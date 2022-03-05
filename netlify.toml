@@ -3,6 +3,12 @@
   publish = "dist"
   fucntions = "netlify/functions"
 
+[dev]
+  commad = "npm run dev"
+  publish = "dist"
+  fucntions = "netlify/functions"
+
 [[redirects]]
   from = "/housing/:id"
-  to = "/.netlify/functions/housing-info"
+  to = "/.netlify/functions/housing-info/?id=:id"
+  status = 200

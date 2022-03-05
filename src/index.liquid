@@ -3,4 +3,11 @@ layout: layouts/base.liquid
 title: Home
 ---
 
-<h1>The UEO home page</h1>
+<h1>Affordable Housing List</h1>
+
+<ul>
+  {% for unit in housing %}
+  <li><a href="https://theunitedeffort.org/Home/Detail?mid={{unit.id}}">{{ unit.apt_name }}</a></li>
+  {% comment %} <li><a href="/housing/{{unit.id}}">{{ unit.apt_name }}</a></li> {% endcomment %}
+  {% endfor %}
+</ul>
