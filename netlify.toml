@@ -10,5 +10,12 @@
 
 [[redirects]]
   from = "/housing/:id"
-  to = "/.netlify/functions/housing-info/?id=:id"
+  to = "https://theunitedeffort.org/Home/Detail?mid=:id"
   status = 200
+
+[[redirects]]
+  from = "/Account/Login/*"
+  to = "https://theunitedeffort.org/Account/Login/:splat"
+  status = 200
+
+

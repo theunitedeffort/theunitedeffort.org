@@ -7,7 +7,7 @@ title: Home
 
 <ul>
   {% for unit in housing %}
-  <li><a href="https://theunitedeffort.org/Home/Detail?mid={{unit.id}}">{{ unit.apt_name }}</a></li>
-  {% comment %} <li><a href="/housing/{{unit.id}}">{{ unit.apt_name }}</a></li> {% endcomment %}
+  {% comment %} <li><a href="https://theunitedeffort.org/Home/Detail?mid={{unit.id}}">{{ unit.apt_name }}</a></li> {% endcomment %}
+  <li><a href="/housing/{{unit.id}}">{{ unit.apt_name }}</a></li>
   {% endfor %}
 </ul>
