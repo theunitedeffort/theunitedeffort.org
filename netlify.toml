@@ -1,0 +1,8 @@
+[build]
+  commad = "npm run build"
+  publish = "dist"
+  fucntions = "netlify/functions"
+
+[[redirects]]
+  from = "/housing/:id"
+  to = "/.netlify/functions/housing-info"
