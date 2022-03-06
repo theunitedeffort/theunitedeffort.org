@@ -5,7 +5,9 @@ title: Home
 
 <h1>Affordable Housing List</h1>
 <ul>
-  {% for unit in housing %}
-  <li><a href="/affordable-housing/{{unit.id}}">{{ unit.apt_name }}</a></li>
+  {% for address in housing %}
+  <li>
+    <a href="/affordable-housing/{{address.id}}">{{ address.apt_name }}</a> / 
+    <a href="/units/{{address.id}}">Units at {{ address.apt_name }}</a></li>
   {% endfor %}
 </ul>

@@ -1,0 +1,27 @@
+---
+layout: "layouts/base.liquid"
+title: "Resources for Affordable Housing"
+permalink: "/Home/OtherHousingResources/index.html"
+---
+
+
+<h1>Resources for Affordable Housing Santa Clara County</h1>
+
+{% assign links = resources | whereEmpty: "City"  %}
+<h2>Across the county</h2>
+<ul>
+  {% for link in links %}
+  <li><a href="{{link.Link}}" target="_BLANK" rel="noopener">{{ link.Name }}</a></li>
+  {% endfor %}
+</ul>
+
+{% assign cities = resources | index: "City" %}
+{% for city in cities | sort %}
+  {% assign links = resources | whereIncluded: "City", city  %}
+  <h2>{{city}}</h2>
+  <ul>
+    {% for link in links %}
+    <li><a href="{{link.Link}}" target="_BLANK" rel="noopener">{{ link.Name }}</a></li>
+    {% endfor %}
+  </ul>
+{% endfor %}

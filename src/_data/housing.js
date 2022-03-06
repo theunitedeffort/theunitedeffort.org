@@ -3,32 +3,29 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.e
 
 
 
-let housingList = [];
+// Lookup data for this item from the Airtable API
+const fetchHousingList = async() => {
+  let housingList = [];
+  const table = base("tbl4X57cCTxhRxoPs"); // Housing table
 
-async function fetchHousingList() {
-
-  await base("Housing").select({
-    view: "API all housing"
-  }).eachPage(function page(records, fetchNextPage) {
-
-    records.forEach(function(record) {
-      housingList.push({
-        id: record.get("ID"),
-        apt_name: record.get("APT_NAME"),
-      })
+  return table.select({
+      view: "API all housing"
+    })
+    .all()
+    .then(records => {
+      // console.log(`records`, records);
+      records.forEach(function(record) {
+        housingList.push({
+          id: record.get("ID"),
+          apt_name: record.get("APT_NAME"),
+        })
+      });
+      return housingList;
     });
 
-    fetchNextPage();
-
-  });
-
-  return housingList;
-
-}
-
+};
 
 
 module.exports = async function() {
-  await fetchHousingList();
-  return housingList;
+  return await fetchHousingList();
 }
