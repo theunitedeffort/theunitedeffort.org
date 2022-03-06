@@ -1,5 +1,3 @@
 node_modules
 dist
 .netlify
-netlify/functions/housing-info/**
-!netlify/functions/housing-info/index.js

@@ -10,12 +10,18 @@
 
 [[redirects]]
   from = "/housing/:id"
-  to = "https://theunitedeffort.org/Home/Detail?mid=:id"
+  to = "/.netlify/functions/housing-info/?id=:id"
   status = 200
 
+# Any unsatisfied requests should be proxied to the original site hosting
 [[redirects]]
-  from = "/Account/Login/*"
-  to = "https://theunitedeffort.org/Account/Login/:splat"
+  from = "/Home/CollectionListNew"
+  to = "/affordable-housing"
+  status = 302
+
+
+# Any unsatisfied requests should be proxied to the original site hosting
+[[redirects]]
+  from = "/*"
+  to = "https://theunitedeffort.org/:splat"
   status = 200
-
-
