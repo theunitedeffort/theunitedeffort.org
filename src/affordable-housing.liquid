@@ -4,10 +4,8 @@ title: Home
 ---
 
 <h1>Affordable Housing List</h1>
-
 <ul>
   {% for unit in housing %}
-  {% comment %} <li><a href="https://theunitedeffort.org/Home/Detail?mid={{unit.id}}">{{ unit.apt_name }}</a></li> {% endcomment %}
-  <li><a href="/housing/{{unit.id}}">{{ unit.apt_name }}</a></li>
+  <li><a href="/affordable-housing/{{unit.id}}">{{ unit.apt_name }}</a></li>
   {% endfor %}
 </ul>

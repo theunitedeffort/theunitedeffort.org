@@ -17,15 +17,17 @@ This version is populated with data from an Airbase database rather than the ori
 
 ## Data source
 
-Data for these page views are drawn from Airtable vie the Airtable API.
+Data for these page views are drawn from Airtable vie the [Airtable API](https://airtable.com/apphE4mk8YDqyHM0I/api/docs).
 To access the data, the site requires _readonly_ access to Airtable via the appropriate Airtable base ID and teh Airtable API key. Provide these via environment variables: 
 
 - `AIRTABLE_API_KEY`
-- `AIRTABLE_BASE_ID`
+- `AIRTABLE_BASE_ID` (`apphE4mk8YDqyHM0I`)
 
 Permissions to the Airtable base can be granted by the adminitrators of [UEO Airbase](https://airtable.com/apphE4mk8YDqyHM0I/)
 
 ## Local development
+
+To make your own copy of this site and begin development, follow these instructions:
 
 ```bash
 # clone this repo
@@ -43,7 +45,7 @@ npm i -g netlify-cli
 netlify init  
 
 # set environment variables
-netlify env:set AIRTABLE_BASE_ID {YOUR ENV VAR VALUE}
+netlify env:set AIRTABLE_BASE_ID apphE4mk8YDqyHM0I
 netlify env:set AIRTABLE_API_KEY {YOUR ENV VAR VALUE}
 
 # run local development build and server
@@ -63,4 +65,4 @@ For a seamless experience for the site visitor, all requests that cannot be sati
 
 This technique could be used to make this site an augmentation layer in front of the original site by pointing the DNS for `theunitedeffort.org` at this site, and proxying any unsatisfied requests to the original production site via alternate domain name or address.
 
-Proxying is achieved via rules defined in the `netlify.toml` file.
+Proxying is achieved via rules defined [in the `netlify.toml`](https://github.com/philhawksworth/the-ueo-demo/blob/main/netlify.toml#L23-L27) file.

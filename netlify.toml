@@ -9,16 +9,15 @@
   fucntions = "netlify/functions"
 
 [[redirects]]
-  from = "/housing/:id"
+  from = "/affordable-housing/:id"
   to = "/.netlify/functions/housing-info/?id=:id"
   status = 200
 
-# Any unsatisfied requests should be proxied to the original site hosting
+# A more freindly URL for the affordable housing list
 [[redirects]]
   from = "/Home/CollectionListNew"
   to = "/affordable-housing"
   status = 302
-
 
 # Any unsatisfied requests should be proxied to the original site hosting
 [[redirects]]
