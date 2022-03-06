@@ -7,7 +7,6 @@ title: Home
 <ul>
   {% for address in housing %}
   <li>
-    <a href="/affordable-housing/{{address.id}}">{{ address.apt_name }}</a> / 
-    <a href="/units/{{address.id}}">Units at {{ address.apt_name }}</a></li>
+    <a href="/affordable-housing/{{address.id}}">{{ address.apt_name }}</a>
   {% endfor %}
 </ul>

@@ -10,13 +10,10 @@
 
 [[redirects]]
   from = "/affordable-housing/:id"
-  to = "/.netlify/functions/housing-info/?id=:id"
+  to = "/.netlify/functions/units/?id=:id"
+  # to = "/.netlify/functions/housing-info/?id=:id"
   status = 200
 
-[[redirects]]
-  from = "/units/:id"
-  to = "/.netlify/functions/units/?id=:id"
-  status = 200
 
 # A more freindly URL for the affordable housing list
 [[redirects]]

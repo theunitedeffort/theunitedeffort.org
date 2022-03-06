@@ -3,12 +3,22 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.e
 
 
 // Make a definition list from all the data returned about this item
+const metaData = (data) => {
+  let meta = data[0].record;
+  return `<dl>
+  <dt>Address</dt><dd>${meta["Address (from Housing)"][0]}</dd>
+  <dt>City</dt><dd>${meta["City (from Housing)"][0]}</dd>
+  <dt>Phone</dt><dd>${meta["Phone (from Housing)"][0]}</dd>
+  <dt>Website</dt><dd><a href="${meta["URL (from Housing)"][0]}">${meta["URL (from Housing)"][0]}</a></dd>
+  </dl>`;
+}
+
+
+// Make a definition list from all the data returned about this item
 const unitDetails = (data) => {
   let rows = [];
   for (item in data) {
     let unit = data[item].record;
-    console.log(`unit`, unit);
-
     rows.push(`
       <td>${unit.TYPE}</td>
       <td>${unit.MAX_OCCUPANCY}</td>
@@ -16,10 +26,6 @@ const unitDetails = (data) => {
       <td>${unit.RENTS}</td>
       <td>${unit.min_income}</td>
       <td>${unit.max_income}</td>
-      <td>${unit["City (from Housing)"][0]}</td>
-      <td>${unit["Address (from Housing)"][0]}</td>
-      <td>${unit["Phone (from Housing)"][0]}</td>
-      <td><a href="${unit["URL (from Housing)"][0]}">${unit["URL (from Housing)"][0]}</a></td>
     `);
   }
   return `<tr>${rows.join("</tr><tr>")}<tr>`;
@@ -29,8 +35,30 @@ const unitDetails = (data) => {
 const pageTemplate = (data) => {
   return `
   <html>
+    <head>
+      <link rel="stylesheet" href="/css/styles.css">
+    </head>
     <body>
-      <table>${ unitDetails(data) }</table>
+      <header>
+        <a href="/">Home</a> |
+        <a href="/affordable-housing/">Affordable housing list</a>
+      </header>
+      ${metaData(data)}
+      <table>
+        <thead>
+          <tr>
+            <td>Home type</td>
+            <td>Max occupancy</td>
+            <td>Status</td>
+            <td>Rents ($)</td>
+            <td>Min income</td>
+            <td>Max income</td>
+          </tr>
+        </thead>
+        <tbody>
+        ${ unitDetails(data) }
+        </tbody>
+      </table>
     <body>
   </html>
   `;
@@ -67,7 +95,7 @@ const fetchData = async(housingID) => {
 exports.handler = async function(event) {
 
   // get the housing ID from the URL
-  const housingID = event.path.split("units/")[1];
+  const housingID = event.path.split("affordable-housing/")[1];
 
   // Look up the property in the DB
   let data = await fetchData(housingID);

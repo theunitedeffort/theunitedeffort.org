@@ -1,6 +1,9 @@
 module.exports = function(eleventyConfig) {
 
 
+  //pass through static assets
+  eleventyConfig.addPassthroughCopy({ "src/_static": "/" });
+
   // Get all of the unique values of a property
   eleventyConfig.addFilter("index", function(collection, property) {
     let values = [];
