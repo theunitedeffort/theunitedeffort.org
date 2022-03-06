@@ -21,8 +21,9 @@ let data;
 
 async function fetchData(housingID) {
   // return await fetchData(housingID);
-  base('Housing')
+  base("Housing")
     .select({
+      view: "API all housing",
       filterByFormula: `ID = "${housingID}"`
     }).firstPage(function(err, records) {
       data = records[0].get('ADDRESS');
@@ -39,7 +40,7 @@ async function fetchData(housingID) {
 
 exports.handler = async function(event) {
 
-  const housingID = event.path.split("housing/")[1];
+  const housingID = event.path.split("affordable-housing/")[1];
 
   await fetchData(housingID);
   console.log(data);

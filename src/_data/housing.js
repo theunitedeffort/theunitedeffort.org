@@ -7,8 +7,8 @@ let housingList = [];
 
 async function fetchHousingList() {
 
-  await base('Housing').select({
-    view: "All housing listing"
+  await base("Housing").select({
+    view: "API all housing"
   }).eachPage(function page(records, fetchNextPage) {
 
     records.forEach(function(record) {
