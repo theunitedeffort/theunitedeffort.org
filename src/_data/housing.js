@@ -7,12 +7,9 @@ let housingList = [];
 
 async function fetchHousingList() {
 
-  await base('Housing list').select({
-    // Selecting the first 3 records in All housing listing:
-    // maxRecords: 3,
+  await base('Housing').select({
     view: "All housing listing"
   }).eachPage(function page(records, fetchNextPage) {
-    // This function (`page`) will get called for each page of records.
 
     records.forEach(function(record) {
       housingList.push({

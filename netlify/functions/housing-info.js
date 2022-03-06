@@ -21,7 +21,7 @@ let data;
 
 async function fetchData(housingID) {
   // return await fetchData(housingID);
-  base('Housing list')
+  base('Housing')
     .select({
       filterByFormula: `ID = "${housingID}"`
     }).firstPage(function(err, records) {
