@@ -4,13 +4,15 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.e
 
 // Make a definition list from all the data returned about this item
 const metaData = (data) => {
-  let meta = data[0].record;
-  return `<dl>
-  <dt>Address</dt><dd>${meta["Address (from Housing)"][0]}</dd>
-  <dt>City</dt><dd>${meta["City (from Housing)"][0]}</dd>
-  <dt>Phone</dt><dd>${meta["Phone (from Housing)"][0]}</dd>
-  <dt>Website</dt><dd><a href="${meta["URL (from Housing)"][0]}">${meta["URL (from Housing)"][0]}</a></dd>
-  </dl>`;
+  if (data[0]) {
+    let meta = data[0].record;
+    return `<dl>    
+    <dt>Address</dt><dd>${meta["Address (from Housing)"]?.[0]|| " "}</dd>
+    <dt>City</dt><dd>${meta["City (from Housing)"]?.[0]|| " "}</dd>
+    <dt>Phone</dt><dd>${meta["Phone (from Housing)"]?.[0] || " "} </dd>
+    <dt>Website</dt><dd><a href="${meta["URL (from Housing)"]?.[0] || " "}">${meta["URL (from Housing)"]?.[0] || " "}</a></dd>
+    </dl>`;
+  }
 }
 
 
