@@ -11,7 +11,14 @@ permalink: "/Home/OtherHousingResources/index.html"
 <h2>Across the county</h2>
 <ul>
   {% for link in links %}
-  <li><a href="{{link.Link}}" target="_BLANK" rel="noopener">{{ link.Name }}</a></li>
+  <li>
+    <a href="{{link.Link}}" target="_BLANK" rel="noopener">{{ link.Name }}</a>
+    {% if link.Description %}
+    <div class="description">
+      {{ link.Description | markdownify }}
+    </div>
+    {% endif %}
+  </li>
   {% endfor %}
 </ul>
 

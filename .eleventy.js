@@ -1,8 +1,12 @@
-module.exports = function(eleventyConfig) {
+const markdown = require("marked");
 
+module.exports = function(eleventyConfig) {
 
   //pass through static assets
   eleventyConfig.addPassthroughCopy({ "src/_static": "/" });
+
+  // Markdown filter
+  eleventyConfig.addFilter("markdownify", (str) => markdown.marked(str));
 
   // Get all of the unique values of a property
   eleventyConfig.addFilter("index", function(collection, property) {
