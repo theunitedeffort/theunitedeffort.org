@@ -15,11 +15,20 @@
   status = 200
 
 
-# A more freindly URL for the affordable housing list
+# More freindly URLs
 [[redirects]]
   from = "/Home/CollectionListNew"
   to = "/affordable-housing"
   status = 302
+[[redirects]]
+  from = "/Home/WishList"
+  to = "/wishlist"
+  status = 302
+[[redirects]]
+  from = "/Home/WhoAreOurClients"
+  to = "/clients"
+  status = 302
+
 
 # Any unsatisfied requests should be proxied to the original site hosting
 [[redirects]]
