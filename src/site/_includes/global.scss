@@ -55,7 +55,10 @@ header,
 footer,
 main,
 .pre-footer {
-  padding: 2rem;
+  padding-top: 1em 0;
+  @include bp(narrow) {
+    padding: 2rem;
+  }
 }
 
 .container {

@@ -1,13 +1,22 @@
-.container {
-  // display: flex;
-  // align-items: flex-start;
+.card-set {
+  @include bp(mid) {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    column-gap: 10%;
+  }
 }
 
 .card {
-  margin: 2em 0 3em;
+  margin: 1em 0 2em;
+  @include bp(mid) {
+    width: 45%;
+  }
   h2 {
     color: var(--color-orange);
     font-size: 1.1em;
+    margin-top: 0em;
     margin-bottom: 0em;
   }
   h3 {
@@ -15,7 +24,3 @@
     font-size: 1.8rem
   }
 }
-
-// .card:nth-child(even) {
-//   margin-left: 40%;
-// }
