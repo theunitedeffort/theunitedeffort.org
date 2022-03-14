@@ -4,14 +4,14 @@
     align-items: flex-start;
     justify-content: space-evenly;
     flex-wrap: wrap;
-    column-gap: 10%;
+    column-gap: 5%;
   }
 }
 
 .card {
   margin: 1em 0 2em;
   @include bp(mid) {
-    width: 45%;
+    width: 30%;
   }
   h2 {
     color: var(--color-orange);
