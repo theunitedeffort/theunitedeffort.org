@@ -1,12 +1,17 @@
 const markdown = require("marked");
+const sass = require("sass");
 
 module.exports = function(eleventyConfig) {
 
   //pass through static assets
-  eleventyConfig.addPassthroughCopy({ "src/_static": "/" });
+  eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
 
   // Markdown filter
-  eleventyConfig.addFilter("markdownify", (str) => markdown.marked(str));
+  // eleventyConfig.addFilter("markdownify", (str) => markdown.marked(str));
+  eleventyConfig.addFilter("markdownify", (str) => {
+    str = str.replaceAll("http:///", "/");
+    return markdown.marked(str)
+  });
 
   // Get all of the unique values of a property
   eleventyConfig.addFilter("index", function(collection, property) {
@@ -40,9 +45,28 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
+
+  // Sass pipeline
+  eleventyConfig.addTemplateFormats("scss");
+  eleventyConfig.addExtension("scss", {
+    outputFileExtension: "css",
+    compile: function(contents, includePath) {
+      let includePaths = [this.config.dir.includes];
+      return () => {
+        let ret = sass.renderSync({
+          file: includePath,
+          includePaths,
+          data: contents,
+          outputStyle: "compressed"
+        });
+        return ret.css.toString("utf8");
+      }
+    }
+  });
+
   return {
     dir: {
-      input: "src",
+      input: "src/site",
       output: "dist"
     }
   }

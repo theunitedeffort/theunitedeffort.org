@@ -1,0 +1,17 @@
+---
+layout: "layouts/base.liquid"
+pagination:
+  data: pages
+  size: 1
+  alias: thisPage
+permalink: "{{ thisPage.url }}/index.html"
+eleventyComputed:
+  pageClass: "page{{ thisPage.url | replace: '/', '-' }}"
+---
+
+{%- for section in thisPage.sections -%}
+  <div class="{{section.type | downcase }}">
+    {{ section.content | markdownify }}
+  </div>
+{%- endfor -%}
+

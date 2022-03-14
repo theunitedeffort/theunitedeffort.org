@@ -1,0 +1,60 @@
+header {
+  background-color: var(--color-white);
+  color: var(--color-black);
+  font-size: 0.95rem;
+  font-weight: 700;
+  .container {
+    text-align: center;
+    @include bp(wide) {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+  .logo-home {
+    width: 200px;
+  }
+  .nav-home img {
+    margin: 0 auto 2em auto;
+    @include bp(wide) {
+      margin: 0;
+    }
+  }
+  ul.navigation {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    line-height: 1.8;
+  }
+  li {
+    list-style: none;
+    margin-right: 1rem;
+  }
+  a:link,
+  a:visited {
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  a:hover,
+  a:focus {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--color-orange);
+  }
+}
+
+.page-resources .nav-resources,
+.page-assistance .nav-assistance,
+.page-clients .nav-clients,
+.page-mentors .nav-mentors,
+.page-home .nav-home,
+.page-about .nav-about {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--color-orange);
+}

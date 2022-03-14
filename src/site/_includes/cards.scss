@@ -1,0 +1,21 @@
+.container {
+  // display: flex;
+  // align-items: flex-start;
+}
+
+.card {
+  margin: 2em 0 3em;
+  h2 {
+    color: var(--color-orange);
+    font-size: 1.1em;
+    margin-bottom: 0em;
+  }
+  h3 {
+    margin-top: 0.4em;
+    font-size: 1.8rem
+  }
+}
+
+// .card:nth-child(even) {
+//   margin-left: 40%;
+// }

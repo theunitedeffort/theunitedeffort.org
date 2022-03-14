@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo - United Efforts Organization</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="{{ pageClass }}">
+  <header>
+    <div class="container">
+      {% include 'header' %}
+    </div>
+  </header>
+  <main>
+    <div class="container">
+    {{ content }}
+    </div>
+  </main>
+  <div class="pre-footer">
+    <div class="container">
+    <h2>Offering and seeking help</h2>
+    <p>
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint maxime ut quae perspiciatis, iusto minima voluptas magnam explicabo odio perferendis vitae rerum sed exercitationem ratione totam placeat tempore ducimus commodi!
+    </p>
+    <a href="/helping">
+      How to help
+    </a>
+    </div>
+  </div>
+ <footer>
+    <div class="container">
+      {% include 'footer' %}
+    </div>
+ </footer>
+</body>
+</html>

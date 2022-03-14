@@ -1,0 +1,61 @@
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-gray-200);
+  font-family: var(--font-headline);
+  font-weight: 850;
+  line-height: 1.2;
+  margin: 2em 0 0.5em 0;
+}
+
+h1 {
+  font-size: 2.5em;
+  margin: 1em 0 0.5em;
+  @include bp(wide) {
+    max-width: 900px;
+  }
+}
+
+h2 {
+  font-size: 1.8em;
+}
+
+h3 {
+  font-size: 1.3em;
+}
+
+main p,
+main ol,
+main ul {
+  margin-top: 1em;
+}
+
+main ol,
+main ul {
+  list-style-position: outside;
+  padding-left: 1em;
+  li {
+    margin-bottom: 0.3em;
+  }
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+main,
+.pre-footer {
+  a:link,
+  a:visited {
+    color: var(--color-blue-dark);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 1px;
+    text-decoration-color: var(--color-blue);
+  }
+  a:hover,
+  a:focus {
+    text-decoration: none;
+  }
+}

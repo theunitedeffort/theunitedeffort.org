@@ -1,3 +1,4 @@
+const { AssetCache } = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
@@ -27,5 +28,11 @@ const fetchHousingList = async() => {
 
 
 module.exports = async function() {
-  return await fetchHousingList();
+  let asset = new AssetCache("airtable_housing");
+  if (asset.isCacheValid("1h")) {
+    return asset.getCachedValue(); // a promise
+  }
+  let housing = await fetchHousingList();
+  await asset.save(housing, "json");
+  return housing;
 }
