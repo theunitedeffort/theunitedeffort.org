@@ -10,8 +10,7 @@
 
 [[redirects]]
   from = "/affordable-housing/:id"
-  to = "/.netlify/functions/units/?id=:id"
-  # to = "/.netlify/functions/housing-info/?id=:id"
+  to = "/.netlify/functions/units"
   status = 200
 
 

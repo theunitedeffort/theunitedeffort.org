@@ -10,6 +10,7 @@ const metaData = (data) => {
     <dt>Address</dt><dd>${meta["Address (from Housing)"]?.[0]|| " "}</dd>
     <dt>City</dt><dd>${meta["City (from Housing)"]?.[0]|| " "}</dd>
     <dt>Phone</dt><dd>${meta["Phone (from Housing)"]?.[0] || " "} </dd>
+    <dt>Number of units</dt><dd>${meta["UNITS_CNT (from Housing)"]?.[0] || " "}</dd>
     <dt>Website</dt><dd><a href="${meta["URL (from Housing)"]?.[0] || " "}">${meta["URL (from Housing)"]?.[0] || " "}</a></dd>
     </dl>`;
   }
@@ -78,7 +79,6 @@ const fetchData = async(housingID) => {
     .then(records => {
       let units = [];
       for (record in records) {
-        // console.log(`record`, JSON.stringify(records[record]));
 
         units.push({
           record: (records[record].fields)
@@ -97,13 +97,33 @@ const fetchData = async(housingID) => {
 exports.handler = async function(event) {
 
   // get the housing ID from the URL
-  const housingID = event.path.split("affordable-housing/")[1];
+  const props = event.path.split("affordable-housing/")[1];
+  let housingID;
+
+  const json = props.includes(".json");
+  if (json) {
+    housingID = props.split(".")[0];
+  } else {
+    housingID = props;
+  }
+
 
   // Look up the property in the DB
   let data = await fetchData(housingID);
-  return {
-    statusCode: 200,
-    body: pageTemplate(data)
-  };
+  if (json) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data),
+      headers: {
+        "Content-type": "application/json"
+      }
+    };
+  } else {
+    return {
+      statusCode: 200,
+      body: pageTemplate(data)
+    };
+  }
+
 
 };

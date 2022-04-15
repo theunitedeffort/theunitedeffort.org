@@ -23,7 +23,14 @@ eleventyComputed:
   {% endif %} 
 
   <div class="{{section.type | downcase }}">
+    {% if section.type == "Pancake" %}
+    <div class="container">
     {{ section.content | markdownify }}
+    </div>
+    {% else %}
+    {{ section.content | markdownify }}
+    {% endif %}
+
   </div>
 {%- endfor -%}
 

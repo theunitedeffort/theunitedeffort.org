@@ -3,6 +3,7 @@ header {
   color: var(--color-black);
   font-size: 0.95rem;
   font-weight: 700;
+  margin-top: 2em;
   .container {
     text-align: center;
     @include bp(wide) {
