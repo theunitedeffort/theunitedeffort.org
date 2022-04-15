@@ -9,6 +9,11 @@
   fucntions = "netlify/functions"
 
 [[redirects]]
+  from = "/affordable-housing/search"
+  to = "/.netlify/functions/search-housing"
+  status = 200
+
+[[redirects]]
   from = "/affordable-housing/:id"
   to = "/.netlify/functions/units"
   status = 200

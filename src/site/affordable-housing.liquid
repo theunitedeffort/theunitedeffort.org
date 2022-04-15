@@ -5,9 +5,11 @@ permalink: "/resources/affordable-housing/index.html"
 ---
 
 <h1>Affordable Housing List</h1>
+
 <ul>
   {% for address in housing %}
   <li>
     <a href="/affordable-housing/{{address.id}}">{{ address.apt_name }}</a>
+  </li>
   {% endfor %}
-</ul>
+</ul> 
