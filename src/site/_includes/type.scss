@@ -37,6 +37,12 @@ main ul {
   padding-left: 1em;
   li {
     margin-bottom: 0.3em;
+    ul,
+    ol {
+      margin-top: 0;
+      margin-bottom: 0.6em;
+      margin-left: 2em;
+    }
   }
 }
 
