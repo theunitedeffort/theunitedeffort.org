@@ -32,7 +32,7 @@ permalink: "/housing/affordable-housing/index.html"
 
 
 <ul>
-  {% for address in housing %}
+  {% for address in housingdatabase %}
   <li>
     <a href="/affordable-housing/{{address.id}}">{{ address.apt_name }}</a>
   </li>
