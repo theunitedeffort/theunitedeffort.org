@@ -6,16 +6,13 @@ pageClass: "page-resources"
 
 <h1>Resources for Affordable Housing Santa Clara County</h1>
 
-<ul>
-  <li><a href="/resources/affordable-housing">Affordable housing list</a></li>
-</ul>
 
-{% assign links = resources | whereEmpty: "City"  %}
-<h2>Across the county</h2>
+{% comment %} {% assign links = resources | whereEmpty: "Category"  %}
+<h2>Miscellaneous</h2>
 <ul>
   {% for link in links %}
   <li>
-    <a href="{{link.Link}}" target="_BLANK" rel="noopener">{{ link.Name }}</a>
+    <a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a>
     {% if link.Description %}
     <div class="description">
       {{ link.Description | markdownify }}
@@ -23,15 +20,15 @@ pageClass: "page-resources"
     {% endif %}
   </li>
   {% endfor %}
-</ul>
+</ul> {% endcomment %}
 
-{% assign cities = resources | index: "City" %}
-{% for city in cities | sort %}
-  {% assign links = resources | whereIncluded: "City", city  %}
+{% assign category = resources | index: "Category" %}
+{% for city in category | sort %}
+  {% assign links = resources | whereIncluded: "Category", city  %}
   <h2>{{city}}</h2>
   <ul>
     {% for link in links %}
-    <li><a href="{{link.Link}}" target="_BLANK" rel="noopener">{{ link.Name }}</a></li>
+    <li><a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a></li>
     {% endfor %}
   </ul>
 {% endfor %}

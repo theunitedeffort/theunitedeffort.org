@@ -1,0 +1,37 @@
+---
+layout: "layouts/base.liquid"
+title: "Affordable Housing database and assistance"
+pageClass: "page-housing"
+---
+
+<h1>Affordable Housing in Santa Clara County</h1>
+
+<ul>
+  <li><a href="/housing/affordable-housing">Affordable housing database</a></li>
+</ul>
+
+{% assign links = housing | whereEmpty: "City"  %}
+<h2>Across the county</h2>
+<ul>
+  {% for link in links %}
+  <li>
+    <a href="{{link.Link}}" target="_BLANK" rel="noopener">{{ link.Name }}</a>
+    {% if link.Description %}
+    <div class="description">
+      {{ link.Description | markdownify }}
+    </div>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+
+{% assign cities = housing | index: "City" %}
+{% for city in cities | sort %}
+  {% assign links = housing | whereIncluded: "City", city  %}
+  <h2>{{city}}</h2>
+  <ul>
+    {% for link in links %}
+    <li><a href="{{link.Link}}" target="_BLANK" rel="noopener">{{ link.Name }}</a></li>
+    {% endfor %}
+  </ul>
+{% endfor %}

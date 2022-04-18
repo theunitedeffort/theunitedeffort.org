@@ -32,14 +32,12 @@ const fetchData = async(query) => {
 
 exports.handler = async function(event) {
 
-
-
-  const { city, bedrooms } = event.queryStringParameters;
+  const { city, unitType } = event.queryStringParameters;
 
   let parameters = [];
 
-  if (bedrooms) {
-    let rooms = bedrooms.split(",");
+  if (unitType) {
+    let rooms = unitType.split(",");
     let roomsQuery = rooms.map((x) => `{TYPE} = '${x} Bedroom'`)
     parameters.push(`OR(${roomsQuery.join(",")})`);
   }

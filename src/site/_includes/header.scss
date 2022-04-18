@@ -51,9 +51,8 @@ header {
 .page-resources .nav-resources,
 .page-public-assistance .nav-public-assistance,
 body[class^="page-public-assistance"] .nav-public-assistance,
-.page-clients .nav-clients,
-.page-mentors .nav-mentors,
-.page-home .nav-home,
+body[class^="page-resources"] .nav-resources,
+body[class^="page-housing"] .nav-housing,
 .page-about .nav-about {
   text-decoration: underline;
   text-decoration-thickness: 3px;

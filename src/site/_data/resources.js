@@ -6,14 +6,16 @@ const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process
 // Lookup data for this item from the Airtable API
 const fetchDataFromAirtable = async() => {
   let data = [];
-  const table = base("tblCbqZ3YyHkTNeaC"); // Resources table
+  const table = base("tblyp7AurXeZEIW4J"); // Resources table
   return table.select({
       view: "API list all"
     })
     .all()
     .then(records => {
       records.forEach(function(record) {
-        data.push(record.fields)
+        if (record.get("Show on website")) {
+          data.push(record.fields)
+        }
       });
       return data;
     });

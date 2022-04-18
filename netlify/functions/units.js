@@ -1,5 +1,6 @@
-var Airtable = require('airtable');
-var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+const Airtable = require('airtable');
+const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+const pageTemplate = require("./includes/base.js");
 
 
 // Make a definition list from all the data returned about this item
@@ -11,7 +12,7 @@ const metaData = (data) => {
     <dt>City</dt><dd>${meta["City (from Housing)"]?.[0]|| " "}</dd>
     <dt>Phone</dt><dd>${meta["Phone (from Housing)"]?.[0] || " "} </dd>
     <dt>Number of units</dt><dd>${meta["UNITS_CNT (from Housing)"]?.[0] || " "}</dd>
-    <dt>Website</dt><dd><a href="${meta["URL (from Housing)"]?.[0] || " "}">${meta["URL (from Housing)"]?.[0] || " "}</a></dd>
+    <dt>Website</dt><dd><a href="${meta["URL (from Housing)"]?.[0] || " "}" target="_BLANK" rel="noopener">${meta["URL (from Housing)"]?.[0] || " "}</a></dd>
     </dl>`;
   }
 }
@@ -35,17 +36,8 @@ const unitDetails = (data) => {
 }
 
 
-const pageTemplate = (data) => {
+const unitTables = (data) => {
   return `
-  <html>
-    <head>
-      <link rel="stylesheet" href="/css/styles.css">
-    </head>
-    <body>
-      <header>
-        <a href="/">Home</a> |
-        <a href="/affordable-housing/">Affordable housing list</a>
-      </header>
       ${metaData(data)}
       <table>
         <thead>
@@ -62,8 +54,6 @@ const pageTemplate = (data) => {
         ${ unitDetails(data) }
         </tbody>
       </table>
-    <body>
-  </html>
   `;
 };
 
@@ -79,15 +69,11 @@ const fetchData = async(housingID) => {
     .then(records => {
       let units = [];
       for (record in records) {
-
         units.push({
           record: (records[record].fields)
         })
-
       }
       return units;
-
-
     });
 };
 
@@ -100,6 +86,7 @@ exports.handler = async function(event) {
   const props = event.path.split("affordable-housing/")[1];
   let housingID;
 
+  // determine if we'll return a view of the json data
   const json = props.includes(".json");
   if (json) {
     housingID = props.split(".")[0];
@@ -119,11 +106,10 @@ exports.handler = async function(event) {
       }
     };
   } else {
+    const units = unitTables(data);
     return {
       statusCode: 200,
-      body: pageTemplate(data)
+      body: pageTemplate(units)
     };
   }
-
-
 };
