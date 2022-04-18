@@ -38,7 +38,7 @@ exports.handler = async function(event) {
 
   if (unitType) {
     let rooms = unitType.split(",");
-    let roomsQuery = rooms.map((x) => `{TYPE} = '${x} Bedroom'`)
+    let roomsQuery = rooms.map((x) => `{TYPE} = '${x}'`)
     parameters.push(`OR(${roomsQuery.join(",")})`);
   }
 

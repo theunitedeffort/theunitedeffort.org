@@ -8,38 +8,17 @@
   publish = "dist"
   fucntions = "netlify/functions"
 
+
 [[redirects]]
-  from = "/affordable-housing/search"
+  from = "/housing/affordable-housing/search"
   to = "/.netlify/functions/search-housing"
   status = 200
 
 [[redirects]]
-  from = "/affordable-housing/:id"
+  from = "/housing/affordable-housing/:id"
   to = "/.netlify/functions/units"
   status = 200
 
 
-# More freindly URLs 
-[[redirects]]
-  from = "/Home/CollectionListNew"
-  to = "/affordable-housing"
-  status = 302
-[[redirects]]
-  from = "/Home/WishList"
-  to = "/wishlist"
-  status = 302
-[[redirects]]
-  from = "/Home/WhoAreOurClients"
-  to = "/clients"
-  status = 302
-[[redirects]]
-  from = "/Home/FindMentor"
-  to = "/mentors"
-  status = 302
 
 
-# Any unsatisfied requests should be proxied to the original site hosting
-[[redirects]]
-  from = "/*"
-  to = "https://theunitedeffort.org/:splat"
-  status = 200
