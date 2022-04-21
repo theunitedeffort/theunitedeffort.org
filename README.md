@@ -17,8 +17,8 @@ This version is populated with data from an Airbase database rather than the ori
 
 ## Data source
 
-Data for these page views are drawn from Airtable vie the [Airtable API](https://airtable.com/apphE4mk8YDqyHM0I/api/docs).
-To access the data, the site requires _readonly_ access to Airtable via the appropriate Airtable base ID and teh Airtable API key. Provide these via environment variables: 
+Data for these page views are drawn from Airtable via the [Airtable API](https://airtable.com/apphE4mk8YDqyHM0I/api/docs).
+To access the data, the site requires _readonly_ access to Airtable via the appropriate Airtable base ID and the Airtable API key. Provide these via environment variables: 
 
 - `AIRTABLE_API_KEY`
 - `AIRTABLE_BASE_ID` (`apphE4mk8YDqyHM0I`)
