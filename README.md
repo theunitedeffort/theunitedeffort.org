@@ -31,10 +31,10 @@ To make your own copy of this site and begin development, follow these instructi
 
 ```bash
 # clone this repo
-git clone https://github.com/philhawksworth/the-ueo-demo
+git clone https://github.com/philhawksworth/the-united-effort-orginization
 
 # move into the working directory and install dependencies
-cd the-ueo-demo
+cd the-united-effort-orginization
 npm install
 
 # install Netlify CLI for centralized env var management
