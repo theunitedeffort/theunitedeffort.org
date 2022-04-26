@@ -1,10 +1,21 @@
 const markdown = require("marked");
 const sass = require("sass");
+const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
+
+module.exports = function(eleventyConfig) {
+  
+};
 
 module.exports = function(eleventyConfig) {
 
   //pass through static assets
   eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
+
+  // Eleventy Serverless plugin
+  eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
+    name: "serverless", // The serverless function name from your permalink object
+    functionsDir: "./netlify/functions/",
+  });
 
   // Markdown filter
   // eleventyConfig.addFilter("markdownify", (str) => markdown.marked(str));

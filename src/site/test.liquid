@@ -1,8 +1,9 @@
 ---
 layout: layouts/base.liquid
-title: Affordable housing database
-permalink: "/housing/affordable-housing/index.html"
-pageClass: "page-housing"
+title: My Test Page
+permalink: 
+  build: "/test/index.html"
+  serverless: "/test/s/index.html"
 ---
 
 <h1>Affordable housing database</h1>
@@ -31,7 +32,6 @@ pageClass: "page-housing"
   <input type="submit" vlaue="Search" />
 </form>
 
-
 <ul>
   {% for address in housingdatabase %}
   <li>
@@ -39,3 +39,4 @@ pageClass: "page-housing"
   </li>
   {% endfor %}
 </ul> 
+
