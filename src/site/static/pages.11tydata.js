@@ -69,8 +69,8 @@ module.exports = async function() {
   if (asset.isCacheValid("1m")) {
     return asset.getCachedValue(); // a promise
   }
+  console.log("Fetching pages.");
   let p = await fetchPages();
   await asset.save(pages, "json");
-  console.log(p);
   return {pages: p};
 }

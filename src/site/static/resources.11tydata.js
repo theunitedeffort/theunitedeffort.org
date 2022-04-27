@@ -5,7 +5,6 @@ const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process
 
 // Lookup data for this item from the Airtable API
 const fetchDataFromAirtable = async() => {
-  console.log("querying airtable for resources.");
   let data = [];
   const table = base("tblyp7AurXeZEIW4J"); // Resources table
   return table.select({
@@ -29,8 +28,8 @@ module.exports = async function() {
   if (asset.isCacheValid("1m")) {
     return asset.getCachedValue(); // a promise
   }
+  console.log("Fetching resources.");
   let res = await fetchDataFromAirtable();
   await asset.save(res, "json");
-  console.log(res);
   return {resources: res};
 }

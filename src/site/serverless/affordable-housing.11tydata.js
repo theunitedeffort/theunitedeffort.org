@@ -32,7 +32,7 @@ module.exports = async function() {
   if (asset.isCacheValid("1s")) {
     return asset.getCachedValue(); // a promise
   }
-  console.log("fetching housing list.")
+  console.log("Fetching housing list.")
   let housing = await fetchHousingList();
   await asset.save(housing, "json");
   return {housingdatabase: housing};
