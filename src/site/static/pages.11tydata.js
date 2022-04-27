@@ -17,10 +17,9 @@ const fetchSection = (id) => {
 }
 
 
-
-
 // Fetch content for our pages from Airtable
 const fetchPages = async() => {
+  console.log("fetching pages");
   let pages = [];
   let data = [];
   const table = base("tblTqhITQfO1MJQaE"); // Structured pages table
@@ -66,11 +65,12 @@ const fetchPages = async() => {
 
 
 module.exports = async function() {
-  let asset = new AssetCache("airtable_pages");
-  if (asset.isCacheValid("1m")) {
-    return asset.getCachedValue(); // a promise
-  }
-  let pages = await fetchPages();
-  await asset.save(pages, "json");
-  return pages;
+  // let asset = new AssetCache("airtable_pages");
+  // if (asset.isCacheValid("1m")) {
+  //   return asset.getCachedValue(); // a promise
+  // }
+  let p = await fetchPages();
+  // await asset.save(pages, "json");
+  console.log(p);
+  return {pages: p};
 }
