@@ -10,7 +10,6 @@ async function handler(event) {
     query: event.queryStringParameters,
     functionsDir: "./netlify/functions/",
   });
-  console.log(elev);
   try {
     let [page] = await elev.getOutput();
 
@@ -27,10 +26,8 @@ async function handler(event) {
   } catch (error) {
     // Only console log for matching serverless paths
     // (otherwise you’ll see a bunch of BrowserSync 404s for non-dynamic URLs during --serve)
-    console.log(event.path);
-    console.log(elev.isServerlessUrl(event.path));
     if (elev.isServerlessUrl(event.path)) {
-      console.log("!!! Serverless Error:", error);
+      console.log("Serverless Error:", error);
     }
     return {
       statusCode: error.httpStatusCode || 500,
