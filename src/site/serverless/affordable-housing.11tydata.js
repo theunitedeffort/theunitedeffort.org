@@ -14,7 +14,7 @@ const fetchHousingList = async() => {
     })
     .all()
     .then(records => {
-      console.log(`records`, records);
+      // console.log(`records`, records);
       records.forEach(function(record) {
         housingList.push({
           id: record.get("ID"),
@@ -28,11 +28,12 @@ const fetchHousingList = async() => {
 
 
 module.exports = async function() {
-  //let asset = new AssetCache("airtable_housing_database");
-  //if (asset.isCacheValid("1m")) {
-  //  return asset.getCachedValue(); // a promise
-  //}
+  let asset = new AssetCache("airtable_housing_database");
+  if (asset.isCacheValid("1s")) {
+    return asset.getCachedValue(); // a promise
+  }
+  console.log("Fetching housing list.")
   let housing = await fetchHousingList();
-  //await asset.save(housing, "json");
-  return housing;
+  await asset.save(housing, "json");
+  return {housingdatabase: housing};
 }
