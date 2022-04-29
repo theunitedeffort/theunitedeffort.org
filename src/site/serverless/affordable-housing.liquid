@@ -3,7 +3,7 @@ layout: layouts/base.liquid
 title: Affordable housing database
 permalink: 
   build: "/housing/affordable-housing/index.html"
-  serverless: "/housing/affordable-housing/serverless.html"
+  serverless: "/housing/affordable-housing/filter"
 pageClass: "page-housing"
 ---
 
@@ -11,7 +11,7 @@ pageClass: "page-housing"
 
 {% assign housingdb = eleventy.serverless.query | housingResults %}
 
-<form action="/housing/affordable-housing/serverless.html" action="get" id="housing-search">
+<form action="/housing/affordable-housing/filter" action="get" id="housing-search">
   
   {% assign filter_values = filter_values | addFilterState: eleventy.serverless.query %}
   <h3>Availability</h3>
