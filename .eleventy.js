@@ -2,6 +2,12 @@ const markdown = require("marked");
 const sass = require("sass");
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 
+var Airtable = require('airtable');
+var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+
+const UNITS_TABLE = "tblNLrf8RTiZdY5KN";
+
+
 module.exports = function(eleventyConfig) {
   
 };
@@ -56,6 +62,105 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
+  eleventyConfig.addFilter("addFilterState", function(filter_values, query) {
+    console.log(query);
+    if (!query) { return filter_values; }
+    if (query.availability) {
+      let selectedAvailabilities = query.availability.split(", ");
+      for (i = 0; i < selectedAvailabilities.length; i++) {
+        let idx = filter_values.open_status.findIndex(v => v.name === selectedAvailabilities[i]);
+        if (idx >= 0) {
+          filter_values.open_status[idx].selected = true;
+        }
+      }
+    }
+
+    if (query.city) {
+      let selectedCities = query.city.split(", ");
+      for (i = 0; i < selectedCities.length; i++) {
+        let idx = filter_values.city.findIndex(v => v.name === selectedCities[i]);
+        if (idx >= 0) {
+          filter_values.city[idx].selected = true;
+        }
+      }
+    }
+
+    if (query.unit_type) {
+      let selectedUnitTypes = query.unit_type.split(", ");
+      for (i = 0; i < selectedUnitTypes.length; i++) {
+        let idx = filter_values.unit_type.findIndex(v => v.name === selectedUnitTypes[i]);
+        if (idx >= 0) {
+          filter_values.unit_type[idx].selected = true;
+        }
+      }
+    }
+    return filter_values;
+  });
+
+  eleventyConfig.addFilter("housingResults", async function(query) {
+    console.log(query);
+    const queryStr = buildQueryStr(query);
+    let housing = await fetchHousingList(queryStr);
+    console.log("got " + housing.length + " properties.")
+    return housing;
+  });
+
+  const buildQueryStr = function(query) {
+    if (!query) { return ""; }
+    const { availability, city, unit_type } = query;
+
+    let parameters = [];
+
+    if (unit_type) {
+      let rooms = unit_type.split(", ");
+      let roomsQuery = rooms.map((x) => `{TYPE} = '${x}'`)
+      parameters.push(`OR(${roomsQuery.join(",")})`);
+    }
+
+    if (city) {
+      let cities = city.split(", ");
+      let cityQuery = cities.map((x) => `{City (from Housing)} = '${x}'`);
+      parameters.push(`OR(${cityQuery.join(",")})`);
+    }
+
+    if (availability) {
+      let availabilities = availability.split(", ");
+      let availabilityQuery = availabilities.map((x) => `{STATUS} = '${x}'`);
+      parameters.push(`OR(${availabilityQuery.join(",")})`);
+    }
+
+    let queryStr = `AND(${parameters.join(",")})`;
+    console.log(queryStr);
+    return queryStr;
+  };
+
+  // Lookup data for this item from the Airtable API
+  const fetchHousingList = async(queryStr) => {
+    let housingList = [];
+    const table = base(UNITS_TABLE);
+
+    return table.select({
+        view: "API all units",
+        filterByFormula: queryStr
+      })
+      .all()
+      .then(records => {
+        records.forEach(function(record) {
+          housingList.push({
+            id: record.get("ID"),
+            apt_name: record.get("APT_NAME"),
+            city: record.get("City (from Housing"),
+            open_status: record.get("STATUS"),
+            unit_type: record.get("TYPE"),  // What to do with undefined values?
+            loc_coords: record.get("LOC_COORDS (from Housing)")
+          })
+        });
+        // return a set of de-duped results
+        return Array.from(
+          new Set(housingList.map((obj) => JSON.stringify(obj)))
+        ).map((string) => JSON.parse(string));
+      });
+  };
 
   // Sass pipeline
   eleventyConfig.addTemplateFormats("scss");

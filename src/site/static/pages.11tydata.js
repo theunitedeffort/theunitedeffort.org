@@ -18,7 +18,6 @@ const fetchSection = (id) => {
 
 // Fetch content for our pages from Airtable
 const fetchPages = async() => {
-  console.log("fetching pages");
   let pages = [];
   let data = [];
   const table = base("tblTqhITQfO1MJQaE"); // Structured pages table
