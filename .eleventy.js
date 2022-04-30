@@ -3,7 +3,8 @@ const sass = require("sass");
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 
 var Airtable = require('airtable');
-var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
+  process.env.AIRTABLE_BASE_ID);
 
 const UNITS_TABLE = "tblNLrf8RTiZdY5KN";
 
@@ -15,12 +16,11 @@ module.exports = function(eleventyConfig) {
 
   // Eleventy Serverless plugin
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
-    name: "serverless", // The serverless function name from your permalink object
+    name: "serverless",
     functionsDir: "./netlify/functions/",
   });
 
   // Markdown filter
-  // eleventyConfig.addFilter("markdownify", (str) => markdown.marked(str));
   eleventyConfig.addFilter("markdownify", (str) => {
     str = str.replaceAll("http:///", "/");
     return markdown.marked(str)
@@ -58,29 +58,35 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
-  eleventyConfig.addFilter("updateFilterState", function(filter_values, query) {
-    if (!query) { return filter_values; }
+  // Add filter checkbox state from the query parameters to 'filterValues'. 
+  eleventyConfig.addFilter("updateFilterState", function(filterValues, query) {
+    // If there is no query (such as on the affordable housing landing page)
+    // there is no state to add to the filterValues.
+    if (!query) { return filterValues; }
 
-    function updateFilterSection(query_value, filter_name) {
-      if (!query_value) { return; }
-      let selectedOptions = query_value.split(", ");
-      let filterIdx = filter_values.findIndex(f => f.name == filter_name);
+    // Updates the state of the FilterSection with the name 'filterName'
+    // according to 'queryValue'
+    function updateFilterSection(queryValue, filterName) {
+      if (!queryValue) { return; }
+      let selectedOptions = queryValue.split(", ");
+      let filterIdx = filterValues.findIndex(f => f.name == filterName);
       if (filterIdx < 0) { return; }
       for (i = 0; i < selectedOptions.length; i++) {
-        let idx = filter_values[filterIdx].options.findIndex(
+        let idx = filterValues[filterIdx].options.findIndex(
           v => v.name === selectedOptions[i]);
         if (idx >= 0) {
-          filter_values[filterIdx].options[idx].selected = true;
+          filterValues[filterIdx].options[idx].selected = true;
         }
       }
     }
 
     updateFilterSection(query.availability, "availability");
     updateFilterSection(query.city, "city");
-    updateFilterSection(query.unit_type, "unit_type");
-    return filter_values;
+    updateFilterSection(query.unitType, "unitType");
+    return filterValues;
   });
 
+  // Gets a subset of all housing results from Airtable based on 'query'.
   eleventyConfig.addFilter("housingResults", async function(query) {
     console.log("housing query: ");
     console.log(query);
@@ -93,23 +99,24 @@ module.exports = function(eleventyConfig) {
     return housing;
   });
 
+  // Generates an Airtable filter formula string based on 'query'.
   const buildQueryStr = function(query) {
     if (!query) { return ""; }
     const {
       availability,
       city,
-      unit_type,
-      rent_min,
-      rent_max,
+      unitType,
+      rentMin,
+      rentMax,
       income,
-      include_unknown_rent,
-      include_unknown_income
+      includeUnknownRent,
+      includeUnknownIncome
     } = query;
 
     let parameters = [];
 
-    if (unit_type) {
-      let rooms = unit_type.split(", ");
+    if (unitType) {
+      let rooms = unitType.split(", ");
       let roomsQuery = rooms.map((x) => `{TYPE} = '${x}'`)
       parameters.push(`OR(${roomsQuery.join(",")})`);
     }
@@ -126,31 +133,36 @@ module.exports = function(eleventyConfig) {
       parameters.push(`OR(${availabilityQuery.join(",")})`);
     }
 
-    // This will not add the rent query parameter if rent_min is 0.
-    // TODO(trevorshannon): Is that ok?
-    if (rent_min) {
-      let rent_min_params = [`{TEST_RENT_PER_MONTH_USD} >= '${rent_min}'`];
-      if (include_unknown_rent) {
-        rent_min_params.push(`{TEST_RENT_PER_MONTH_USD} = BLANK()`);
+    // No rent filter will be added if a rentMin/rentMax query parameter
+    // is present but equal to zero.  This is ok, as a rentMin = 0 is
+    // effectively no filter anyways and a rentMax = 0 is a bit nonsensical and 
+    // so is ignored.
+    if (rentMin) {
+      let rentMinParams = [`{TEST_RENT_PER_MONTH_USD} >= '${rentMin}'`];
+      // If the user wants to see units with no rent listed, make sure units
+      // with empty rent values are allowed.
+      if (includeUnknownRent) {
+        rentMinParams.push(`{TEST_RENT_PER_MONTH_USD} = BLANK()`);
       }
-      parameters.push(`OR(${rent_min_params.join(",")})`);
+      parameters.push(`OR(${rentMinParams.join(",")})`);
     }
-    if (rent_max) {
-      let rent_max_params = [`{TEST_RENT_PER_MONTH_USD} <= '${rent_max}'`];
-      if (include_unknown_rent) {
-        rent_max_params.push(`{TEST_RENT_PER_MONTH_USD} = BLANK()`);
+    if (rentMax) {
+      let rentMaxParams = [`{TEST_RENT_PER_MONTH_USD} <= '${rentMax}'`];
+      if (includeUnknownRent) {
+        rentMaxParams.push(`{TEST_RENT_PER_MONTH_USD} = BLANK()`);
       }
-      parameters.push(`OR(${rent_max_params.join(",")})`);
+      parameters.push(`OR(${rentMaxParams.join(",")})`);
     }
     if (income) {
-      let income_min_params = [`{TEST_MIN_INCOME_PER_YR_USD} <= '${income}'`];
-      let income_max_params = [`{TEST_MAX_INCOME_PER_YR_USD} >= '${income}'`];
-      if (include_unknown_income) {
-        income_min_params.push(`{TEST_MIN_INCOME_PER_YR_USD} = BLANK()`);
-        income_max_params.push(`{TEST_MAX_INCOME_PER_YR_USD} = BLANK()`);
+      let incomeMinParams = [`{TEST_MIN_INCOME_PER_YR_USD} <= '${income}'`];
+      let incomeMaxParams = [`{TEST_MAX_INCOME_PER_YR_USD} >= '${income}'`];
+      if (includeUnknownIncome) {
+        incomeMinParams.push(`{TEST_MIN_INCOME_PER_YR_USD} = BLANK()`);
+        incomeMaxParams.push(`{TEST_MAX_INCOME_PER_YR_USD} = BLANK()`);
       }
       parameters.push(
-        `AND(OR(${income_min_params.join(",")}), OR(${income_max_params.join(",")}))`);
+        `AND(OR(${incomeMinParams.join(",")}),\
+        OR(${incomeMaxParams.join(",")}))`);
     }
 
     let queryStr = `AND(${parameters.join(",")})`;
@@ -159,7 +171,8 @@ module.exports = function(eleventyConfig) {
     return queryStr;
   };
 
-  // Lookup data for this item from the Airtable API
+  // Get housing units from Airtable, filtered by the Airtable formula string
+  // 'queryStr'.
   const fetchHousingList = async(queryStr) => {
     let housingList = [];
     const table = base(UNITS_TABLE);
@@ -173,16 +186,16 @@ module.exports = function(eleventyConfig) {
         records.forEach(function(record) {
           housingList.push({
             id: record.get("ID (from Housing)"),
-            apt_name: record.get("APT_NAME"),
+            aptName: record.get("APT_NAME"),
             city: record.get("City (from Housing)"),
-            open_status: record.get("STATUS"),
-            unit_type: record.get("TYPE"), // What to do with undefined values?
-            loc_coords: record.get("LOC_COORDS (from Housing)"),
-            phone: record.get("Phone (from Housing)"),
-
+            openStatus: record.get("STATUS"),
+            unitType: record.get("TYPE"),
+            locCoords: record.get("LOC_COORDS (from Housing)"),
+            phone: record.get("Phone (from Housing)")
           })
         });
-        // return a set of de-duped results
+        // De-duplicate results which can be present if the same unit is offered
+        // at different rents for different income levels.
         return Array.from(
           new Set(housingList.map((obj) => JSON.stringify(obj)))
         ).map((string) => JSON.parse(string));

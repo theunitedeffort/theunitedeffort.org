@@ -14,15 +14,15 @@ pageClass: "page-housing"
 
 <form action="/housing/affordable-housing/filter" action="get" id="housing-search">
   
-  {% assign filter_values = filter_values | updateFilterState: query %}
-  {% for section in filter_values %}
+  {% assign filterValues = filterValues | updateFilterState: query %}
+  {% for section in filterValues %}
     <h3>{{section.heading}}</h3>
     <div style="column-count:2;width:50%">
-    {% assign sorted_opts = section.options | sort: "name" %}
-    {% for opt in sorted_opts %}
-      {% assign opt_id = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
-      <input type="checkbox" id="{{opt_id}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
-      <label for="{{opt_id}}">{{opt.name}}</label><br/>
+    {% assign sortedOpts = section.options | sort: "name" %}
+    {% for opt in sortedOpts %}
+      {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
+      <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
+      <label for="{{optId}}">{{opt.name}}</label><br/>
     {% endfor %}
     </div>
   {% endfor %}
@@ -30,11 +30,11 @@ pageClass: "page-housing"
   <h3>Rent</h3>
   <div>
     <label for="rent-min">Minimum</label>
-    $<input type="number" min="0" id="rent-min" name="rent_min" value="{{query.rent_min | escape}}"> per month<br/>
+    $<input type="number" min="0" id="rent-min" name="rentMin" value="{{query.rentMin | escape}}"> per month<br/>
     <label for="rent-max">Maximum</label>
-    $<input type="number" min="0" id="rent-max" name="rent_max" value="{{query.rent_max | escape}}"> per month<br/>
-    <input type="checkbox" id="include-unknown-rent" name="include_unknown_rent" 
-    {% if query == nil or query.include_unknown_rent == "on" %}checked{% endif %}>
+    $<input type="number" min="0" id="rent-max" name="rentMax" value="{{query.rentMax | escape}}"> per month<br/>
+    <input type="checkbox" id="include-unknown-rent" name="includeUnknownRent" 
+    {% if query == nil or query.includeUnknownRent == "on" %}checked{% endif %}>
     <label for="include-unknown-rent">Include properties with no rent information</label>
   </div>
 
@@ -42,8 +42,8 @@ pageClass: "page-housing"
   <div>
     <label for="income">Yearly Income</label>
     $<input type="number" min="0" id="income" name="income" value="{{query.income | escape}}"> per year<br/>
-    <input type="checkbox" id="include-unknown-income" name="include_unknown_income" 
-    {% if query == nil or query.include_unknown_income == "on" %}checked{% endif %}>
+    <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome" 
+    {% if query == nil or query.includeUnknownIncome == "on" %}checked{% endif %}>
     <label for="include-unknown-income">Include properties with no income limit information</label>
   </div>
 
@@ -55,25 +55,25 @@ pageClass: "page-housing"
   {% for address in housingdb %}
   <li>
     <h4>
-      <a href="/housing/affordable-housing/{{address.id}}">{{ address.apt_name }}</a>, 
+      <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a>, 
     </h4>
     <span>
       {{ address.city }}
     </span> 
     <p>
       <span class="badge
-        {% if address.open_status == "Call for Status" %}
+        {% if address.openStatus == "Call for Status" %}
           badge__warn
-        {% elsif address.open_status == "Waitlist Closed" %}
+        {% elsif address.openStatus == "Waitlist Closed" %}
           badge__bad
-        {% elsif address.open_status == "Waitlist Open" %}
+        {% elsif address.openStatus == "Waitlist Open" %}
           badge__ok
         {% endif %}
         ">
-        {{ address.open_status }}
+        {{ address.openStatus }}
       </span>
       <span class="badge">
-        {{ address.unit_type }}
+        {{ address.unitType }}
       </span> 
     </p>
   </li>

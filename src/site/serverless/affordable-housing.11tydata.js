@@ -1,20 +1,27 @@
 var Airtable = require('airtable');
-var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+var base = new Airtable(
+  { apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const UNITS_TABLE = "tblNLrf8RTiZdY5KN";
 
+// A group of checkboxes for filtering housing results.
 function FilterSection(heading, name, options) {
   this.heading = heading;
   this.name = name;
   this.options = options;
 }
 
+// A single checkbox for filtering housing results.
 function FilterCheckbox(name, selected=false) {
   this.name = name;
   this.selected = selected;
 }
 
-// TODO(trevorshannon): Only fetch filter options at build time, not on every page load.
+// Gets values from all housing units that are relevant to future filtering of 
+// results.
+//
+// TODO(trevorshannon): Only fetch filter options at build time, not on every
+// page load.
 const fetchFilterOptions = async() => {
   let records = [];
   const table = base(UNITS_TABLE);
@@ -32,29 +39,35 @@ const fetchFilterOptions = async() => {
         } 
         records.push({
           city: cityStr,
-          open_status: record.get("STATUS"),
-          unit_type: record.get("TYPE")
+          openStatus: record.get("STATUS"),
+          unitType: record.get("TYPE")
         })
       });
       return records;
     });
 };
 
+// Returns an object containing a list of FilterSections with each FilterSection
+// having a unique list of FilterCheckboxes encompassing all the values
+// available in the Airtable data at that time.
 module.exports = async function() {
   console.log("Fetching filter options.");
-  let filter_options = await fetchFilterOptions();
-  let cities = [...new Set(filter_options.map(({city}) => city))];
+  let filterOptions = await fetchFilterOptions();
+  let cities = [...new Set(filterOptions.map(({city}) => city))];
   cities = cities.filter(city => city !== undefined);
-  let open_statuses = [...new Set(filter_options.map(({open_status}) => open_status))];
-  open_statuses = open_statuses.filter(open_status => open_status !== undefined);
-  let unit_types = [...new Set(filter_options.map(({unit_type}) => unit_type))];
-  unit_types = unit_types.filter(unit_type => unit_type !== undefined);
+  let openStatuses = [
+      ...new Set(filterOptions.map(({openStatus}) => openStatus))];
+  openStatuses = openStatuses.filter(openStatus => openStatus !== undefined);
+  let unitTypes = [...new Set(filterOptions.map(({unitType}) => unitType))];
+  unitTypes = unitTypes.filter(unitType => unitType !== undefined);
 
-  let filter_vals = [
-    new FilterSection("Availability", "availability", open_statuses.map((x) => new FilterCheckbox(x))),
+  let filterVals = [
+    new FilterSection("Availability", "availability", 
+      openStatuses.map((x) => new FilterCheckbox(x))),
     new FilterSection("City", "city", cities.map((x) => new FilterCheckbox(x))),
-    new FilterSection("Type of Unit", "unit_type", unit_types.map((x) => new FilterCheckbox(x)))
+    new FilterSection("Type of Unit", "unitType",
+      unitTypes.map((x) => new FilterCheckbox(x)))
   ];
   console.log("Got filter options.");
-  return {filter_values: filter_vals};
+  return {filterValues: filterVals};
 }
