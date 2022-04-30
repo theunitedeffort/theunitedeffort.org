@@ -9,10 +9,6 @@ const UNITS_TABLE = "tblNLrf8RTiZdY5KN";
 
 
 module.exports = function(eleventyConfig) {
-  
-};
-
-module.exports = function(eleventyConfig) {
 
   //pass through static assets
   eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
@@ -99,15 +95,15 @@ module.exports = function(eleventyConfig) {
 
   const buildQueryStr = function(query) {
     if (!query) { return ""; }
-    const { 
+    const {
       availability,
       city,
       unit_type,
       rent_min,
       rent_max,
-      income, 
-      include_unknown_rent, 
-      include_unknown_income 
+      income,
+      include_unknown_rent,
+      include_unknown_income
     } = query;
 
     let parameters = [];
@@ -180,7 +176,7 @@ module.exports = function(eleventyConfig) {
             apt_name: record.get("APT_NAME"),
             city: record.get("City (from Housing"),
             open_status: record.get("STATUS"),
-            unit_type: record.get("TYPE"),  // What to do with undefined values?
+            unit_type: record.get("TYPE"), // What to do with undefined values?
             loc_coords: record.get("LOC_COORDS (from Housing)")
           })
         });
