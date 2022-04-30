@@ -1,0 +1,81 @@
+---
+layout: layouts/base.liquid
+title: Affordable housing database
+permalink: 
+  build: "/housing/affordable-housing/index.html"
+  serverless: "/housing/affordable-housing/filter"
+pageClass: "page-housing"
+---
+
+<h1>Affordable housing database</h1>
+
+{% assign query = eleventy.serverless.query %}
+{% assign housingdb = query | housingResults %}
+
+<form action="/housing/affordable-housing/filter" action="get" id="housing-search">
+  
+  {% assign filterValues = filterValues | updateFilterState: query %}
+  {% for section in filterValues %}
+    <h3>{{section.heading}}</h3>
+    <div style="column-count:2;width:50%">
+    {% assign sortedOpts = section.options | sort: "name" %}
+    {% for opt in sortedOpts %}
+      {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
+      <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
+      <label for="{{optId}}">{{opt.name}}</label><br/>
+    {% endfor %}
+    </div>
+  {% endfor %}
+
+  <h3>Rent</h3>
+  <div>
+    <label for="rent-min">Minimum</label>
+    $<input type="number" min="0" id="rent-min" name="rentMin" value="{{query.rentMin | escape}}"> per month<br/>
+    <label for="rent-max">Maximum</label>
+    $<input type="number" min="0" id="rent-max" name="rentMax" value="{{query.rentMax | escape}}"> per month<br/>
+    <input type="checkbox" id="include-unknown-rent" name="includeUnknownRent" 
+    {% if query == nil or query.includeUnknownRent == "on" %}checked{% endif %}>
+    <label for="include-unknown-rent">Include properties with no rent information</label>
+  </div>
+
+  <h3>Income</h3>
+  <div>
+    <label for="income">Yearly Income</label>
+    $<input type="number" min="0" id="income" name="income" value="{{query.income | escape}}"> per year<br/>
+    <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome" 
+    {% if query == nil or query.includeUnknownIncome == "on" %}checked{% endif %}>
+    <label for="include-unknown-income">Include properties with no income limit information</label>
+  </div>
+
+  <input type="submit" class="btn_submit" value="Search the housing list" />
+</form>
+
+
+<ul class="results_list">
+  {% for address in housingdb %}
+  <li>
+    <h4>
+      <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a>, 
+    </h4>
+    <span>
+      {{ address.city }}
+    </span> 
+    <p>
+      <span class="badge
+        {% if address.openStatus == "Call for Status" %}
+          badge__warn
+        {% elsif address.openStatus == "Waitlist Closed" %}
+          badge__bad
+        {% elsif address.openStatus == "Waitlist Open" %}
+          badge__ok
+        {% endif %}
+        ">
+        {{ address.openStatus }}
+      </span>
+      <span class="badge">
+        {{ address.unitType }}
+      </span> 
+    </p>
+  </li>
+  {% endfor %}
+</ul> 

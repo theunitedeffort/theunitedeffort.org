@@ -17,8 +17,6 @@ const fetchSection = (id) => {
 }
 
 
-
-
 // Fetch content for our pages from Airtable
 const fetchPages = async() => {
   let pages = [];
@@ -70,7 +68,8 @@ module.exports = async function() {
   if (asset.isCacheValid("1m")) {
     return asset.getCachedValue(); // a promise
   }
-  let pages = await fetchPages();
-  await asset.save(pages, "json");
-  return pages;
+  console.log("Fetching pages.");
+  let p = await fetchPages();
+  await asset.save(p, "json");
+  return {pages: p};
 }

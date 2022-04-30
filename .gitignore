@@ -2,3 +2,5 @@ node_modules
 dist
 .netlify
 .cache
+netlify/functions/serverless/**
+!netlify/functions/serverless/index.js
