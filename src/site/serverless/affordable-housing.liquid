@@ -11,9 +11,11 @@ pageClass: "page-housing"
 
 {% assign housingdb = eleventy.serverless.query | housingResults %}
 
+
 <form action="/housing/affordable-housing/filter" action="get" id="housing-search">
   
-  {% assign filter_values = filter_values | addFilterState: eleventy.serverless.query %}
+  {% assign filter_values = filter_values | updateFilterState: eleventy.serverless.query %}
+  {{ filter_values | log }}
   <h3>Availability</h3>
   {% assign filter_avails = filter_values.open_status | sort: "name" %}
   {% for avail in filter_avails %}
@@ -40,6 +42,24 @@ pageClass: "page-housing"
       <input type="checkbox" id="{{unit_type_id}}" value="{{unit_type.name}}" name="unit_type" {% if unit_type.selected %}checked{% endif %}>
       <label for="{{unit_type_id}}">{{unit_type.name}}</label><br/>
      {% endfor %}
+  </div>
+
+  <h3>Rent</h3>
+  <div>
+    <label for="rent-min">Minimum</label>
+    $<input type="number" min="0" id="rent-min" name="rent_min" value="{{eleventy.serverless.query.rent_min | escape}}"> per month<br/>
+    <label for="rent-max">Maximum</label>
+    $<input type="number" min="0" id="rent-max" name="rent_max" value="{{eleventy.serverless.query.rent_max | escape}}"> per month<br/>
+    <input type="checkbox" id="include-unknown-rent" name="include_unknown_rent" {% if eleventy.serverless.query.include_unknown_rent == "on" %}checked{% endif %}>
+    <label for="include-unknown-rent">Include properties with no rent information</label>
+  </div>
+
+  <h3>Income</h3>
+  <div>
+    <label for="income">Yearly Income</label>
+    $<input type="number" min="0" id="income" name="income" value="{{eleventy.serverless.query.income | escape}}"> per year<br/>
+    <input type="checkbox" id="include-unknown-income" name="include_unknown_income" {% if eleventy.serverless.query.include_unknown_income == "on" %}checked{% endif %}>
+    <label for="include-unknown-income">Include properties with no income limit information</label>
   </div>
 
   <input type="submit" value="Apply Filter" />

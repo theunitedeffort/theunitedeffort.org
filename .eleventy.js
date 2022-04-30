@@ -62,8 +62,7 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
-  eleventyConfig.addFilter("addFilterState", function(filter_values, query) {
-    console.log(query);
+  eleventyConfig.addFilter("updateFilterState", function(filter_values, query) {
     if (!query) { return filter_values; }
     if (query.availability) {
       let selectedAvailabilities = query.availability.split(", ");
@@ -98,16 +97,27 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addFilter("housingResults", async function(query) {
+    console.log("housing query: ");
     console.log(query);
     const queryStr = buildQueryStr(query);
     let housing = await fetchHousingList(queryStr);
     console.log("got " + housing.length + " properties.")
+    console.log(housing);
     return housing;
   });
 
   const buildQueryStr = function(query) {
     if (!query) { return ""; }
-    const { availability, city, unit_type } = query;
+    const { 
+      availability,
+      city,
+      unit_type,
+      rent_min,
+      rent_max,
+      income, 
+      include_unknown_rent, 
+      include_unknown_income 
+    } = query;
 
     let parameters = [];
 
@@ -129,7 +139,35 @@ module.exports = function(eleventyConfig) {
       parameters.push(`OR(${availabilityQuery.join(",")})`);
     }
 
+    // This will not add the rent query parameter if rent_min is 0.
+    // TODO(trevorshannon): Is that ok?
+    if (rent_min) {
+      let rent_min_params = [`{TEST_RENT_PER_MONTH_USD} >= '${rent_min}'`];
+      if (include_unknown_rent) {
+        rent_min_params.push(`{TEST_RENT_PER_MONTH_USD} = BLANK()`);
+      }
+      parameters.push(`OR(${rent_min_params.join(",")})`);
+    }
+    if (rent_max) {
+      let rent_max_params = [`{TEST_RENT_PER_MONTH_USD} <= '${rent_max}'`];
+      if (include_unknown_rent) {
+        rent_max_params.push(`{TEST_RENT_PER_MONTH_USD} = BLANK()`);
+      }
+      parameters.push(`OR(${rent_max_params.join(",")})`);
+    }
+    if (income) {
+      let income_min_params = [`{TEST_MIN_INCOME_PER_YR_USD} <= '${income}'`];
+      let income_max_params = [`{TEST_MAX_INCOME_PER_YR_USD} >= '${income}'`];
+      if (include_unknown_income) {
+        income_min_params.push(`{TEST_MIN_INCOME_PER_YR_USD} = BLANK()`);
+        income_max_params.push(`{TEST_MAX_INCOME_PER_YR_USD} = BLANK()`);
+      }
+      parameters.push(
+        `AND(OR(${income_min_params.join(",")}), OR(${income_max_params.join(",")}))`);
+    }
+
     let queryStr = `AND(${parameters.join(",")})`;
+    console.log("Airtable query:");
     console.log(queryStr);
     return queryStr;
   };

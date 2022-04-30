@@ -44,5 +44,6 @@ module.exports = async function() {
     open_status: open_statuses.map((x) => ({name: x, selected: false})),
     unit_type: unit_types.map((x) => ({name: x, selected: false}))
   };
+  console.log("Got filter options.");
   return {filter_values: filter_vals};
 }
