@@ -15,34 +15,17 @@ pageClass: "page-housing"
 <form action="/housing/affordable-housing/filter" action="get" id="housing-search">
   
   {% assign filter_values = filter_values | updateFilterState: query %}
-  {{ filter_values | log }}
-  <h3>Availability</h3>
-  {% assign filter_avails = filter_values.open_status | sort: "name" %}
-  {% for avail in filter_avails %}
-    {% assign avail_id = 'avail-' | append: avail.name | downcase | replace: ' ', '-' %}
-    <input type="checkbox" id="{{avail_id}}" value="{{avail.name}}" name="availability" {% if avail.selected %}checked{% endif %}>
-    <label for="{{avail_id}}">{{avail.name}}</label><br/>
-  {% endfor %}
-  
-  <h3>City</h3>
-  <div style="column-count:2;width:50%">
-    {% assign filter_cities = filter_values.city | sort: "name" %}
-    {% for city in filter_cities %}
-      {% assign city_id = 'city-' | append: city.name | downcase | replace: ' ', '-' %}
-      <input type="checkbox" id="{{city_id}}" value="{{city.name}}" name="city" {% if city.selected %}checked{% endif %}>
-      <label for="{{city_id}}">{{city.name}}</label><br/>
+  {% for section in filter_values %}
+    <h3>{{section.heading}}</h3>
+    <div style="column-count:2;width:50%">
+    {% assign sorted_opts = section.options | sort: "name" %}
+    {% for opt in sorted_opts %}
+      {% assign opt_id = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
+      <input type="checkbox" id="{{opt_id}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
+      <label for="{{opt_id}}">{{opt.name}}</label><br/>
     {% endfor %}
-  </div>
-
-  <h3>Type of Unit</h3>
-  <div style="column-count:2;width:50%">
-    {% assign filter_units = filter_values.unit_type | sort: "name" %}
-    {% for unit_type in filter_units %}
-      {% assign unit_type_id = 'unit-type-' | append: unit_type.name | downcase | replace: ' ', '-' %}
-      <input type="checkbox" id="{{unit_type_id}}" value="{{unit_type.name}}" name="unit_type" {% if unit_type.selected %}checked{% endif %}>
-      <label for="{{unit_type_id}}">{{unit_type.name}}</label><br/>
-     {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
 
   <h3>Rent</h3>
   <div>

@@ -3,6 +3,17 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.e
 
 const UNITS_TABLE = "tblNLrf8RTiZdY5KN";
 
+function FilterSection(heading, name, options) {
+  this.heading = heading;
+  this.name = name;
+  this.options = options;
+}
+
+function FilterCheckbox(name, selected=false) {
+  this.name = name;
+  this.selected = selected;
+}
+
 // TODO(trevorshannon): Only fetch filter options at build time, not on every page load.
 const fetchFilterOptions = async() => {
   let records = [];
@@ -39,11 +50,11 @@ module.exports = async function() {
   let unit_types = [...new Set(filter_options.map(({unit_type}) => unit_type))];
   unit_types = unit_types.filter(unit_type => unit_type !== undefined);
 
-  let filter_vals = {
-    city: cities.map((x) => ({name: x, selected: false})),
-    open_status: open_statuses.map((x) => ({name: x, selected: false})),
-    unit_type: unit_types.map((x) => ({name: x, selected: false}))
-  };
+  let filter_vals = [
+    new FilterSection("Availability", "availability", open_statuses.map((x) => new FilterCheckbox(x))),
+    new FilterSection("City", "city", cities.map((x) => new FilterCheckbox(x))),
+    new FilterSection("Type of Unit", "unit_type", unit_types.map((x) => new FilterCheckbox(x)))
+  ];
   console.log("Got filter options.");
   return {filter_values: filter_vals};
 }

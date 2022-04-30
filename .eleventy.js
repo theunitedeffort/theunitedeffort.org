@@ -64,35 +64,24 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addFilter("updateFilterState", function(filter_values, query) {
     if (!query) { return filter_values; }
-    if (query.availability) {
-      let selectedAvailabilities = query.availability.split(", ");
-      for (i = 0; i < selectedAvailabilities.length; i++) {
-        let idx = filter_values.open_status.findIndex(v => v.name === selectedAvailabilities[i]);
+
+    function updateFilterSection(query_value, filter_name) {
+      if (!query_value) { return; }
+      let selectedOptions = query_value.split(", ");
+      let filterIdx = filter_values.findIndex(f => f.name == filter_name);
+      if (filterIdx < 0) { return; }
+      for (i = 0; i < selectedOptions.length; i++) {
+        let idx = filter_values[filterIdx].options.findIndex(
+          v => v.name === selectedOptions[i]);
         if (idx >= 0) {
-          filter_values.open_status[idx].selected = true;
+          filter_values[filterIdx].options[idx].selected = true;
         }
       }
     }
 
-    if (query.city) {
-      let selectedCities = query.city.split(", ");
-      for (i = 0; i < selectedCities.length; i++) {
-        let idx = filter_values.city.findIndex(v => v.name === selectedCities[i]);
-        if (idx >= 0) {
-          filter_values.city[idx].selected = true;
-        }
-      }
-    }
-
-    if (query.unit_type) {
-      let selectedUnitTypes = query.unit_type.split(", ");
-      for (i = 0; i < selectedUnitTypes.length; i++) {
-        let idx = filter_values.unit_type.findIndex(v => v.name === selectedUnitTypes[i]);
-        if (idx >= 0) {
-          filter_values.unit_type[idx].selected = true;
-        }
-      }
-    }
+    updateFilterSection(query.availability, "availability");
+    updateFilterSection(query.city, "city");
+    updateFilterSection(query.unit_type, "unit_type");
     return filter_values;
   });
 
