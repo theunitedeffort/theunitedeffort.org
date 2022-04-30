@@ -172,12 +172,14 @@ module.exports = function(eleventyConfig) {
       .then(records => {
         records.forEach(function(record) {
           housingList.push({
-            id: record.get("ID"),
+            id: record.get("ID (from Housing)"),
             apt_name: record.get("APT_NAME"),
-            city: record.get("City (from Housing"),
+            city: record.get("City (from Housing)"),
             open_status: record.get("STATUS"),
             unit_type: record.get("TYPE"), // What to do with undefined values?
-            loc_coords: record.get("LOC_COORDS (from Housing)")
+            loc_coords: record.get("LOC_COORDS (from Housing)"),
+            phone: record.get("Phone (from Housing)"),
+
           })
         });
         // return a set of de-duped results

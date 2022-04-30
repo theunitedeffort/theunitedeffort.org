@@ -47,14 +47,35 @@ pageClass: "page-housing"
     <label for="include-unknown-income">Include properties with no income limit information</label>
   </div>
 
-  <input type="submit" value="Apply Filter" />
+  <input type="submit" class="btn_submit" value="Search the housing list" />
 </form>
 
 
-<ul>
+<ul class="results_list">
   {% for address in housingdb %}
   <li>
-    <a href="/housing/affordable-housing/{{address.id}}">{{ address.apt_name }}</a>
+    <h4>
+      <a href="/housing/affordable-housing/{{address.id}}">{{ address.apt_name }}</a>, 
+    </h4>
+    <span>
+      {{ address.city }}
+    </span> 
+    <p>
+      <span class="badge
+        {% if address.open_status == "Call for Status" %}
+          badge__warn
+        {% elsif address.open_status == "Waitlist Closed" %}
+          badge__bad
+        {% elsif address.open_status == "Waitlist Open" %}
+          badge__ok
+        {% endif %}
+        ">
+        {{ address.open_status }}
+      </span>
+      <span class="badge">
+        {{ address.unit_type }}
+      </span> 
+    </p>
   </li>
   {% endfor %}
 </ul> 

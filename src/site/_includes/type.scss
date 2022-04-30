@@ -69,3 +69,52 @@ main,
 address {
   font-style: normal;
 }
+
+.badge {
+  color: var(--color-black);
+  background-color: var(--color-gray-900);
+  font-size: 1em;
+  border-radius: 3px;
+  padding: 0.2em 0.5em;
+  margin-right: 0.2em;
+  white-space: nowrap;
+  @include bp(mid) {
+    font-size: 0.8em;
+  }
+  @include bp(wide) {
+    font-size: 0.7em;
+  }
+}
+
+.badge__ok {
+  border-left: 0.4em solid var(--color-green);
+}
+
+.badge__bad {
+  border-left: 0.4em solid var(--color-red);
+}
+
+.badge__warn {
+  border-left: 0.4em solid var(--color-orange);
+}
+
+.results_list {
+  font-size: 0.9em;
+  list-style: none;
+  margin: 1em 0 2em;
+  padding: 0;
+  li {
+    padding-bottom: 0.6em;
+  }
+  p {
+    margin: 0;
+    padding: 0;
+  }
+  h4 {
+    display: inline-block;
+    font-size: 1.3em;
+    font-weight: 600;
+    margin: 0 0 0.2em;
+    padding: 0;
+  }
+}
