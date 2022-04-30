@@ -102,7 +102,9 @@ module.exports = function(eleventyConfig) {
     const queryStr = buildQueryStr(query);
     let housing = await fetchHousingList(queryStr);
     console.log("got " + housing.length + " properties.")
-    console.log(housing);
+    if (query) {
+      console.log(housing);
+    }
     return housing;
   });
 
