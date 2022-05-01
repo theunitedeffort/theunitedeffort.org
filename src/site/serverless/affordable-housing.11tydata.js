@@ -1,6 +1,5 @@
 var Airtable = require('airtable');
-var base = new Airtable(
-  { apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const UNITS_TABLE = "tblNLrf8RTiZdY5KN";
 
@@ -12,7 +11,7 @@ function FilterSection(heading, name, options) {
 }
 
 // A single checkbox for filtering housing results.
-function FilterCheckbox(name, selected=false) {
+function FilterCheckbox(name, selected = false) {
   this.name = name;
   this.selected = selected;
 }
@@ -36,7 +35,7 @@ const fetchFilterOptions = async() => {
         let cityStr = "";
         if (record.get("City (from Housing)") !== undefined) {
           cityStr = record.get("City (from Housing)")[0];
-        } 
+        }
         records.push({
           city: cityStr,
           openStatus: record.get("STATUS"),
@@ -53,21 +52,20 @@ const fetchFilterOptions = async() => {
 module.exports = async function() {
   console.log("Fetching filter options.");
   let filterOptions = await fetchFilterOptions();
-  let cities = [...new Set(filterOptions.map(({city}) => city))];
+  let cities = [...new Set(filterOptions.map(({ city }) => city))];
   cities = cities.filter(city => city !== undefined);
-  let openStatuses = [
-      ...new Set(filterOptions.map(({openStatus}) => openStatus))];
+  let openStatuses = [...new Set(filterOptions.map(({ openStatus }) => openStatus))];
   openStatuses = openStatuses.filter(openStatus => openStatus !== undefined);
-  let unitTypes = [...new Set(filterOptions.map(({unitType}) => unitType))];
+  let unitTypes = [...new Set(filterOptions.map(({ unitType }) => unitType))];
   unitTypes = unitTypes.filter(unitType => unitType !== undefined);
 
   let filterVals = [
-    new FilterSection("Availability", "availability", 
-      openStatuses.map((x) => new FilterCheckbox(x))),
     new FilterSection("City", "city", cities.map((x) => new FilterCheckbox(x))),
     new FilterSection("Type of Unit", "unitType",
-      unitTypes.map((x) => new FilterCheckbox(x)))
+      unitTypes.map((x) => new FilterCheckbox(x))),
+    new FilterSection("Availability", "availability",
+      openStatuses.map((x) => new FilterCheckbox(x)))
   ];
   console.log("Got filter options.");
-  return {filterValues: filterVals};
+  return { filterValues: filterVals };
 }

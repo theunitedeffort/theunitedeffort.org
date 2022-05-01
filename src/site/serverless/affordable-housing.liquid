@@ -9,15 +9,26 @@ pageClass: "page-housing"
 
 <h1>Affordable housing database</h1>
 
+<div>
+<p>
+  The affordable housing database is compiled from many housing lists across the county in order to provide a single resource to search. To help us maintain this database, you can <a href="/housing/affordable-housing/contribute/">submit updates and additions</a> for us to review and include.
+</p>
+<p>
+  All search options below are optional.
+</p>
+</div>
+
 {% assign query = eleventy.serverless.query %}
 {% assign housingdb = query | housingResults %}
 
-<form action="/housing/affordable-housing/filter" action="get" id="housing-search">
+<form action="/housing/affordable-housing/filter" action="get" id="housing-search" class="housing_search">
   
   {% assign filterValues = filterValues | updateFilterState: query %}
+
   {% for section in filterValues %}
-    <h3>{{section.heading}}</h3>
-    <div style="column-count:2;width:50%">
+  <fieldset>
+    <legend>{{section.heading}}</legend>
+    <div class="option_columns">
     {% assign sortedOpts = section.options | sort: "name" %}
     {% for opt in sortedOpts %}
       {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
@@ -25,36 +36,45 @@ pageClass: "page-housing"
       <label for="{{optId}}">{{opt.name}}</label><br/>
     {% endfor %}
     </div>
+  </fieldset>
   {% endfor %}
 
-  <h3>Rent</h3>
-  <div>
-    <label for="rent-min">Minimum</label>
-    $<input type="number" min="0" id="rent-min" name="rentMin" value="{{query.rentMin | escape}}"> per month<br/>
-    <label for="rent-max">Maximum</label>
-    $<input type="number" min="0" id="rent-max" name="rentMax" value="{{query.rentMax | escape}}"> per month<br/>
-    <input type="checkbox" id="include-unknown-rent" name="includeUnknownRent" 
-    {% if query == nil or query.includeUnknownRent == "on" %}checked{% endif %}>
-    <label for="include-unknown-rent">Include properties with no rent information</label>
-  </div>
+  <fieldset>
+    <legend>Property Name</legend>
+    <div>
+      <label for="property-name">Name</label><br />
+      <input type="text" aria-label="Property Name" id="property-name" value="{{query.propertyName | escape}}" name="propertyName">
+    </div>
+  </fieldset>
 
-  <h3>Income</h3>
-  <div>
-    <label for="income">Yearly Income</label>
-    $<input type="number" min="0" id="income" name="income" value="{{query.income | escape}}"> per year<br/>
-    <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome" 
-    {% if query == nil or query.includeUnknownIncome == "on" %}checked{% endif %}>
-    <label for="include-unknown-income">Include properties with no income limit information</label>
-  </div>
+  <fieldset>
+    <legend>Rent</legend>
+    <div>
+      <label for="rent-min">Minimum ($ per month)</label><br />
+      <input type="number" min="0" id="rent-min" name="rentMin" value="{{query.rentMin | escape}}"><br/>
+      <label for="rent-max">Maximum ($ per month)</label><br />
+      <input type="number" min="0" id="rent-max" name="rentMax" value="{{query.rentMax | escape}}"><br/>
+      <input type="checkbox" id="include-unknown-rent" name="includeUnknownRent" 
+      {% if query == nil or query.includeUnknownRent == "on" %}checked{% endif %}>
+      <label for="include-unknown-rent">Include properties with no rent information</label>
+    </div>
+  </fieldset>
 
-  <h3>Property Name</h3>
-  <div>
-    <input type="text" aria-label="Property Name" id="property-name" value="{{query.propertyName | escape}}" name="propertyName">
-  </div>
+  <fieldset>
+    <legend>Income</legend>
+    <div>
+      <label for="income">Yearly Income ($)</label><br />
+      <input type="number" min="0" id="income" name="income" value="{{query.income | escape}}"><br/>
+      <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome" 
+      {% if query == nil or query.includeUnknownIncome == "on" %}checked{% endif %}>
+      <label for="include-unknown-income">Include properties with no income limit information</label>
+    </div>
+  </fieldset>
 
+  <div class="form_controls">
   <input type="submit" class="btn btn_submit" value="Search the housing list" />
-  
   <a href="javascript:window.print()" class="btn btn_print">Print this list</a>
+  </div>
 </form>
 
 
