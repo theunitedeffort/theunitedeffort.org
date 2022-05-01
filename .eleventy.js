@@ -134,20 +134,10 @@ module.exports = function(eleventyConfig) {
       parameters.push(`OR(${availabilityQuery.join(",")})`);
     }
 
-    // No rent filter will be added if a rentMin/rentMax query parameter
-    // is present but equal to zero.  This is ok, as a rentMin = 0 is
-    // effectively no filter anyways and a rentMax = 0 is a bit nonsensical and 
-    // so is ignored.
-    if (rentMin) {
-      let rentMinParams = [`{RENT_PER_MONTH_USD} >= '${rentMin}'`];
-      // If the user wants to see units with no rent listed, make sure units
-      // with empty rent values are allowed.
-      if (includeUnknownRent) {
-        rentMinParams.push(`{RENT_PER_MONTH_USD} = BLANK()`);
-      }
-      parameters.push(`OR(${rentMinParams.join(",")})`);
-    }
-    if (rentMax) {
+    // While unlikely to yield results, honor a user's request to limit the rent
+    // to $0 if that is what they choose.  Thus, check explicitly for undefined 
+    // and allow rentMax == 0 to pass through this conditional.
+    if (rentMax !== undefined) {
       let rentMaxParams = [`{RENT_PER_MONTH_USD} <= '${rentMax}'`];
       if (includeUnknownRent) {
         rentMaxParams.push(`{RENT_PER_MONTH_USD} = BLANK()`);
