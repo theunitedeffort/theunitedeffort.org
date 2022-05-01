@@ -4,21 +4,33 @@ form {
   }
 }
 
-.btn_submit {
+.btn,
+main a.btn {
+  font-family: var(--font-primary);
   padding: 0.6em 1em;
   margin: 1em 0 2em;
-  background-color: var(--color-blue-dark);
   border-style: none;
-  border-top: solid 2px var(--color-blue-dark);
-  border-bottom: solid 2px var(--color-blue-dark-b);
   color: white;
   font-size: 1em;
-  font-weight: 800;
+  font-weight: 750;
   border-radius: 3px;
+  text-decoration: none;
+  background-color: var(--color-blue-dark);
+  border-top: solid 2px var(--color-blue-dark);
+  border-bottom: solid 2px var(--color-blue-dark-b);
+  white-space: nowrap;
 }
 
-.btn_submit:hover,
-.btn_submit:focus {
+.btn_submit {
+  background-color: var(--color-blue-dark);
+  border-top: solid 2px var(--color-blue-dark);
+  border-bottom: solid 2px var(--color-blue-dark-b);
+}
+
+main a.btn:hover,
+main a.btn:focus,
+.btn:hover,
+.btn:focus {
   background-color: var(--color-blue-dark-b);
   cursor: pointer;
 }
