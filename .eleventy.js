@@ -110,7 +110,8 @@ module.exports = function(eleventyConfig) {
       rentMax,
       income,
       includeUnknownRent,
-      includeUnknownIncome
+      includeUnknownIncome,
+      propertyName
     } = query;
 
     let parameters = [];
@@ -163,6 +164,10 @@ module.exports = function(eleventyConfig) {
       parameters.push(
         `AND(OR(${incomeMinParams.join(",")}),\
         OR(${incomeMaxParams.join(",")}))`);
+    }
+    if (propertyName) {
+      // APT_NAME is a lookup field which is by default an array (in this case with a single entry).
+      parameters.push(`FIND(LOWER('${propertyName}'), LOWER(ARRAYJOIN({APT_NAME}, ''))) > 0`);
     }
 
     let queryStr = `AND(${parameters.join(",")})`;
