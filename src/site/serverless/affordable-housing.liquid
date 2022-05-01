@@ -47,6 +47,11 @@ pageClass: "page-housing"
     <label for="include-unknown-income">Include properties with no income limit information</label>
   </div>
 
+  <h3>Property Name</h3>
+  <div>
+    <input type="text" aria-label="Property Name" id="property-name" value="{{query.propertyName | escape}}" name="propertyName">
+  </div>
+
   <input type="submit" class="btn_submit" value="Search the housing list" />
 </form>
 
