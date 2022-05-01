@@ -27,9 +27,9 @@ const unitDetails = (data) => {
       <td>${unit.TYPE}</td>
       <td>${unit.MAX_OCCUPANCY}</td>
       <td>${unit.STATUS}</td>
-      <td>${unit.RENTS}</td>
-      <td>${unit.min_income}</td>
-      <td>${unit.max_income}</td>
+      <td>${unit.RENT_PER_MONTH_USD}</td>
+      <td>${unit.MIN_INCOME_PER_YR_USD}</td>
+      <td>${unit.MAX_INCOME_PER_YR_USD}</td>
     `);
   }
   return `<tr>${rows.join("</tr><tr>")}<tr>`;

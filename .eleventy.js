@@ -138,27 +138,27 @@ module.exports = function(eleventyConfig) {
     // effectively no filter anyways and a rentMax = 0 is a bit nonsensical and 
     // so is ignored.
     if (rentMin) {
-      let rentMinParams = [`{TEST_RENT_PER_MONTH_USD} >= '${rentMin}'`];
+      let rentMinParams = [`{RENT_PER_MONTH_USD} >= '${rentMin}'`];
       // If the user wants to see units with no rent listed, make sure units
       // with empty rent values are allowed.
       if (includeUnknownRent) {
-        rentMinParams.push(`{TEST_RENT_PER_MONTH_USD} = BLANK()`);
+        rentMinParams.push(`{RENT_PER_MONTH_USD} = BLANK()`);
       }
       parameters.push(`OR(${rentMinParams.join(",")})`);
     }
     if (rentMax) {
-      let rentMaxParams = [`{TEST_RENT_PER_MONTH_USD} <= '${rentMax}'`];
+      let rentMaxParams = [`{RENT_PER_MONTH_USD} <= '${rentMax}'`];
       if (includeUnknownRent) {
-        rentMaxParams.push(`{TEST_RENT_PER_MONTH_USD} = BLANK()`);
+        rentMaxParams.push(`{RENT_PER_MONTH_USD} = BLANK()`);
       }
       parameters.push(`OR(${rentMaxParams.join(",")})`);
     }
     if (income) {
-      let incomeMinParams = [`{TEST_MIN_INCOME_PER_YR_USD} <= '${income}'`];
-      let incomeMaxParams = [`{TEST_MAX_INCOME_PER_YR_USD} >= '${income}'`];
+      let incomeMinParams = [`{MIN_INCOME_PER_YR_USD} <= '${income}'`];
+      let incomeMaxParams = [`{MAX_INCOME_PER_YR_USD} >= '${income}'`];
       if (includeUnknownIncome) {
-        incomeMinParams.push(`{TEST_MIN_INCOME_PER_YR_USD} = BLANK()`);
-        incomeMaxParams.push(`{TEST_MAX_INCOME_PER_YR_USD} = BLANK()`);
+        incomeMinParams.push(`{MIN_INCOME_PER_YR_USD} = BLANK()`);
+        incomeMaxParams.push(`{MAX_INCOME_PER_YR_USD} = BLANK()`);
       }
       parameters.push(
         `AND(OR(${incomeMinParams.join(",")}),\
