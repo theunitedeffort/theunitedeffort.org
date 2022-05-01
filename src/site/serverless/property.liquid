@@ -1,0 +1,15 @@
+---
+layout: layouts/base.liquid
+title: Affordable housing database
+permalink: 
+  serverless: "/housing/affordable-housing/test_property/:id"
+pageClass: "page-housing"
+---
+
+Detailed property information goes here.
+
+{{ eleventy | log }}
+
+{% assign propertyData = eleventy.serverless.path.id | propertyDetails %}
+
+{{ propertyData | log }}

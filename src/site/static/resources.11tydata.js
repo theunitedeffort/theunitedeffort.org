@@ -30,6 +30,7 @@ module.exports = async function() {
   }
   console.log("Fetching resources.");
   let res = await fetchDataFromAirtable();
-  await asset.save(res, "json");
-  return {resources: res};
+  let retval = {resources: res};
+  await asset.save(retval, "json");
+  return retval;
 }

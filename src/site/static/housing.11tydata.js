@@ -30,6 +30,7 @@ module.exports = async function() {
   }
   console.log("Fetching housing resources.");
   let resources = await fetchDataFromAirtable();
-  await asset.save(resources, "json");
-  return {housing: resources};
+  let retval = {housing: resources};
+  await asset.save(retval, "json");
+  return retval;
 }

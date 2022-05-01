@@ -86,6 +86,31 @@ module.exports = function(eleventyConfig) {
     return filterValues;
   });
 
+  // Gets details for the rental property with ID 'propertyId'
+  eleventyConfig.addFilter("propertyDetails", async function(propertyId) {
+    let propertyData = await fetchPropertyData(propertyId);
+    return propertyData;
+  });
+
+  const fetchPropertyData = async(propertyId) => {
+    console.log("Fetching property data for id " + propertyId);
+    const table = base(UNITS_TABLE);
+    return table.select({
+        view: "API all units",
+        filterByFormula: `HOUSING_LIST_ID = "${propertyId}"`
+      })
+      .all()
+      .then(records => {
+        let units = [];
+        for (record in records) {
+          units.push({
+            record: (records[record].fields)
+          })
+        }
+        return units;  // TODO(trevorshannon): Rename from units?
+      });
+  };
+
   // Gets a subset of all housing results from Airtable based on 'query'.
   eleventyConfig.addFilter("housingResults", async function(query) {
     console.log("housing query: ");

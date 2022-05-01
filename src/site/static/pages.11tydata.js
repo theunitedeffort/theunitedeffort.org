@@ -70,6 +70,7 @@ module.exports = async function() {
   }
   console.log("Fetching pages.");
   let p = await fetchPages();
-  await asset.save(p, "json");
-  return {pages: p};
+  let retval = {pages: p};
+  await asset.save(retval, "json");
+  return retval;
 }
