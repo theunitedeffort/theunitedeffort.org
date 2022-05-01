@@ -10,19 +10,18 @@ module.exports = (data) => {
     <title>United Efforts Organization</title>
     <link rel="stylesheet" href="/styles.css">
   </head>
-  <body class="page-resources">
+  <body class="page-housing">
     <header>
-      <div class="container">
+      <div class="container">  
         <a href="/" class="nav-home" title="Home">
-        <img src="/images/ueo-logo.png" class="logo-home"  alt="">
-      </a>
-      <ul class="navigation">
-        <li><a href="/resources" class="nav-resources">Resources</a></li>
-        <li><a href="/public-assistance" class="nav-assistance">Public assistance programs</a></li>
-        <li class="second-row"><a href="/mentors" class="nav-mentors">Mentors</a></li>
-        <li class="second-row"><a href="/helping" class="nav-help">Ways to help</a></li>
-        <li class="second-row"><a href="/about" class="nav-about">About us</a></li>
-      </ul>
+          <img src="/images/ueo-logo.png" class="logo-home"  alt="">
+        </a>
+        <ul class="navigation">
+          <li><a href="/housing" class="nav-housing">Housing</a></li>
+          <li><a href="/public-assistance" class="nav-public-assistance">Public assistance programs</a></li>
+          <li class="second-row"><a href="/resources" class="nav-resources">Resources</a></li>
+          <li class="second-row"><a href="/about" class="nav-about">About us</a></li>
+        </ul>
       </div>
     </header>
     <main>
@@ -32,24 +31,30 @@ module.exports = (data) => {
     </main>
     <div class="pre-footer">
       <div class="container">
-      <h2>Offering and seeking help</h2>
+      <h2>Donate</h2>
       <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint maxime ut quae perspiciatis, iusto minima voluptas magnam explicabo odio perferendis vitae rerum sed exercitationem ratione totam placeat tempore ducimus commodi!
+        Donations by check should be made out to<br/>
+        "The United Effort Organization, Inc."
       </p>
-      <a href="/helping">
-        How to help
-      </a>
+      <p>
+        Mail to:
+      </p>
+      <address>
+        The United Effort Organization, Inc.<br/>
+        340 E Middlefield Road<br/>
+        Mountain View, CA 94043<br/>
+      </address>
       </div>
     </div>
     <footer>
       <div class="container">
-        <ul class="navigation">
+       <ul class="navigation">
+          <li><a href="javascript:window.print()" class="nav_print">Print this page</a></li>
           <li><a href="/">Home</a></li>
+          <li><a href="/housing">Housing</a></li>
+          <li><a href="/public-assistance">Public assistance programs</a></li>
           <li><a href="/resources">Resources</a></li>
           <li><a href="/about">About us</a></li>
-          <li><a href="/assistance">Guides and assistance</a></li>
-          <li><a href="/mentors">Mentors</a></li>
-          <li><a href="/helping">Ways to help</a></li>
         </ul>
       
         <div class="contact">
