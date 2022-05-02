@@ -1,0 +1,45 @@
+/* from https://clicknathan.com/web-design/styling-html-5-description-lists-formerly-known-as-definition-lists-properly/ */
+dl:after {content:"";display:table;clear:both;}
+dd {
+    padding:.25em 0;
+}
+dl {
+    width:100%;
+}
+dt, dd {
+    display:inline-block;
+    width:20%;
+}
+dt {
+    text-align:right;
+    font-weight:bold;
+    clear:left;
+    float:left;
+}
+dd {
+    width:80%;
+    padding-left:1em;
+    clear:right;
+}
+dd + dd {
+    float:right;
+    clear:both;
+}
+dt:first-child {
+    padding-top:.25em;
+}
+dd + dt {
+   clear:both;
+    padding-top:.25em;
+}
+dt + dt {
+    width: 100%;
+    float: none;
+    padding: 0 80% 0 0;
+}
+dt + dt + dd {
+    margin-top: -2em;
+}
+dt + dt + dd + dt {
+    margin-top: 2em;
+}
