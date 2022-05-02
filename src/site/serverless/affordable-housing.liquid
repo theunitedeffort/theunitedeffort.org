@@ -110,7 +110,7 @@ function CopyUrl() {
       </span> 
     </p>
     {% if address.address %}
-      {{ address.address }}{% if address.city %}, {{ address.city }}{% endif %}<br/>
+      {{ address.address }}{% if address.city %}, {{ address.city }}{% endif %} (<a href="https://maps.google.com/maps?q={{ address.address | url_encode}} {{ address.city | url_encode}}&country=us">map</a>)<br/>
     {% endif %}
     {% if address.phone %}
       &#9742; <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a><br/>
