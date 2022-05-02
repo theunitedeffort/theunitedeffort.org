@@ -134,26 +134,34 @@ module.exports = function(eleventyConfig) {
       parameters.push(`OR(${availabilityQuery.join(",")})`);
     }
 
-    // While unlikely to yield results, honor a user's request to limit the rent
-    // to $0 if that is what they choose.  Thus, check explicitly for undefined 
-    // and allow rentMax == 0 to pass through this conditional.
-    if (rentMax !== undefined) {
+    if (rentMax) {
       let rentMaxParams = [`{RENT_PER_MONTH_USD} <= '${rentMax}'`];
-      if (includeUnknownRent) {
-        rentMaxParams.push(`{RENT_PER_MONTH_USD} = BLANK()`);
+      // Airtable says that blank (unknown) rents are == 0, so records with
+      // unknown rents will automatically be included in a simple "rent <= max"
+      // filter.  If user does not want records with unknown rent, explicitly
+      // exclude records with blank rent values by first casting to a string as
+      // suggested in 
+      // https://community.airtable.com/t/blank-zero-problem/5662/13
+      if (!includeUnknownRent) {
+        rentMaxParams.push(`({RENT_PER_MONTH_USD} & "")`);
       }
-      parameters.push(`OR(${rentMaxParams.join(",")})`);
+      parameters.push(`AND(${rentMaxParams.join(",")})`);
     }
     if (income) {
       let incomeMinParams = [`{MIN_INCOME_PER_YR_USD} <= '${income}'`];
       let incomeMaxParams = [`{MAX_INCOME_PER_YR_USD} >= '${income}'`];
+      let incomeOp = "OR";
       if (includeUnknownIncome) {
-        incomeMinParams.push(`{MIN_INCOME_PER_YR_USD} = BLANK()`);
-        incomeMaxParams.push(`{MAX_INCOME_PER_YR_USD} = BLANK()`);
+        incomeMinParams.push(`NOT({MIN_INCOME_PER_YR_USD} & "")`);
+        incomeMaxParams.push(`NOT({MAX_INCOME_PER_YR_USD} & "")`);
+      } else {
+        incomeMinParams.push(`({MIN_INCOME_PER_YR_USD} & "")`);
+        incomeMaxParams.push(`({MAX_INCOME_PER_YR_USD} & "")`);
+        incomeOp = "AND"
       }
       parameters.push(
-        `AND(OR(${incomeMinParams.join(",")}),\
-        OR(${incomeMaxParams.join(",")}))`);
+        `AND(${incomeOp}(${incomeMinParams.join(",")}),` +
+        `${incomeOp}(${incomeMaxParams.join(",")}))`);
     }
     if (propertyName) {
       // APT_NAME is a lookup field which is by default an array (in this case with a single entry).

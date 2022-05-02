@@ -76,7 +76,8 @@ pageClass: "page-housing"
   </div>
 </form>
 
-
+{% assign num_results = housingdb | size %}
+Found {{ num_results }} {% if num_results == 1 %}property{% else %}properties{% endif %} 
 <ul class="results_list">
   {% for address in housingdb %}
   <li>
