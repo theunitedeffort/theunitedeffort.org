@@ -21,6 +21,14 @@ const metaData = (data) => {
   }
 }
 
+const formatCurrency = (value) => {
+  return value.toLocaleString("en-US", {
+    style: "currency", 
+    maximumFractionDigits: 0, 
+    minimumFractionDigits: 0, 
+    currency: "USD"});
+}
+
 // Make a definition list from all the data returned about this item
 const unitDetails = (data) => {
   let rows = [];
@@ -30,16 +38,13 @@ const unitDetails = (data) => {
     let minIncomeStr = NO_MIN_INCOME_STRING;
     let maxIncomeStr = NO_MAX_INCOME_STRING;
     if (unit.RENT_PER_MONTH_USD) {
-      rentStr = unit.RENT_PER_MONTH_USD.toLocaleString(
-        "en-US", {style:"currency", maximumFractionDigits:0, currency:"USD"});
+      rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
     }
     if (unit.MIN_INCOME_PER_YR_USD) {
-      minIncomeStr = unit.MIN_INCOME_PER_YR_USD.toLocaleString(
-        "en-US", {style:"currency", maximumFractionDigits:0, currency:"USD"});
+      minIncomeStr = formatCurrency(unit.MIN_INCOME_PER_YR_USD);
     }
     if (unit.MAX_INCOME_PER_YR_USD) {
-      maxIncomeStr = unit.MAX_INCOME_PER_YR_USD.toLocaleString(
-        "en-US", {style:"currency", maximumFractionDigits:0, currency:"USD"});
+      maxIncomeStr = formatCurrency(unit.MAX_INCOME_PER_YR_USD);
     }
     rows.push(`
       <td>${unit.MAX_OCCUPANCY}</td>
