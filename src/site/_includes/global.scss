@@ -56,12 +56,14 @@ footer,
 main,
 .pre-footer {
   padding-top: 1em 0;
+  /* The below padding gets erroneously applied to the header on wide screens. */
   @include bp(narrow) {
     padding: 2rem;
   }
 }
 
 main {
+  padding-top: 0;
   padding-bottom: 4em;
 }
 
