@@ -13,8 +13,12 @@ const metaData = (units) => {
   let heading = `<h1>${aptName}</h1>`
   let definitions = [];
   for (key in units.metadata) {
-    if (key === 'aptName') { continue; }
-    definitions.push(`<dt>${key}</dt><dd>${units.metadata[key]}</dd>`);
+    if (key === "aptName") { continue; }
+    let value = units.metadata[key];
+    if (key === "Website") {
+      value = `<a href="${value}" target="_BLANK" rel="noopener">${value}</a>`
+    }
+    definitions.push(`<dt>${key}</dt><dd>${value}</dd>`);
     // TODO (trevorshannon): add link a tag.
   }
   return `
@@ -79,9 +83,9 @@ const unitTables = (units) => {
       <table>
         <thead>
           <tr>
-            <td>Min income (per year)</td>
-            <td>Max income (per year)</td>
-            <td>Rent (per month)</td>
+            <th>Min income (per year)</th>
+            <th>Max income (per year)</th>
+            <th>Rent (per month)</th>
           </tr>
         </thead>
         <tbody>
@@ -115,10 +119,10 @@ const fetchData = async(housingID) => {
           records[0].fields["Address (from Housing)"]?.[0]|| " ");
         units.metadata["City"] = (
           records[0].fields["City (from Housing)"]?.[0]|| " ");
+        units.metadata["Units"] = (
+          records[0].fields["UNITS_CNT (from Housing)"]?.[0]|| " ");
         units.metadata["Phone"] = (
           records[0].fields["Phone (from Housing)"]?.[0]|| " ");
-        units.metadata["Number of Units"] = (
-          records[0].fields["UNITS_CNT (from Housing)"]?.[0]|| " ");
         units.metadata["Website"] = (
           records[0].fields["URL (from Housing)"]?.[0]|| " ");
       }
