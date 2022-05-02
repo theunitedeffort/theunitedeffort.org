@@ -139,10 +139,16 @@ module.exports = function(eleventyConfig) {
     // and allow rentMax == 0 to pass through this conditional.
     if (rentMax !== undefined) {
       let rentMaxParams = [`{RENT_PER_MONTH_USD} <= '${rentMax}'`];
-      if (includeUnknownRent) {
-        rentMaxParams.push(`{RENT_PER_MONTH_USD} = BLANK()`);
+      // Airtable says that blank (unknown) rents are == 0, so records with
+      // unknown rents will automatically be included in a simple "rent <= max"
+      // filter.  If user does not want records with unknown rent, explicitly
+      // exclude records with blank rent values by first casting to a string as
+      // suggested in 
+      // https://community.airtable.com/t/blank-zero-problem/5662/13
+      if (!includeUnknownRent) {
+        rentMaxParams.push(`({RENT_PER_MONTH_USD} & "")`);
       }
-      parameters.push(`OR(${rentMaxParams.join(",")})`);
+      parameters.push(`AND(${rentMaxParams.join(",")})`);
     }
     if (income) {
       let incomeMinParams = [`{MIN_INCOME_PER_YR_USD} <= '${income}'`];
