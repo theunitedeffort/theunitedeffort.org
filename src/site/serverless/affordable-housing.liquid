@@ -9,6 +9,7 @@ pageClass: "page-housing"
 <script>
 function CopyUrl() {
   navigator.clipboard.writeText(window.location.href);
+  document.getElementById("copy-url-done").removeAttribute("hidden");
   return false;
 }
 </script>
@@ -84,7 +85,7 @@ function CopyUrl() {
 {% assign num_results = housingdb | size %}
 <b>Found {{ num_results }} {% if num_results == 1 %}property{% else %}properties{% endif %}</b> 
 {% if eleventy.serverless.query %}
-<p>To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a>.</p>
+<p>To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
 {% endif %}
 <ul class="results_list">
   {% for address in housingdb %}
