@@ -2,6 +2,10 @@ const Airtable = require('airtable');
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 const pageTemplate = require("./includes/base.js");
 
+const NO_RENT_STRING = "Call for rent";
+const NO_MIN_INCOME_STRING = "Call for info";
+const NO_MAX_INCOME_STRING = NO_MIN_INCOME_STRING;
+
 
 // Make a definition list from all the data returned about this item
 const metaData = (data) => {
@@ -17,19 +21,32 @@ const metaData = (data) => {
   }
 }
 
-
 // Make a definition list from all the data returned about this item
 const unitDetails = (data) => {
   let rows = [];
   for (item in data) {
     let unit = data[item].record;
+    let rentStr = NO_RENT_STRING;
+    let minIncomeStr = NO_MIN_INCOME_STRING;
+    let maxIncomeStr = NO_MAX_INCOME_STRING;
+    if (unit.RENT_PER_MONTH_USD) {
+      rentStr = unit.RENT_PER_MONTH_USD.toLocaleString(
+        "en-US", {style:"currency", maximumFractionDigits:0, currency:"USD"});
+    }
+    if (unit.MIN_INCOME_PER_YR_USD) {
+      minIncomeStr = unit.MIN_INCOME_PER_YR_USD.toLocaleString(
+        "en-US", {style:"currency", maximumFractionDigits:0, currency:"USD"});
+    }
+    if (unit.MAX_INCOME_PER_YR_USD) {
+      maxIncomeStr = unit.MAX_INCOME_PER_YR_USD.toLocaleString(
+        "en-US", {style:"currency", maximumFractionDigits:0, currency:"USD"});
+    }
     rows.push(`
-      <td>${unit.TYPE}</td>
       <td>${unit.MAX_OCCUPANCY}</td>
       <td>${unit.STATUS}</td>
-      <td>${unit.RENT_PER_MONTH_USD}</td>
-      <td>${unit.MIN_INCOME_PER_YR_USD}</td>
-      <td>${unit.MAX_INCOME_PER_YR_USD}</td>
+      <td>${rentStr}</td>
+      <td>${minIncomeStr}</td>
+      <td>${maxIncomeStr}</td>
     `);
   }
   return `<tr>${rows.join("</tr><tr>")}<tr>`;
@@ -37,23 +54,33 @@ const unitDetails = (data) => {
 
 
 const unitTables = (data) => {
-  return `
-      ${metaData(data)}
+  //let aptName = data[0].record["APT_NAME"]?.[0] || " ";
+  let aptName = "The Apartment Name";  // TODO(trevorshannon)
+  let tables = [];
+  let unitTypes = Object.keys(data).sort();
+  for (idx in unitTypes) {
+    tables.push(`
+      <h3>${unitTypes[idx]}</h3>
       <table>
         <thead>
           <tr>
-            <td>Home type</td>
             <td>Max occupancy</td>
             <td>Status</td>
-            <td>Rents ($)</td>
-            <td>Min income</td>
-            <td>Max income</td>
+            <td>Rent (per month)</td>
+            <td>Min income (per year)</td>
+            <td>Max income (per year)</td>
           </tr>
         </thead>
         <tbody>
-        ${ unitDetails(data) }
+        ${unitDetails(data[unitTypes[idx]])}
         </tbody>
       </table>
+    `);
+  }
+  return `
+      <h1>${aptName}</h1>
+      ${metaData(data)}
+      ${tables.join("")}
   `;
 };
 
@@ -61,6 +88,7 @@ const unitTables = (data) => {
 // Lookup data for this item from the Airtable API
 const fetchData = async(housingID) => {
   const table = base("tblNLrf8RTiZdY5KN"); // Units table
+  let newunits = {};
   return table.select({
       view: "API all units",
       filterByFormula: `HOUSING_LIST_ID = "${housingID}"`
@@ -72,8 +100,12 @@ const fetchData = async(housingID) => {
         units.push({
           record: (records[record].fields)
         })
+        let unitKey = records[record].fields.TYPE;
+        newunits[unitKey] = newunits[unitKey] || [];
+        newunits[unitKey].push({record: records[record].fields});
       }
-      return units;
+      console.log(newunits);
+      return newunits;
     });
 };
 
@@ -97,6 +129,7 @@ exports.handler = async function(event) {
 
   // Look up the property in the DB
   let data = await fetchData(housingID);
+  console.log(data);
   if (json) {
     return {
       statusCode: 200,
