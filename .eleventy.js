@@ -190,11 +190,13 @@ module.exports = function(eleventyConfig) {
           housingList.push({
             id: record.get("ID (from Housing)"),
             aptName: record.get("APT_NAME"),
+            address: record.get("Address (from Housing)"),
             city: record.get("City (from Housing)"),
             openStatus: record.get("STATUS"),
             unitType: record.get("TYPE"),
             locCoords: record.get("LOC_COORDS (from Housing)"),
-            phone: record.get("Phone (from Housing)")
+            phone: record.get("Phone (from Housing)"),
+            website: record.get("URL (from Housing)")
           })
         });
         // De-duplicate results which can be present if the same unit is offered
