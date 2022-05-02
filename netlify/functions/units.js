@@ -48,11 +48,9 @@ const unitDetails = (data) => {
       maxIncomeStr = formatCurrency(unit.MAX_INCOME_PER_YR_USD);
     }
     rows.push(`
-      <td>${unit.MAX_OCCUPANCY}</td>
-      <td>${unit.STATUS}</td>
-      <td>${rentStr}</td>
       <td>${minIncomeStr}</td>
       <td>${maxIncomeStr}</td>
+      <td>${rentStr}</td>
     `);
   }
   return `<tr>${rows.join("</tr><tr>")}<tr>`;
@@ -63,16 +61,27 @@ const unitTables = (units) => {
   let tables = [];
   let unitTypes = Object.keys(units.data).sort();
   for (idx in unitTypes) {
+    // 'units' is guaranteed to have at least one item for each key
+    // based on how it is generated in fetchData. Max occupancy and status
+    // should always be the same in every entry for a given rental property &
+    // unit type, so just take the first one here.
+    let maxOccupancy = units.data[unitTypes[idx]][0].record.MAX_OCCUPANCY;
+    let openStatus = units.data[unitTypes[idx]][0].record.STATUS;
+    let statusBadgeClass = "badge__warn";
+    if (openStatus === "Waitlist Closed") {
+      statusBadgeClass = "badge__bad";
+    } else if (openStatus === "Waitlist Open") {
+      statusBadgeClass = "badge__ok";
+    }
     tables.push(`
-      <h3>${unitTypes[idx]}</h3>
+      <h3>${unitTypes[idx]} <span class="badge ${statusBadgeClass}">${openStatus}</span></h3>
+      Maximum occupancy: ${maxOccupancy}
       <table>
         <thead>
           <tr>
-            <td>Max occupancy</td>
-            <td>Status</td>
-            <td>Rent (per month)</td>
             <td>Min income (per year)</td>
             <td>Max income (per year)</td>
+            <td>Rent (per month)</td>
           </tr>
         </thead>
         <tbody>
