@@ -88,7 +88,8 @@ function CopyUrl() {
 <p>To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
 {% endif %}
 <ul class="results_list">
-  {% for address in housingdb %}
+  {% assign sortedHousingdb = housingdb | sort: "aptName" %}
+  {% for address in sortedHousingdb %}
   <li>
     <h4>
       <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
@@ -105,17 +106,20 @@ function CopyUrl() {
         ">
         {{ address.openStatus }}
       </span>
-      <span class="badge">
-        {{ address.unitType }}
-      </span> 
+      {% assign sortedUnitTypes = address.unitType | sort %}
+      {% for unitType in sortedUnitTypes %}
+        <span class="badge">
+          {{ unitType }}
+        </span>
+      {% endfor %}   
     </p>
-    {% if address.address %}
-      {{ address.address }}{% if address.city %}, {{ address.city }}{% endif %} (<a href="https://maps.google.com/maps?q={{ address.address | url_encode}} {{ address.city | url_encode}}&country=us">map</a>)<br/>
+    {% if address.address and address.address != '' %}
+      {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} (<a href="https://maps.google.com/maps?q={{ address.address | url_encode}} {{ address.city | url_encode}}&country=us">map</a>)<br/>
     {% endif %}
-    {% if address.phone %}
+    {% if address.phone and address.phone != '' %}
       &#9742; <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a><br/>
     {% endif %}
-    {% if address.website %}
+    {% if address.website and address.website != '' %}
       <a href="{{ address.website }}">View property website</a><sup>&#8599;</sup><br/>
     {% endif %}
   </li>

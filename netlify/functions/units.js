@@ -112,7 +112,6 @@ const fetchData = async(housingID) => {
     .then(records => {
       let units = {"metadata": {}, "data": []};
       if (records[0]){
-        console.log(records[0]);
         units.metadata["aptName"] = (
           records[0].fields["APT_NAME"]?.[0]|| " ");
         units.metadata["Address"] = (
@@ -131,7 +130,6 @@ const fetchData = async(housingID) => {
         units.data[unitKey] = units.data[unitKey] || [];
         units.data[unitKey].push({record: records[record].fields});
       }
-      console.log(units);
       return units;
     });
 };

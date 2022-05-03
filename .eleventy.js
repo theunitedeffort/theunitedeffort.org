@@ -188,19 +188,36 @@ module.exports = function(eleventyConfig) {
       .then(records => {
         records.forEach(function(record) {
           housingList.push({
-            id: record.get("ID (from Housing)"),
-            aptName: record.get("APT_NAME"),
-            address: record.get("Address (from Housing)"),
-            city: record.get("City (from Housing)"),
+            id: record.get("ID (from Housing)")?.[0] || "",
+            aptName: record.get("APT_NAME")?.[0] || "",
+            address: record.get("Address (from Housing)")?.[0] || "",
+            city: record.get("City (from Housing)")?.[0] || "",
             openStatus: record.get("STATUS"),
             unitType: record.get("TYPE"),
-            locCoords: record.get("LOC_COORDS (from Housing)"),
-            phone: record.get("Phone (from Housing)"),
-            website: record.get("URL (from Housing)")
+            locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
+            phone: record.get("Phone (from Housing)")?.[0] || "",
+            website: record.get("URL (from Housing)")?.[0] || ""
           })
         });
+
+        // Get a map from housing id to all associated unit types.
+        let typeById = {};
+        for (idx in housingList) {
+          let unitId = housingList[idx].id;
+          typeById[unitId] = typeById[unitId] || new Set();
+          typeById[unitId].add(housingList[idx].unitType);
+        }
+
+        // Use the housingId:unitType map to rewrite the unitType of each record
+        // to be a list of all the unit types at the property with housingId. This will result
+        // in some duplicate entries, but those will be filtered out next.
+        for (idx in housingList) {
+          housingList[idx].unitType = [...typeById[housingList[idx].id]];
+        }
+
         // De-duplicate results which can be present if the same unit is offered
-        // at different rents for different income levels.
+        // at different rents for different income levels or if the same property has multiple 
+        // units on offer.
         return Array.from(
           new Set(housingList.map((obj) => JSON.stringify(obj)))
         ).map((string) => JSON.parse(string));
