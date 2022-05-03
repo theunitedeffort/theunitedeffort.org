@@ -11,7 +11,7 @@ h4 {
 
 h1 {
   font-size: 2.5em;
-  margin: 2em 0 0.5em;
+  margin: 0.5em 0 0.5em;
   @include bp(wide) {
     max-width: 900px;
   }
@@ -106,7 +106,7 @@ address {
   border-top: solid 1px var(--color-gray-700);
   padding: 2em 0 0 0;
   li {
-    padding-bottom: 0.8em;
+    padding-bottom: 1.2em;
   }
   p {
     margin: 0;

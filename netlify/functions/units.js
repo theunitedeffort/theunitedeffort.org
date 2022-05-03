@@ -2,58 +2,101 @@ const Airtable = require('airtable');
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 const pageTemplate = require("./includes/base.js");
 
+const NO_RENT_STRING = "Call for rent";
+const NO_MIN_INCOME_STRING = "Call for info";
+const NO_MAX_INCOME_STRING = NO_MIN_INCOME_STRING;
+
 
 // Make a definition list from all the data returned about this item
-const metaData = (data) => {
-  if (data[0]) {
-    let meta = data[0].record;
-    return `<dl>    
-    <dt>Address</dt><dd>${meta["Address (from Housing)"]?.[0]|| " "}</dd>
-    <dt>City</dt><dd>${meta["City (from Housing)"]?.[0]|| " "}</dd>
-    <dt>Phone</dt><dd>${meta["Phone (from Housing)"]?.[0] || " "} </dd>
-    <dt>Number of units</dt><dd>${meta["UNITS_CNT (from Housing)"]?.[0] || " "}</dd>
-    <dt>Website</dt><dd><a href="${meta["URL (from Housing)"]?.[0] || " "}" target="_BLANK" rel="noopener">${meta["URL (from Housing)"]?.[0] || " "}</a></dd>
-    </dl>`;
+const metaData = (units) => {
+  let aptName = units.metadata.aptName || "Apartment Listing";
+  let heading = `<h1>${aptName}</h1>`
+  let definitions = [];
+  for (key in units.metadata) {
+    if (key === "aptName") { continue; }
+    let value = units.metadata[key];
+    if (key === "Website") {
+      value = `<a href="${value}" target="_BLANK" rel="noopener">${value}</a>`
+    }
+    definitions.push(`<dt>${key}</dt><dd>${value}</dd>`);
+    // TODO (trevorshannon): add link a tag.
   }
+  return `
+    ${heading}
+    <dl>${definitions.join("")}</dl>`;
 }
 
+const formatCurrency = (value) => {
+  return value.toLocaleString("en-US", {
+    style: "currency", 
+    maximumFractionDigits: 0, 
+    minimumFractionDigits: 0, 
+    currency: "USD"});
+}
 
 // Make a definition list from all the data returned about this item
 const unitDetails = (data) => {
   let rows = [];
   for (item in data) {
     let unit = data[item].record;
+    let rentStr = NO_RENT_STRING;
+    let minIncomeStr = NO_MIN_INCOME_STRING;
+    let maxIncomeStr = NO_MAX_INCOME_STRING;
+    if (unit.RENT_PER_MONTH_USD) {
+      rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
+    }
+    if (unit.MIN_INCOME_PER_YR_USD) {
+      minIncomeStr = formatCurrency(unit.MIN_INCOME_PER_YR_USD);
+    }
+    if (unit.MAX_INCOME_PER_YR_USD) {
+      maxIncomeStr = formatCurrency(unit.MAX_INCOME_PER_YR_USD);
+    }
     rows.push(`
-      <td>${unit.TYPE}</td>
-      <td>${unit.MAX_OCCUPANCY}</td>
-      <td>${unit.STATUS}</td>
-      <td>${unit.RENT_PER_MONTH_USD}</td>
-      <td>${unit.MIN_INCOME_PER_YR_USD}</td>
-      <td>${unit.MAX_INCOME_PER_YR_USD}</td>
+      <td>${minIncomeStr}</td>
+      <td>${maxIncomeStr}</td>
+      <td>${rentStr}</td>
     `);
   }
   return `<tr>${rows.join("</tr><tr>")}<tr>`;
 }
 
 
-const unitTables = (data) => {
-  return `
-      ${metaData(data)}
+const unitTables = (units) => {
+  let tables = [];
+  let unitTypes = Object.keys(units.data).sort();
+  for (idx in unitTypes) {
+    // 'units' is guaranteed to have at least one item for each key
+    // based on how it is generated in fetchData. Max occupancy and status
+    // should always be the same in every entry for a given rental property &
+    // unit type, so just take the first one here.
+    let maxOccupancy = units.data[unitTypes[idx]][0].record.MAX_OCCUPANCY;
+    let openStatus = units.data[unitTypes[idx]][0].record.STATUS;
+    let statusBadgeClass = "badge__warn";
+    if (openStatus === "Waitlist Closed") {
+      statusBadgeClass = "badge__bad";
+    } else if (openStatus === "Waitlist Open") {
+      statusBadgeClass = "badge__ok";
+    }
+    tables.push(`
+      <h3>${unitTypes[idx]} <span class="badge ${statusBadgeClass}">${openStatus}</span></h3>
+      Maximum occupancy: ${maxOccupancy}
       <table>
         <thead>
           <tr>
-            <td>Home type</td>
-            <td>Max occupancy</td>
-            <td>Status</td>
-            <td>Rents ($)</td>
-            <td>Min income</td>
-            <td>Max income</td>
+            <th>Min income (per year)</th>
+            <th>Max income (per year)</th>
+            <th>Rent (per month)</th>
           </tr>
         </thead>
         <tbody>
-        ${ unitDetails(data) }
+        ${unitDetails(units.data[unitTypes[idx]])}
         </tbody>
       </table>
+    `);
+  }
+  return `
+      ${metaData(units)}
+      ${tables.join("")}
   `;
 };
 
@@ -67,11 +110,25 @@ const fetchData = async(housingID) => {
     })
     .all()
     .then(records => {
-      let units = [];
+      let units = {"metadata": {}, "data": []};
+      if (records[0]){
+        units.metadata["aptName"] = (
+          records[0].fields["APT_NAME"]?.[0]|| " ");
+        units.metadata["Address"] = (
+          records[0].fields["Address (from Housing)"]?.[0]|| " ");
+        units.metadata["City"] = (
+          records[0].fields["City (from Housing)"]?.[0]|| " ");
+        units.metadata["Units"] = (
+          records[0].fields["UNITS_CNT (from Housing)"]?.[0]|| " ");
+        units.metadata["Phone"] = (
+          records[0].fields["Phone (from Housing)"]?.[0]|| " ");
+        units.metadata["Website"] = (
+          records[0].fields["URL (from Housing)"]?.[0]|| " ");
+      }
       for (record in records) {
-        units.push({
-          record: (records[record].fields)
-        })
+        let unitKey = records[record].fields.TYPE;
+        units.data[unitKey] = units.data[unitKey] || [];
+        units.data[unitKey].push({record: records[record].fields});
       }
       return units;
     });
@@ -97,6 +154,7 @@ exports.handler = async function(event) {
 
   // Look up the property in the DB
   let data = await fetchData(housingID);
+  console.log(data);
   if (json) {
     return {
       statusCode: 200,

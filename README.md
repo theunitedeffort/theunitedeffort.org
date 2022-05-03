@@ -2,8 +2,8 @@
 
 ## Example housing listing and detail pages
 
-- https://theunitedeffortorginazation.netlify.app/
-- https://preview-theunitedeffortorginazation.netlify.app/ (Preview site)
+- https://ueo.netlify.app/
+- https://preview-ueo.netlify.app/ (Preview site)
 
 ## What is this site?
 
