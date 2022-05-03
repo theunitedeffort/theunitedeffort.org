@@ -114,13 +114,13 @@ function CopyUrl() {
       {% endfor %}   
     </p>
     {% if address.address and address.address != '' %}
-      {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} (<a href="https://maps.google.com/maps?q={{ address.address | url_encode}} {{ address.city | url_encode}}&country=us">map</a>)<br/>
+      {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} (<a href="https://maps.google.com/maps?q={{ address.address | url_encode}} {{ address.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)<br/>
     {% endif %}
     {% if address.phone and address.phone != '' %}
       &#9742; <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a><br/>
     {% endif %}
     {% if address.website and address.website != '' %}
-      <a href="{{ address.website }}">View property website</a><sup>&#8599;</sup><br/>
+      <a href="{{ address.website }}" target="_blank" rel="noopener">View property website</a><sup>&#8599;</sup><br/>
     {% endif %}
   </li>
   {% endfor %}
