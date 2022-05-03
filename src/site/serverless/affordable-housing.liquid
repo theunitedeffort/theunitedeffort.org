@@ -91,11 +91,8 @@ function CopyUrl() {
   {% for address in housingdb %}
   <li>
     <h4>
-      <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a>, 
+      <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
     </h4>
-    <span>
-      {{ address.city }}
-    </span> 
     <p>
       <span class="badge
         {% if address.openStatus == "Call for Status" %}
@@ -112,6 +109,15 @@ function CopyUrl() {
         {{ address.unitType }}
       </span> 
     </p>
+    {% if address.address %}
+      {{ address.address }}{% if address.city %}, {{ address.city }}{% endif %} (<a href="https://maps.google.com/maps?q={{ address.address | url_encode}} {{ address.city | url_encode}}&country=us">map</a>)<br/>
+    {% endif %}
+    {% if address.phone %}
+      &#9742; <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a><br/>
+    {% endif %}
+    {% if address.website %}
+      <a href="{{ address.website }}">View property website</a><sup>&#8599;</sup><br/>
+    {% endif %}
   </li>
   {% endfor %}
 </ul> 
