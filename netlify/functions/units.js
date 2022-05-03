@@ -34,6 +34,33 @@ const formatCurrency = (value) => {
     currency: "USD"});
 }
 
+const sortUnitTypes = (values, property='') => {
+  let sorted = values.sort(function(a, b) {
+    let valA = property ? a[property] : a;
+    let valB = property ? b[property] : b;
+    // Return < 0 if 'a' should go before 'b'
+    // Return > 0 if 'b' should go before 'a'
+    if ((valA === "SRO" && valB === "Studio") || // SRO before Studio.
+        (valA === "SRO" || valA === "Studio") || // SRO/Studio always first.
+        (valB === "Others")) { // Others always last.
+      return -1; 
+    }
+    if ((valA === "Studio" && valB === "SRO") || // SRO before Studio
+        (valB === "SRO" || valB === "Studio") || // SRO/Studio always first.
+        (valA === "Others")) { // Others always last.
+      return 1;
+    }
+    if (valA < valB) {
+      return -1;
+    }
+    if (valA > valB) {
+      return 1;
+    }
+    return 0;
+  });
+  return sorted;
+}
+
 // Make a definition list from all the data returned about this item
 const unitDetails = (data) => {
   let rows = [];
@@ -63,7 +90,7 @@ const unitDetails = (data) => {
 
 const unitTables = (units) => {
   let tables = [];
-  let unitTypes = Object.keys(units.data).sort();
+  let unitTypes = sortUnitTypes(Object.keys(units.data));
   for (idx in unitTypes) {
     // 'units' is guaranteed to have at least one item for each key
     // based on how it is generated in fetchData. Max occupancy and status

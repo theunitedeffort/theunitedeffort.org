@@ -35,7 +35,11 @@ function CopyUrl() {
   <fieldset>
     <legend>{{section.heading}}</legend>
     <div class="option_columns">
-    {% assign sortedOpts = section.options | sort: "name" %}
+    {% if section.name == "unitType" %}
+      {% assign sortedOpts = section.options | sortUnitType: "name" %}
+    {% else %}
+      {% assign sortedOpts = section.options | sort: "name" %}
+    {% endif %}
     {% for opt in sortedOpts %}
       {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
       <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
@@ -106,7 +110,7 @@ function CopyUrl() {
         ">
         {{ address.openStatus }}
       </span>
-      {% assign sortedUnitTypes = address.unitType | sort %}
+      {% assign sortedUnitTypes = address.unitType | sortUnitType %}
       {% for unitType in sortedUnitTypes %}
         <span class="badge">
           {{ unitType }}
