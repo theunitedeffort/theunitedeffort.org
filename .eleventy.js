@@ -85,6 +85,19 @@ module.exports = function(eleventyConfig) {
     return sorted;
   });
 
+  eleventyConfig.addFilter("numFiltersApplied", function(query){
+    // TODO: Don't hardcode this list of filters here.
+    const allowedFilters = ["city", "availability", "unitType", "propertyName",
+      "rentMax", "income"];
+    let count = 0;
+    for (key in query) {
+      if (allowedFilters.includes(key) && query[key]) {
+        count++;
+      }
+    }
+    return count;
+  });
+
   // Add filter checkbox state from the query parameters to 'filterValues'. 
   eleventyConfig.addFilter("updateFilterState", function(filterValues, query) {
     // If there is no query (such as on the affordable housing landing page)
