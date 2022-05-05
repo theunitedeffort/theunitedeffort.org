@@ -69,6 +69,8 @@ const unitDetails = (data) => {
     let rentStr = NO_RENT_STRING;
     let minIncomeStr = NO_MIN_INCOME_STRING;
     let maxIncomeStr = NO_MAX_INCOME_STRING;
+    let minIncomeInfo = "";
+    let maxIncomeInfo = "";
     if (unit.RENT_PER_MONTH_USD) {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
     }
@@ -78,9 +80,15 @@ const unitDetails = (data) => {
     if (unit.MAX_INCOME_PER_YR_USD) {
       maxIncomeStr = formatCurrency(unit.MAX_INCOME_PER_YR_USD);
     }
+    if (unit.min_income_details) {
+      minIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${unit.min_income_details}</span></span>`;
+    }
+    if (unit.max_income_details) {
+      maxIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${unit.max_income_details}</span></span>`;
+    }
     rows.push(`
-      <td>${minIncomeStr}</td>
-      <td>${maxIncomeStr}</td>
+      <td>${minIncomeStr} ${minIncomeInfo}</td>
+      <td>${maxIncomeStr} ${maxIncomeInfo}</td>
       <td>${rentStr}</td>
     `);
   }
