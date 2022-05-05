@@ -106,8 +106,14 @@ Use the filter options below to narrow your search.
   <fieldset>
     <legend>Income</legend>
     <div>
-      Provide your income to hide properties you are not eligible for. Your information will not be stored.<br />
-      <label for="income">Yearly Income ($)</label><br />
+      <label for="income">Yearly Income ($)</label>
+      <span class="tooltip_entry">
+        <i class="fa-solid fa-circle-question"></i>
+        <span class="tooltip_content">
+          Provide your income to hide properties you are not eligible for. Your information will not be stored.
+        </span>
+      </span>
+      <br />
       <input type="number" min="0" id="income" name="income" value="{{query.income | escape}}"><br/>
       <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome"
       {% if num_filters_applied == 0 or query.includeUnknownIncome == "on" %}checked{% endif %}>

@@ -151,6 +151,12 @@ address {
   left: 105%;
 }
 
+form {
+  .tooltip_content {
+  font-size: 0.8em;
+  }
+}
+
 .tooltip_entry:hover .tooltip_content {
   visibility: visible;
 }
