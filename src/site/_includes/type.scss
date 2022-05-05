@@ -120,3 +120,32 @@ address {
     padding: 0;
   }
 }
+
+.tooltip_entry {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip_entry .tooltip_content {
+  visibility: hidden;
+  min-width: 10em;
+  max-width: 20em;
+  width: max-content;
+  background-color: var(--color-gray-200);
+  color: var(--color-white);
+  text-align: center;
+  padding: 0.3em 0.3em;
+  border-radius: 6px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--color-white);
+  position: absolute;
+  z-index: 1;
+  top: -5px;
+  left: 105%;
+}
+
+.tooltip_entry:hover .tooltip_content {
+  visibility: visible;
+}
