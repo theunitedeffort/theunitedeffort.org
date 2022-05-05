@@ -60,7 +60,8 @@
       white-space: nowrap;
     }
     
-    .btn_submit {
+    .btn_submit,
+    main a.btn_action {
       background-color: var(--color-blue-dark);
       border-top: solid 2px var(--color-blue-dark);
       border-bottom: solid 2px var(--color-blue-dark-b);
@@ -79,6 +80,8 @@
       cursor: pointer;
     }
 
+    main a.btn_action:hover,
+    main a.btn_action:focus,
     .btn_submit:hover,
     .btn_submit:focus,
     .btn_submit:disabled {
