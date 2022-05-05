@@ -80,6 +80,12 @@
     }
 
     .btn_submit:hover,
-    .btn_submit:focus {
+    .btn_submit:focus,
+    .btn_submit:disabled {
       background-color: var(--color-blue-dark-b);
     }
+
+    .btn_submit:disabled {
+      cursor: default;
+    }
+

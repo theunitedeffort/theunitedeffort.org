@@ -6,13 +6,6 @@ permalink:
   serverless: "/housing/affordable-housing/filter"
 pageClass: "page-housing"
 ---
-<script>
-function CopyUrl() {
-  navigator.clipboard.writeText(window.location.href);
-  document.getElementById("copy-url-done").removeAttribute("hidden");
-  return false;
-}
-</script>
 
 {% assign query = eleventy.serverless.query %}
 {% assign housingdb = query | housingResults %}
@@ -21,6 +14,37 @@ function CopyUrl() {
 {% capture num_results_snippet %}
 <b>Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {% if num_results == 1 %}property{% else %}properties{% endif %}</b>
 {% endcapture %}
+
+<script>
+function CopyUrl() {
+  navigator.clipboard.writeText(window.location.href);
+  document.getElementById("copy-url-done").removeAttribute("hidden");
+  return false;
+}
+
+// Show a loading message by changing the submit button to say "Loading..."
+function ShowLoading() {
+  let submitButton = document.getElementById("filter-submit");
+  submitButton.value = "Loading...";
+  submitButton.disabled = "disabled";
+}
+
+// If the filtering form GETs the results page's url with
+// the anchor hash (e.g. action="/affordable-housing/filter#results")
+// then the form submission button will be disabled and the
+// page will not reload if the user clicks on the submit button
+// without first changing the filter state.  So, to force a 
+// page reload every time, have the form GET e.g. 
+// /affordable-housing/filter and manually scroll to the anchor
+// after the page loads.  Only do this if the user has applied 
+// a filter at all.
+{% if num_filters_applied > 0 %} 
+function TestFn() {
+  location.hash = "#results";
+}
+document.onload = TestFn();
+{% endif %}
+</script>
 
 <h1>{{title}}</h1>
 
@@ -38,7 +62,7 @@ Use the filter options below to narrow your search.
 {% endif %}
 
 
-<form action="/housing/affordable-housing/filter#results" action="get" id="housing-search" class="housing_search">
+<form action="/housing/affordable-housing/filter" action="get" id="housing-search" class="housing_search" onsubmit="ShowLoading();">
   
   {% assign filterValues = filterValues | updateFilterState: query %}
 
@@ -92,7 +116,7 @@ Use the filter options below to narrow your search.
   </fieldset>
 
   <div class="form_controls">
-  <input type="submit" class="btn btn_submit" value="Update results" />
+  <input type="submit" id="filter-submit" class="btn btn_submit" value="Update results"/>
   </div>
 </form>
 
