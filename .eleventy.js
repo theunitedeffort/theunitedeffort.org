@@ -134,7 +134,7 @@ module.exports = function(eleventyConfig) {
     let housing = await fetchHousingList(queryStr);
     console.log("got " + housing.length + " properties.")
     if (query) {
-      console.log(housing);
+      console.log(JSON.stringify(housing, null, 4));
     }
     return housing;
   });
@@ -232,27 +232,29 @@ module.exports = function(eleventyConfig) {
             aptName: record.get("APT_NAME")?.[0] || "",
             address: record.get("Address (from Housing)")?.[0] || "",
             city: record.get("City (from Housing)")?.[0] || "",
-            openStatus: record.get("STATUS"),
-            unitType: record.get("TYPE"),
+            units: {unitType: record.get("TYPE"), openStatus: record.get("STATUS")},
             locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
             phone: record.get("Phone (from Housing)")?.[0] || "",
             website: record.get("URL (from Housing)")?.[0] || ""
           })
         });
 
-        // Get a map from housing id to all associated unit types.
+        // Get a map from housing id to all associated unit type, status pairs.
         let typeById = {};
         for (idx in housingList) {
           let unitId = housingList[idx].id;
           typeById[unitId] = typeById[unitId] || new Set();
-          typeById[unitId].add(housingList[idx].unitType);
+          typeById[unitId].add(JSON.stringify({
+            unitType: housingList[idx].units.unitType,
+            openStatus: housingList[idx].units.openStatus}));
         }
 
-        // Use the housingId:unitType map to rewrite the unitType of each record
-        // to be a list of all the unit types at the property with housingId. This will result
+        // Use the housingId:(unitType,openStatus) map to rewrite the units of each record
+        // to be a list of all the units at the property with housingId. This will result
         // in some duplicate entries, but those will be filtered out next.
         for (idx in housingList) {
-          housingList[idx].unitType = [...typeById[housingList[idx].id]];
+          let unitsStrArray = [...typeById[housingList[idx].id]];
+          housingList[idx].units = unitsStrArray.map((x) => JSON.parse(x));
         }
 
         // De-duplicate results which can be present if the same unit is offered

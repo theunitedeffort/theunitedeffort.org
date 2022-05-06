@@ -76,7 +76,7 @@ address {
   font-size: 1em;
   border-radius: 3px;
   padding: 0.2em 0.5em;
-  margin-right: 0.2em;
+  margin: 0.3em 0 0.3em 0.2em;
   white-space: nowrap;
   font-size: 0.9em;
   @include bp(mid) {
@@ -85,25 +85,29 @@ address {
   @include bp(wide) {
     font-size: 0.7em;
   }
+  display: inline-block;
 }
 
 .badge__ok {
   border-left: 0.4em solid var(--color-green);
+  margin-left: 0;
 }
 
 .badge__bad {
   border-left: 0.4em solid var(--color-red);
+  margin-left: 0;
 }
 
 .badge__warn {
   border-left: 0.4em solid var(--color-orange);
+  margin-left: 0;
 }
 
 h3 .badge {
-  display: inline-block;
   position: relative;
   margin-left: 1em;
   font-size: 0.8em;
+  font-weight: lighter;
   top: -0.2em;
 }
 
