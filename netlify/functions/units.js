@@ -10,7 +10,6 @@ const NO_MAX_INCOME_STRING = NO_MIN_INCOME_STRING;
 // Make a definition list from all the data returned about this item
 const metaData = (units) => {
   let aptName = units.metadata.aptName || "Apartment Listing";
-  let heading = `<h1>${aptName}</h1>`
   let definitions = [];
   for (key in units.metadata) {
     if (key === "aptName") { continue; }
@@ -18,12 +17,11 @@ const metaData = (units) => {
     if (key === "Website") {
       value = `<a href="${value}" target="_BLANK" rel="noopener">${value}</a>`
     }
-    definitions.push(`<dt>${key}</dt><dd>${value}</dd>`);
-    // TODO (trevorshannon): add link a tag.
+    definitions.push(`<tr><td class="definition_term">${key}</td><td class="definition">${value}</td></tr>`);
   }
   return `
-    ${heading}
-    <dl>${definitions.join("")}</dl>`;
+    <h1>${aptName}</h1>
+    <table class="deflist">${definitions.join("")}</table>`;
 }
 
 const formatCurrency = (value) => {
