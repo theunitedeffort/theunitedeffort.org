@@ -29,6 +29,26 @@ function ShowLoading() {
   submitButton.disabled = "disabled";
 }
 
+// Show a hidden checkbox with id optionId depending on the value ofinputId.
+function ToggleHiddenOption(optionId, inputId) {
+  let option = document.getElementById(optionId);
+  let input = document.getElementById(inputId);
+  if (input.value) {
+    option.parentElement.removeAttribute("hidden");
+  } else {
+    option.parentElement.setAttribute("hidden", "hidden");
+  }
+}
+
+function ToggleRentOption() {
+  ToggleHiddenOption("include-unknown-rent", "rent-max");
+}
+
+function ToggleIncomeOption() {
+  ToggleHiddenOption("include-unknown-income", "income");
+}
+
+
 // If the filtering form GETs the results page's url with
 // the anchor hash (e.g. action="/affordable-housing/filter#results")
 // then the form submission button will be disabled and the
@@ -36,13 +56,15 @@ function ShowLoading() {
 // without first changing the filter state.  So, to force a 
 // page reload every time, have the form GET e.g. 
 // /affordable-housing/filter and manually scroll to the anchor
-// after the page loads.  Only do this if the user has applied 
-// a filter at all.
+// after the page loads.  Also ensure the rent and income checkboxes
+// are shown if those fields are filled. 
 {% if num_filters_applied > 0 %} 
-function TestFn() {
+function OnWindowLoad() {
+  ToggleRentOption();
+  ToggleIncomeOption();
   location.hash = "#results";
 }
-document.onload = TestFn();
+window.onload = function() {OnWindowLoad()};
 {% endif %}
 </script>
 
@@ -88,10 +110,12 @@ Use the filter options below to narrow your search.
     <legend>Rent</legend>
     <div>
       <label for="rent-max">Maximum ($ per month)</label><br />
-      <input type="number" min="0" id="rent-max" name="rentMax" value="{{query.rentMax | escape}}"><br/>
-      <input type="checkbox" id="include-unknown-rent" name="includeUnknownRent" 
-      {% if num_filters_applied == 0 or query.includeUnknownRent == "on" %}checked{% endif %}>
-      <label for="include-unknown-rent">Include properties with no rent information</label>
+      <input type="number" oninput="ToggleRentOption();" min="0" id="rent-max" name="rentMax" value="{{query.rentMax | escape}}"><br/>
+      <span id="include-unknown-rent-container" hidden>
+        <input type="checkbox" id="include-unknown-rent" name="includeUnknownRent"
+        {% if num_filters_applied == 0 or query.includeUnknownRent == "on" %}checked{% endif %}>
+        <label for="include-unknown-rent">Include properties with no rent information</label>
+      </span>
     </div>
   </fieldset>
 
@@ -106,10 +130,12 @@ Use the filter options below to narrow your search.
         </span>
       </span>
       <br />
-      <input type="number" min="0" id="income" name="income" value="{{query.income | escape}}"><br/>
-      <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome"
-      {% if num_filters_applied == 0 or query.includeUnknownIncome == "on" %}checked{% endif %}>
-      <label for="include-unknown-income">Include properties with no income limit information</label>
+      <input type="number" oninput="ToggleIncomeOption();" min="0" id="income" name="income" value="{{query.income | escape}}"><br/>
+      <span id="include-unknown-income-container" hidden>
+        <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome"
+        {% if num_filters_applied == 0 or query.includeUnknownIncome == "on" %}checked{% endif %}>
+        <label for="include-unknown-income">Include properties with no income limit information</label>
+      </span>
     </div>
   </fieldset>
 
@@ -145,7 +171,6 @@ Use the filter options below to narrow your search.
       
       {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
       {% for status in allStatuses %}
-        {{status | log}}
         <span class="badge
         {% if status == "Call for Status" %}
           badge__warn
@@ -156,7 +181,6 @@ Use the filter options below to narrow your search.
         {% endif %}
         ">{{ status }}</span>
         {% assign sortedUnits = address.units | where: "openStatus",  status | sortUnitType: "unitType" %}
-        {{sortedUnits | log}}
         {% for unit in sortedUnits %}
           <span class="badge">{{ unit.unitType }}</span>
         {% endfor %} 
