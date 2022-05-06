@@ -29,6 +29,29 @@ function ShowLoading() {
   submitButton.disabled = "disabled";
 }
 
+function ToggleHiddenOption(optionId, inputId) {
+  let option = document.getElementById(optionId);
+  let input = document.getElementById(inputId);
+  if (input.value) {
+    console.log("value");
+    // Need to show the checkbox on page load if input.value
+    option.removeAttribute("hidden");
+  } else {
+    console.log("empty");
+    option.setAttribute("hidden", "hidden");
+    // Need to set the checkbox back to checked when it is hidden.
+  }
+}
+
+function ToggleRentOption() {
+  ToggleHiddenOption("include-unknown-rent-container", "rent-max");
+}
+
+function ToggleIncomeOption() {
+  ToggleHiddenOption("include-unknown-income-container", "income");
+}
+
+
 // If the filtering form GETs the results page's url with
 // the anchor hash (e.g. action="/affordable-housing/filter#results")
 // then the form submission button will be disabled and the
@@ -88,10 +111,12 @@ Use the filter options below to narrow your search.
     <legend>Rent</legend>
     <div>
       <label for="rent-max">Maximum ($ per month)</label><br />
-      <input type="number" min="0" id="rent-max" name="rentMax" value="{{query.rentMax | escape}}"><br/>
-      <input type="checkbox" id="include-unknown-rent" name="includeUnknownRent" 
-      {% if num_filters_applied == 0 or query.includeUnknownRent == "on" %}checked{% endif %}>
-      <label for="include-unknown-rent">Include properties with no rent information</label>
+      <input type="number" oninput="ToggleRentOption();" min="0" id="rent-max" name="rentMax" value="{{query.rentMax | escape}}"><br/>
+      <span id="include-unknown-rent-container" hidden>
+        <input type="checkbox" id="include-unknown-rent" name="includeUnknownRent"
+        {% if num_filters_applied == 0 or query.includeUnknownRent == "on" %}checked{% endif %}>
+        <label for="include-unknown-rent">Include properties with no rent information</label>
+      </span>
     </div>
   </fieldset>
 
@@ -106,10 +131,12 @@ Use the filter options below to narrow your search.
         </span>
       </span>
       <br />
-      <input type="number" min="0" id="income" name="income" value="{{query.income | escape}}"><br/>
-      <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome"
-      {% if num_filters_applied == 0 or query.includeUnknownIncome == "on" %}checked{% endif %}>
-      <label for="include-unknown-income">Include properties with no income limit information</label>
+      <input type="number" oninput="ToggleIncomeOption();" min="0" id="income" name="income" value="{{query.income | escape}}"><br/>
+      <span id="include-unknown-income-container" hidden>
+        <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome"
+        {% if num_filters_applied == 0 or query.includeUnknownIncome == "on" %}checked{% endif %}>
+        <label for="include-unknown-income">Include properties with no income limit information</label>
+      </span>
     </div>
   </fieldset>
 
@@ -145,7 +172,6 @@ Use the filter options below to narrow your search.
       
       {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
       {% for status in allStatuses %}
-        {{status | log}}
         <span class="badge
         {% if status == "Call for Status" %}
           badge__warn
@@ -156,7 +182,6 @@ Use the filter options below to narrow your search.
         {% endif %}
         ">{{ status }}</span>
         {% assign sortedUnits = address.units | where: "openStatus",  status | sortUnitType: "unitType" %}
-        {{sortedUnits | log}}
         {% for unit in sortedUnits %}
           <span class="badge">{{ unit.unitType }}</span>
         {% endfor %} 
