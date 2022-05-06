@@ -142,23 +142,26 @@ Use the filter options below to narrow your search.
       <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
     </h4>
     <p>
-      <span class="badge
-        {% if address.openStatus == "Call for Status" %}
+      
+      {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
+      {% for status in allStatuses %}
+        {{status | log}}
+        <span class="badge
+        {% if status == "Call for Status" %}
           badge__warn
-        {% elsif address.openStatus == "Waitlist Closed" %}
+        {% elsif status == "Waitlist Closed" %}
           badge__bad
-        {% elsif address.openStatus == "Waitlist Open" %}
+        {% elsif status == "Waitlist Open" %}
           badge__ok
         {% endif %}
-        ">
-        {{ address.openStatus }}
-      </span>
-      {% assign sortedUnitTypes = address.unitType | sortUnitType %}
-      {% for unitType in sortedUnitTypes %}
-        <span class="badge">
-          {{ unitType }}
-        </span>
-      {% endfor %}   
+        ">{{ status }}</span>
+        {% assign sortedUnits = address.units | where: "openStatus",  status | sortUnitType: "unitType" %}
+        {{sortedUnits | log}}
+        {% for unit in sortedUnits %}
+          <span class="badge">{{ unit.unitType }}</span>
+        {% endfor %} 
+        <br/>  
+      {% endfor %}
     </p>
     {% if address.address and address.address != '' %}
       {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} (<a href="https://maps.google.com/maps?q={{ address.address | url_encode}} {{ address.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)<br/>
