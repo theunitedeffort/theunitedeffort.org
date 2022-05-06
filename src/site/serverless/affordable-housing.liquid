@@ -29,26 +29,23 @@ function ShowLoading() {
   submitButton.disabled = "disabled";
 }
 
+// Show a hidden checkbox with id optionId depending on the value ofinputId.
 function ToggleHiddenOption(optionId, inputId) {
   let option = document.getElementById(optionId);
   let input = document.getElementById(inputId);
   if (input.value) {
-    console.log("value");
-    // Need to show the checkbox on page load if input.value
-    option.removeAttribute("hidden");
+    option.parentElement.removeAttribute("hidden");
   } else {
-    console.log("empty");
-    option.setAttribute("hidden", "hidden");
-    // Need to set the checkbox back to checked when it is hidden.
+    option.parentElement.setAttribute("hidden", "hidden");
   }
 }
 
 function ToggleRentOption() {
-  ToggleHiddenOption("include-unknown-rent-container", "rent-max");
+  ToggleHiddenOption("include-unknown-rent", "rent-max");
 }
 
 function ToggleIncomeOption() {
-  ToggleHiddenOption("include-unknown-income-container", "income");
+  ToggleHiddenOption("include-unknown-income", "income");
 }
 
 
@@ -59,13 +56,15 @@ function ToggleIncomeOption() {
 // without first changing the filter state.  So, to force a 
 // page reload every time, have the form GET e.g. 
 // /affordable-housing/filter and manually scroll to the anchor
-// after the page loads.  Only do this if the user has applied 
-// a filter at all.
+// after the page loads.  Also ensure the rent and income checkboxes
+// are shown if those fields are filled. 
 {% if num_filters_applied > 0 %} 
-function TestFn() {
+function OnWindowLoad() {
+  ToggleRentOption();
+  ToggleIncomeOption();
   location.hash = "#results";
 }
-document.onload = TestFn();
+window.onload = function() {OnWindowLoad()};
 {% endif %}
 </script>
 
