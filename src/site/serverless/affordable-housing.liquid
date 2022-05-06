@@ -85,14 +85,6 @@ Use the filter options below to narrow your search.
   {% endfor %}
 
   <fieldset>
-    <legend>Property Name</legend>
-    <div>
-      <label for="property-name">Name</label><br />
-      <input type="text" aria-label="Property Name" id="property-name" value="{{query.propertyName | escape}}" name="propertyName">
-    </div>
-  </fieldset>
-
-  <fieldset>
     <legend>Rent</legend>
     <div>
       <label for="rent-max">Maximum ($ per month)</label><br />
@@ -118,6 +110,14 @@ Use the filter options below to narrow your search.
       <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome"
       {% if num_filters_applied == 0 or query.includeUnknownIncome == "on" %}checked{% endif %}>
       <label for="include-unknown-income">Include properties with no income limit information</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Property Name</legend>
+    <div>
+      <label for="property-name">Name</label><br />
+      <input type="text" aria-label="Property Name" id="property-name" value="{{query.propertyName | escape}}" name="propertyName">
     </div>
   </fieldset>
 
