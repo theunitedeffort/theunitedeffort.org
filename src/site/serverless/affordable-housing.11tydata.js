@@ -1,3 +1,4 @@
+const { AssetCache } = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
@@ -50,8 +51,23 @@ const fetchFilterOptions = async() => {
 // having a unique list of FilterCheckboxes encompassing all the values
 // available in the Airtable data at that time.
 module.exports = async function() {
+  let asset = new AssetCache("affordable_housing_filters");
+  // This cache duration will only be used at build time.
+  let cacheDuration = "1m";
+  if(process.env.ELEVENTY_SERVERLESS) {
+    // Use the serverless cache location specified in .eleventy.js
+    asset.cacheDirectory = "cache"; 
+    cacheDuration = "*";  // Infinite duration (data refreshes at each build)
+  }
+  if (asset.isCacheValid(cacheDuration)) {
+    console.log("Returning cached filter options.");
+    return asset.getCachedValue(); // a promise
+  }
   console.log("Fetching filter options.");
+  console.time("Fetch filter options");
   let filterOptions = await fetchFilterOptions();
+  console.timeEnd("Fetch filter options");
+  console.time("Get unique filter values");
   let cities = [...new Set(filterOptions.map(({ city }) => city))];
   cities = cities.filter(city => city !== undefined);
   let openStatuses = [...new Set(filterOptions.map(({ openStatus }) => openStatus))];
@@ -69,6 +85,10 @@ module.exports = async function() {
     new FilterSection("Availability", "availability",
       openStatuses.map((x) => new FilterCheckbox(x)))
   ];
+  console.timeEnd("Get unique filter values");
   console.log("Got filter options.");
-  return { filterValues: filterVals };
+  let filterData = { filterValues: filterVals };
+  
+  await asset.save(filterData, "json");
+  return filterData;
 }
