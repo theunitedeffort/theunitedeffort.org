@@ -1,9 +1,6 @@
 const markdown = require("marked");
 const sass = require("sass");
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
-// This requirement is somehow not propagated from affordable-housing.11tydata.js
-// so include it here to be sure it makes it into the serverless bundle.
-const EleventyFetch = require("@11ty/eleventy-fetch");
 
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
@@ -21,11 +18,6 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
     name: "serverless",
     functionsDir: "./netlify/functions/",
-    copy: [
-      // Files/directories that start with a dot
-      // are not bundled by default.
-      { from: ".cache", to: "cache" }
-    ]
   });
 
   // Markdown filter
@@ -141,9 +133,9 @@ module.exports = function(eleventyConfig) {
     const queryStr = buildQueryStr(query);
     let housing = await fetchHousingList(queryStr);
     console.log("got " + housing.length + " properties.")
-    // if (query) {
-    //   console.log(JSON.stringify(housing, null, 4));
-    // }
+    if (query) {
+      console.log(JSON.stringify(housing, null, 4));
+    }
     return housing;
   });
 
