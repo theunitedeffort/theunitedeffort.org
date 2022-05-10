@@ -64,10 +64,7 @@ module.exports = async function() {
     return asset.getCachedValue(); // a promise
   }
   console.log("Fetching filter options.");
-  console.time("Fetch filter options");
   let filterOptions = await fetchFilterOptions();
-  console.timeEnd("Fetch filter options");
-  console.time("Get unique filter values");
   let cities = [...new Set(filterOptions.map(({ city }) => city))];
   cities = cities.filter(city => city !== undefined);
   let openStatuses = [...new Set(filterOptions.map(({ openStatus }) => openStatus))];
@@ -85,7 +82,6 @@ module.exports = async function() {
     new FilterSection("Availability", "availability",
       openStatuses.map((x) => new FilterCheckbox(x)))
   ];
-  console.timeEnd("Get unique filter values");
   console.log("Got filter options.");
   let filterData = { filterValues: filterVals };
   
