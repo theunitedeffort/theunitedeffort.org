@@ -1,4 +1,3 @@
-const { AssetCache } = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
@@ -84,8 +83,5 @@ module.exports = async function() {
       openStatuses.map((x) => new FilterCheckbox(x)))
   ];
   console.log("Got filter options.");
-  let filterData = { filterValues: filterVals };
-  
-  await asset.save(filterData, "json");
-  return filterData;
+  return { filterValues: filterVals };
 }
