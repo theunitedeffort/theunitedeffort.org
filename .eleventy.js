@@ -1,6 +1,9 @@
 const markdown = require("marked");
 const sass = require("sass");
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
+// This requirement is somehow not propagated from affordable-housing.11tydata.js
+// so include it here to be sure it makes it into the serverless bundle.
+const EleventyFetch = require("@11ty/eleventy-fetch");
 
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
