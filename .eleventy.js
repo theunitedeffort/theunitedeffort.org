@@ -1,7 +1,9 @@
 const markdown = require("marked");
 const sass = require("sass");
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
-
+// This requirement is somehow not propagated from affordable-housing.11tydata.js
+// so include it here to be sure it makes it into the serverless bundle.
+const EleventyFetch = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.AIRTABLE_BASE_ID);
@@ -18,6 +20,11 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
     name: "serverless",
     functionsDir: "./netlify/functions/",
+    copy: [
+      // Files/directories that start with a dot
+      // are not bundled by default.
+      { from: ".cache", to: "cache" }
+    ]
   });
 
   // Markdown filter
@@ -100,22 +107,27 @@ module.exports = function(eleventyConfig) {
 
   // Add filter checkbox state from the query parameters to 'filterValues'. 
   eleventyConfig.addFilter("updateFilterState", function(filterValues, query) {
+    // The AssetCache holding filterValues stores a buffered version of the
+    // cached filterValues and does not read it in from the filesystem on each
+    // page render. We need to be sure to not modify the original object, lest
+    // those edits persist in the cached object.
+    let filterValuesCopy = JSON.parse(JSON.stringify(filterValues));
     // If there is no query (such as on the affordable housing landing page)
     // there is no state to add to the filterValues.
-    if (!query) { return filterValues; }
+    if (!query) { return filterValuesCopy; }
 
     // Updates the state of the FilterSection with the name 'filterName'
     // according to 'queryValue'
     function updateFilterSection(queryValue, filterName) {
       if (!queryValue) { return; }
       let selectedOptions = queryValue.split(", ");
-      let filterIdx = filterValues.findIndex(f => f.name == filterName);
+      let filterIdx = filterValuesCopy.findIndex(f => f.name == filterName);
       if (filterIdx < 0) { return; }
       for (i = 0; i < selectedOptions.length; i++) {
-        let idx = filterValues[filterIdx].options.findIndex(
+        let idx = filterValuesCopy[filterIdx].options.findIndex(
           v => v.name === selectedOptions[i]);
         if (idx >= 0) {
-          filterValues[filterIdx].options[idx].selected = true;
+          filterValuesCopy[filterIdx].options[idx].selected = true;
         }
       }
     }
@@ -123,7 +135,7 @@ module.exports = function(eleventyConfig) {
     updateFilterSection(query.availability, "availability");
     updateFilterSection(query.city, "city");
     updateFilterSection(query.unitType, "unitType");
-    return filterValues;
+    return filterValuesCopy;
   });
 
   // Gets a subset of all housing results from Airtable based on 'query'.
@@ -133,9 +145,9 @@ module.exports = function(eleventyConfig) {
     const queryStr = buildQueryStr(query);
     let housing = await fetchHousingList(queryStr);
     console.log("got " + housing.length + " properties.")
-    if (query) {
-      console.log(JSON.stringify(housing, null, 4));
-    }
+    // if (query) {
+    //   console.log(JSON.stringify(housing, null, 4));
+    // }
     return housing;
   });
 
