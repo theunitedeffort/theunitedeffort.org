@@ -138,12 +138,8 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("housingResults", async function(query) {
     console.log("housing query: ");
     console.log(query);
-    console.time("build query string");
     const queryStr = buildQueryStr(query);
-    console.timeEnd("build query string");
-    console.time("fetch housing list");
     let housing = await fetchHousingList(queryStr);
-    console.timeEnd("fetch housing list");
     console.log("got " + housing.length + " properties.")
     // if (query) {
     //   console.log(JSON.stringify(housing, null, 4));
