@@ -61,7 +61,8 @@ module.exports = async function() {
   }
   if (asset.isCacheValid(cacheDuration)) {
     console.log("Returning cached filter options.");
-    return asset.getCachedValue(); // a promise
+    let filters = await asset.getCachedValue();
+    return filters;
   }
   console.log("Fetching filter options.");
   let filterOptions = await fetchFilterOptions();
