@@ -1,7 +1,9 @@
 const markdown = require("marked");
 const sass = require("sass");
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
-
+// This requirement is somehow not propagated from affordable-housing.11tydata.js
+// so include it here to be sure it makes it into the serverless bundle.
+const EleventyFetch = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.AIRTABLE_BASE_ID);
@@ -18,6 +20,11 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
     name: "serverless",
     functionsDir: "./netlify/functions/",
+    copy: [
+      // Files/directories that start with a dot
+      // are not bundled by default.
+      { from: ".cache", to: "cache" }
+    ]
   });
 
   // Markdown filter
@@ -58,24 +65,69 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
+  eleventyConfig.addFilter("sortUnitType", function(values, property='') {
+    let sorted = values.sort(function(a, b) {
+      let valA = property ? a[property] : a;
+      let valB = property ? b[property] : b;
+      // Return < 0 if 'a' should go before 'b'
+      // Return > 0 if 'b' should go before 'a'
+      if ((valA === "SRO" && valB === "Studio") || // SRO before Studio.
+          (valA === "SRO" || valA === "Studio") || // SRO/Studio always first.
+          (valB === "Others")) { // Others always last.
+        return -1; 
+      }
+      if ((valA === "Studio" && valB === "SRO") || // SRO before Studio
+          (valB === "SRO" || valB === "Studio") || // SRO/Studio always first.
+          (valA === "Others")) { // Others always last.
+        return 1;
+      }
+      if (valA < valB) {
+        return -1;
+      }
+      if (valA > valB) {
+        return 1;
+      }
+      return 0;
+    });
+    return sorted;
+  });
+
+  eleventyConfig.addFilter("numFiltersApplied", function(query){
+    // TODO: Don't hardcode this list of filters here.
+    const allowedFilters = ["city", "availability", "unitType", "propertyName",
+      "rentMax", "income"];
+    let count = 0;
+    for (key in query) {
+      if (allowedFilters.includes(key) && query[key]) {
+        count++;
+      }
+    }
+    return count;
+  });
+
   // Add filter checkbox state from the query parameters to 'filterValues'. 
   eleventyConfig.addFilter("updateFilterState", function(filterValues, query) {
+    // The AssetCache holding filterValues stores a buffered version of the
+    // cached filterValues and does not read it in from the filesystem on each
+    // page render. We need to be sure to not modify the original object, lest
+    // those edits persist in the cached object.
+    let filterValuesCopy = JSON.parse(JSON.stringify(filterValues));
     // If there is no query (such as on the affordable housing landing page)
     // there is no state to add to the filterValues.
-    if (!query) { return filterValues; }
+    if (!query) { return filterValuesCopy; }
 
     // Updates the state of the FilterSection with the name 'filterName'
     // according to 'queryValue'
     function updateFilterSection(queryValue, filterName) {
       if (!queryValue) { return; }
       let selectedOptions = queryValue.split(", ");
-      let filterIdx = filterValues.findIndex(f => f.name == filterName);
+      let filterIdx = filterValuesCopy.findIndex(f => f.name == filterName);
       if (filterIdx < 0) { return; }
       for (i = 0; i < selectedOptions.length; i++) {
-        let idx = filterValues[filterIdx].options.findIndex(
+        let idx = filterValuesCopy[filterIdx].options.findIndex(
           v => v.name === selectedOptions[i]);
         if (idx >= 0) {
-          filterValues[filterIdx].options[idx].selected = true;
+          filterValuesCopy[filterIdx].options[idx].selected = true;
         }
       }
     }
@@ -83,7 +135,7 @@ module.exports = function(eleventyConfig) {
     updateFilterSection(query.availability, "availability");
     updateFilterSection(query.city, "city");
     updateFilterSection(query.unitType, "unitType");
-    return filterValues;
+    return filterValuesCopy;
   });
 
   // Gets a subset of all housing results from Airtable based on 'query'.
@@ -93,9 +145,9 @@ module.exports = function(eleventyConfig) {
     const queryStr = buildQueryStr(query);
     let housing = await fetchHousingList(queryStr);
     console.log("got " + housing.length + " properties.")
-    if (query) {
-      console.log(housing);
-    }
+    // if (query) {
+    //   console.log(JSON.stringify(housing, null, 4));
+    // }
     return housing;
   });
 
@@ -192,27 +244,29 @@ module.exports = function(eleventyConfig) {
             aptName: record.get("APT_NAME")?.[0] || "",
             address: record.get("Address (from Housing)")?.[0] || "",
             city: record.get("City (from Housing)")?.[0] || "",
-            openStatus: record.get("STATUS"),
-            unitType: record.get("TYPE"),
+            units: {unitType: record.get("TYPE"), openStatus: record.get("STATUS")},
             locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
             phone: record.get("Phone (from Housing)")?.[0] || "",
             website: record.get("URL (from Housing)")?.[0] || ""
           })
         });
 
-        // Get a map from housing id to all associated unit types.
+        // Get a map from housing id to all associated unit type, status pairs.
         let typeById = {};
         for (idx in housingList) {
           let unitId = housingList[idx].id;
           typeById[unitId] = typeById[unitId] || new Set();
-          typeById[unitId].add(housingList[idx].unitType);
+          typeById[unitId].add(JSON.stringify({
+            unitType: housingList[idx].units.unitType,
+            openStatus: housingList[idx].units.openStatus}));
         }
 
-        // Use the housingId:unitType map to rewrite the unitType of each record
-        // to be a list of all the unit types at the property with housingId. This will result
+        // Use the housingId:(unitType,openStatus) map to rewrite the units of each record
+        // to be a list of all the units at the property with housingId. This will result
         // in some duplicate entries, but those will be filtered out next.
         for (idx in housingList) {
-          housingList[idx].unitType = [...typeById[housingList[idx].id]];
+          let unitsStrArray = [...typeById[housingList[idx].id]];
+          housingList[idx].units = unitsStrArray.map((x) => JSON.parse(x));
         }
 
         // De-duplicate results which can be present if the same unit is offered

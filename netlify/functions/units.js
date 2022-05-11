@@ -10,7 +10,6 @@ const NO_MAX_INCOME_STRING = NO_MIN_INCOME_STRING;
 // Make a definition list from all the data returned about this item
 const metaData = (units) => {
   let aptName = units.metadata.aptName || "Apartment Listing";
-  let heading = `<h1>${aptName}</h1>`
   let definitions = [];
   for (key in units.metadata) {
     if (key === "aptName") { continue; }
@@ -18,12 +17,11 @@ const metaData = (units) => {
     if (key === "Website") {
       value = `<a href="${value}" target="_BLANK" rel="noopener">${value}</a>`
     }
-    definitions.push(`<dt>${key}</dt><dd>${value}</dd>`);
-    // TODO (trevorshannon): add link a tag.
+    definitions.push(`<tr><td class="definition_term">${key}</td><td class="definition">${value}</td></tr>`);
   }
   return `
-    ${heading}
-    <dl>${definitions.join("")}</dl>`;
+    <h1>${aptName}</h1>
+    <table class="deflist">${definitions.join("")}</table>`;
 }
 
 const formatCurrency = (value) => {
@@ -34,6 +32,33 @@ const formatCurrency = (value) => {
     currency: "USD"});
 }
 
+const sortUnitTypes = (values, property='') => {
+  let sorted = values.sort(function(a, b) {
+    let valA = property ? a[property] : a;
+    let valB = property ? b[property] : b;
+    // Return < 0 if 'a' should go before 'b'
+    // Return > 0 if 'b' should go before 'a'
+    if ((valA === "SRO" && valB === "Studio") || // SRO before Studio.
+        (valA === "SRO" || valA === "Studio") || // SRO/Studio always first.
+        (valB === "Others")) { // Others always last.
+      return -1; 
+    }
+    if ((valA === "Studio" && valB === "SRO") || // SRO before Studio
+        (valB === "SRO" || valB === "Studio") || // SRO/Studio always first.
+        (valA === "Others")) { // Others always last.
+      return 1;
+    }
+    if (valA < valB) {
+      return -1;
+    }
+    if (valA > valB) {
+      return 1;
+    }
+    return 0;
+  });
+  return sorted;
+}
+
 // Make a definition list from all the data returned about this item
 const unitDetails = (data) => {
   let rows = [];
@@ -42,6 +67,8 @@ const unitDetails = (data) => {
     let rentStr = NO_RENT_STRING;
     let minIncomeStr = NO_MIN_INCOME_STRING;
     let maxIncomeStr = NO_MAX_INCOME_STRING;
+    let minIncomeInfo = "";
+    let maxIncomeInfo = "";
     if (unit.RENT_PER_MONTH_USD) {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
     }
@@ -51,9 +78,15 @@ const unitDetails = (data) => {
     if (unit.MAX_INCOME_PER_YR_USD) {
       maxIncomeStr = formatCurrency(unit.MAX_INCOME_PER_YR_USD);
     }
+    if (unit.min_income_details) {
+      minIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${unit.min_income_details}</span></span>`;
+    }
+    if (unit.max_income_details) {
+      maxIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${unit.max_income_details}</span></span>`;
+    }
     rows.push(`
-      <td>${minIncomeStr}</td>
-      <td>${maxIncomeStr}</td>
+      <td>${minIncomeStr} ${minIncomeInfo}</td>
+      <td>${maxIncomeStr} ${maxIncomeInfo}</td>
       <td>${rentStr}</td>
     `);
   }
@@ -63,7 +96,7 @@ const unitDetails = (data) => {
 
 const unitTables = (units) => {
   let tables = [];
-  let unitTypes = Object.keys(units.data).sort();
+  let unitTypes = sortUnitTypes(Object.keys(units.data));
   for (idx in unitTypes) {
     // 'units' is guaranteed to have at least one item for each key
     // based on how it is generated in fetchData. Max occupancy and status

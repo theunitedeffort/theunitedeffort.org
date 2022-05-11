@@ -1,3 +1,4 @@
+const { AssetCache } = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
@@ -50,12 +51,28 @@ const fetchFilterOptions = async() => {
 // having a unique list of FilterCheckboxes encompassing all the values
 // available in the Airtable data at that time.
 module.exports = async function() {
+  let asset = new AssetCache("affordable_housing_filters");
+  // This cache duration will only be used at build time.
+  let cacheDuration = "1m";
+  if(process.env.ELEVENTY_SERVERLESS) {
+    // Use the serverless cache location specified in .eleventy.js
+    asset.cacheDirectory = "cache"; 
+    cacheDuration = "*";  // Infinite duration (data refreshes at each build)
+  }
+  if (asset.isCacheValid(cacheDuration)) {
+    console.log("Returning cached filter options.");
+    let filters = await asset.getCachedValue();
+    return filters;
+  }
   console.log("Fetching filter options.");
   let filterOptions = await fetchFilterOptions();
   let cities = [...new Set(filterOptions.map(({ city }) => city))];
   cities = cities.filter(city => city !== undefined);
   let openStatuses = [...new Set(filterOptions.map(({ openStatus }) => openStatus))];
-  openStatuses = openStatuses.filter(openStatus => openStatus !== undefined);
+  // Don't allow Waitlist Closed to be a filter option as most people will not want to 
+  // specifically search for places with a closed waitlist.
+  openStatuses = openStatuses.filter(openStatus => (
+    openStatus !== undefined && openStatus !== "Waitlist Closed"));
   let unitTypes = [...new Set(filterOptions.map(({ unitType }) => unitType))];
   unitTypes = unitTypes.filter(unitType => unitType !== undefined);
 
@@ -67,5 +84,8 @@ module.exports = async function() {
       openStatuses.map((x) => new FilterCheckbox(x)))
   ];
   console.log("Got filter options.");
-  return { filterValues: filterVals };
+  let filterData = { filterValues: filterVals };
+
+  await asset.save(filterData, "json");
+  return filterData;
 }
