@@ -69,10 +69,7 @@ module.exports = async function() {
   let cities = [...new Set(filterOptions.map(({ city }) => city))];
   cities = cities.filter(city => city !== undefined);
   let openStatuses = [...new Set(filterOptions.map(({ openStatus }) => openStatus))];
-  // Don't allow Waitlist Closed to be a filter option as most people will not want to 
-  // specifically search for places with a closed waitlist.
-  openStatuses = openStatuses.filter(openStatus => (
-    openStatus !== undefined && openStatus !== "Waitlist Closed"));
+  openStatuses = openStatuses.filter(openStatus => openStatus !== undefined);
   let unitTypes = [...new Set(filterOptions.map(({ unitType }) => unitType))];
   unitTypes = unitTypes.filter(unitType => unitType !== undefined);
 
