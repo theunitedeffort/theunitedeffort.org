@@ -18,7 +18,7 @@ module.exports = (data) => {
           <img src="/images/ueo-logo.png" class="logo-home"  alt="">
         </a>
         <ul class="navigation">
-          <li><a href="/housing" class="nav-housing">Housing</a></li>
+          <li><a href="/affordable-housing" class="nav-housing">Find Affordable Housing</a></li>
           <li><a href="/public-assistance" class="nav-public-assistance">Public assistance programs</a></li>
           <li class="second-row"><a href="/resources" class="nav-resources">Resources</a></li>
           <li class="second-row"><a href="/about" class="nav-about">About us</a></li>
