@@ -23,8 +23,11 @@ permalink: /resources/index.html
 </ul> {% endcomment %}
 
 {% assign uniqueCategories = resources | index: "Category" %}
+{% for category in uniqueCategories %}
+<a href="#{{category | downcase | replace: " ", "-" }}">{{category}}</a><br/>
+{% endfor %}
 {% for category in uniqueCategories | sort %}
-  <h2>{{category}}</h2>
+  <h2 id="{{category | downcase | replace: " ", "-" }}">{{category}}</h2>
   {% assign categoryLinks = resources | whereIncluded: "Category", category  %}
   {% assign noSubcategoryLinks = categoryLinks | whereEmpty: "Subcategory"  %}
   <ul>
