@@ -8,7 +8,7 @@ var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.AIRTABLE_BASE_ID);
 
-const UNITS_TABLE = "tblNLrf8RTiZdY5KN";
+const UNITS_TABLE = "tblDzf4DI4q28tyuw";
 
 
 module.exports = function(eleventyConfig) {

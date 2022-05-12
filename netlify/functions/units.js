@@ -136,7 +136,7 @@ const unitTables = (units) => {
 
 // Lookup data for this item from the Airtable API
 const fetchData = async(housingID) => {
-  const table = base("tblNLrf8RTiZdY5KN"); // Units table
+  const table = base("tblDzf4DI4q28tyuw"); // Units table
   return table.select({
       view: "API all units",
       filterByFormula: `HOUSING_LIST_ID = "${housingID}"`
