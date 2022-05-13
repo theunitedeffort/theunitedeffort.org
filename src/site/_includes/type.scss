@@ -120,6 +120,7 @@ h3 .badge {
   padding: 2em 0 0 0;
   li {
     padding-bottom: 1.2em;
+    break-inside: avoid;
   }
   li.no_results {
     font-size: 1em;
