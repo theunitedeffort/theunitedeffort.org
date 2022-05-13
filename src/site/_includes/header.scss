@@ -58,3 +58,19 @@ body[class^="page-housing"] .nav-housing,
   text-underline-offset: 2px;
   text-decoration-color: var(--color-orange);
 }
+
+@media print {
+  header {
+    .container {
+      text-align: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-home img {
+      margin: 0;
+      width: 100px;
+    }
+  }
+}

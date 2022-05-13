@@ -165,10 +165,20 @@ h3 .badge {
 
 form {
   .tooltip_content {
-  font-size: 0.8em;
+    font-size: 0.8em;
   }
 }
 
 .tooltip_entry:hover .tooltip_content {
   visibility: visible;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+@media print {
+  .results_list {
+    font-size: 0.8em;
+  }
 }

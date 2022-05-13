@@ -66,7 +66,7 @@
       border-top: solid 2px var(--color-blue-dark);
       border-bottom: solid 2px var(--color-blue-dark-b);
     }
-
+    
     main a.btn_print {
       float: right;
       margin: 0;
@@ -79,7 +79,7 @@
       background-color: var(--color-gray-500);
       cursor: pointer;
     }
-
+    
     main a.btn_action:hover,
     main a.btn_action:focus,
     .btn_submit:hover,
@@ -87,8 +87,20 @@
     .btn_submit:disabled {
       background-color: var(--color-blue-dark-b);
     }
-
+    
     .btn_submit:disabled {
       cursor: default;
     }
-
+    
+    @media print {
+      form {
+        font-size: 0.6em;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      fieldset {
+        width: 48%;
+      }
+    }
