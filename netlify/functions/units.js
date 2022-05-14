@@ -110,17 +110,12 @@ const unitDetails = (data) => {
       for(idx=0; idx<12; idx++) {
         let householdSize = idx + 1;
         let field = `MAX_YEARLY_INCOME_HH_${householdSize}_USD`;
-        console.log(field)
         let value = unit[field];
-        console.log(unit[field]);
         if (!value || (unit.MAX_OCCUPANCY && householdSize > unit.MAX_OCCUPANCY)) {
-          console.log("continuing on");
           continue;
         }
-        console.log("pushing to the array");
-        detailStrs.push(`Household size ${householdSize}: ${formatCurrency(value)}`);
+        detailStrs.push(`Household of ${householdSize}: ${formatCurrency(value)}`);
       }
-      console.log(detailStrs);
       maxIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${detailStrs.join("<br/>")}</span></span>`;
     }
     rows.push(`
