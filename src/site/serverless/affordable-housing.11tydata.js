@@ -2,7 +2,7 @@ const { AssetCache } = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
-const UNITS_TABLE = "tblNLrf8RTiZdY5KN";
+const UNITS_TABLE = "tblRtXBod9CC0mivK";
 
 // A group of checkboxes for filtering housing results.
 function FilterSection(heading, name, options) {

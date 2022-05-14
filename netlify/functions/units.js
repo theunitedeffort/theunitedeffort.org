@@ -2,9 +2,13 @@ const Airtable = require('airtable');
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 const pageTemplate = require("./includes/base.js");
 
+const NO_DATA_STRING = "Call for info";
 const NO_RENT_STRING = "Call for rent";
-const NO_MIN_INCOME_STRING = "Call for info";
-const NO_MAX_INCOME_STRING = NO_MIN_INCOME_STRING;
+const NO_RENT_WITH_NOTES_STRING = "Varies";
+const NO_MIN_INCOME_STRING = NO_DATA_STRING;
+const NO_MAX_INCOME_STRING = NO_DATA_STRING;
+const NO_MAX_OCCUPANCY_STRING = NO_DATA_STRING;
+const UNITS_TABLE = "tblRtXBod9CC0mivK"
 
 
 // Make a definition list from all the data returned about this item
@@ -67,27 +71,61 @@ const unitDetails = (data) => {
     let rentStr = NO_RENT_STRING;
     let minIncomeStr = NO_MIN_INCOME_STRING;
     let maxIncomeStr = NO_MAX_INCOME_STRING;
+    let rentInfo = "";
     let minIncomeInfo = "";
     let maxIncomeInfo = "";
     if (unit.RENT_PER_MONTH_USD) {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
+    } else if (unit.RENT_NOTES) {
+      rentStr = NO_RENT_WITH_NOTES_STRING;
+      rentInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${unit.RENT_NOTES}</span></span>`;
     }
-    if (unit.MIN_INCOME_PER_YR_USD) {
-      minIncomeStr = formatCurrency(unit.MIN_INCOME_PER_YR_USD);
+    if (unit.MIN_YEARLY_INCOME_USD) {
+      minIncomeStr = formatCurrency(unit.MIN_YEARLY_INCOME_USD);
     }
-    if (unit.MAX_INCOME_PER_YR_USD) {
-      maxIncomeStr = formatCurrency(unit.MAX_INCOME_PER_YR_USD);
+    if (unit.MAX_YEARLY_INCOME_LOW_USD && unit.MAX_YEARLY_INCOME_HIGH_USD) {
+      if (unit.MAX_YEARLY_INCOME_LOW_USD == unit.MAX_YEARLY_INCOME_HIGH_USD) {
+        maxIncomeStr = formatCurrency(unit.MAX_YEARLY_INCOME_LOW_USD);
+      } else {
+       maxIncomeStr = `${formatCurrency(unit.MAX_YEARLY_INCOME_LOW_USD)} to ${formatCurrency(unit.MAX_YEARLY_INCOME_HIGH_USD)}`;
+      }    
     }
-    if (unit.min_income_details) {
-      minIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${unit.min_income_details}</span></span>`;
+    if (unit.MIN_YEARLY_INCOME_USD && 
+        unit.MIN_INCOME_RENT_FACTOR && 
+        !unit.OVERRIDE_MIN_YEARLY_INCOME_USD) {
+      minIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">Calculated as ${unit.MIN_INCOME_RENT_FACTOR} times yearly rent</span></span>`;
     }
-    if (unit.max_income_details) {
-      maxIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${unit.max_income_details}</span></span>`;
+    // TODO: Make a "has details" field?
+    if (unit.MAX_YEARLY_INCOME_LOW_USD && 
+        unit.MAX_YEARLY_INCOME_HIGH_USD &&
+        (unit.MAX_YEARLY_INCOME_HH_1_USD ||
+         unit.MAX_YEARLY_INCOME_HH_2_USD ||
+         unit.MAX_YEARLY_INCOME_HH_3_USD ||
+         unit.MAX_YEARLY_INCOME_HH_4_USD ||
+         unit.MAX_YEARLY_INCOME_HH_5_USD ||
+         unit.MAX_YEARLY_INCOME_HH_6_USD ||
+         unit.MAX_YEARLY_INCOME_HH_7_USD ||
+         unit.MAX_YEARLY_INCOME_HH_8_USD ||
+         unit.MAX_YEARLY_INCOME_HH_9_USD ||
+         unit.MAX_YEARLY_INCOME_HH_10_USD ||
+         unit.MAX_YEARLY_INCOME_HH_11_USD ||
+         unit.MAX_YEARLY_INCOME_HH_12_USD)) {
+      let detailStrs = [];
+      for(idx=0; idx<12; idx++) {
+        let householdSize = idx + 1;
+        let field = `MAX_YEARLY_INCOME_HH_${householdSize}_USD`;
+        let value = unit[field];
+        if (!value || (unit.MAX_OCCUPANCY && householdSize > unit.MAX_OCCUPANCY)) {
+          continue;
+        }
+        detailStrs.push(`Household of ${householdSize}: ${formatCurrency(value)}`);
+      }
+      maxIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${detailStrs.join("<br/>")}</span></span>`;
     }
     rows.push(`
       <td>${minIncomeStr} ${minIncomeInfo}</td>
       <td>${maxIncomeStr} ${maxIncomeInfo}</td>
-      <td>${rentStr}</td>
+      <td>${rentStr} ${rentInfo}</td>
     `);
   }
   return `<tr>${rows.join("</tr><tr>")}<tr>`;
@@ -102,7 +140,7 @@ const unitTables = (units) => {
     // based on how it is generated in fetchData. Max occupancy and status
     // should always be the same in every entry for a given rental property &
     // unit type, so just take the first one here.
-    let maxOccupancy = units.data[unitTypes[idx]][0].record.MAX_OCCUPANCY;
+    let maxOccupancy = units.data[unitTypes[idx]][0].record.MAX_OCCUPANCY || NO_MAX_OCCUPANCY_STRING;
     let openStatus = units.data[unitTypes[idx]][0].record.STATUS;
     let statusBadgeClass = "badge__warn";
     if (openStatus === "Waitlist Closed") {
@@ -136,7 +174,7 @@ const unitTables = (units) => {
 
 // Lookup data for this item from the Airtable API
 const fetchData = async(housingID) => {
-  const table = base("tblNLrf8RTiZdY5KN"); // Units table
+  const table = base(UNITS_TABLE);
   return table.select({
       view: "API all units",
       filterByFormula: `HOUSING_LIST_ID = "${housingID}"`
