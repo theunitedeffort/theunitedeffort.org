@@ -6,6 +6,9 @@
         flex-direction: row;
         justify-content: space-between;
       }
+      @include bp(wide) {
+        font-size: 0.8em;
+      }
       fieldset {
         @include bp(mid) {
           width: 48%;

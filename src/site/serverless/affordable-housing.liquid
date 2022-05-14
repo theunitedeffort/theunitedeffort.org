@@ -100,7 +100,12 @@ Use the filter options below to narrow your search.
     {% for opt in sortedOpts %}
       {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
       <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
-      <label for="{{optId}}">{{opt.name}}</label><br/>
+      {% if opt.name == "SRO" %}
+          {% assign label = '<abbr title="Single Room Occupancy">SRO</abbr>' %}
+      {% else %}
+          {% assign label = opt.name %}
+      {% endif %}
+      <label for="{{optId}}">{{label}}</label><br/>
     {% endfor %}
     </div>
   </fieldset>
