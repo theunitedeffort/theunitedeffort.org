@@ -173,16 +173,22 @@ const fetchData = async(housingID) => {
 exports.handler = async function(event) {
 
   // get the housing ID from the URL
-  const props = event.path.split("affordable-housing/")[1];
-  let housingID;
+  // const props = event.path.split("affordable-housing/")[1];
+  // let housingID;
 
-  // determine if we'll return a view of the json data
-  const json = props.includes(".json");
-  if (json) {
-    housingID = props.split(".")[0];
-  } else {
-    housingID = props;
-  }
+  // // determine if we'll return a view of the json data
+  // const json = props.includes(".json");
+  // if (json) {
+  //   housingID = props.split(".")[0];
+  // } else {
+  //   housingID = props;
+  // }
+
+
+  const housingID = event.path.split("affordable-housing/")[1];
+  const json = event.path.startsWith("/data/");
+
+
 
 
   // Look up the property in the DB

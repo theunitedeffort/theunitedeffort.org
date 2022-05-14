@@ -1,0 +1,49 @@
+---
+layout: "layouts/base.liquid"
+title: "Data feeds for Affordable Housing"
+permalink: /feeds/index.html
+---
+
+<h1>Data feeds</h1>
+
+<p>
+ The content and data resources of this site are available for you to consume as data feeds for use in your own sites and applications. (Fair usage, bandwidth, and requests quotas may apply)
+</p>
+<p>
+  Some pages of the site can be returned as JSON data instead of HTML by prepending <code>/data/</code> to their paths.
+</p>
+
+
+<h2>Examples</h2>
+
+<h3>Affordable housing database searches</h3>
+<table>
+  <thead>
+    <tr>
+      <th>HTML view path</th><th>Data view path</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><a href="/housing/affordable-housing/">/housing/affordable-housing/</td>
+    <td><a href="/data/housing/affordable-housing/">/data/housing/affordable-housing/</td>
+  </tr>
+  <tr>
+    <td><a href="/housing/affordable-housing/?city=San+Jose">/housing/affordable-housing/?city=San+Jose</td>
+    <td><a href="/data/housing/affordable-housing/?city=San+Jose">/data/housing/affordable-housing?city=San+Jose/</td>
+  </tr>
+</table>
+
+<h3>Affordable housing database details</h3>
+<table>
+  <thead>
+    <tr>
+      <th>HTML view path</th><th>Data view path</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><a href="/housing/affordable-housing/1250">/housing/affordable-housing/1250</td>
+    <td><a href="/data/housing/affordable-housing/1250">/data/housing/affordable-housing/1250</td>
+  </tr>
+</table>
+
+

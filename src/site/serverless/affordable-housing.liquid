@@ -6,7 +6,6 @@ permalink:
   serverless: "/housing/affordable-housing/filter"
 pageClass: "page-housing"
 ---
-
 {% assign query = eleventy.serverless.query %}
 {% assign housingdb = query | housingResults %}
 {% assign num_results = housingdb | size %}
@@ -69,7 +68,6 @@ window.onload = function() {OnWindowLoad()};
 </script>
 
 <h1>{{title}}</h1>
-
 <p>
 {{num_results_snippet}}
 </p>
