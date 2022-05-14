@@ -18,7 +18,6 @@ const metaData = (units) => {
   for (key in units.metadata) {
     if (key === "aptName") { continue; }
     let value = units.metadata[key];
-    console.log(value);
     if (!value) {
       continue
     }
