@@ -4,6 +4,7 @@ const pageTemplate = require("./includes/base.js");
 
 const NO_DATA_STRING = "Call for info";
 const NO_RENT_STRING = "Call for rent";
+const NO_RENT_WITH_NOTES_STRING = "Varies";
 const NO_MIN_INCOME_STRING = NO_DATA_STRING;
 const NO_MAX_INCOME_STRING = NO_DATA_STRING;
 const NO_MAX_OCCUPANCY_STRING = NO_DATA_STRING;
@@ -70,10 +71,14 @@ const unitDetails = (data) => {
     let rentStr = NO_RENT_STRING;
     let minIncomeStr = NO_MIN_INCOME_STRING;
     let maxIncomeStr = NO_MAX_INCOME_STRING;
+    let rentInfo = "";
     let minIncomeInfo = "";
     let maxIncomeInfo = "";
     if (unit.RENT_PER_MONTH_USD) {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
+    } else if (unit.RENT_NOTES) {
+      rentStr = NO_RENT_WITH_NOTES_STRING;
+      rentInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${unit.RENT_NOTES}</span></span>`;
     }
     if (unit.MIN_YEARLY_INCOME_USD) {
       minIncomeStr = formatCurrency(unit.MIN_YEARLY_INCOME_USD);
@@ -121,7 +126,7 @@ const unitDetails = (data) => {
     rows.push(`
       <td>${minIncomeStr} ${minIncomeInfo}</td>
       <td>${maxIncomeStr} ${maxIncomeInfo}</td>
-      <td>${rentStr}</td>
+      <td>${rentStr} ${rentInfo}</td>
     `);
   }
   return `<tr>${rows.join("</tr><tr>")}<tr>`;
