@@ -84,7 +84,6 @@ const unitDetails = (data) => {
       minIncomeStr = formatCurrency(unit.MIN_YEARLY_INCOME_USD);
     }
     if (unit.MAX_YEARLY_INCOME_LOW_USD && unit.MAX_YEARLY_INCOME_HIGH_USD) {
-      // TODO: test this equality logic
       if (unit.MAX_YEARLY_INCOME_LOW_USD == unit.MAX_YEARLY_INCOME_HIGH_USD) {
         maxIncomeStr = formatCurrency(unit.MAX_YEARLY_INCOME_LOW_USD);
       } else {
