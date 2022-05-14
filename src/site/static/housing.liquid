@@ -31,14 +31,14 @@ permalink: /housing/index.html
   {% endfor %}
 </ul>
 
-<h2>City specific housing resources</h2>
+<h2>City-specific housing resources</h2>
 {% assign cities = housing | index: "City" %}
+<ul>
 {% for city in cities | sort %}
   {% assign links = housing | whereIncluded: "City", city  %}
   {% comment %} <h2>{{city}}</h2> {% endcomment %}
-  <ul>
     {% for link in links %}
     <li><a href="{{link.Link}}" target="_BLANK" rel="noopener">{{ link.Name }}</a></li>
     {% endfor %}
-  </ul>
 {% endfor %}
+</ul>
