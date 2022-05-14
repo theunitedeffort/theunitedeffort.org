@@ -28,7 +28,11 @@ permalink: /resources/index.html
   <h2>{{city}}</h2>
   <ul>
     {% for link in links %}
-    <li><a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a></li>
-    {% endfor %}
+      {% if link.Markdown %}
+        <li>{{ link.Markdown | markdownify }}</li>
+      {% else %}
+        <li><a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a></li>
+      {% endif %}
+    {% endfor %} 
   </ul>
 {% endfor %}
