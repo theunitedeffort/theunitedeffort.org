@@ -17,7 +17,7 @@ permalink: /housing/index.html
   </div>
 
 {% assign links = housing | whereEmpty: "City"  %}
-<h2>Across the county</h2>
+<h2>General housing resources</h2>
 <ul>
   {% for link in links %}
   <li>
@@ -31,10 +31,11 @@ permalink: /housing/index.html
   {% endfor %}
 </ul>
 
+<h2>City specific housing resources</h2>
 {% assign cities = housing | index: "City" %}
 {% for city in cities | sort %}
   {% assign links = housing | whereIncluded: "City", city  %}
-  <h2>{{city}}</h2>
+  {% comment %} <h2>{{city}}</h2> {% endcomment %}
   <ul>
     {% for link in links %}
     <li><a href="{{link.Link}}" target="_BLANK" rel="noopener">{{ link.Name }}</a></li>
