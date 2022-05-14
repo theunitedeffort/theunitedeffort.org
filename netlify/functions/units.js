@@ -18,8 +18,14 @@ const metaData = (units) => {
   for (key in units.metadata) {
     if (key === "aptName") { continue; }
     let value = units.metadata[key];
+    if (!value) {
+      continue
+    }
     if (key === "Website") {
       value = `<a href="${value}" target="_BLANK" rel="noopener">${value}</a>`
+    }
+    if (key === "Email") {
+      value = `<a href="mailto:${value}" target="_BLANK" rel="noopener">${value}</a>`
     }
     definitions.push(`<tr><td class="definition_term">${key}</td><td class="definition">${value}</td></tr>`);
   }
@@ -220,17 +226,19 @@ const fetchData = async(housingID) => {
       let units = {"metadata": {}, "data": []};
       if (records[0]){
         units.metadata["aptName"] = (
-          records[0].fields["APT_NAME"]?.[0]|| " ");
+          records[0].fields["APT_NAME"]?.[0]|| "");
         units.metadata["Address"] = (
-          records[0].fields["Address (from Housing)"]?.[0]|| " ");
+          records[0].fields["Address (from Housing)"]?.[0]|| "");
         units.metadata["City"] = (
-          records[0].fields["City (from Housing)"]?.[0]|| " ");
+          records[0].fields["City (from Housing)"]?.[0]|| "");
         units.metadata["Units"] = (
-          records[0].fields["UNITS_CNT (from Housing)"]?.[0]|| " ");
+          records[0].fields["UNITS_CNT (from Housing)"]?.[0]|| "");
+        units.metadata["Email"] = (
+          records[0].fields["EMAIL (from Housing)"]?.[0]|| "");
         units.metadata["Phone"] = (
-          records[0].fields["Phone (from Housing)"]?.[0]|| " ");
+          records[0].fields["Phone (from Housing)"]?.[0]|| "");
         units.metadata["Website"] = (
-          records[0].fields["URL (from Housing)"]?.[0]|| " ");
+          records[0].fields["URL (from Housing)"]?.[0]|| "");
       }
       for (record in records) {
         let unitKey = records[record].fields.TYPE;

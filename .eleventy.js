@@ -247,7 +247,8 @@ module.exports = function(eleventyConfig) {
             units: {unitType: record.get("TYPE"), openStatus: record.get("STATUS")},
             locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
             phone: record.get("Phone (from Housing)")?.[0] || "",
-            website: record.get("URL (from Housing)")?.[0] || ""
+            website: record.get("URL (from Housing)")?.[0] || "",
+            email: record.get("EMAIL (from Housing)")?.[0] || ""
           })
         });
 
