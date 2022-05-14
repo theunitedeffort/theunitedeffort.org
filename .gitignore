@@ -4,3 +4,4 @@ dist
 .cache
 netlify/functions/serverless/**
 !netlify/functions/serverless/index.js
+/**/.DS_Store
