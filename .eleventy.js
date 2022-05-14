@@ -8,7 +8,7 @@ var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.AIRTABLE_BASE_ID);
 
-const UNITS_TABLE = "tblNLrf8RTiZdY5KN";
+const UNITS_TABLE = "tblRtXBod9CC0mivK";
 
 
 module.exports = function(eleventyConfig) {
@@ -200,15 +200,15 @@ module.exports = function(eleventyConfig) {
       parameters.push(`AND(${rentMaxParams.join(",")})`);
     }
     if (income) {
-      let incomeMinParams = [`{MIN_INCOME_PER_YR_USD} <= '${income}'`];
-      let incomeMaxParams = [`{MAX_INCOME_PER_YR_USD} >= '${income}'`];
+      let incomeMinParams = [`{MIN_YEARLY_INCOME_USD} <= '${income}'`];
+      let incomeMaxParams = [`{MAX_YEARLY_INCOME_HIGH_USD} >= '${income}'`];
       let incomeOp = "OR";
       if (includeUnknownIncome) {
-        incomeMinParams.push(`NOT({MIN_INCOME_PER_YR_USD} & "")`);
-        incomeMaxParams.push(`NOT({MAX_INCOME_PER_YR_USD} & "")`);
+        incomeMinParams.push(`NOT({MIN_YEARLY_INCOME_USD} & "")`);
+        incomeMaxParams.push(`NOT({MAX_YEARLY_INCOME_HIGH_USD} & "")`);
       } else {
-        incomeMinParams.push(`({MIN_INCOME_PER_YR_USD} & "")`);
-        incomeMaxParams.push(`({MAX_INCOME_PER_YR_USD} & "")`);
+        incomeMinParams.push(`({MIN_YEARLY_INCOME_USD} & "")`);
+        incomeMaxParams.push(`({MAX_YEARLY_INCOME_HIGH_USD} & "")`);
         incomeOp = "AND"
       }
       parameters.push(
