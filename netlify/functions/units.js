@@ -25,7 +25,7 @@ const metaData = (units) => {
       value = `<a href="${value}" target="_BLANK" rel="noopener">${value}</a>`
     }
     if (key === "Email") {
-      value = `<a href="mailto:${value}">${value}</a>`
+      value = `<a href="mailto:${value}" target="_BLANK" rel="noopener">${value}</a>`
     }
     definitions.push(`<tr><td class="definition_term">${key}</td><td class="definition">${value}</td></tr>`);
   }
