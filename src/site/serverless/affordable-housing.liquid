@@ -92,6 +92,8 @@ Use the filter options below to narrow your search.
     <div class="option_columns">
     {% if section.name == "unitType" %}
       {% assign sortedOpts = section.options | sortUnitType: "name" %}
+    {% elsif section.name == "availability" %}
+      {% assign sortedOpts = section.options | sortAvailability: "name" %}
     {% else %}
       {% assign sortedOpts = section.options | sort: "name" %}
     {% endif %}
