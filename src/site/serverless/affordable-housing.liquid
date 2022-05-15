@@ -55,12 +55,6 @@ function ToggleIncomeOption() {
   ToggleHiddenOption("include-unknown-income", "income");
 }
 
-function ResetState() {
-  ToggleRentOption();
-  ToggleIncomeOption();
-  HideLoading();
-}
-
 // If the filtering form GETs the results page's url with
 // the anchor hash (e.g. action="/affordable-housing/filter#results")
 // then the form submission button will be disabled and the
@@ -71,19 +65,23 @@ function ResetState() {
 // after the page loads.  Also ensure the rent and income checkboxes
 // are shown if those fields are filled. 
 
+{% if num_filters_applied > 0 %} 
 function OnWindowLoad() {
-  console.log("OnWindowLoad");
-  ResetState();
-  {% if num_filters_applied > 0 %} 
+  ToggleRentOption();
+  ToggleIncomeOption();
   location.hash = "#results";
-  {% endif %}
-}
-
-function OnPageShow() {
-  console.log("OnPageShow");
-  ResetState();
 }
 window.onload = function() {OnWindowLoad()};
+{% endif %}
+
+function OnPageShow() {
+  // When the user departs the page by applying filters, the submit
+  // button text changes to a loading message.  Ensure that loading
+  // message is gone if the user returns to the page via the back
+  // navigation arrow.
+  HideLoading();
+}
+
 window.onpageshow = function() {OnPageShow()};
 
 </script>
