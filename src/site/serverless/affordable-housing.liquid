@@ -30,7 +30,6 @@ function ShowLoading() {
 }
 
 function HideLoading() {
-  console.log("HideLoading");
   let submitButton = document.getElementById("filter-submit");
   submitButton.value = "{{updateButtonStr}}";
   submitButton.removeAttribute("disabled");
@@ -64,7 +63,6 @@ function ToggleIncomeOption() {
 // /affordable-housing/filter and manually scroll to the anchor
 // after the page loads.  Also ensure the rent and income checkboxes
 // are shown if those fields are filled. 
-
 {% if num_filters_applied > 0 %} 
 function OnWindowLoad() {
   ToggleRentOption();
