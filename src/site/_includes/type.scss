@@ -138,6 +138,22 @@
       padding: 0;
     }
   }
+
+  .icon_info {
+    border-radius: 50%;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: .8em;
+    height: 1.4em;
+    width: 1.4em;
+    display: inline-block;
+    padding-top: 0.05em;
+    text-align: center;
+    &:after {
+      content: "?";
+    }
+  }
   
   .tooltip_entry {
     position: relative;

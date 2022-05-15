@@ -120,7 +120,7 @@ const unitDetails = (data) => {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
     } else if (unit.RENT_NOTES) {
       rentStr = NO_RENT_WITH_NOTES_STRING;
-      rentInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${unit.RENT_NOTES}</span></span>`;
+      rentInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">${unit.RENT_NOTES}</span></span>`;
     }
     if (unit.MIN_YEARLY_INCOME_USD) {
       minIncomeStr = formatCurrency(unit.MIN_YEARLY_INCOME_USD);
@@ -135,7 +135,7 @@ const unitDetails = (data) => {
     if (unit.MIN_YEARLY_INCOME_USD && 
         unit.MIN_INCOME_RENT_FACTOR && 
         !unit.OVERRIDE_MIN_YEARLY_INCOME_USD) {
-      minIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">Calculated as ${unit.MIN_INCOME_RENT_FACTOR} times yearly rent</span></span>`;
+      minIncomeInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">Calculated as ${unit.MIN_INCOME_RENT_FACTOR} times yearly rent</span></span>`;
     }
     // TODO: Make a "has details" field?
     if (unit.MAX_YEARLY_INCOME_LOW_USD && 
@@ -162,7 +162,7 @@ const unitDetails = (data) => {
         }
         detailStrs.push(`Household of ${householdSize}: ${formatCurrency(value)}`);
       }
-      maxIncomeInfo = `<span class="tooltip_entry"><i class="fa-solid fa-circle-info"></i><span class="tooltip_content">${detailStrs.join("<br/>")}</span></span>`;
+      maxIncomeInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">${detailStrs.join("<br/>")}</span></span>`;
     }
     rows.push(`
       <td>${minIncomeStr} ${minIncomeInfo}</td>

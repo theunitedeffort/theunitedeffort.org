@@ -9,7 +9,6 @@ module.exports = (data) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The United Effort Organization</title>
     <link rel="stylesheet" href="/styles.css">
-    <script src="https://kit.fontawesome.com/e2c09d12c3.js" crossorigin="anonymous"></script>
   </head>
   <body class="page-housing">
     <header>
