@@ -30,6 +30,7 @@ function ShowLoading() {
 }
 
 function HideLoading() {
+  console.log("HideLoading");
   let submitButton = document.getElementById("filter-submit");
   submitButton.value = "{{updateButtonStr}}";
   submitButton.removeAttribute("disabled");
@@ -66,6 +67,7 @@ function ToggleIncomeOption() {
 // are shown if those fields are filled. 
 
 function OnWindowLoad() {
+  console.log("OnWindowLoad");
   ToggleRentOption();
   ToggleIncomeOption();
   HideLoading();
