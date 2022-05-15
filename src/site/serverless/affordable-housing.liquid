@@ -178,14 +178,29 @@ Use the filter options below to narrow your search.
 {% if eleventy.serverless.query %}
   {% comment %} <p class="noprint">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p> {% endcomment %}
   {% if num_results > 0 %}
-    <div class="align-end flex">
-      <div class="noprint bold">
+    <div class="align-end flex stack-reversed">
+      <p class="noprint bold">
       {{num_results_snippet}}
-      </div>
-      <div class="controls">
-        <a class="btn btn_secondary noprint btn_print " href="javascript:window.print();" title="Print these results">Print results</a>
-        <a class="btn btn_secondary noprint btn_download " title="Download these results in CSV format">CSV</a>
-        <a class="btn btn_secondary noprint btn_bookmark " title="Bookmark these search criteria">Bookmark</a>
+      </p>
+      <div>
+        <a class="btn btn_secondary noprint btn_print " href="javascript:window.print();" title="Print these results">
+          <svg role="img" aria-hidden="true" focusable="false" class="icon ">
+            <use xlink:href="/images/sprites.svg#print"></use>
+          </svg>
+          Print results
+        </a>
+        <a class="btn btn_secondary noprint btn_download " title="Download these results in CSV format">
+           <svg role="img" aria-hidden="true" focusable="false" class="icon ">
+            <use xlink:href="/images/sprites.svg#download"></use>
+          </svg>
+          CSV
+        </a>
+        <a class="btn btn_secondary noprint btn_bookmark " title="Bookmark these search criteria">
+          <svg role="img" aria-hidden="true" focusable="false" class="icon ">
+            <use xlink:href="/images/sprites.svg#bookmark"></use>
+          </svg>
+          Bookmark
+          </a>
       </div>
     </div>
   {% endif %}

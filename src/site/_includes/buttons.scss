@@ -5,15 +5,24 @@ main {
     font-family: var(--font-primary);
     padding: 0.6em 1em;
     border-style: none;
-    font-size: 1rem;
     border-radius: 3px;
     white-space: nowrap;
     text-decoration: none;
+    display: inline-block;
+    margin-bottom: 0.2em;
+    
+    font-size: 0.8rem;
+    @include bp(mid) {
+      font-size: 1rem;
+    }
+
+    .icon {
+      width: 1.2em;
+      height: 1.2em;
+      vertical-align: sub;
+    }
   }
 
-  a.btn {
-    line-height: 3;
-  }
 
   .btn_primary,
   a.btn_primary {
@@ -54,5 +63,16 @@ main {
       background-color: var(--color-gray-300);
   }
 
+//   a.btn_print {
+//     display: inline-block;
+//     background: url(/images/sprites.svg#instagram) no-repeat;
+//     background-position: 0 0;
+//     background-size: 2em 2em;
+//   }
+
+
 }
+
+
+
 
