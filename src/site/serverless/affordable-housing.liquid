@@ -55,6 +55,11 @@ function ToggleIncomeOption() {
   ToggleHiddenOption("include-unknown-income", "income");
 }
 
+function ResetState() {
+  ToggleRentOption();
+  ToggleIncomeOption();
+  HideLoading();
+}
 
 // If the filtering form GETs the results page's url with
 // the anchor hash (e.g. action="/affordable-housing/filter#results")
@@ -68,14 +73,18 @@ function ToggleIncomeOption() {
 
 function OnWindowLoad() {
   console.log("OnWindowLoad");
-  ToggleRentOption();
-  ToggleIncomeOption();
-  HideLoading();
+  ResetState();
   {% if num_filters_applied > 0 %} 
   location.hash = "#results";
   {% endif %}
 }
+
+function OnPageShow() {
+  console.log("OnPageShow");
+  ResetState();
+}
 window.onload = function() {OnWindowLoad()};
+window.onpageshow = function() {OnPageShow()};
 
 </script>
 
