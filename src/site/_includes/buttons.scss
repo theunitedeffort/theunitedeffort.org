@@ -61,6 +61,8 @@ main {
   a.btn:disabled {
     cursor: default;
       background-color: var(--color-gray-300);
+      border-top-color: var(--color-gray-300);
+      border-bottom-color: var(--color-gray-100);
   }
 
 //   a.btn_print {
