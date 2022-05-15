@@ -191,7 +191,7 @@ const unitTables = (units) => {
       statusBadgeClass = "badge__ok";
     }
     tables.push(`
-      <h3>${unitTypes[idx]} <span class="badge ${statusBadgeClass}">${openStatus}</span></h3>
+      <h3>${unitTypes[idx] == "undefined" ? "" : unitTypes[idx]}<span class="badge ${statusBadgeClass}">${openStatus}</span></h3>
       Maximum occupancy: ${maxOccupancy}
       <table>
         <thead>
@@ -255,23 +255,10 @@ const fetchData = async(housingID) => {
 exports.handler = async function(event) {
 
   // get the housing ID from the URL
-  // const props = event.path.split("affordable-housing/")[1];
-  // let housingID;
-
-  // // determine if we'll return a view of the json data
-  // const json = props.includes(".json");
-  // if (json) {
-  //   housingID = props.split(".")[0];
-  // } else {
-  //   housingID = props;
-  // }
-
-
   const housingID = event.path.split("affordable-housing/")[1];
+  
+  // // determine if we'll return a view of the json data
   const json = event.path.startsWith("/data/");
-
-
-
 
   // Look up the property in the DB
   let data = await fetchData(housingID);
