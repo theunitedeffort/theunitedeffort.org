@@ -12,7 +12,7 @@ pageClass: "page-housing"
 {% assign num_results = housingdb | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}
-<p class="noprint bold">Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {% if num_results == 1 %}property{% else %}properties{% endif %}</p>
+  Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {% if num_results == 1 %}property{% else %}properties{% endif %}
 {% endcapture %}
 
 <script>
@@ -85,9 +85,9 @@ window.onpageshow = function() {OnPageShow()};
 </script>
 
 <h1>{{title}}</h1>
-<p>
+<p class="noprint bold">
 {{num_results_snippet}}
-</p>
+<p>
 {% if num_filters_applied == 0 %}
 <p>
 Use the filter options below to narrow your search.
@@ -170,19 +170,27 @@ Use the filter options below to narrow your search.
   </fieldset>
 
   <div class="form_controls">
-  <input type="submit" id="filter-submit" class="btn btn_submit noprint" value="{{updateButtonStr}}"/>
+    <input type="submit" id="filter-submit" class="btn btn_primary noprint" value="{{updateButtonStr}}"/>
   </div>
 </form>
 
 <a id="results"></a>
-{{num_results_snippet}}
 {% if eleventy.serverless.query %}
-<p class="noprint">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
+  {% comment %} <p class="noprint">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p> {% endcomment %}
+  {% if num_results > 0 %}
+    <div class="align-end flex">
+      <div class="noprint bold">
+      {{num_results_snippet}}
+      </div>
+      <div class="controls">
+        <a class="btn btn_secondary noprint btn_print " href="javascript:window.print();" title="Print these results">Print results</a>
+        <a class="btn btn_secondary noprint btn_download " title="Download these results in CSV format">CSV</a>
+        <a class="btn btn_secondary noprint btn_bookmark " title="Bookmark these search criteria">Bookmark</a>
+      </div>
+    </div>
+  {% endif %}
 {% endif %}
 <ul class="results_list">
-  {% if num_results > 0 %}
-    <a href="javascript:window.print()" class="btn btn_print noprint">Print this list</a>
-  {% endif %}
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
   {% for address in sortedHousingdb %}
   <li>

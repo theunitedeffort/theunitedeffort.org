@@ -91,3 +91,13 @@ main {
     display: none;
   }
 }
+
+.align-end {
+  text-align: right;
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
