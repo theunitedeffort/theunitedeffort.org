@@ -139,7 +139,8 @@
     }
   }
 
-  .icon_info {
+  .icon_info,
+  .icon_query {
     border-radius: 50%;
     background-color: var(--color-black);
     color: var(--color-white);
@@ -150,8 +151,19 @@
     display: inline-block;
     padding-top: 0.05em;
     text-align: center;
+  }
+
+  
+  .icon_query {
     &:after {
       content: "?";
+    }
+  }
+  .icon_info {
+    padding-right: 0.2em;
+    &:after {
+      content: "i";
+      font-style: italic;
     }
   }
   
