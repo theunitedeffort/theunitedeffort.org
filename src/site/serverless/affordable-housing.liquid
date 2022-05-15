@@ -6,6 +6,7 @@ permalink:
   serverless: "/housing/affordable-housing/filter"
 pageClass: "page-housing"
 ---
+{% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
 {% assign housingdb = query | housingResults %}
 {% assign num_results = housingdb | size %}
@@ -26,6 +27,12 @@ function ShowLoading() {
   let submitButton = document.getElementById("filter-submit");
   submitButton.value = "Loading...";
   submitButton.disabled = "disabled";
+}
+
+function HideLoading() {
+  let submitButton = document.getElementById("filter-submit");
+  submitButton.value = "{{updateButtonStr}}";
+  submitButton.removeAttribute("disabled");
 }
 
 // Show a hidden checkbox with id optionId depending on the value ofinputId.
@@ -57,14 +64,17 @@ function ToggleIncomeOption() {
 // /affordable-housing/filter and manually scroll to the anchor
 // after the page loads.  Also ensure the rent and income checkboxes
 // are shown if those fields are filled. 
-{% if num_filters_applied > 0 %} 
+
 function OnWindowLoad() {
   ToggleRentOption();
   ToggleIncomeOption();
+  HideLoading();
+  {% if num_filters_applied > 0 %} 
   location.hash = "#results";
+  {% endif %}
 }
 window.onload = function() {OnWindowLoad()};
-{% endif %}
+
 </script>
 
 <h1>{{title}}</h1>
@@ -153,7 +163,7 @@ Use the filter options below to narrow your search.
   </fieldset>
 
   <div class="form_controls">
-  <input type="submit" id="filter-submit" class="btn btn_submit noprint" value="Update results"/>
+  <input type="submit" id="filter-submit" class="btn btn_submit noprint" value="{{updateButtonStr}}"/>
   </div>
 </form>
 
