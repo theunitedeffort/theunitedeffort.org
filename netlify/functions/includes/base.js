@@ -19,9 +19,9 @@ module.exports = (data) => {
         </a>
         <ul class="navigation">
           <li><a href="/housing" class="nav-housing">Housing</a></li>
-          <li><a href="/public-assistance" class="nav-public-assistance">Public assistance programs</a></li>
+          <li><a href="/public-assistance" class="nav-public-assistance">Public Assistance Programs</a></li>
           <li class="second-row"><a href="/resources" class="nav-resources">Resources</a></li>
-          <li class="second-row"><a href="/about" class="nav-about">About us</a></li>
+          <li class="second-row"><a href="/about" class="nav-about">About Us</a></li>
         </ul>
       </div>
     </header>
@@ -53,9 +53,9 @@ module.exports = (data) => {
           <li><a href="javascript:window.print()" class="nav_print">Print this page</a></li>
           <li><a href="/">Home</a></li>
           <li><a href="/housing">Housing</a></li>
-          <li><a href="/public-assistance">Public assistance programs</a></li>
+          <li><a href="/public-assistance">Public Assistance Programs</a></li>
           <li><a href="/resources">Resources</a></li>
-          <li><a href="/about">About us</a></li>
+          <li><a href="/about">About Us</a></li>
         </ul>
       
         <div class="contact">
