@@ -92,6 +92,24 @@ module.exports = function(eleventyConfig) {
     return sorted;
   });
 
+  eleventyConfig.addFilter("sortAvailability", function(values, property='') {
+    const ranking = new Map([
+      ["Waitlist Open", 1],
+      ["Waitlist Closed", 2],
+      ["Call for Status", 3]
+    ]);
+    let sorted = values.sort(function(a, b) {
+      let valA = property ? a[property] : a;
+      let valB = property ? b[property] : b;
+      // Rank values according to the map 'ranking' unless the value is not in 
+      // the map.  Put the unknown values at the end in any order.
+      let rankA = ranking.get(valA) || ranking.size;
+      let rankB = ranking.get(valB) || ranking.size;
+      return rankA - rankB;
+    });
+    return sorted;
+  });
+
   eleventyConfig.addFilter("numFiltersApplied", function(query){
     // TODO: Don't hardcode this list of filters here.
     const allowedFilters = ["city", "availability", "unitType", "propertyName",
@@ -247,7 +265,8 @@ module.exports = function(eleventyConfig) {
             units: {unitType: record.get("TYPE"), openStatus: record.get("STATUS")},
             locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
             phone: record.get("Phone (from Housing)")?.[0] || "",
-            website: record.get("URL (from Housing)")?.[0] || ""
+            website: record.get("URL (from Housing)")?.[0] || "",
+            email: record.get("EMAIL (from Housing)")?.[0] || ""
           })
         });
 

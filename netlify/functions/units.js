@@ -18,8 +18,14 @@ const metaData = (units) => {
   for (key in units.metadata) {
     if (key === "aptName") { continue; }
     let value = units.metadata[key];
+    if (!value) {
+      continue
+    }
     if (key === "Website") {
       value = `<a href="${value}" target="_BLANK" rel="noopener">${value}</a>`
+    }
+    if (key === "Email") {
+      value = `<a href="mailto:${value}" target="_BLANK" rel="noopener">${value}</a>`
     }
     definitions.push(`<tr><td class="definition_term">${key}</td><td class="definition">${value}</td></tr>`);
   }
@@ -34,6 +40,41 @@ const formatCurrency = (value) => {
     maximumFractionDigits: 0, 
     minimumFractionDigits: 0, 
     currency: "USD"});
+}
+
+const compareRents = (a, b) => {
+  // Compare rent table rows.
+  // If both units have differing rent, sort according to those.  
+  // Otherwise, use min income if available.
+  // Otherwise, use max income (the low end of the range) if available.
+  // If the units have none of those three values, don't sort at all, as 
+  // there is nothing to compare against.
+  let compA = 0;
+  let compB = 0;
+  if (a.record.RENT_PER_MONTH_USD && 
+      b.record.RENT_PER_MONTH_USD && 
+      a.record.RENT_PER_MONTH_USD != b.record.RENT_PER_MONTH_USD) {
+    compA = a.record.RENT_PER_MONTH_USD;
+    compB = b.record.RENT_PER_MONTH_USD;
+  } else if (a.record.MIN_YEARLY_INCOME_USD && 
+             b.record.MIN_YEARLY_INCOME_USD &&
+             a.record.MIN_YEARLY_INCOME_USD != b.record.MIN_YEARLY_INCOME_USD) {
+    compA = a.record.MIN_YEARLY_INCOME_USD;
+    compB = b.record.MIN_YEARLY_INCOME_USD;
+  } else if (
+      a.record.MAX_YEARLY_INCOME_LOW_USD && 
+      b.record.MAX_YEARLY_INCOME_LOW_USD &&
+      a.record.MAX_YEARLY_INCOME_LOW_USD != b.record.MAX_YEARLY_INCOME_LOW_USD) {
+    compA = a.record.MAX_YEARLY_INCOME_LOW_USD;
+    compB = b.record.MAX_YEARLY_INCOME_LOW_USD;
+  }
+  if (compA < compB) {
+    return -1;
+  }
+  if (compA > compB) {
+    return 1;
+  }
+  return 0;
 }
 
 const sortUnitTypes = (values, property='') => {
@@ -63,11 +104,12 @@ const sortUnitTypes = (values, property='') => {
   return sorted;
 }
 
-// Make a definition list from all the data returned about this item
+// Make table rows for all the rent offerings of the unit type described by 'data'.
 const unitDetails = (data) => {
   let rows = [];
-  for (item in data) {
-    let unit = data[item].record;
+  let sortedData = data.sort(compareRents);
+  for (item in sortedData) {
+    let unit = sortedData[item].record;
     let rentStr = NO_RENT_STRING;
     let minIncomeStr = NO_MIN_INCOME_STRING;
     let maxIncomeStr = NO_MAX_INCOME_STRING;
@@ -184,17 +226,19 @@ const fetchData = async(housingID) => {
       let units = {"metadata": {}, "data": []};
       if (records[0]){
         units.metadata["aptName"] = (
-          records[0].fields["APT_NAME"]?.[0]|| " ");
+          records[0].fields["APT_NAME"]?.[0]|| "");
         units.metadata["Address"] = (
-          records[0].fields["Address (from Housing)"]?.[0]|| " ");
+          records[0].fields["Address (from Housing)"]?.[0]|| "");
         units.metadata["City"] = (
-          records[0].fields["City (from Housing)"]?.[0]|| " ");
+          records[0].fields["City (from Housing)"]?.[0]|| "");
         units.metadata["Units"] = (
-          records[0].fields["UNITS_CNT (from Housing)"]?.[0]|| " ");
+          records[0].fields["UNITS_CNT (from Housing)"]?.[0]|| "");
+        units.metadata["Email"] = (
+          records[0].fields["EMAIL (from Housing)"]?.[0]|| "");
         units.metadata["Phone"] = (
-          records[0].fields["Phone (from Housing)"]?.[0]|| " ");
+          records[0].fields["Phone (from Housing)"]?.[0]|| "");
         units.metadata["Website"] = (
-          records[0].fields["URL (from Housing)"]?.[0]|| " ");
+          records[0].fields["URL (from Housing)"]?.[0]|| "");
       }
       for (record in records) {
         let unitKey = records[record].fields.TYPE;
