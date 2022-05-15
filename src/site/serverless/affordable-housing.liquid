@@ -229,7 +229,9 @@ Use the filter options below to narrow your search.
         ">{{ status }}</span>
         {% assign sortedUnits = address.units | where: "openStatus",  status | sortUnitType: "unitType" %}
         {% for unit in sortedUnits %}
-          <span class="badge">{{ unit.unitType }}</span>
+          {% if unit.unitType %}
+            <span class="badge">{{ unit.unitType }}</span>
+          {% endif %}
         {% endfor %} 
         
       {% endfor %}
