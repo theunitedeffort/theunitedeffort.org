@@ -41,10 +41,6 @@ a {
   color: currentColor;
 }
 
-a[href^="tel:"]:before {
-  content: "\260e" " ";
-}
-
 img {
   display: block;
   max-width: 100%;

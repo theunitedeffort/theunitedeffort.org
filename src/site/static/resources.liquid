@@ -7,21 +7,6 @@ permalink: /resources/index.html
 
 <h1>General Resources</h1>
 
-{% comment %} {% assign links = resources | whereEmpty: "Category"  %}
-<h2>Miscellaneous</h2>
-<ul>
-  {% for link in links %}
-  <li>
-    <a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a>
-    {% if link.Description %}
-    <div class="description">
-      {{ link.Description | markdownify }}
-    </div>
-    {% endif %}
-  </li>
-  {% endfor %}
-</ul> {% endcomment %}
-
 {% assign category = resources | index: "Category" %}
 {% for city in category | sort %}
   {% assign links = resources | whereIncluded: "Category", city  %}
