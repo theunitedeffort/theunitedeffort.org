@@ -219,7 +219,7 @@ const fetchData = async(housingID) => {
   const table = base(UNITS_TABLE);
   return table.select({
       view: "API all units",
-      filterByFormula: `HOUSING_LIST_ID = "${housingID}"`
+      filterByFormula: `{ID (from Housing)} = "${housingID}"`
     })
     .all()
     .then(records => {
