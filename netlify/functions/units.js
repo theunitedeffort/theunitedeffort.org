@@ -3,6 +3,7 @@ const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process
 const pageTemplate = require("./includes/base.js");
 
 const NO_DATA_STRING = "Call for info";
+const NO_INCOME_BRACKET_STRING = "Bracket"
 const NO_RENT_STRING = "Call for rent";
 const NO_RENT_WITH_NOTES_STRING = "Varies";
 const NO_MIN_INCOME_STRING = NO_DATA_STRING;
@@ -47,6 +48,7 @@ const compareRents = (a, b) => {
   // If both units have differing rent, sort according to those.  
   // Otherwise, use min income if available.
   // Otherwise, use max income (the low end of the range) if available.
+  // Otherwise, use AMI percentage if available.
   // If the units have none of those three values, don't sort at all, as 
   // there is nothing to compare against.
   let compA = 0;
@@ -67,6 +69,13 @@ const compareRents = (a, b) => {
       a.record.MAX_YEARLY_INCOME_LOW_USD != b.record.MAX_YEARLY_INCOME_LOW_USD) {
     compA = a.record.MAX_YEARLY_INCOME_LOW_USD;
     compB = b.record.MAX_YEARLY_INCOME_LOW_USD;
+  }
+  else if (
+      a.record.PERCENT_AMI && 
+      b.record.PERCENT_AMI &&
+      a.record.PERCENT_AMI != b.record.PERCENT_AMI) {
+    compA = a.record.PERCENT_AMI;
+    compB = b.record.PERCENT_AMI;
   }
   if (compA < compB) {
     return -1;
@@ -110,12 +119,16 @@ const unitDetails = (data) => {
   let sortedData = data.sort(compareRents);
   for (item in sortedData) {
     let unit = sortedData[item].record;
+    let incomeBracketStr = `${NO_INCOME_BRACKET_STRING} ${parseInt(item) + 1}`;
     let rentStr = NO_RENT_STRING;
     let minIncomeStr = NO_MIN_INCOME_STRING;
     let maxIncomeStr = NO_MAX_INCOME_STRING;
     let rentInfo = "";
     let minIncomeInfo = "";
     let maxIncomeInfo = "";
+    if (unit.PERCENT_AMI) {
+      incomeBracketStr = `${unit.PERCENT_AMI}% <abbr title="Area Median Income">AMI</abbr>`;
+    }
     if (unit.RENT_PER_MONTH_USD) {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
     } else if (unit.RENT_NOTES) {
@@ -165,6 +178,7 @@ const unitDetails = (data) => {
       maxIncomeInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">${detailStrs.join("<br/>")}</span></span>`;
     }
     rows.push(`
+      <td>${incomeBracketStr}</td>
       <td>${minIncomeStr} ${minIncomeInfo}</td>
       <td>${maxIncomeStr} ${maxIncomeInfo}</td>
       <td>${rentStr} ${rentInfo}</td>
@@ -196,6 +210,7 @@ const unitTables = (units) => {
       <table>
         <thead>
           <tr>
+            <th>Income bracket</th>
             <th>Min income (per year)</th>
             <th>Max income (per year)</th>
             <th>Rent (per month)</th>
