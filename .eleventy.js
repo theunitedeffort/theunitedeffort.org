@@ -188,7 +188,7 @@ module.exports = function(eleventyConfig) {
 
     if (unitType) {
       let rooms = unitType.split(", ");
-      let roomsQuery = rooms.map((x) => `{TYPE} = '${x}'`)
+      let roomsQuery = rooms.map((x) => `{TYPE_COPY} = '${x}'`)
       parameters.push(`OR(${roomsQuery.join(",")})`);
     }
 
@@ -262,7 +262,7 @@ module.exports = function(eleventyConfig) {
             aptName: record.get("APT_NAME")?.[0] || "",
             address: record.get("Address (from Housing)")?.[0] || "",
             city: record.get("City (from Housing)")?.[0] || "",
-            units: {unitType: record.get("TYPE"), openStatus: record.get("STATUS")},
+            units: {unitType: record.get("TYPE_COPY"), openStatus: record.get("STATUS")},
             locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
             phone: record.get("Phone (from Housing)")?.[0] || "",
             website: record.get("URL (from Housing)")?.[0] || "",

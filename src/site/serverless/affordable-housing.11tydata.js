@@ -40,7 +40,7 @@ const fetchFilterOptions = async() => {
         records.push({
           city: cityStr,
           openStatus: record.get("STATUS"),
-          unitType: record.get("TYPE")
+          unitType: record.get("TYPE_COPY")
         })
       });
       return records;
