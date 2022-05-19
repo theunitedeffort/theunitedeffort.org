@@ -241,7 +241,7 @@ const fetchData = async(housingID) => {
           records[0].fields["URL (from Housing)"]?.[0]|| "");
       }
       for (record in records) {
-        let unitKey = records[record].fields.TYPE_COPY;
+        let unitKey = records[record].fields.TYPE;
         units.data[unitKey] = units.data[unitKey] || [];
         units.data[unitKey].push({record: records[record].fields});
       }
