@@ -111,6 +111,8 @@ Use the filter options below to narrow your search.
       {% assign sortedOpts = section.options | sortUnitType: "name" %}
     {% elsif section.name == "availability" %}
       {% assign sortedOpts = section.options | sortAvailability: "name" %}
+    {% elsif section.name == "age" %}
+      {% assign sortedOpts = section.options %}
     {% else %}
       {% assign sortedOpts = section.options | sort: "name" %}
     {% endif %}

@@ -149,10 +149,10 @@ module.exports = function(eleventyConfig) {
         }
       }
     }
+    for (section in query){
+      updateFilterSection(query[section], section);
+    }
 
-    updateFilterSection(query.availability, "availability");
-    updateFilterSection(query.city, "city");
-    updateFilterSection(query.unitType, "unitType");
     return filterValuesCopy;
   });
 
@@ -176,6 +176,7 @@ module.exports = function(eleventyConfig) {
       availability,
       city,
       unitType,
+      age,
       rentMin,
       rentMax,
       income,
@@ -202,6 +203,21 @@ module.exports = function(eleventyConfig) {
       let availabilities = availability.split(", ");
       let availabilityQuery = availabilities.map((x) => `{STATUS} = '${x}'`);
       parameters.push(`OR(${availabilityQuery.join(",")})`);
+    }
+
+    if (age) {
+      let ages = age.split(", ");
+      let ageQuery = [];
+      for (idx in ages) {
+        if (ages[idx] === "Youth Only") {
+          ageQuery.push(`{IS_YOUTH_ONLY (from Housing)} = 1`);
+        } else if (ages[idx] === "Seniors Only") {
+          ageQuery.push(`{IS_SENIORS_ONLY (from Housing)} = 1`);
+        } else if (ages[idx] === "No Age Restriction") {
+          ageQuery.push(`AND({IS_YOUTH_ONLY (from Housing)} = 0, {IS_SENIORS_ONLY (from Housing)} = 0)`);
+        }
+      }
+      parameters.push(`OR(${ageQuery.join(",")})`);
     }
 
     if (rentMax) {
