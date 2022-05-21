@@ -11,13 +11,31 @@ const NO_MAX_INCOME_STRING = NO_DATA_STRING;
 const NO_MAX_OCCUPANCY_STRING = NO_DATA_STRING;
 const UNITS_TABLE = "tblRtXBod9CC0mivK"
 
+// Generate a user-friendly string showing an age range.
+// If no max age is given, the string will show "<min_age>+"
+// If no min age is given, the string will show "<max_age> and under"
+const makeAgeRangeString = (min_age, max_age) => {
+  if (min_age && max_age) {
+    return ` (${min_age} - ${max_age} years)`;
+  }
+  if (min_age && !max_age) {
+    return ` (${min_age}+ years)`;
+  }
+  if (!min_age && max_age) {
+    return ` (${max_age} years and under)`;
+  }
+  return "";
+}
 
 // Make a definition list from all the data returned about this item
 const metaData = (units) => {
   let aptName = units.metadata.aptName || "Apartment Listing";
+  let metaNotes = [];
   let definitions = [];
   for (key in units.metadata) {
-    if (key === "aptName") { continue; }
+    // The apartment name is instead rendered as the page title.
+    // Notes are instead rendered as a separate paragraph.
+    if (key === "aptName" || key === "notesData") { continue; }
     let value = units.metadata[key];
     if (!value) {
       continue
@@ -30,9 +48,22 @@ const metaData = (units) => {
     }
     definitions.push(`<tr><td class="definition_term">${key}</td><td class="definition">${value}</td></tr>`);
   }
+  let ageRangeStr = makeAgeRangeString(units.metadata.notesData["MIN_RESIDENT_AGE"],
+    units.metadata.notesData["MAX_RESIDENT_AGE"]);
+  if (units.metadata.notesData["IS_SENIORS_ONLY"]) {
+    metaNotes.push(`This property requires that residents be seniors${ageRangeStr}.`)
+  }
+  if (units.metadata.notesData["IS_YOUTH_ONLY"]) {
+    metaNotes.push(`This property requires that residents be youth${ageRangeStr}.`)
+  }
+  let metaNotesStr = "";
+  if (metaNotes.length > 0) {
+    metaNotesStr = `<p>${metaNotes.join("<br/>")}</p>`; 
+  }
   return `
     <h1>${aptName}</h1>
-    <table class="deflist">${definitions.join("")}</table>`;
+    <table class="deflist">${definitions.join("")}</table>
+    ${metaNotesStr}`;
 }
 
 const formatCurrency = (value) => {
@@ -238,7 +269,7 @@ const fetchData = async(housingID) => {
     })
     .all()
     .then(records => {
-      let units = {"metadata": {}, "data": []};
+      let units = {"metadata": {"notesData": {}}, "data": []};
       if (records[0]){
         units.metadata["aptName"] = (
           records[0].fields["APT_NAME"]?.[0]|| "");
@@ -254,6 +285,14 @@ const fetchData = async(housingID) => {
           records[0].fields["Phone (from Housing)"]?.[0]|| "");
         units.metadata["Website"] = (
           records[0].fields["URL (from Housing)"]?.[0]|| "");
+        units.metadata.notesData["IS_YOUTH_ONLY"] = (
+          records[0].fields["IS_YOUTH_ONLY (from Housing)"]?.[0]|| "");
+        units.metadata.notesData["IS_SENIORS_ONLY"] = (
+          records[0].fields["IS_SENIORS_ONLY (from Housing)"]?.[0]|| "");
+        units.metadata.notesData["MIN_RESIDENT_AGE"] = (
+          records[0].fields["MIN_RESIDENT_AGE (from Housing)"]?.[0]|| "");
+        units.metadata.notesData["MAX_RESIDENT_AGE"] = (
+          records[0].fields["MAX_RESIDENT_AGE (from Housing)"]?.[0]|| "");
       }
       for (record in records) {
         let unitKey = records[record].fields.TYPE;
