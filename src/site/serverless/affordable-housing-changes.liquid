@@ -1,0 +1,110 @@
+---
+layout: layouts/base.liquid
+title: Check for Affordable Housing Updates
+permalink: 
+  serverless: "/housing/affordable-housing/changes/:id"
+---
+
+{% assign allFields = "foo" | housingFields %}
+{% assign housingDbFields = allFields.housingDatabase | removeHiddenHousingFields | sortFields: "name"  %}
+{% assign unitsFields = allFields.units | removeHiddenUnitsFields | sortFields: "name"  %}
+{% assign record = eleventy.serverless.path.id | housingRecord %}
+{% assign unitsRecords = eleventy.serverless.path.id | unitsRecords %}
+
+{{unitsRecords | log}}
+
+<form style="display:block" name="housing_update" netlify>
+{% for field in housingDbFields %}
+  <label for="{{field.id}}">{{field.name}}</label>
+  
+  {% if field.description %}
+  <span class="tooltip_entry">
+    <span class="icon_info"></span>
+    <span class="tooltip_content">{{field.description | newline_to_br}}</span>
+  </span>
+  {% endif %}
+
+  {% if field.isComputed %}
+    {{record | getFieldValue: field.name}}
+  {% elsif field.type == "singleLineText" or field.type == "url" %}
+    <input type="text" id="{{field.id}}" name="{{field.name}}" value="{{record | getFieldValue: field.name}}"/>
+  {% elsif field.type == "email" %}
+    <input type="email" id="{{field.id}}" name="{{field.name}}" value="{{record | getFieldValue: field.name}}"/>
+  {% elsif field.type == "multilineText" %}
+    <textarea id="{{field.id}}" name="{{field.name}}">{{record | getFieldValue: field.name}}</textarea>
+  {% elsif field.type == "number" %}
+    <input type="number" step="{{field.options.precision | stepFromPrecision}}" min="0" value="{{record | getFieldValue: field.name}}"/>
+  {% elsif field.type == "singleSelect" or field.type == "multipleSeclets" %}
+    <select id="{{field.id}}" name="{{field.name}}" {% if field.type == "multipleSelects" %}multiple{% endif %}>
+    {% assign sortedOptions = field.options.choices | map: "name" | sort %}
+    {% for option in sortedOptions %}
+      {% assign selectedValue = record | getFieldValue: field.name %}
+      <option value="{{option}}" {% if option == selectedValue %}selected{% endif %}>{{option}}</option>
+    {% endfor %}
+    </select>
+  {% elsif field.type == "multipleRecordLinks" %}
+    {% for unit in unitsRecords %}
+    <fieldset><legend>{{unit | getFieldValue: "TYPE"}}</legend>
+      {% comment %}<table>
+      <th>Household Size</th>
+      <th>Maximum Income ($)</th>
+      {% for i in (1..12) %}
+        {% assign maxIncomeField = }
+        <tr>
+        <td>i</td>
+        <td><input type="number" step="{{field.options.precision | stepFromPrecision}}" min="0" value="{{unit | getFieldValue: field.name}}"/></td>
+        <tr>
+      {% endfor %}
+      </table>
+      {% endcomment %}
+	    {% for field in unitsFields %}
+
+  		  <label for="{{field.id}}">{{field.name}}</label>
+  		  
+  		  {% if field.description %}
+  		  <span class="tooltip_entry">
+  		    <span class="icon_info"></span>
+  		    <span class="tooltip_content">{{field.description | newline_to_br}}</span>
+  		  </span>
+  		  {% endif %}
+
+  		  {% if field.isComputed %}
+  		    {{unit | getFieldValue: field.name}}
+  		  {% elsif field.type == "singleLineText" or field.type == "url" %}
+  		    <input type="text" id="{{field.id}}" name="{{field.name}}" value="{{unit | getFieldValue: field.name}}"/>
+  		  {% elsif field.type == "email" %}
+  		    <input type="email" id="{{field.id}}" name="{{field.name}}" value="{{unit | getFieldValue: field.name}}"/>
+  		  {% elsif field.type == "multilineText" %}
+  		    <textarea id="{{field.id}}" name="{{field.name}}">{{unit | getFieldValue: field.name}}</textarea>
+  		  {% elsif field.type == "number" %}
+  		    <input type="number" step="{{field.options.precision | stepFromPrecision}}" min="0" value="{{unit | getFieldValue: field.name}}"/>
+  		  {% elsif field.type == "singleSelect" or field.type == "multipleSeclets" %}
+  		    <select id="{{field.id}}" name="{{field.name}}" {% if field.type == "multipleSelects" %}multiple{% endif %}>
+  		    {% assign sortedOptions = field.options.choices | map: "name" | sort %}
+  		    {% for option in sortedOptions %}
+  		      {% assign selectedValue = unit | getFieldValue: field.name %}
+  		      <option value="{{option}}" {% if option == selectedValue %}selected{% endif %}>{{option}}</option>
+  		    {% endfor %}
+  		    </select>
+  		  {% elsif field.type == "multipleRecordLinks" %}
+  		    TODO: {{unit | getFieldValue: field.name}}
+  		  {% elsif field.type == "phoneNumber" %}
+  		    <input type="tel" id="{{field.id}}" name="{{field.name}}" value="{{unit | getFieldValue: field.name}}"/>
+  		  {% elsif field.type == "checkbox" %}
+  		    {% assign checkbox_value = unit | getFieldValue: field.name %}
+  		    <input type="checkbox" id="{{field.id}}" name="{{field.name}}" {% if checkbox_value and checkbox_value != "" %}checked{% endif %}/>
+  		  {% endif %}
+  		  <br/>
+		  {% endfor %}
+    </fieldset>
+	  {% endfor %}
+  {% elsif field.type == "phoneNumber" %}
+    <input type="tel" id="{{field.id}}" name="{{field.name}}" value="{{record | getFieldValue: field.name}}"/>
+  {% elsif field.type == "checkbox" %}
+    {% assign checkbox_value = record | getFieldValue: field.name %}
+    <input type="checkbox" id="{{field.id}}" name="{{field.name}}" {% if checkbox_value and checkbox_value != "" %}checked{% endif %}/>
+  {% endif %}
+  <br/>
+{% endfor %}
+<button type="submit">Submit</button>
+</form>

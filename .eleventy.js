@@ -9,6 +9,8 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.AIRTABLE_BASE_ID);
 
 const UNITS_TABLE = "tblRtXBod9CC0mivK";
+const HOUSING_DATABASE_TABLE = "tbl8LUgXQoTYEw2Yh";
+const HOUSING_DATABASE_SCHEMA_TABLE = "tblfRhO6C1Pi0Ljwc";
 
 
 module.exports = function(eleventyConfig) {
@@ -65,6 +67,75 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
+  eleventyConfig.addFilter("getFieldValue", function(record, fieldname) {
+    let value = record.get(fieldname) || "";
+    return value;
+  });
+
+  eleventyConfig.addFilter("stepFromPrecision", function(numPrecisionDigits) {
+    return 10 ** (-1 * parseInt(numPrecisionDigits));
+  });
+
+  function removeHidden(fields, hiddenFields) {
+    let filtered = [];
+    for (const field of fields) {
+      if (!hiddenFields.includes(field.name)){
+        filtered.push(field);
+      }
+    }
+    return filtered;
+  }
+
+  eleventyConfig.addFilter("removeHiddenHousingFields", function(fields){
+    const hiddenFields = [
+      "LOC_COORDS",
+      "THIS_RECORD_ID",
+      "LAST_MODIFIED_DATETIME",
+      "UEO_URL",
+      "LEGACY_ID",
+      "TYPE (from UNITS)",
+      "ID",
+      "AFFORDABLEHOUSINGONLINE_URL",
+    ]
+    return removeHidden(fields, hiddenFields);
+  });
+
+  eleventyConfig.addFilter("removeHiddenUnitsFields", function(fields){
+    const hiddenFields = [
+      "ID",
+      "APT_NAME",
+      "HOUSING_LIST_ID",
+      "Address (from Housing)",
+      "MIN_YEARLY_INCOME_USD",
+      "MAX_YEARLY_INCOME_LOW_USD",
+      "MAX_YEARLY_INCOME_HIGH_USD",
+      "ID (from Housing)",
+      "City (from Housing)",
+      "Prefilled Form URL",
+      "ami_rent",
+      "ami_max_income",
+      "URL (from Housing)",
+      "EMAIL (from Housing)",
+      "Phone (from Housing)",
+      "UNITS_CNT (from Housing)",
+      "DISALLOWS_PUBLIC_APPLICATIONS (from Housing)",
+      "LOC_COORDS (from Housing)",
+      "[validation] rent * factor * 12",
+      "[validation] ami_diff",
+      "[validation] Min Income Discrepancy",
+      "test_form_url",
+      "LINKED_HOUSING_RECORD_ID",
+      "LAST_MODIFIED_DATETIME",
+      "UEO_URL (from Housing)",
+      "IS_YOUTH_ONLY (from Housing)",
+      "IS_SENIORS_ONLY (from Housing)",
+      "MIN_RESIDENT_AGE (from Housing)",
+      "MAX_RESIDENT_AGE (from Housing)",
+      "PREFERS_LOCAL_APPLICANTS (from Housing)",
+    ]
+    return removeHidden(fields, hiddenFields);
+  });
+
   eleventyConfig.addFilter("sortUnitType", function(values, property='') {
     let sorted = values.sort(function(a, b) {
       let valA = property ? a[property] : a;
@@ -105,6 +176,49 @@ module.exports = function(eleventyConfig) {
       // the map.  Put the unknown values at the end in any order.
       let rankA = ranking.get(valA) || ranking.size;
       let rankB = ranking.get(valB) || ranking.size;
+      return rankA - rankB;
+    });
+    return sorted;
+  });
+
+  eleventyConfig.addFilter("sortFields", function(values, property='') {
+    const rankingList = [
+      "DISPLAY_ID",
+      "APT_NAME",
+      "ADDRESS",
+      "SECOND_ADDRESS",
+      "CITY", 
+      "ZIP_CODE",
+      "COUNTY",
+      "STATE",
+      "PHONE",
+      "EMAIL",
+      "PROPERTY_URL",
+      "UNITS_CNT",
+      "MANAGEMENT_COMPANY",
+      "PROPERTY_OWNER",
+      "IS_SENIORS_ONLY",
+      "IS_YOUTH_ONLY",
+      "MIN_RESIDENT_AGE",
+      "MAX_RESIDENT_AGE",
+      "ACCEPTS_VOUCHERS",
+      "PREFERS_LOCAL_APPLICANTS",
+      "DISALLOWS_PUBLIC_APPLICATIONS",
+      "UNITS",
+    ];
+    let ranking = new Map();
+    for (var idx=0; idx < rankingList.length; idx++) {
+      ranking.set(rankingList[idx], parseInt(idx) + 1);
+    }
+    console.log(ranking);
+
+    let sorted = values.sort(function(a, b) {
+      let valA = property ? a[property] : a;
+      let valB = property ? b[property] : b;
+      // Rank values according to the map 'ranking' unless the value is not in 
+      // the map.  Put the unknown values at the end in any order.
+      let rankA = ranking.get(valA) || (ranking.size + 1);
+      let rankB = ranking.get(valB) || (ranking.size + 1);
       return rankA - rankB;
     });
     return sorted;
@@ -244,6 +358,25 @@ module.exports = function(eleventyConfig) {
     return queryStr;
   };
 
+  eleventyConfig.addFilter("housingRecord", async function(displayId) {
+    console.log("Getting record for Housing Database DISPLAY_ID = " + displayId);
+    let housingRecord = await fetchHousingRecord(displayId);
+    console.log(housingRecord);
+    return housingRecord;
+  });
+
+  eleventyConfig.addFilter("unitsRecords", async function(displayId) {
+    console.log("Getting records for Units DISPLAY_ID = " + displayId);
+    let unitsRecords = await fetchUnitsRecords(displayId);
+    console.log(unitsRecords);
+    return unitsRecords;
+  });
+
+  eleventyConfig.addFilter("housingFields", async function(x) {
+    return fetchHousingSchema();
+  });
+
+
   // Get housing units from Airtable, filtered by the Airtable formula string
   // 'queryStr'.
   const fetchHousingList = async(queryStr) => {
@@ -295,6 +428,47 @@ module.exports = function(eleventyConfig) {
           new Set(housingList.map((obj) => JSON.stringify(obj)))
         ).map((string) => JSON.parse(string));
       });
+  };
+
+  const fetchHousingSchema = async() => {
+    const table = base(HOUSING_DATABASE_SCHEMA_TABLE);
+
+    return table.select({
+      fields: ["HOUSING_DATABASE_FIELDS_JSON", "UNITS_FIELDS_JSON"],
+      maxRecords: 1,
+      sort: [{field: "ID", direction: "asc"}]
+    })
+    .all()
+    .then(records => {
+      housingDbFields = JSON.parse(records[0].get("HOUSING_DATABASE_FIELDS_JSON"));
+      unitsFields = JSON.parse(records[0].get("UNITS_FIELDS_JSON"));
+      return {housingDatabase: housingDbFields, units: unitsFields};
+    });
+  };
+
+  const fetchHousingRecord = async(displayId) => {
+    const table = base(HOUSING_DATABASE_TABLE);
+
+    return table.select({
+      filterByFormula: `DISPLAY_ID = ${displayId}`,
+      maxRecords: 1
+    })
+    .all()
+    .then(records => {
+      return records[0];
+      });
+  };
+
+  const fetchUnitsRecords = async(displayId) => {
+    const table = base(UNITS_TABLE);
+
+    return table.select({
+      filterByFormula: `{ID (from Housing)} = ${displayId}`,
+    })
+    .all()
+    .then(records => {
+      return records;
+    });
   };
 
   // Sass pipeline
