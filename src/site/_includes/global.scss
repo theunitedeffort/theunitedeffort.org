@@ -59,7 +59,7 @@ main,
 }
 
 main {
-  padding-top: 0;
+  padding-top: 3em;
   padding-bottom: 4em;
 }
 
@@ -87,7 +87,26 @@ main {
       content: " (" attr(href) ") ";
     }
   }
-  .btn {
+  .noprint {
     display: none;
   }
+}
+
+.align-end {
+  text-align: right;
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stack-reversed {
+  flex-wrap: wrap-reverse;
+}
+
+.hidden {
+  display:none;
 }

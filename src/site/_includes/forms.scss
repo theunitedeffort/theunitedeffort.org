@@ -6,6 +6,9 @@
         flex-direction: row;
         justify-content: space-between;
       }
+      @include bp(wide) {
+        font-size: 0.8em;
+      }
       fieldset {
         @include bp(mid) {
           width: 48%;
@@ -43,52 +46,27 @@
       columns: 8em 3;
     }
     
-    .btn,
-    main a.btn {
-      font-family: var(--font-primary);
-      padding: 0.6em 1em;
-      margin: 1em 0 2em;
-      border-style: none;
-      color: white;
-      font-size: 1em;
-      font-weight: 750;
-      border-radius: 3px;
-      text-decoration: none;
-      background-color: var(--color-gray-600);
-      border-top: solid 2px var(--color-gray-600);
-      border-bottom: solid 2px var(--color-gray-300);
-      white-space: nowrap;
-    }
+
+
     
-    .btn_submit,
-    main a.btn_action {
-      background-color: var(--color-blue-dark);
-      border-top: solid 2px var(--color-blue-dark);
-      border-bottom: solid 2px var(--color-blue-dark-b);
+    @media print {
+      form {
+        font-size: 0.6em;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      fieldset {
+        width: 48%;
+      }
     }
 
-    main a.btn_print {
-      float: right;
-      margin: 0;
+    .form_controls {
+      width:100%;
+      padding: 2em 0;
+      margin-bottom: 2em;
+      border-top: solid 1px var(--color-gray-700);
+      border-bottom: solid 1px var(--color-gray-700);
+      
     }
-    
-    main a.btn:hover,
-    main a.btn:focus,
-    .btn:hover,
-    .btn:focus {
-      background-color: var(--color-gray-500);
-      cursor: pointer;
-    }
-
-    main a.btn_action:hover,
-    main a.btn_action:focus,
-    .btn_submit:hover,
-    .btn_submit:focus,
-    .btn_submit:disabled {
-      background-color: var(--color-blue-dark-b);
-    }
-
-    .btn_submit:disabled {
-      cursor: default;
-    }
-

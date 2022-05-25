@@ -1,18 +1,19 @@
-# The United Effort Organization
+# Website for The United Effort Organization
 
-## Example housing listing and detail pages
+https://theunitedeffort.org 
 
-- https://ueo.netlify.app/
-- https://preview-ueo.netlify.app/ (Preview site)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/71dbec41-02ec-426b-be5a-b88aedb884df/deploy-status)](https://app.netlify.com/sites/ueo/deploys)
+
+This site is also deployed on a preview URL for the purposes of checking content updates before they are deployed to the production site.
+
+https://preview-ueo.netlify.app/ (Preview site)
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/0f7946ce-05b7-4620-9996-f0e18d239578/deploy-status)](https://app.netlify.com/sites/preview-ueo/deploys)
+
 
 ## What is this site?
 
-A version of [The United Effort Organization](https://theunitedeffort.org/)'s affordable housing list and associated details pages who's original versions can be find at:
-
-- https://theunitedeffort.org/Home/CollectionListNew?searchInput=
-- https://theunitedeffort.org/Home/Detail?mid=1250 etc
-
-This version is populated with data from an Airbase database rather than the original MS SQLServer db. The intent is to provide an easier route to managing the underlying content, and have greater control over the user experience delivered on these pages.
+A collection of curated resources and a searchable database of collated affordable housing to assist those in Santa Clara County, USA
 
 
 ## Data source
@@ -52,17 +53,12 @@ netlify env:set AIRTABLE_API_KEY {YOUR ENV VAR VALUE}
 netlify dev
 ```
 
-## Deployment
+## Hosting and Deployment
+
+The site is hosted on [Netlfy](https://netlify.com/) and is managed in a Netlify team called `United Effort Org`.
 
 After setting up the site with Netlify, you will have a CI/CD pipeline set up to deploy on each push to your production git branch. Pushing changes to `main` will automatically build and deploy the site.
 
+## Planning and contributing
 
-
-
-## Pass-through to original production site
-
-For a seamless experience for the site visitor, all requests that cannot be satisfied by this site are invisibly proxied through to the original production site at https://theunitedeffort.org/
-
-This technique could be used to make this site an augmentation layer in front of the original site by pointing the DNS for `theunitedeffort.org` at this site, and proxying any unsatisfied requests to the original production site via alternate domain name or address.
-
-Proxying is achieved via rules defined [in the `netlify.toml`](https://github.com/philhawksworth/the-ueo-demo/blob/main/netlify.toml#L23-L27) file.
+We collect and prioritise our efforts in [GitHub issues](https://github.com/philhawksworth/the-united-effort-orginization/issues), arranged into [Milestones](https://github.com/philhawksworth/the-united-effort-orginization/milestones) and coordinate our efforts on those issues in a GitHub [Project](https://github.com/users/philhawksworth/projects/1/views/1). To avoid duplicating effort, you should capture your tasks in [an issue](https://github.com/philhawksworth/the-united-effort-orginization/issues) and place it in the `Doing` column of [the Project](https://github.com/users/philhawksworth/projects/1/views/1) when you being working on it.

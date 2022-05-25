@@ -6,13 +6,13 @@ permalink:
   serverless: "/affordable-housing/filter"
 pageClass: "page-housing"
 ---
-
+{% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
 {% assign housingdb = query | housingResults %}
 {% assign num_results = housingdb | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}
-<b>Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {% if num_results == 1 %}property{% else %}properties{% endif %}</b>
+  Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {% if num_results == 1 %}property{% else %}properties{% endif %}
 {% endcapture %}
 
 <script>
@@ -27,6 +27,12 @@ function ShowLoading() {
   let submitButton = document.getElementById("filter-submit");
   submitButton.value = "Loading...";
   submitButton.disabled = "disabled";
+}
+
+function HideLoading() {
+  let submitButton = document.getElementById("filter-submit");
+  submitButton.value = "{{updateButtonStr}}";
+  submitButton.removeAttribute("disabled");
 }
 
 // Show a hidden checkbox with id optionId depending on the value ofinputId.
@@ -48,7 +54,6 @@ function ToggleIncomeOption() {
   ToggleHiddenOption("include-unknown-income", "income");
 }
 
-
 // If the filtering form GETs the results page's url with
 // the anchor hash (e.g. action="/affordable-housing/filter#results")
 // then the form submission button will be disabled and the
@@ -66,19 +71,29 @@ function OnWindowLoad() {
 }
 window.onload = function() {OnWindowLoad()};
 {% endif %}
+
+function OnPageShow() {
+  // When the user departs the page by applying filters, the submit
+  // button text changes to a loading message.  Ensure that loading
+  // message is gone if the user returns to the page via the back
+  // navigation arrow.
+  HideLoading();
+}
+
+window.onpageshow = function() {OnPageShow()};
+
 </script>
 
 <h1>{{title}}</h1>
-
-<p>
+<p class="noprint bold">
 {{num_results_snippet}}
-</p>
+<p>
 {% if num_filters_applied == 0 %}
 <p>
 Use the filter options below to narrow your search.
 </p>
 {% else %}
-<p>
+<p class="noprint">
 {{num_filters_applied}} {% if num_filters_applied == 1 %}filter is {% else %}filters are {% endif %}applied. <a href="/housing/affordable-housing">Clear filters</a>
 </p>
 {% endif %}
@@ -94,13 +109,20 @@ Use the filter options below to narrow your search.
     <div class="option_columns">
     {% if section.name == "unitType" %}
       {% assign sortedOpts = section.options | sortUnitType: "name" %}
+    {% elsif section.name == "availability" %}
+      {% assign sortedOpts = section.options | sortAvailability: "name" %}
     {% else %}
       {% assign sortedOpts = section.options | sort: "name" %}
     {% endif %}
     {% for opt in sortedOpts %}
       {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
       <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
-      <label for="{{optId}}">{{opt.name}}</label><br/>
+      {% if opt.name == "SRO" %}
+          {% assign label = '<abbr title="Single Room Occupancy">SRO</abbr>' %}
+      {% else %}
+          {% assign label = opt.name %}
+      {% endif %}
+      <label for="{{optId}}">{{label}}</label><br/>
     {% endfor %}
     </div>
   </fieldset>
@@ -124,7 +146,7 @@ Use the filter options below to narrow your search.
     <div>
       <label for="income">Yearly Income ($)</label>
       <span class="tooltip_entry">
-        <i class="fa-solid fa-circle-question"></i>
+        <span class="icon_query"></span>
         <span class="tooltip_content">
           Provide your income to hide properties you are not eligible for. Your information will not be stored.
         </span>
@@ -148,19 +170,45 @@ Use the filter options below to narrow your search.
   </fieldset>
 
   <div class="form_controls">
-  <input type="submit" id="filter-submit" class="btn btn_submit" value="Update results"/>
+    <input type="submit" id="filter-submit" class="btn btn_primary noprint" value="{{updateButtonStr}}"/>
   </div>
 </form>
 
 <a id="results"></a>
-{{num_results_snippet}}
 {% if eleventy.serverless.query %}
-<p>To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
+  {% comment %} <p class="noprint">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p> {% endcomment %}
+  {% if num_results > 0 %}
+    <div class="align-end flex stack-reversed">
+      <p class="noprint bold">
+      {{num_results_snippet}}
+      </p>
+      <div>
+        <a class="btn btn_secondary noprint btn_print " title="Print these results" href="javascript:window.print();">
+          <svg role="img" aria-hidden="true" focusable="false" class="icon ">
+            <use xlink:href="/images/sprites.svg#print"></use>
+          </svg>
+          Print results
+        </a>
+        {% comment %} 
+        <a class="btn btn_secondary noprint btn_download " title="Download these results in CSV format">
+           <svg role="img" aria-hidden="true" focusable="false" class="icon ">
+            <use xlink:href="/images/sprites.svg#download"></use>
+          </svg>
+          CSV
+        </a>
+        {% endcomment %}
+        <a class="btn btn_secondary noprint btn_bookmark " title="Copy the URL of this search" href="javascript:CopyUrl();">
+          <svg role="img" aria-hidden="true" focusable="false" class="icon icon_copy">
+            <use xlink:href="/images/sprites.svg#copy"></use>
+          </svg>
+          Copy URL
+        </a>
+        <span id="copy-url-done" hidden>&#10003;</span>
+      </div>
+    </div>
+  {% endif %}
 {% endif %}
 <ul class="results_list">
-  {% if num_results > 0 %}
-    <a href="javascript:window.print()" class="btn btn_print">Print this list</a>
-  {% endif %}
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
   {% for address in sortedHousingdb %}
   <li>
@@ -168,7 +216,6 @@ Use the filter options below to narrow your search.
       <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
     </h4>
     <p>
-      
       {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
       {% for status in allStatuses %}
         <span class="badge
@@ -182,20 +229,34 @@ Use the filter options below to narrow your search.
         ">{{ status }}</span>
         {% assign sortedUnits = address.units | where: "openStatus",  status | sortUnitType: "unitType" %}
         {% for unit in sortedUnits %}
-          <span class="badge">{{ unit.unitType }}</span>
+          {% if unit.unitType %}
+            <span class="badge">{{ unit.unitType }}</span>
+          {% endif %}
         {% endfor %} 
-        <br/>  
+        
       {% endfor %}
     </p>
-    {% if address.address and address.address != '' %}
-      {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} (<a href="https://maps.google.com/maps?q={{ address.address | url_encode}} {{ address.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)<br/>
-    {% endif %}
-    {% if address.phone and address.phone != '' %}
-      <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a><br/>
-    {% endif %}
-    {% if address.website and address.website != '' %}
-      <a href="{{ address.website }}" target="_blank" rel="noopener">View property website</a><sup>&#8599;</sup><br/>
-    {% endif %}
+    <address>
+      {% if address.address and address.address != '' %}
+        <p>
+        {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint">(<a href="https://maps.google.com/maps?q={{ address.address | url_encode}} {{ address.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)</span>
+        </p>
+      {% endif %}
+      {% if address.email and address.email != '' %}
+        <p>
+          <a href="mailto:{{ address.email }}" target="_blank" rel="noopener">{{ address.email }}</a>
+        </p>
+      {% endif %}
+      {% if address.phone and address.phone != '' %}
+        <p>
+          <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a>
+        </p>
+      {% endif %}
+      {% if address.website and address.website != '' %}
+        <a href="{{ address.website }}" target="_blank" rel="noopener">View property website</a><sup>&#8599;</sup>
+      {% endif %}
+    </address>
+
   </li>
   {% endfor %}
   {% if num_results == 0 %}

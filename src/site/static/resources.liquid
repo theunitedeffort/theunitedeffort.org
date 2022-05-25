@@ -5,22 +5,7 @@ pageClass: "page-resources"
 permalink: /resources/index.html
 ---
 
-<h1>General resources</h1>
-
-{% comment %} {% assign links = resources | whereEmpty: "Category"  %}
-<h2>Miscellaneous</h2>
-<ul>
-  {% for link in links %}
-  <li>
-    <a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a>
-    {% if link.Description %}
-    <div class="description">
-      {{ link.Description | markdownify }}
-    </div>
-    {% endif %}
-  </li>
-  {% endfor %}
-</ul> {% endcomment %}
+<h1>General Resources</h1>
 
 {% assign uniqueCategories = resources | index: "Category" %}
 {% for category in uniqueCategories %}
@@ -32,7 +17,11 @@ permalink: /resources/index.html
   {% assign noSubcategoryLinks = categoryLinks | whereEmpty: "Subcategory"  %}
   <ul>
   {% for link in noSubcategoryLinks %}
-    <li><a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a></li>
+    {% if link.Markdown %}
+      <li>{{ link.Markdown | markdownify }}</li>
+    {% else %}
+      <li><a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a></li>
+    {% endif %}
   {% endfor %}
   </ul>
 
@@ -42,7 +31,11 @@ permalink: /resources/index.html
     <h3>{{subcategory}}</h3>
     <ul>
       {% for link in subcategoryLinks %}
-      <li><a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a></li>
+        {% if link.Markdown %}
+          <li>{{ link.Markdown | markdownify }}</li>
+        {% else %}
+          <li><a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a></li>
+        {% endif %}
       {% endfor %}
     </ul>
   {% endfor %}

@@ -8,8 +8,11 @@ module.exports = (data) => {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The United Effort Organization</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <link rel="stylesheet" href="/styles.css">
-    <script src="https://kit.fontawesome.com/e2c09d12c3.js" crossorigin="anonymous"></script>
   </head>
   <body class="page-housing">
     <header>
@@ -19,9 +22,9 @@ module.exports = (data) => {
         </a>
         <ul class="navigation">
           <li><a href="/affordable-housing" class="nav-housing">Find Affordable Housing</a></li>
-          <li><a href="/public-assistance" class="nav-public-assistance">Public assistance programs</a></li>
+          <li><a href="/public-assistance" class="nav-public-assistance">Public Assistance Programs</a></li>
           <li class="second-row"><a href="/resources" class="nav-resources">Resources</a></li>
-          <li class="second-row"><a href="/about" class="nav-about">About us</a></li>
+          <li class="second-row"><a href="/about" class="nav-about">About Us</a></li>
         </ul>
       </div>
     </header>
@@ -53,9 +56,9 @@ module.exports = (data) => {
           <li><a href="javascript:window.print()" class="nav_print">Print this page</a></li>
           <li><a href="/">Home</a></li>
           <li><a href="/housing">Housing</a></li>
-          <li><a href="/public-assistance">Public assistance programs</a></li>
+          <li><a href="/public-assistance">Public Assistance Programs</a></li>
           <li><a href="/resources">Resources</a></li>
-          <li><a href="/about">About us</a></li>
+          <li><a href="/about">About Us</a></li>
         </ul>
       
         <div class="contact">

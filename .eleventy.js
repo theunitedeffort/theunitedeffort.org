@@ -8,7 +8,7 @@ var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.AIRTABLE_BASE_ID);
 
-const UNITS_TABLE = "tblNLrf8RTiZdY5KN";
+const UNITS_TABLE = "tblRtXBod9CC0mivK";
 
 
 module.exports = function(eleventyConfig) {
@@ -88,6 +88,24 @@ module.exports = function(eleventyConfig) {
         return 1;
       }
       return 0;
+    });
+    return sorted;
+  });
+
+  eleventyConfig.addFilter("sortAvailability", function(values, property='') {
+    const ranking = new Map([
+      ["Waitlist Open", 1],
+      ["Waitlist Closed", 2],
+      ["Call for Status", 3]
+    ]);
+    let sorted = values.sort(function(a, b) {
+      let valA = property ? a[property] : a;
+      let valB = property ? b[property] : b;
+      // Rank values according to the map 'ranking' unless the value is not in 
+      // the map.  Put the unknown values at the end in any order.
+      let rankA = ranking.get(valA) || ranking.size;
+      let rankB = ranking.get(valB) || ranking.size;
+      return rankA - rankB;
     });
     return sorted;
   });
@@ -200,15 +218,15 @@ module.exports = function(eleventyConfig) {
       parameters.push(`AND(${rentMaxParams.join(",")})`);
     }
     if (income) {
-      let incomeMinParams = [`{MIN_INCOME_PER_YR_USD} <= '${income}'`];
-      let incomeMaxParams = [`{MAX_INCOME_PER_YR_USD} >= '${income}'`];
+      let incomeMinParams = [`{MIN_YEARLY_INCOME_USD} <= '${income}'`];
+      let incomeMaxParams = [`{MAX_YEARLY_INCOME_HIGH_USD} >= '${income}'`];
       let incomeOp = "OR";
       if (includeUnknownIncome) {
-        incomeMinParams.push(`NOT({MIN_INCOME_PER_YR_USD} & "")`);
-        incomeMaxParams.push(`NOT({MAX_INCOME_PER_YR_USD} & "")`);
+        incomeMinParams.push(`NOT({MIN_YEARLY_INCOME_USD} & "")`);
+        incomeMaxParams.push(`NOT({MAX_YEARLY_INCOME_HIGH_USD} & "")`);
       } else {
-        incomeMinParams.push(`({MIN_INCOME_PER_YR_USD} & "")`);
-        incomeMaxParams.push(`({MAX_INCOME_PER_YR_USD} & "")`);
+        incomeMinParams.push(`({MIN_YEARLY_INCOME_USD} & "")`);
+        incomeMaxParams.push(`({MAX_YEARLY_INCOME_HIGH_USD} & "")`);
         incomeOp = "AND"
       }
       parameters.push(
@@ -247,7 +265,8 @@ module.exports = function(eleventyConfig) {
             units: {unitType: record.get("TYPE"), openStatus: record.get("STATUS")},
             locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
             phone: record.get("Phone (from Housing)")?.[0] || "",
-            website: record.get("URL (from Housing)")?.[0] || ""
+            website: record.get("URL (from Housing)")?.[0] || "",
+            email: record.get("EMAIL (from Housing)")?.[0] || ""
           })
         });
 
