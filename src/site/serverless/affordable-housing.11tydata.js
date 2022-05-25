@@ -41,6 +41,7 @@ const fetchFilterOptions = async() => {
           city: cityStr,
           openStatus: record.get("STATUS"),
           unitType: record.get("TYPE"),
+          populationsServed: record.get("_POPULATIONS_SERVED"),
         })
       });
       return records;
@@ -72,6 +73,10 @@ module.exports = async function() {
   openStatuses = openStatuses.filter(openStatus => openStatus !== undefined);
   let unitTypes = [...new Set(filterOptions.map(({ unitType }) => unitType))];
   unitTypes = unitTypes.filter(unitType => unitType !== undefined);
+  let allPopulationsServed = filterOptions.map(({ populationsServed }) => populationsServed);
+  allPopulationsServed = [...new Set(allPopulationsServed.flat())];
+  allPopulationsServed = allPopulationsServed.filter(populationsServed => populationsServed !== undefined);
+
 
   let filterVals = [
     new FilterSection("City", "city", cities.map((x) => new FilterCheckbox(x))),
@@ -79,12 +84,9 @@ module.exports = async function() {
       unitTypes.map((x) => new FilterCheckbox(x))),
     new FilterSection("Availability", "availability",
       openStatuses.map((x) => new FilterCheckbox(x))),
-    // The age filter is not a direct mapping from values in Airtable,
-    // so hard-code the values here.
-    new FilterSection("Ages Served", "age",
-      [new FilterCheckbox("Youth Only"),
-       new FilterCheckbox("Seniors Only"),
-       new FilterCheckbox("No Age Restriction")])
+    new FilterSection("Populations Served", "populationsServed",
+      allPopulationsServed.map((x) => new FilterCheckbox(x))),
+    
   ];
   console.log("Got filter options.");
   let filterData = { filterValues: filterVals };
