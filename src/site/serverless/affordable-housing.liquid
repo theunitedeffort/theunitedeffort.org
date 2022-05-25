@@ -106,7 +106,11 @@ Use the filter options below to narrow your search.
   {% for section in filterValues %}
   <fieldset>
     <legend>{{section.heading}}</legend>
-    <div class="option_columns">
+    <div class="option_columns
+    {% if section.name == "populationsServed" %} 
+      wide
+    {% endif %}
+    ">
     {% if section.name == "unitType" %}
       {% assign sortedOpts = section.options | sortUnitType: "name" %}
     {% elsif section.name == "availability" %}
