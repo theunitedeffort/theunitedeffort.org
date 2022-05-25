@@ -9,7 +9,7 @@ publish = "dist"
 fucntions = "netlify/functions"
 
 [[redirects]]
-from = "/affordable-housing/filter"
+from = "/housing/affordable-housing/filter"
 to = "/.netlify/functions/serverless"
 status = 200
 force = true
@@ -36,3 +36,9 @@ status = 200
 from = "/data/housing/affordable-housing/:id"
 to = "/.netlify/functions/units"
 status = 200
+
+[[redirects]]
+from = "/housing"
+to = "/housing/affordable-housing"
+status = 200
+
