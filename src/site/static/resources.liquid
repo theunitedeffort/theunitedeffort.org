@@ -13,22 +13,18 @@ permalink: /resources/index.html
 {% endfor %}
 {% for category in uniqueCategories | sort %}
   <h2 id="{{category | downcase | replace: " ", "-" }}">{{category}}</h2>
-  {% assign categoryLinks = resources | whereIncluded: "Category", category  %}
-  {% assign noSubcategoryLinks = categoryLinks | whereEmpty: "Subcategory"  %}
-  <ul>
-  {% for link in noSubcategoryLinks %}
-    {% if link.Markdown %}
-      <li>{{ link.Markdown | markdownify }}</li>
+  {% assign links = resources | whereIncluded: "Category", category  %}
+  {% assign uniqueSubcategories = links | index: "Subcategory" | sort %}
+  {% assign rangeEnd = uniqueSubcategories | size | plus: -1 %}
+  {% comment %} Start at -1 to artificially insert an additional null subcategory first. {% endcomment %}
+  {% for idx in (-1..rangeEnd) %}
+    {% if forloop.first == true %}
+      {% assign subcategoryLinks = links | whereEmpty: "Subcategory" %}
     {% else %}
-      <li><a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a></li>
+      {% assign subcategory = uniqueSubcategories[idx] %}
+      {% assign subcategoryLinks = links | whereIncluded: "Subcategory", subcategory %}
+      <h3>{{subcategory}}</h3>
     {% endif %}
-  {% endfor %}
-  </ul>
-
-  {% assign uniqueSubcategories = categoryLinks | index: "Subcategory" %}
-  {% for subcategory in uniqueSubcategories | sort %}
-    {% assign subcategoryLinks = categoryLinks | whereIncluded: "Subcategory", subcategory %}
-    <h3>{{subcategory}}</h3>
     <ul>
       {% for link in subcategoryLinks %}
         {% if link.Markdown %}

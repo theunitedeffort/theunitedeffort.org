@@ -41,4 +41,3 @@ status = 200
 from = "/housing"
 to = "/housing/affordable-housing"
 status = 301
-
