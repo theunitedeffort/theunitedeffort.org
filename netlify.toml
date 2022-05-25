@@ -40,5 +40,5 @@ status = 200
 [[redirects]]
 from = "/housing"
 to = "/housing/affordable-housing"
-status = 200
+status = 301
 
