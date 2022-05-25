@@ -11,6 +11,7 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
 const UNITS_TABLE = "tblRtXBod9CC0mivK";
 const HOUSING_DATABASE_TABLE = "tbl8LUgXQoTYEw2Yh";
 const HOUSING_DATABASE_SCHEMA_TABLE = "tblfRhO6C1Pi0Ljwc";
+const CHANGES_TABLE = "tblXy0hiHoda5UVSR";
 
 
 module.exports = function(eleventyConfig) {
@@ -270,6 +271,78 @@ module.exports = function(eleventyConfig) {
     return filterValuesCopy;
   });
 
+  const fieldLabel = function(labelText, fields, fieldName, index="") {
+    let tag = `<label for="${fields[fieldName].id}${index ? ":" + index : ""}">${labelText} `
+    if (fields[fieldName].description) {
+      tag += `<span class="tooltip_entry">
+<span class="icon_info"></span>
+<span class="tooltip_content">${fields[fieldName].description}</span>
+</span>`
+    }
+   tag += `</label>`;
+   return tag;
+  }
+
+  const formField = function(fields, record, fieldName, index="") {
+    let field = fields[fieldName];
+    let tag = "";
+    let options = "";
+    let content = "";
+    let endtag = "";
+    console.log(record);
+    let value = record ? record.get(fieldName) : "";
+    if (field.type === "singleSelect" || field.type === "multipleSelects") {
+      tag = "select";
+      endtag = "</select>"
+      if (field.type === "multipleSelects") {
+        options = "multiple";
+      }
+      let choices = field.options.choices.map((x) => x.name).sort();
+      content += `<option></option>`;
+      for (const choice of choices) {
+        content += `<option value="${choice}"${choice === value ? " selected" : ""}>${choice}</option>`
+      }
+    } else if (field.type === "multilineText") {
+      tag = "textarea"
+      endtag = "</textarea>"
+      content = value;
+    } else if (field.type === "number") {
+      tag = "input"
+      options = `type="number" min="0" value="${value}"`
+    } else if (field.type === "email") {
+      tag = "input"
+      options = `type="email" value="${value}"`
+    } else if (field.type === "phoneNumber") {
+      tag = "input"
+      options = `type="tel" value="${value}"`
+    } else if (field.type === "singleLineText" || field.type === "url") {
+      tag = "input"
+      options = `type="text" value="${value}"`
+    } else if (field.type === "checkbox") {
+      tag = "input"
+      options = `type="checkbox" ${value ? "checked" : ""}`
+    } else {
+      return "";
+    }
+    return `<${tag} id="${field.id}${index ? ":" + index : ""}" name="${field.name}${index ? ":" + index : ""}" ${options}>${content}${endtag}`;
+  }
+
+  eleventyConfig.addShortcode("fieldLabel", function(labelText, fields, fieldName) {
+    return fieldLabel(labelText, fields, fieldName);
+  });
+
+  eleventyConfig.addShortcode("indexFieldLabel", function(index, labelText, fields, fieldName) {
+    return fieldLabel(labelText, fields, fieldName, index);
+  });
+
+  eleventyConfig.addShortcode("formField", function(fields, record, fieldName) {
+    return formField(fields, record, fieldName);
+  });
+
+  eleventyConfig.addShortcode("indexFormField", function(index, fields, record, fieldName) {
+    return formField(fields, record, fieldName, index);
+  });
+
   // Gets a subset of all housing results from Airtable based on 'query'.
   eleventyConfig.addFilter("housingResults", async function(query) {
     console.log("housing query: ");
@@ -282,6 +355,21 @@ module.exports = function(eleventyConfig) {
     // }
     return housing;
   });
+
+  // eleventyConfig.addFilter("saveChangesFormResponses", async function(responses) {
+  //   const table = base(CHANGES_TABLE);
+  //   await table.create({
+  //     "CAMPAIGN": "First Campaign",
+  //     "FORM_RESPONSE_JSON": responses;
+  //   }, function(err, record) {
+  //     if (err) {
+  //       console.error(err);
+  //       return false;
+  //     }
+  //     console.log(record.getId());
+  //   });
+  //   return true;
+  // });
 
   // Generates an Airtable filter formula string based on 'query'.
   const buildQueryStr = function(query) {
@@ -442,7 +530,10 @@ module.exports = function(eleventyConfig) {
     .then(records => {
       housingDbFields = JSON.parse(records[0].get("HOUSING_DATABASE_FIELDS_JSON"));
       unitsFields = JSON.parse(records[0].get("UNITS_FIELDS_JSON"));
-      return {housingDatabase: housingDbFields, units: unitsFields};
+      return {
+        housingDatabase: Object.fromEntries(housingDbFields.map((x) => [x.name, x])),
+        units: Object.fromEntries(unitsFields.map((x) => [x.name, x])),
+      };
     });
   };
 

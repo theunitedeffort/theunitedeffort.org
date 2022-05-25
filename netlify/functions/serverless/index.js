@@ -9,6 +9,10 @@ async function handler(event) {
     path: new URL(event.rawUrl).pathname,
     query: event.queryStringParameters,
     functionsDir: "./netlify/functions/",
+    // Ensure any data that is POSTed is available to the template.
+    config: function(config) {
+      config.addGlobalData("eventBody", event.body);
+    }
   });
   try {
     let [page] = await elev.getOutput();
