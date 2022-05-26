@@ -83,7 +83,7 @@ const metaData = (units) => {
     if (populationsServed.includes("General Population")) {
       metaNotes.push(`In addition to the general population, this property also specifically serves people who are ${populationsStr}.`)
     } else {
-      metaNotes.push(`This property only serves people that are ${populationsStr}.`)
+      metaNotes.push(`This property only serves people who are ${populationsStr}.`)
     }
   }
 
