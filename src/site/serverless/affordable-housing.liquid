@@ -161,10 +161,13 @@ Use the filter options below to narrow your search.
   </fieldset>
 
   <fieldset>
-    <legend>Property Name</legend>
+    <legend>More Filters</legend>
     <div>
-      <label for="property-name">Name</label><br />
-      <input type="text" aria-label="Property Name" id="property-name" value="{{query.propertyName | escape}}" name="propertyName">
+      <input type="checkbox" id="wheelchair-accessible-only" name="wheelchairAccessibleOnly"
+        {% if query.wheelchairAccessibleOnly == "on" %}checked{% endif %}>
+      <label for="wheelchair-accessible-only">Only show wheelchair-accessible properties</label><br />
+      <label for="property-name">Property Name</label><br />
+      <input type="text" id="property-name" value="{{query.propertyName | escape}}" name="propertyName"><br />
     </div>
   </fieldset>
 

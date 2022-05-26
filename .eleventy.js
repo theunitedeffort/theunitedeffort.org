@@ -127,7 +127,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("numFiltersApplied", function(query){
     // TODO: Don't hardcode this list of filters here.
     const allowedFilters = ["city", "availability", "unitType", "propertyName",
-      "rentMax", "income", "populationsServed"];
+      "rentMax", "income", "populationsServed", "wheelchairAccessibleOnly"];
     let count = 0;
     for (key in query) {
       if (allowedFilters.includes(key) && query[key]) {
@@ -196,7 +196,8 @@ module.exports = function(eleventyConfig) {
       income,
       includeUnknownRent,
       includeUnknownIncome,
-      propertyName
+      propertyName,
+      wheelchairAccessibleOnly,
     } = query;
 
     let parameters = [];
@@ -227,6 +228,10 @@ module.exports = function(eleventyConfig) {
       // for a complicated solution.
       let populationsQuery = populations.map(x => `FIND('${x}', {_POPULATIONS_SERVED})`);
       parameters.push(`OR(${populationsQuery.join(",")})`);
+    }
+
+    if (wheelchairAccessibleOnly) {
+      parameters.push(`{_HAS_WHEELCHAIR_ACCESSIBLE_UNITS} = 1`);
     }
 
     if (rentMax) {
