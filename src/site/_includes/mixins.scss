@@ -1,6 +1,7 @@
 // Breakpoints
 $bp-narrow: "(min-width: 550px)";
 $bp-mid: "(min-width: 800px)";
+$bp-midwide: "(min-width: 1050px)";
 $bp-wide: "(min-width: 1266px)";
 $bp-ultra: "(min-width: 1400px)";
 @mixin bp($point) {
@@ -11,6 +12,11 @@ $bp-ultra: "(min-width: 1400px)";
   }
   @else if $point==mid {
     @media #{$bp-mid} {
+      @content;
+    }
+  }
+  @else if $point==midwide {
+    @media #{$bp-midwide} {
       @content;
     }
   }

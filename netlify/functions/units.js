@@ -27,6 +27,23 @@ const makeAgeRangeString = (min_age, max_age) => {
   return "";
 }
 
+const makeListString = (collection, finalJoinStr) => {
+  let strArray = [];
+  for (let i = 0; i < collection.length; i++) {
+    strArray.push(collection[i]);
+    if (i == collection.length - 1) {
+      // Final item; no additional joining string required.
+      break;
+    }
+    if (i == collection.length - 2) {
+      strArray.push(` ${finalJoinStr} `);
+    } else {
+      strArray.push(", ");
+    }
+  }
+  return strArray.join("");
+}
+
 // Make a definition list from all the data returned about this item
 const metaData = (units) => {
   let aptName = units.metadata.aptName || "Apartment Listing";
@@ -48,19 +65,34 @@ const metaData = (units) => {
     }
     definitions.push(`<tr><td class="definition_term">${key}</td><td class="definition">${value}</td></tr>`);
   }
-  let ageRangeStr = makeAgeRangeString(units.metadata.notesData["MIN_RESIDENT_AGE"],
-    units.metadata.notesData["MAX_RESIDENT_AGE"]);
-  if (units.metadata.notesData["IS_SENIORS_ONLY"]) {
-    metaNotes.push(`This property requires that residents be seniors${ageRangeStr}.`)
+  let ageRangeStr = makeAgeRangeString(units.metadata.notesData["_MIN_RESIDENT_AGE"],
+    units.metadata.notesData["_MAX_RESIDENT_AGE"]);
+  
+  let populationsServed = units.metadata.notesData["_POPULATIONS_SERVED"];
+  let specialPopulations = populationsServed.filter(x => x !== "General Population");
+  let specialPopulationsDisp = [];
+  for (const population of specialPopulations) {
+    let str = population.toLowerCase()
+    if (population === "Seniors" || population === "Youth") {
+      str += ageRangeStr;
+    }
+    specialPopulationsDisp.push(str);
   }
-  if (units.metadata.notesData["IS_YOUTH_ONLY"]) {
-    metaNotes.push(`This property requires that residents be youth${ageRangeStr}.`)
+  let populationsStr = makeListString(specialPopulationsDisp, "or");
+  if (specialPopulations.length) {
+    if (populationsServed.includes("General Population")) {
+      metaNotes.push(`In addition to the general population, this property also specifically serves people who are ${populationsStr}.`)
+    } else {
+      metaNotes.push(`This property only serves people that are ${populationsStr}.`)
+    }
   }
+
   if (units.metadata.notesData["_PREFERS_LOCAL_APPLICANTS"]) {
     let cityStr = units.metadata["City"] || "the local city"
     metaNotes.push(
       `When selecting residents, this property gives preference to those who work or live in ${cityStr}.`);
   }
+
   let metaNotesStr = "";
   if (metaNotes.length > 0) {
     metaNotesStr = `<p>${metaNotes.join("<br/>")}</p>`; 
@@ -290,14 +322,12 @@ const fetchData = async(housingID) => {
           records[0].fields["Phone (from Housing)"]?.[0]|| "");
         units.metadata["Website"] = (
           records[0].fields["URL (from Housing)"]?.[0]|| "");
-        units.metadata.notesData["IS_YOUTH_ONLY"] = (
-          records[0].fields["IS_YOUTH_ONLY (from Housing)"]?.[0]|| "");
-        units.metadata.notesData["IS_SENIORS_ONLY"] = (
-          records[0].fields["IS_SENIORS_ONLY (from Housing)"]?.[0]|| "");
-        units.metadata.notesData["MIN_RESIDENT_AGE"] = (
-          records[0].fields["MIN_RESIDENT_AGE (from Housing)"]?.[0]|| "");
-        units.metadata.notesData["MAX_RESIDENT_AGE"] = (
-          records[0].fields["MAX_RESIDENT_AGE (from Housing)"]?.[0]|| "");
+        units.metadata.notesData["_POPULATIONS_SERVED"] = (
+          records[0].fields["_POPULATIONS_SERVED"]);
+        units.metadata.notesData["_MIN_RESIDENT_AGE"] = (
+          records[0].fields["_MIN_RESIDENT_AGE"]?.[0]|| "");
+        units.metadata.notesData["_MAX_RESIDENT_AGE"] = (
+          records[0].fields["_MAX_RESIDENT_AGE"]?.[0]|| "");
         units.metadata.notesData["_PREFERS_LOCAL_APPLICANTS"] = (
           records[0].fields["_PREFERS_LOCAL_APPLICANTS"]?.[0]|| "");
       }
