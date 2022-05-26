@@ -107,16 +107,12 @@ Use the filter options below to narrow your search.
   {% for section in filterValues %}
   <fieldset>
     <legend>{{section.heading}}</legend>
-    <div class="option_columns">
-    {% if section.name == "unitType" %}
-      {% assign sortedOpts = section.options | sortUnitType: "name" %}
-    {% elsif section.name == "availability" %}
-      {% assign sortedOpts = section.options | sortAvailability: "name" %}
-    {% elsif section.name == "age" %}
-      {% assign sortedOpts = section.options %}
-    {% else %}
-      {% assign sortedOpts = section.options | sort: "name" %}
+    <div class="option_columns
+    {% if section.name == "populationsServed" %} 
+      wide
     {% endif %}
+    ">
+    {% assign sortedOpts = section.options | rankSort: "name" %}
     {% for opt in sortedOpts %}
       {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
       <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
@@ -230,7 +226,7 @@ Use the filter options below to narrow your search.
           badge__ok
         {% endif %}
         ">{{ status }}</span>
-        {% assign sortedUnits = address.units | where: "openStatus",  status | sortUnitType: "unitType" %}
+        {% assign sortedUnits = address.units | where: "openStatus",  status | rankSort: "unitType" %}
         {% for unit in sortedUnits %}
           {% if unit.unitType %}
             <span class="badge">{{ unit.unitType }}</span>

@@ -23,7 +23,7 @@ function FilterCheckbox(name, selected = false) {
 // TODO(trevorshannon): Only fetch filter options at build time, not on every
 // page load.
 const fetchFilterOptions = async() => {
-  let records = [];
+  let options = [];
   const table = base(UNITS_TABLE);
 
   return table.select({
@@ -37,13 +37,14 @@ const fetchFilterOptions = async() => {
         if (record.get("City (from Housing)") !== undefined) {
           cityStr = record.get("City (from Housing)")[0];
         }
-        records.push({
+        options.push({
           city: cityStr,
           openStatus: record.get("STATUS"),
           unitType: record.get("TYPE"),
+          populationsServed: record.get("_POPULATIONS_SERVED"),
         })
       });
-      return records;
+      return options;
     });
 };
 
@@ -66,25 +67,25 @@ module.exports = async function() {
   }
   console.log("Fetching filter options.");
   let filterOptions = await fetchFilterOptions();
-  let cities = [...new Set(filterOptions.map(({ city }) => city))];
-  cities = cities.filter(city => city !== undefined);
-  let openStatuses = [...new Set(filterOptions.map(({ openStatus }) => openStatus))];
-  openStatuses = openStatuses.filter(openStatus => openStatus !== undefined);
-  let unitTypes = [...new Set(filterOptions.map(({ unitType }) => unitType))];
-  unitTypes = unitTypes.filter(unitType => unitType !== undefined);
+  let cities = [...new Set(filterOptions.map(o => o.city))];
+  cities = cities.filter(x => x !== undefined);
+  let openStatuses = [...new Set(filterOptions.map(o => o.openStatus))];
+  openStatuses = openStatuses.filter(x => x !== undefined);
+  let unitTypes = [...new Set(filterOptions.map(o => o.unitType))];
+  unitTypes = unitTypes.filter(x => x !== undefined);
+  let allPopulationsServed = filterOptions.map(o => o.populationsServed);
+  allPopulationsServed = [...new Set(allPopulationsServed.flat())];
+  allPopulationsServed = allPopulationsServed.filter(x => x !== undefined);
 
   let filterVals = [
-    new FilterSection("City", "city", cities.map((x) => new FilterCheckbox(x))),
+    new FilterSection("City", "city", cities.map(x => new FilterCheckbox(x))),
     new FilterSection("Type of Unit", "unitType",
-      unitTypes.map((x) => new FilterCheckbox(x))),
+      unitTypes.map(x => new FilterCheckbox(x))),
     new FilterSection("Availability", "availability",
-      openStatuses.map((x) => new FilterCheckbox(x))),
-    // The age filter is not a direct mapping from values in Airtable,
-    // so hard-code the values here.
-    new FilterSection("Ages Served", "age",
-      [new FilterCheckbox("Youth Only"),
-       new FilterCheckbox("Seniors Only"),
-       new FilterCheckbox("No Age Restriction")])
+      openStatuses.map(x => new FilterCheckbox(x))),
+    new FilterSection("Populations Served", "populationsServed",
+      allPopulationsServed.map(x => new FilterCheckbox(x))),
+    
   ];
   console.log("Got filter options.");
   let filterData = { filterValues: filterVals };

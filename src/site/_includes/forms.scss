@@ -43,10 +43,12 @@
     }
     
     .option_columns {
-      columns: 8em 3;
+      columns: 7em 3;
     }
-    
 
+    .option_columns.wide {
+      columns: 11em 3;
+    }
 
     
     @media print {
