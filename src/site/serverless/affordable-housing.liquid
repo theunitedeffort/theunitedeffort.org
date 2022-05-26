@@ -130,7 +130,7 @@ Use the filter options below to narrow your search.
   <fieldset>
     <legend>Rent</legend>
     <div>
-      <label for="rent-max">Maximum ($ per month)</label><br />
+      <label for="rent-max">Maximum ($ per month)</label>
       <input type="number" oninput="ToggleRentOption();" min="0" id="rent-max" name="rentMax" value="{{query.rentMax | escape}}"><br/>
       <span id="include-unknown-rent-container" hidden>
         <input type="checkbox" id="include-unknown-rent" name="includeUnknownRent"
@@ -150,7 +150,6 @@ Use the filter options below to narrow your search.
           Provide your income to hide properties you are not eligible for. Your information will not be stored.
         </span>
       </span>
-      <br />
       <input type="number" oninput="ToggleIncomeOption();" min="0" id="income" name="income" value="{{query.income | escape}}"><br/>
       <span id="include-unknown-income-container" hidden>
         <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome"
@@ -165,9 +164,11 @@ Use the filter options below to narrow your search.
     <div>
       <input type="checkbox" id="wheelchair-accessible-only" name="wheelchairAccessibleOnly"
         {% if query.wheelchairAccessibleOnly == "on" %}checked{% endif %}>
-      <label for="wheelchair-accessible-only">Only show wheelchair-accessible properties</label><br />
-      <label for="property-name">Property Name</label><br />
-      <input type="text" id="property-name" value="{{query.propertyName | escape}}" name="propertyName"><br />
+      <label for="wheelchair-accessible-only">Only show wheelchair-accessible properties</label>
+      <p>
+      <label for="property-name">Property Name</label>
+      <input type="text" id="property-name" value="{{query.propertyName | escape}}" name="propertyName">
+      </p>
     </div>
   </fieldset>
 
