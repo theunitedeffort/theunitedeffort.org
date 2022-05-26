@@ -87,6 +87,12 @@ const metaData = (units) => {
     }
   }
 
+  if (units.metadata.notesData["_PREFERS_LOCAL_APPLICANTS"]) {
+    let cityStr = units.metadata["City"] || "the local city"
+    metaNotes.push(
+      `When selecting residents, this property gives preference to those who work or live in ${cityStr}.`);
+  }
+
   let metaNotesStr = "";
   if (metaNotes.length > 0) {
     metaNotesStr = `<p>${metaNotes.join("<br/>")}</p>`; 
@@ -322,6 +328,8 @@ const fetchData = async(housingID) => {
           records[0].fields["_MIN_RESIDENT_AGE"]?.[0]|| "");
         units.metadata.notesData["_MAX_RESIDENT_AGE"] = (
           records[0].fields["_MAX_RESIDENT_AGE"]?.[0]|| "");
+        units.metadata.notesData["_PREFERS_LOCAL_APPLICANTS"] = (
+          records[0].fields["_PREFERS_LOCAL_APPLICANTS"]?.[0]|| "");
       }
       for (record in records) {
         let unitKey = records[record].fields.TYPE;
