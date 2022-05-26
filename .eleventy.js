@@ -221,7 +221,11 @@ module.exports = function(eleventyConfig) {
 
     if (populationsServed) {
       let populations = populationsServed.split(", ");
-      let populationsQuery = populations.map(x => `{_POPULATIONS_SERVED} = '${x}'`);
+      // Note this formula will break if one population option is a substring of another.
+      // e.g. "developmentally disabled" and "disabled"
+      // See https://community.airtable.com/t/return-rows-that-contain-multiple-select-item/42187/4
+      // for a complicated solution.
+      let populationsQuery = populations.map(x => `FIND('${x}', {_POPULATIONS_SERVED})`);
       parameters.push(`OR(${populationsQuery.join(",")})`);
     }
 
@@ -287,7 +291,8 @@ module.exports = function(eleventyConfig) {
             locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
             phone: record.get("Phone (from Housing)")?.[0] || "",
             website: record.get("URL (from Housing)")?.[0] || "",
-            email: record.get("EMAIL (from Housing)")?.[0] || ""
+            email: record.get("EMAIL (from Housing)")?.[0] || "",
+            populationsServed: record.get("_POPULATIONS_SERVED"),
           })
         });
 
