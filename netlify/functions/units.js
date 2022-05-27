@@ -57,6 +57,9 @@ const metaData = (units) => {
     if (!value) {
       continue
     }
+    if (key === "Address") {
+      value = `${value} (<a href="https://maps.google.com/maps?q=${encodeURIComponent(value)}+${encodeURIComponent(units.metadata["City"] || "")}&country=us" target="_blank" rel="noopener">map</a>)`
+    }
     if (key === "Website") {
       value = `<a href="${value}" target="_BLANK" rel="noopener">${value}</a>`
     }
