@@ -88,10 +88,10 @@ window.onpageshow = function() {OnPageShow()};
 <h2 class="subtitle">In Santa Clara County</h2>
 <p class="noprint bold">
 {{num_results_snippet}}
-<p>
+</p>
 {% if num_filters_applied == 0 %}
 <p>
-Use the filter options below to narrow your search.
+Narrow your search with the filter options below or <a href="#results">scroll</a> to the full list of properties 
 </p>
 {% else %}
 <p class="noprint">
@@ -159,6 +159,8 @@ Use the filter options below to narrow your search.
     </div>
   </fieldset>
 
+<a id="results"></a>
+
   <fieldset>
     <legend>More Filters</legend>
     <div>
@@ -177,7 +179,6 @@ Use the filter options below to narrow your search.
   </div>
 </form>
 
-<a id="results"></a>
 {% if eleventy.serverless.query %}
   {% comment %} <p class="noprint">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p> {% endcomment %}
   {% if num_results > 0 %}
