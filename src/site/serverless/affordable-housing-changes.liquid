@@ -11,7 +11,6 @@ permalink:
 {% assign record = eleventy.serverless.path.id | housingRecord %}
 {% assign unitsRecords = eleventy.serverless.path.id | unitsRecords %}
 
-
 <form style="display:block;" name="housing_changes" netlify>
 
 {% fieldLabel "Property Name", housingFields, "APT_NAME" %}
@@ -23,27 +22,99 @@ permalink:
 {% fieldLabel "City", housingFields, "CITY" %}
 {% formField housingFields, record, "CITY" %}<br/>
 
-{% for unitNum in (0..4) %}
-{% assign numUnitsRecords = unitsRecords | size %}
-{% if unitNum < numUnitsRecords %}
-  {% assign unitsRecord = unitsRecords[unitNum] %}
-{% else %}
-  {% assign unitsRecord = "" %}
-{% endif %}
-<div id="unit-{{unitNum}}">
-<fieldset><legend>Unit Offering {{ unitNum | plus: 1 }}</legend>
-{% indexFieldLabel unitNum, "Type", unitsFields, "TYPE" %}
-{% indexFormField unitNum, unitsFields, unitsRecord, "TYPE" %}<br/>
+<div id="all-units">
+{% for unitNum in (0..9) %}
+	{% assign numUnitsRecords = unitsRecords | size %}
+	{% if unitNum < numUnitsRecords %}
+	  {% assign unitsRecord = unitsRecords[unitNum] %}
+	  {% assign hidden = "" %}
+	{% else %}
+	  {% assign unitsRecord = "" %}
+	  {% assign hidden = "hidden" %}
+	{% endif %}
+	<div id="unit-{{unitNum}}" {{hidden}}>
+	<fieldset>
+	  <legend>Unit Offering 
+	    <button type="button">Delete</button>
+	  </legend>
+	{% indexFieldLabel unitNum, "Type", unitsFields, "TYPE" %}
+	{% indexFormField unitNum, unitsFields, unitsRecord, "TYPE" %}<br/>
 
-{% indexFieldLabel unitNum, "Percent AMI", unitsFields, "PERCENT_AMI" %}
-{% indexFormField unitNum, unitsFields, unitsRecord, "PERCENT_AMI" %}<br/>
-</fieldset>
-</div>
+	{% indexFieldLabel unitNum, "Status", unitsFields, "STATUS" %}
+	{% indexFormField unitNum, unitsFields, unitsRecord, "STATUS" %}<br/>
+
+  Occupancy
+	{% indexFieldLabel unitNum, "Min", unitsFields, "MIN_OCCUPANCY" %}
+	{% indexFormField unitNum, unitsFields, unitsRecord, "MIN_OCCUPANCY" %} to 
+
+  {% indexFieldLabel unitNum, "Max", unitsFields, "MAX_OCCUPANCY" %}
+	{% indexFormField unitNum, unitsFields, unitsRecord, "MAX_OCCUPANCY" %} people<br/>
+
+	{% indexFieldLabel unitNum, "Percent AMI", unitsFields, "PERCENT_AMI" %}
+	{% indexFormField unitNum, unitsFields, unitsRecord, "PERCENT_AMI" %}%<br/>
+
+	{% indexFieldLabel unitNum, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}
+	${% indexFormField unitNum, unitsFields, unitsRecord, "RENT_PER_MONTH_USD" %} per month<br/>
+	</fieldset>
+	</div>
 {% endfor %}
+</div>
 
-<button type="button">Add new unit offering</button>
+<button type="button" onclick="addUnit();">Add new unit offering</button>
+<br/>
 <button type="submit">Submit</button>
 </form>
 
+<script>
+let unitIdx = {{ unitsRecords | size | plus: -1}};
+
+function addUnit() {
+  if (unitIdx < 9) {
+    unitIdx++;
+    let newUnit = document.querySelectorAll("#all-units div")[unitIdx];
+    newUnit.removeAttribute("hidden");
+    //document.getElementById("unit-" + (numUnits - 1)).removeAttribute("hidden");
+  }
+}
+
+function clearUnitForm(unitDiv) {
+	let allInputs = unitDiv.querySelectorAll("input, textarea, select");
+	for (input of allInputs) {
+	  if (input.tagName == "TEXTAREA") {
+	    input.innerHTML = "";
+	  } else if (input.tagName == "SELECT") {
+	    let options = input.childNodes;
+	    for (option of options) {
+	      option.removeAttribute("selected");
+	    }
+	    input.firstChild.setAttribute("selected", "selected");
+	  } else if (input.tagName == "INPUT") {
+	    if (input.type == "checkbox") {
+	      input.removeAttribute("checked");
+	    } else {
+	      input.value = "";
+	    }
+	  }
+	}
+}
+
+function deleteUnit() {
+  let deletedUnit = this.parentNode.parentNode.parentNode;
+	if (unitIdx >= 0) {
+	  deletedUnit.setAttribute("hidden", "hidden");
+	  let unitsContainer = document.getElementById("all-units");
+	  unitsContainer.appendChild(deletedUnit);
+	  unitIdx--;
+	  clearUnitForm(deletedUnit);
+	}
+}
+
+let units = document.querySelectorAll("#all-units div");
+for (unit of units) {
+	let deleteButton = unit.querySelector("button");
+	deleteButton.onclick = deleteUnit;
+}
+
+</script>
 
 

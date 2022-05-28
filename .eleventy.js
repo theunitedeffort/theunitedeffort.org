@@ -297,10 +297,10 @@ module.exports = function(eleventyConfig) {
       if (field.type === "multipleSelects") {
         options = "multiple";
       }
-      let choices = field.options.choices.map((x) => x.name).sort();
+      //let choices = field.options.choices.map((x) => x.name).sort();
       content += `<option></option>`;
-      for (const choice of choices) {
-        content += `<option value="${choice}"${choice === value ? " selected" : ""}>${choice}</option>`
+      for (const choice of field.options.choices) {
+        content += `<option style="background-color:${choice.color};" value="${choice.name}"${choice.name === value ? " selected" : ""}>${choice.name}</option>`
       }
     } else if (field.type === "multilineText") {
       tag = "textarea"
