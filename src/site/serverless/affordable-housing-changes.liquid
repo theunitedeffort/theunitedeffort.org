@@ -11,7 +11,7 @@ permalink:
 {% assign record = eleventy.serverless.path.id | housingRecord %}
 {% assign unitsRecords = eleventy.serverless.path.id | unitsRecords %}
 
-<form style="display:block;" name="housing_changes" netlify>
+<form style="display:block;" id="housing-changes" name="housing_changes" netlify>
 
 {% fieldLabel "Property Name", housingFields, "APT_NAME" %}
 {% formField housingFields, record, "APT_NAME" %}<br/>
@@ -19,8 +19,32 @@ permalink:
 {% fieldLabel "Address", housingFields, "ADDRESS" %}
 {% formField housingFields, record, "ADDRESS" %}<br/>
 
+{% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}
+{% formField housingFields, record, "SECOND_ADDRESS" %}<br/>
+
 {% fieldLabel "City", housingFields, "CITY" %}
 {% formField housingFields, record, "CITY" %}<br/>
+
+{% fieldLabel "ZIP Code", housingFields, "ZIP_CODE" %}
+{% formField housingFields, record, "ZIP_CODE" %}<br/>
+
+{% fieldLabel "Contact Phone", housingFields, "PHONE" %}
+{% formField housingFields, record, "PHONE" %}<br/>
+
+{% fieldLabel "Contact Email", housingFields, "EMAIL" %}
+{% formField housingFields, record, "EMAIL" %}<br/>
+
+{% fieldLabel "URL", housingFields, "PROPERTY_URL" %}
+{% formField housingFields, record, "PROPERTY_URL" %}<br/>
+
+{% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}
+{% formField housingFields, record, "UNITS_CNT" %}<br/>
+
+{% fieldLabel "Populations Served", housingFields, "POPULATIONS_SERVED" %}
+{% formField housingFields, record, "POPULATIONS_SERVED" %}<br/>
+
+{% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}
+{% formField housingFields, record, "ACCEPTS_VOUCHERS" %}<br/>
 
 <div id="all-units">
 {% for unitNum in (0..9) %}
@@ -62,7 +86,7 @@ permalink:
 
 <button type="button" onclick="addUnit();">Add new unit offering</button>
 <br/>
-<button type="submit">Submit</button>
+<a href="{{serverless.path}}">Reset</a> <button type="submit">Submit</button>
 </form>
 
 <script>
@@ -109,10 +133,29 @@ function deleteUnit() {
 	}
 }
 
+function updateSelectColor() {
+	let options = this.childNodes;
+	for (option of options) {
+	  if (option.selected) {
+	    let color = option.dataset.color;
+	    if (color) {
+	      this.style.backgroundColor = `var(--airtable-color-${color})`;
+	    } else {
+	      this.style.backgroundColor = "";
+	    }
+	  }
+	}
+}
+
 let units = document.querySelectorAll("#all-units div");
 for (unit of units) {
 	let deleteButton = unit.querySelector("button");
 	deleteButton.onclick = deleteUnit;
+}
+
+let selects = document.querySelectorAll("#housing-changes select");
+for (select of selects) {
+	select.onchange = updateSelectColor;
 }
 
 </script>

@@ -290,7 +290,7 @@ module.exports = function(eleventyConfig) {
     let content = "";
     let endtag = "";
     console.log(record);
-    let value = record ? record.get(fieldName) : "";
+    let value = record ? record.get(fieldName) || "" : "";
     if (field.type === "singleSelect" || field.type === "multipleSelects") {
       tag = "select";
       endtag = "</select>"
@@ -300,7 +300,12 @@ module.exports = function(eleventyConfig) {
       //let choices = field.options.choices.map((x) => x.name).sort();
       content += `<option></option>`;
       for (const choice of field.options.choices) {
-        content += `<option style="background-color:${choice.color};" value="${choice.name}"${choice.name === value ? " selected" : ""}>${choice.name}</option>`
+        let selected = "";
+        if (choice.name === value) {
+          selected = " selected";
+          options += ` style="background-color:var(--airtable-color-${choice.color});"`
+        }
+        content += `<option value="${choice.name}"${selected} data-color="${choice.color}">${choice.name}</option>`;
       }
     } else if (field.type === "multilineText") {
       tag = "textarea"
