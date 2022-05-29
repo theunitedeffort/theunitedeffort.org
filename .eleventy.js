@@ -543,6 +543,9 @@ module.exports = function(eleventyConfig) {
   };
 
   const fetchHousingRecord = async(displayId) => {
+    if (!displayId) {
+      return "";
+    }
     const table = base(HOUSING_DATABASE_TABLE);
 
     return table.select({
@@ -556,6 +559,9 @@ module.exports = function(eleventyConfig) {
   };
 
   const fetchUnitsRecords = async(displayId) => {
+    if (!displayId) {
+      return "";
+    }
     const table = base(UNITS_TABLE);
 
     return table.select({
