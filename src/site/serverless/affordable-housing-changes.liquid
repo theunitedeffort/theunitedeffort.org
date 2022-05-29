@@ -3,6 +3,7 @@ layout: layouts/base.liquid
 title: Check for Affordable Housing Updates
 permalink: 
   serverless: "/housing/affordable-housing/changes/:id"
+  build: "/housing/affordable-housing/changes"
 ---
 
 {% assign allFields = "foo" | housingFields %}
@@ -12,6 +13,7 @@ permalink:
 {% assign unitsRecords = eleventy.serverless.path.id | unitsRecords %}
 
 <form style="display:block;" id="housing-changes" name="housing_changes" netlify>
+<input type="hidden" name="form-name" value="housing_changes" />
 
 {% fieldLabel "Property Name", housingFields, "APT_NAME" %}
 {% formField housingFields, record, "APT_NAME" %}<br/>
