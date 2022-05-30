@@ -96,6 +96,10 @@ const metaData = (units) => {
       `When selecting residents, this property gives preference to those who work or live in ${cityStr}.`);
   }
 
+  if (units.metadata.notesData["_DISALLOWS_PUBLIC_APPLICATIONS"]) {
+    metaNotes.push("A referral from a case manager or housing agency is required to apply for this property. Contact the property for details on the referral process.");
+  }
+
   let metaNotesStr = "";
   if (metaNotes.length > 0) {
     metaNotesStr = `<p>${metaNotes.join("<br/>")}</p>`; 
@@ -333,6 +337,8 @@ const fetchData = async(housingID) => {
           records[0].fields["_MAX_RESIDENT_AGE"]?.[0]|| "");
         units.metadata.notesData["_PREFERS_LOCAL_APPLICANTS"] = (
           records[0].fields["_PREFERS_LOCAL_APPLICANTS"]?.[0]|| "");
+        units.metadata.notesData["_DISALLOWS_PUBLIC_APPLICATIONS"] = (
+          records[0].fields["_DISALLOWS_PUBLIC_APPLICATIONS"]?.[0]|| "");
       }
       for (record in records) {
         let unitKey = records[record].fields.TYPE;
