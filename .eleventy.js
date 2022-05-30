@@ -289,24 +289,34 @@ module.exports = function(eleventyConfig) {
     let options = "";
     let content = "";
     let endtag = "";
-    console.log(record);
+    // console.log(record);
     let value = record ? record.get(fieldName) || "" : "";
-    if (field.type === "singleSelect" || field.type === "multipleSelects") {
+    if (field.type === "singleSelect") {
       tag = "select";
       endtag = "</select>"
-      if (field.type === "multipleSelects") {
-        options = "multiple";
-      }
-      //let choices = field.options.choices.map((x) => x.name).sort();
       content += `<option></option>`;
       for (const choice of field.options.choices) {
         let selected = "";
         if (choice.name === value) {
           selected = " selected";
-          options += ` style="background-color:var(--airtable-color-${choice.color});"`
+          options += `style="background-color:var(--airtable-color-${choice.color});"`
         }
         content += `<option value="${choice.name}"${selected} data-color="${choice.color}">${choice.name}</option>`;
       }
+    } else if (field.type === "multipleSelects") {
+      let checkboxes = [];
+      for (const choice of field.options.choices) {
+        let selected = "";
+        let style = "";
+        console.log(value);
+        if (value.includes(choice.name)) {
+          selected = "checked";
+          style = `style="background-color:var(--airtable-color-${choice.color});"`
+        }
+        let id = `${field.id}:${choice.name.replace(" ", "-").toLowerCase()}${index ? ":" + index : ""}`;
+        checkboxes.push(`<input type="checkbox" id="${id}" name="${field.name}${index ? ":" + index : ""}" ${selected} data-color="${choice.color}"> <label for="${id}" ${style}>${choice.name}</label>`);
+      }
+      return checkboxes.join("<br/>");
     } else if (field.type === "multilineText") {
       tag = "textarea"
       endtag = "</textarea>"

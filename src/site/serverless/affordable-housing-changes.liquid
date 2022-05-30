@@ -42,8 +42,10 @@ permalink:
 {% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}
 {% formField housingFields, record, "UNITS_CNT" %}<br/>
 
-{% fieldLabel "Populations Served", housingFields, "POPULATIONS_SERVED" %}
+<div class="multiselect">
+{% fieldLabel "Populations Served", housingFields, "POPULATIONS_SERVED" %}<br/>
 {% formField housingFields, record, "POPULATIONS_SERVED" %}<br/>
+</div>
 
 {% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}
 {% formField housingFields, record, "ACCEPTS_VOUCHERS" %}<br/>
@@ -149,6 +151,20 @@ function updateSelectColor() {
 	}
 }
 
+function updateMultiselectColors() {
+	let options = this.querySelectorAll("input[type=checkbox]");
+	for (option of options) {
+	  let label = option.nextSibling.nextSibling;
+	  label.style.backgroundColor = "";
+	  if (option.checked) {
+	    let color = option.dataset.color;
+	    if (color) {
+	      label.style.backgroundColor = `var(--airtable-color-${color})`;
+	    } 
+	  }
+	}
+}
+
 let units = document.querySelectorAll("#all-units div");
 for (unit of units) {
 	let deleteButton = unit.querySelector("button");
@@ -158,6 +174,11 @@ for (unit of units) {
 let selects = document.querySelectorAll("#housing-changes select");
 for (select of selects) {
 	select.onchange = updateSelectColor;
+}
+
+let multiselects = document.querySelectorAll(".multiselect");
+for (multiselect of multiselects) {
+	multiselect.onchange = updateMultiselectColors;
 }
 
 </script>
