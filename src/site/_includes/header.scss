@@ -5,7 +5,7 @@ header {
   font-weight: 700;
   .container {
     text-align: center;
-    @include bp(wide) {
+    @include bp(midwide) {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -17,7 +17,7 @@ header {
   }
   .nav-home img {
     margin: 0 auto 2em auto;
-    @include bp(wide) {
+    @include bp(midwide) {
       margin: 0;
     }
   }

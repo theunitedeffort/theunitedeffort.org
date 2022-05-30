@@ -1,11 +1,11 @@
 ---
 layout: "layouts/base.liquid"
-title: "Resources for Affordable Housing"
+title: "General Resources"
 pageClass: "page-resources"
 permalink: /resources/index.html
 ---
 
-<h1>General Resources</h1>
+<h1>{{title}}</h1>
 
 {% assign uniqueCategories = resources | index: "Category" %}
 {% for category in uniqueCategories %}

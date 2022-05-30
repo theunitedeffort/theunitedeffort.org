@@ -40,7 +40,8 @@ const fetchPages = async() => {
           if (!data[name]) {
             data[name] = {
               url: path,
-              sections: []
+              sections: [],
+              name: name
             };
           }
 

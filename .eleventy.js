@@ -10,6 +10,34 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
 
 const UNITS_TABLE = "tblRtXBod9CC0mivK";
 
+// This is a global sort ranking for all filter options.  
+// It assumes no name collisions.
+// Highest rank = 1.
+// Force an item to be ranked last every time with rank = -1.
+const SORT_RANKING = new Map([
+  // Unit Type
+  ["SRO", 1],
+  ["Studio", 2],
+  ["1 Bedroom", 3],
+  ["2 Bedroom", 4],
+  ["3 Bedroom", 5],
+  ["4 Bedroom", 6],
+  ["5 Bedroom", 7],
+  ["6 Bedroom", 8],
+  ["Shared Housing", 9],
+  ["Others", -1],
+  // Availability
+  ["Waitlist Open", 1],
+  ["Waitlist Closed", 2],
+  ["Call for Status", 3],
+  // Populations Served
+  ["General Population", 1],
+  ["Seniors", 2],
+  ["Youth", 3],
+  ["Developmentally Disabled", 4],
+  ["Physically Disabled", 5],
+]);
+
 
 module.exports = function(eleventyConfig) {
 
@@ -65,26 +93,30 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
-  eleventyConfig.addFilter("sortUnitType", function(values, property='') {
+  // Sorts items according to the ranking defined in SORT_RANKING.
+  eleventyConfig.addFilter("rankSort", function(values, property="") {
     let sorted = values.sort(function(a, b) {
       let valA = property ? a[property] : a;
       let valB = property ? b[property] : b;
-      // Return < 0 if 'a' should go before 'b'
-      // Return > 0 if 'b' should go before 'a'
-      if ((valA === "SRO" && valB === "Studio") || // SRO before Studio.
-          (valA === "SRO" || valA === "Studio") || // SRO/Studio always first.
-          (valB === "Others")) { // Others always last.
-        return -1; 
-      }
-      if ((valA === "Studio" && valB === "SRO") || // SRO before Studio
-          (valB === "SRO" || valB === "Studio") || // SRO/Studio always first.
-          (valA === "Others")) { // Others always last.
-        return 1;
-      }
-      if (valA < valB) {
+      let rankA = SORT_RANKING.get(valA);
+      let rankB = SORT_RANKING.get(valB);
+      // Special handling for the -1 rank, which is always sorted last.
+      if (rankB < 0) {
         return -1;
-      }
-      if (valA > valB) {
+      } else if (rankA < 0) {
+        return 1;
+      // Sort by rank if both items have one.
+      } else if (rankA && rankB) {
+        return rankA - rankB;
+      // Put unranked items after the ranked ones.
+      } else if (rankA && !rankB) {
+        return -1;
+      } else if (!rankA && rankB) {
+        return 1;
+      // Sort unranked items alphabetically.
+      } else if (valA < valB) {
+        return -1;
+      } else if (valA > valB) {
         return 1;
       }
       return 0;
@@ -92,28 +124,10 @@ module.exports = function(eleventyConfig) {
     return sorted;
   });
 
-  eleventyConfig.addFilter("sortAvailability", function(values, property='') {
-    const ranking = new Map([
-      ["Waitlist Open", 1],
-      ["Waitlist Closed", 2],
-      ["Call for Status", 3]
-    ]);
-    let sorted = values.sort(function(a, b) {
-      let valA = property ? a[property] : a;
-      let valB = property ? b[property] : b;
-      // Rank values according to the map 'ranking' unless the value is not in 
-      // the map.  Put the unknown values at the end in any order.
-      let rankA = ranking.get(valA) || ranking.size;
-      let rankB = ranking.get(valB) || ranking.size;
-      return rankA - rankB;
-    });
-    return sorted;
-  });
-
   eleventyConfig.addFilter("numFiltersApplied", function(query){
     // TODO: Don't hardcode this list of filters here.
     const allowedFilters = ["city", "availability", "unitType", "propertyName",
-      "rentMax", "income"];
+      "rentMax", "income", "populationsServed", "wheelchairAccessibleOnly"];
     let count = 0;
     for (key in query) {
       if (allowedFilters.includes(key) && query[key]) {
@@ -149,10 +163,10 @@ module.exports = function(eleventyConfig) {
         }
       }
     }
+    for (section in query){
+      updateFilterSection(query[section], section);
+    }
 
-    updateFilterSection(query.availability, "availability");
-    updateFilterSection(query.city, "city");
-    updateFilterSection(query.unitType, "unitType");
     return filterValuesCopy;
   });
 
@@ -176,12 +190,14 @@ module.exports = function(eleventyConfig) {
       availability,
       city,
       unitType,
+      populationsServed,
       rentMin,
       rentMax,
       income,
       includeUnknownRent,
       includeUnknownIncome,
-      propertyName
+      propertyName,
+      wheelchairAccessibleOnly,
     } = query;
 
     let parameters = [];
@@ -202,6 +218,20 @@ module.exports = function(eleventyConfig) {
       let availabilities = availability.split(", ");
       let availabilityQuery = availabilities.map((x) => `{STATUS} = '${x}'`);
       parameters.push(`OR(${availabilityQuery.join(",")})`);
+    }
+
+    if (populationsServed) {
+      let populations = populationsServed.split(", ");
+      // Note this formula will break if one population option is a substring of another.
+      // e.g. "developmentally disabled" and "disabled"
+      // See https://community.airtable.com/t/return-rows-that-contain-multiple-select-item/42187/4
+      // for a complicated solution.
+      let populationsQuery = populations.map(x => `FIND('${x}', {_POPULATIONS_SERVED})`);
+      parameters.push(`OR(${populationsQuery.join(",")})`);
+    }
+
+    if (wheelchairAccessibleOnly) {
+      parameters.push(`{_HAS_WHEELCHAIR_ACCESSIBLE_UNITS} = 1`);
     }
 
     if (rentMax) {
@@ -266,7 +296,8 @@ module.exports = function(eleventyConfig) {
             locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
             phone: record.get("Phone (from Housing)")?.[0] || "",
             website: record.get("URL (from Housing)")?.[0] || "",
-            email: record.get("EMAIL (from Housing)")?.[0] || ""
+            email: record.get("EMAIL (from Housing)")?.[0] || "",
+            populationsServed: record.get("_POPULATIONS_SERVED"),
           })
         });
 

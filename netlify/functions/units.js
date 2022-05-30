@@ -3,6 +3,7 @@ const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process
 const pageTemplate = require("./includes/base.js");
 
 const NO_DATA_STRING = "Call for info";
+const NO_INCOME_BRACKET_STRING = "Bracket"
 const NO_RENT_STRING = "Call for rent";
 const NO_RENT_WITH_NOTES_STRING = "Varies";
 const NO_MIN_INCOME_STRING = NO_DATA_STRING;
@@ -10,16 +11,54 @@ const NO_MAX_INCOME_STRING = NO_DATA_STRING;
 const NO_MAX_OCCUPANCY_STRING = NO_DATA_STRING;
 const UNITS_TABLE = "tblRtXBod9CC0mivK"
 
+// Generate a user-friendly string showing an age range.
+// If no max age is given, the string will show "<min_age>+"
+// If no min age is given, the string will show "<max_age> and under"
+const makeAgeRangeString = (min_age, max_age) => {
+  if (min_age && max_age) {
+    return ` (${min_age} - ${max_age} years)`;
+  }
+  if (min_age && !max_age) {
+    return ` (${min_age}+ years)`;
+  }
+  if (!min_age && max_age) {
+    return ` (${max_age} years and under)`;
+  }
+  return "";
+}
+
+const makeListString = (collection, finalJoinStr) => {
+  let strArray = [];
+  for (let i = 0; i < collection.length; i++) {
+    strArray.push(collection[i]);
+    if (i == collection.length - 1) {
+      // Final item; no additional joining string required.
+      break;
+    }
+    if (i == collection.length - 2) {
+      strArray.push(` ${finalJoinStr} `);
+    } else {
+      strArray.push(", ");
+    }
+  }
+  return strArray.join("");
+}
 
 // Make a definition list from all the data returned about this item
 const metaData = (units) => {
   let aptName = units.metadata.aptName || "Apartment Listing";
+  let metaNotes = [];
   let definitions = [];
   for (key in units.metadata) {
-    if (key === "aptName") { continue; }
+    // The apartment name is instead rendered as the page title.
+    // Notes are instead rendered as a separate paragraph.
+    if (key === "aptName" || key === "notesData") { continue; }
     let value = units.metadata[key];
     if (!value) {
       continue
+    }
+    if (key === "Address") {
+      value = `${value} (<a href="https://maps.google.com/maps?q=${encodeURIComponent(value)}+${encodeURIComponent(units.metadata["City"] || "")}&country=us" target="_blank" rel="noopener">map</a>)`
     }
     if (key === "Website") {
       value = `<a href="${value}" target="_BLANK" rel="noopener">${value}</a>`
@@ -29,9 +68,42 @@ const metaData = (units) => {
     }
     definitions.push(`<tr><td class="definition_term">${key}</td><td class="definition">${value}</td></tr>`);
   }
+  let ageRangeStr = makeAgeRangeString(units.metadata.notesData["_MIN_RESIDENT_AGE"],
+    units.metadata.notesData["_MAX_RESIDENT_AGE"]);
+  
+  let populationsServed = units.metadata.notesData["_POPULATIONS_SERVED"];
+  let specialPopulations = populationsServed.filter(x => x !== "General Population");
+  let specialPopulationsDisp = [];
+  for (const population of specialPopulations) {
+    let str = population.toLowerCase()
+    if (population === "Seniors" || population === "Youth") {
+      str += ageRangeStr;
+    }
+    specialPopulationsDisp.push(str);
+  }
+  let populationsStr = makeListString(specialPopulationsDisp, "or");
+  if (specialPopulations.length) {
+    if (populationsServed.includes("General Population")) {
+      metaNotes.push(`In addition to the general population, this property also specifically serves people who are ${populationsStr}.`)
+    } else {
+      metaNotes.push(`This property only serves people who are ${populationsStr}.`)
+    }
+  }
+
+  if (units.metadata.notesData["_PREFERS_LOCAL_APPLICANTS"]) {
+    let cityStr = units.metadata["City"] || "the local city"
+    metaNotes.push(
+      `When selecting residents, this property gives preference to those who work or live in ${cityStr}.`);
+  }
+
+  let metaNotesStr = "";
+  if (metaNotes.length > 0) {
+    metaNotesStr = `<p>${metaNotes.join("<br/>")}</p>`; 
+  }
   return `
     <h1>${aptName}</h1>
-    <table class="deflist">${definitions.join("")}</table>`;
+    <table class="deflist">${definitions.join("")}</table>
+    ${metaNotesStr}`;
 }
 
 const formatCurrency = (value) => {
@@ -47,6 +119,7 @@ const compareRents = (a, b) => {
   // If both units have differing rent, sort according to those.  
   // Otherwise, use min income if available.
   // Otherwise, use max income (the low end of the range) if available.
+  // Otherwise, use AMI percentage if available.
   // If the units have none of those three values, don't sort at all, as 
   // there is nothing to compare against.
   let compA = 0;
@@ -67,6 +140,13 @@ const compareRents = (a, b) => {
       a.record.MAX_YEARLY_INCOME_LOW_USD != b.record.MAX_YEARLY_INCOME_LOW_USD) {
     compA = a.record.MAX_YEARLY_INCOME_LOW_USD;
     compB = b.record.MAX_YEARLY_INCOME_LOW_USD;
+  }
+  else if (
+      a.record.PERCENT_AMI && 
+      b.record.PERCENT_AMI &&
+      a.record.PERCENT_AMI != b.record.PERCENT_AMI) {
+    compA = a.record.PERCENT_AMI;
+    compB = b.record.PERCENT_AMI;
   }
   if (compA < compB) {
     return -1;
@@ -110,12 +190,16 @@ const unitDetails = (data) => {
   let sortedData = data.sort(compareRents);
   for (item in sortedData) {
     let unit = sortedData[item].record;
+    let incomeBracketStr = `${NO_INCOME_BRACKET_STRING} ${parseInt(item) + 1}`;
     let rentStr = NO_RENT_STRING;
     let minIncomeStr = NO_MIN_INCOME_STRING;
     let maxIncomeStr = NO_MAX_INCOME_STRING;
     let rentInfo = "";
     let minIncomeInfo = "";
     let maxIncomeInfo = "";
+    if (unit.PERCENT_AMI) {
+      incomeBracketStr = `${unit.PERCENT_AMI}% <abbr title="Area Median Income">AMI</abbr>`;
+    }
     if (unit.RENT_PER_MONTH_USD) {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
     } else if (unit.RENT_NOTES) {
@@ -165,6 +249,7 @@ const unitDetails = (data) => {
       maxIncomeInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">${detailStrs.join("<br/>")}</span></span>`;
     }
     rows.push(`
+      <td>${incomeBracketStr}</td>
       <td>${minIncomeStr} ${minIncomeInfo}</td>
       <td>${maxIncomeStr} ${maxIncomeInfo}</td>
       <td>${rentStr} ${rentInfo}</td>
@@ -196,6 +281,7 @@ const unitTables = (units) => {
       <table>
         <thead>
           <tr>
+            <th>Income bracket</th>
             <th>Min income (per year)</th>
             <th>Max income (per year)</th>
             <th>Rent (per month)</th>
@@ -223,7 +309,7 @@ const fetchData = async(housingID) => {
     })
     .all()
     .then(records => {
-      let units = {"metadata": {}, "data": []};
+      let units = {"metadata": {"notesData": {}}, "data": []};
       if (records[0]){
         units.metadata["aptName"] = (
           records[0].fields["APT_NAME"]?.[0]|| "");
@@ -239,6 +325,14 @@ const fetchData = async(housingID) => {
           records[0].fields["Phone (from Housing)"]?.[0]|| "");
         units.metadata["Website"] = (
           records[0].fields["URL (from Housing)"]?.[0]|| "");
+        units.metadata.notesData["_POPULATIONS_SERVED"] = (
+          records[0].fields["_POPULATIONS_SERVED"]);
+        units.metadata.notesData["_MIN_RESIDENT_AGE"] = (
+          records[0].fields["_MIN_RESIDENT_AGE"]?.[0]|| "");
+        units.metadata.notesData["_MAX_RESIDENT_AGE"] = (
+          records[0].fields["_MAX_RESIDENT_AGE"]?.[0]|| "");
+        units.metadata.notesData["_PREFERS_LOCAL_APPLICANTS"] = (
+          records[0].fields["_PREFERS_LOCAL_APPLICANTS"]?.[0]|| "");
       }
       for (record in records) {
         let unitKey = records[record].fields.TYPE;
