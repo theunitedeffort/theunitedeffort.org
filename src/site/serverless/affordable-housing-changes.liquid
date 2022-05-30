@@ -36,6 +36,9 @@ permalink:
 {% fieldLabel "Contact Email", housingFields, "EMAIL" %}
 {% formField housingFields, record, "EMAIL" %}<br/>
 
+{% fieldLabel "Management Company", housingFields, "MANAGEMENT_COMPANY" %}
+{% formField housingFields, record, "MANAGEMENT_COMPANY" %}<br/>
+
 {% fieldLabel "URL", housingFields, "PROPERTY_URL" %}
 {% formField housingFields, record, "PROPERTY_URL" %}<br/>
 
@@ -47,8 +50,17 @@ permalink:
 {% formField housingFields, record, "POPULATIONS_SERVED" %}<br/>
 </div>
 
+{% fieldLabel "Minimum Resident Age", housingFields, "MIN_RESIDENT_AGE" %}
+{% formField housingFields, record, "MIN_RESIDENT_AGE" %}<br/>
+
+{% fieldLabel "Maximum Resident Age", housingFields, "MAX_RESIDENT_AGE" %}
+{% formField housingFields, record, "MAX_RESIDENT_AGE" %}<br/>
+
 {% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}
 {% formField housingFields, record, "ACCEPTS_VOUCHERS" %}<br/>
+
+{% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
+{% formField housingFields, record, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}<br/>
 
 <div id="all-units">
 {% for unitNum in (0..9) %}
@@ -83,6 +95,25 @@ permalink:
 
 	{% indexFieldLabel unitNum, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}
 	${% indexFormField unitNum, unitsFields, unitsRecord, "RENT_PER_MONTH_USD" %} per month<br/>
+
+	{% indexFieldLabel unitNum, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %} = 
+	{% indexFormField unitNum, unitsFields, unitsRecord, "MIN_INCOME_RENT_FACTOR" %} times yearly rent<br/>
+
+	<table>
+	<th>Household Size</th>
+	<th>Maximum Income</th>
+	{% for hhSize in (1..12) %}
+	{% assign hiddenRow = "" %}
+	{% if unitsRecord and unitsRecord != "" and unitsRecord.fields.MAX_OCCUPANCY and hhSize > unitsRecord.fields.MAX_OCCUPANCY %}
+	  {% assign hiddenRow = "hidden" %}
+	{% endif %}
+	<tr {{hiddenRow}}>
+	{% assign fieldname = "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD" %}
+	<td>{% indexFieldLabel unitNum, hhSize, unitsFields, fieldname %}</td>
+	<td>${% indexFormField unitNum, unitsFields, unitsRecord, fieldname %} per year</td>
+	</tr>
+	{% endfor %}
+	</table>
 	</fieldset>
 	</div>
 {% endfor %}
