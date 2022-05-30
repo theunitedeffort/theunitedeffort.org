@@ -98,7 +98,7 @@ const metaData = (units) => {
 
   let metaNotesStr = "";
   if (metaNotes.length > 0) {
-    metaNotesStr = `<p>${metaNotes.join("<br/>")}</p>`; 
+    metaNotesStr = `<p>${metaNotes.join("</p><p>")}</p>`; 
   }
   return `
     <h1>${aptName}</h1>
