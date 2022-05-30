@@ -287,18 +287,22 @@ module.exports = function(eleventyConfig) {
       .all()
       .then(records => {
         records.forEach(function(record) {
-          housingList.push({
-            id: record.get("ID (from Housing)")?.[0] || "",
-            aptName: record.get("APT_NAME")?.[0] || "",
-            address: record.get("Address (from Housing)")?.[0] || "",
-            city: record.get("City (from Housing)")?.[0] || "",
-            units: {unitType: record.get("TYPE"), openStatus: record.get("STATUS")},
-            locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
-            phone: record.get("Phone (from Housing)")?.[0] || "",
-            website: record.get("URL (from Housing)")?.[0] || "",
-            email: record.get("EMAIL (from Housing)")?.[0] || "",
-            populationsServed: record.get("_POPULATIONS_SERVED"),
-          })
+          let housing_id = record.get("ID (from Housing)")?.[0] || "";
+          // Ignore any entries that do not have a parent property.
+          if (housing_id) {
+            housingList.push({
+              id: housing_id,
+              aptName: record.get("APT_NAME")?.[0] || "",
+              address: record.get("Address (from Housing)")?.[0] || "",
+              city: record.get("City (from Housing)")?.[0] || "",
+              units: {unitType: record.get("TYPE"), openStatus: record.get("STATUS")},
+              locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
+              phone: record.get("Phone (from Housing)")?.[0] || "",
+              website: record.get("URL (from Housing)")?.[0] || "",
+              email: record.get("EMAIL (from Housing)")?.[0] || "",
+              populationsServed: record.get("_POPULATIONS_SERVED"),
+            });
+          }
         });
 
         // Get a map from housing id to all associated unit type, status pairs.
