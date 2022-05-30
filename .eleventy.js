@@ -126,8 +126,17 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addFilter("numFiltersApplied", function(query){
     // TODO: Don't hardcode this list of filters here.
-    const allowedFilters = ["city", "availability", "unitType", "propertyName",
-      "rentMax", "income", "populationsServed", "wheelchairAccessibleOnly"];
+    const allowedFilters = [
+      "city", 
+      "availability", 
+      "unitType", 
+      "propertyName",
+      "rentMax", 
+      "income", 
+      "populationsServed", 
+      "wheelchairAccessibleOnly",
+      "includeReferrals",
+    ];
     let count = 0;
     for (key in query) {
       if (allowedFilters.includes(key) && query[key]) {
@@ -185,7 +194,7 @@ module.exports = function(eleventyConfig) {
 
   // Generates an Airtable filter formula string based on 'query'.
   const buildQueryStr = function(query) {
-    if (!query) { return ""; }
+    query = query || "";
     const {
       availability,
       city,
@@ -198,9 +207,16 @@ module.exports = function(eleventyConfig) {
       includeUnknownIncome,
       propertyName,
       wheelchairAccessibleOnly,
+      includeReferrals,
     } = query;
 
+    
     let parameters = [];
+
+    // By default, hide any units not allowing public applications (i.e. referrals only).
+    if(!includeReferrals) {
+      parameters.push("{_DISALLOWS_PUBLIC_APPLICATIONS} = 0")
+    }
 
     if (unitType) {
       let rooms = unitType.split(", ");
