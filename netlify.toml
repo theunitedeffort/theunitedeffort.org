@@ -50,3 +50,8 @@ status = 200
 from = "/data/housing/affordable-housing/:id"
 to = "/.netlify/functions/units"
 status = 200
+
+[[redirects]]
+from = "/housing/affordable-housing/rawdata/:id"
+to = "/.netlify/functions/rawdata"
+status = 200

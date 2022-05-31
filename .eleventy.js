@@ -283,59 +283,44 @@ module.exports = function(eleventyConfig) {
    return tag;
   }
 
-  const formField = function(fields, record, fieldName, index="") {
+  const formField = function(fields, fieldName, index="") {
     let field = fields[fieldName];
     let tag = "";
     let options = "";
     let content = "";
     let endtag = "";
-    // console.log(record);
-    let value = record ? record.get(fieldName) || "" : "";
     if (field.type === "singleSelect") {
       tag = "select";
       endtag = "</select>"
       content += `<option></option>`;
       for (const choice of field.options.choices) {
-        let selected = "";
-        if (choice.name === value) {
-          selected = " selected";
-          options += `style="background-color:var(--airtable-color-${choice.color});"`
-        }
-        content += `<option value="${choice.name}"${selected} data-color="${choice.color}">${choice.name}</option>`;
+        content += `<option value="${choice.name}" data-color="${choice.color}">${choice.name}</option>`;
       }
     } else if (field.type === "multipleSelects") {
       let checkboxes = [];
       for (const choice of field.options.choices) {
-        let selected = "";
-        let style = "";
-        console.log(value);
-        if (value.includes(choice.name)) {
-          selected = "checked";
-          style = `style="background-color:var(--airtable-color-${choice.color});"`
-        }
         let id = `${field.id}:${choice.name.replace(" ", "-").toLowerCase()}${index ? ":" + index : ""}`;
-        checkboxes.push(`<input type="checkbox" id="${id}" name="${field.name}${index ? ":" + index : ""}" ${selected} data-color="${choice.color}"> <label for="${id}" ${style}>${choice.name}</label>`);
+        checkboxes.push(`<input type="checkbox" id="${id}" name="${field.name}${index ? ":" + index : ""}" data-color="${choice.color}"> <label for="${id}">${choice.name}</label>`);
       }
       return checkboxes.join("<br/>");
     } else if (field.type === "multilineText") {
       tag = "textarea"
       endtag = "</textarea>"
-      content = value;
     } else if (field.type === "number") {
       tag = "input"
-      options = `type="number" min="0" value="${value}"`
+      options = `type="number" min="0"`
     } else if (field.type === "email") {
       tag = "input"
-      options = `type="email" value="${value}"`
+      options = `type="email"`
     } else if (field.type === "phoneNumber") {
       tag = "input"
-      options = `type="tel" value="${value}"`
+      options = `type="tel"`
     } else if (field.type === "singleLineText" || field.type === "url") {
       tag = "input"
-      options = `type="text" value="${value}"`
+      options = `type="text"`
     } else if (field.type === "checkbox") {
       tag = "input"
-      options = `type="checkbox" ${value ? "checked" : ""}`
+      options = `type="checkbox"`
     } else {
       return "";
     }
@@ -350,12 +335,12 @@ module.exports = function(eleventyConfig) {
     return fieldLabel(labelText, fields, fieldName, index);
   });
 
-  eleventyConfig.addShortcode("formField", function(fields, record, fieldName) {
-    return formField(fields, record, fieldName);
+  eleventyConfig.addShortcode("formField", function(fields, fieldName) {
+    return formField(fields, fieldName);
   });
 
-  eleventyConfig.addShortcode("indexFormField", function(index, fields, record, fieldName) {
-    return formField(fields, record, fieldName, index);
+  eleventyConfig.addShortcode("indexFormField", function(index, fields, fieldName) {
+    return formField(fields, fieldName, index);
   });
 
   // Gets a subset of all housing results from Airtable based on 'query'.

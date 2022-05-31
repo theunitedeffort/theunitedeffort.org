@@ -213,6 +213,17 @@ const unitTables = (units) => {
   `;
 };
 
+const fetchRawRecords = async(housingID) => {
+  const table = base(UNITS_TABLE);
+  return table.select({
+    view: "API all units",
+    filterByFormula: `{ID (from Housing)} = "${housingID}"`
+  })
+  .all()
+  .then(records => {
+    return records;
+  });
+}
 
 // Lookup data for this item from the Airtable API
 const fetchData = async(housingID) => {
@@ -250,20 +261,17 @@ const fetchData = async(housingID) => {
 };
 
 
-
-
 exports.handler = async function(event) {
-
+  console.log(event.path);
   // get the housing ID from the URL
   const housingID = event.path.split("affordable-housing/")[1];
   
-  // // determine if we'll return a view of the json data
+  // determine if we'll return a view of the json data
   const json = event.path.startsWith("/data/");
+  let data;
 
-  // Look up the property in the DB
-  let data = await fetchData(housingID);
-  console.log(data);
   if (json) {
+    data = await fetchRawRecords(housingID);
     return {
       statusCode: 200,
       body: JSON.stringify(data),
@@ -272,6 +280,9 @@ exports.handler = async function(event) {
       }
     };
   } else {
+    // Look up the property in the DB
+    data = await fetchData(housingID);
+    console.log(data);
     const units = unitTables(data);
     return {
       statusCode: 200,

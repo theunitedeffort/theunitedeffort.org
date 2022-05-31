@@ -9,108 +9,100 @@ permalink:
 {% assign allFields = "foo" | housingFields %}
 {% assign housingFields = allFields.housingDatabase %}
 {% assign unitsFields = allFields.units %}
+{% comment %}
 {% assign record = eleventy.serverless.path.id | housingRecord %}
 {% assign unitsRecords = eleventy.serverless.path.id | unitsRecords %}
+{% endcomment %}
 
 <form style="display:block;" id="housing-changes" name="housing_changes" netlify>
 <input type="hidden" name="form-name" value="housing_changes" />
 
+<div id="property-data">
 {% fieldLabel "Property Name", housingFields, "APT_NAME" %}
-{% formField housingFields, record, "APT_NAME" %}<br/>
+{% formField housingFields, "APT_NAME" %}<br/>
 
 {% fieldLabel "Address", housingFields, "ADDRESS" %}
-{% formField housingFields, record, "ADDRESS" %}<br/>
+{% formField housingFields, "ADDRESS" %}<br/>
 
 {% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}
-{% formField housingFields, record, "SECOND_ADDRESS" %}<br/>
+{% formField housingFields, "SECOND_ADDRESS" %}<br/>
 
 {% fieldLabel "City", housingFields, "CITY" %}
-{% formField housingFields, record, "CITY" %}<br/>
+{% formField housingFields, "CITY" %}<br/>
 
 {% fieldLabel "ZIP Code", housingFields, "ZIP_CODE" %}
-{% formField housingFields, record, "ZIP_CODE" %}<br/>
+{% formField housingFields, "ZIP_CODE" %}<br/>
 
 {% fieldLabel "Contact Phone", housingFields, "PHONE" %}
-{% formField housingFields, record, "PHONE" %}<br/>
+{% formField housingFields, "PHONE" %}<br/>
 
 {% fieldLabel "Contact Email", housingFields, "EMAIL" %}
-{% formField housingFields, record, "EMAIL" %}<br/>
+{% formField housingFields, "EMAIL" %}<br/>
 
 {% fieldLabel "Management Company", housingFields, "MANAGEMENT_COMPANY" %}
-{% formField housingFields, record, "MANAGEMENT_COMPANY" %}<br/>
+{% formField housingFields, "MANAGEMENT_COMPANY" %}<br/>
 
 {% fieldLabel "URL", housingFields, "PROPERTY_URL" %}
-{% formField housingFields, record, "PROPERTY_URL" %}<br/>
+{% formField housingFields, "PROPERTY_URL" %}<br/>
 
 {% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}
-{% formField housingFields, record, "UNITS_CNT" %}<br/>
+{% formField housingFields, "UNITS_CNT" %}<br/>
 
 <div class="multiselect">
 {% fieldLabel "Populations Served", housingFields, "POPULATIONS_SERVED" %}<br/>
-{% formField housingFields, record, "POPULATIONS_SERVED" %}<br/>
+{% formField housingFields, "POPULATIONS_SERVED" %}<br/>
 </div>
 
 {% fieldLabel "Minimum Resident Age", housingFields, "MIN_RESIDENT_AGE" %}
-{% formField housingFields, record, "MIN_RESIDENT_AGE" %}<br/>
+{% formField housingFields, "MIN_RESIDENT_AGE" %}<br/>
 
 {% fieldLabel "Maximum Resident Age", housingFields, "MAX_RESIDENT_AGE" %}
-{% formField housingFields, record, "MAX_RESIDENT_AGE" %}<br/>
+{% formField housingFields, "MAX_RESIDENT_AGE" %}<br/>
 
 {% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}
-{% formField housingFields, record, "ACCEPTS_VOUCHERS" %}<br/>
+{% formField housingFields, "ACCEPTS_VOUCHERS" %}<br/>
 
 {% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
-{% formField housingFields, record, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}<br/>
+{% formField housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}<br/>
+</div>
 
 <div id="all-units">
 {% for unitNum in (0..9) %}
-	{% assign numUnitsRecords = unitsRecords | size %}
-	{% if unitNum < numUnitsRecords %}
-	  {% assign unitsRecord = unitsRecords[unitNum] %}
-	  {% assign hidden = "" %}
-	{% else %}
-	  {% assign unitsRecord = "" %}
-	  {% assign hidden = "hidden" %}
-	{% endif %}
-	<div id="unit-{{unitNum}}" {{hidden}}>
+	<div id="unit-{{unitNum}}">
 	<fieldset>
 	  <legend>Unit Offering 
 	    <button type="button">Delete</button>
 	  </legend>
 	{% indexFieldLabel unitNum, "Type", unitsFields, "TYPE" %}
-	{% indexFormField unitNum, unitsFields, unitsRecord, "TYPE" %}<br/>
+	{% indexFormField unitNum, unitsFields, "TYPE" %}<br/>
 
 	{% indexFieldLabel unitNum, "Status", unitsFields, "STATUS" %}
-	{% indexFormField unitNum, unitsFields, unitsRecord, "STATUS" %}<br/>
+	{% indexFormField unitNum, unitsFields, "STATUS" %}<br/>
 
   Occupancy
 	{% indexFieldLabel unitNum, "Min", unitsFields, "MIN_OCCUPANCY" %}
-	{% indexFormField unitNum, unitsFields, unitsRecord, "MIN_OCCUPANCY" %} to 
+	{% indexFormField unitNum, unitsFields, "MIN_OCCUPANCY" %} to 
 
   {% indexFieldLabel unitNum, "Max", unitsFields, "MAX_OCCUPANCY" %}
-	{% indexFormField unitNum, unitsFields, unitsRecord, "MAX_OCCUPANCY" %} people<br/>
+	{% indexFormField unitNum, unitsFields, "MAX_OCCUPANCY" %} people<br/>
 
 	{% indexFieldLabel unitNum, "Percent AMI", unitsFields, "PERCENT_AMI" %}
-	{% indexFormField unitNum, unitsFields, unitsRecord, "PERCENT_AMI" %}%<br/>
+	{% indexFormField unitNum, unitsFields, "PERCENT_AMI" %}%<br/>
 
 	{% indexFieldLabel unitNum, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}
-	${% indexFormField unitNum, unitsFields, unitsRecord, "RENT_PER_MONTH_USD" %} per month<br/>
+	${% indexFormField unitNum, unitsFields, "RENT_PER_MONTH_USD" %} per month<br/>
 
 	{% indexFieldLabel unitNum, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %} = 
-	{% indexFormField unitNum, unitsFields, unitsRecord, "MIN_INCOME_RENT_FACTOR" %} times yearly rent<br/>
+	{% indexFormField unitNum, unitsFields, "MIN_INCOME_RENT_FACTOR" %} times yearly rent<br/>
 
 	<table>
 	<th>Household Size</th>
 	<th>Maximum Income</th>
 	{% for hhSize in (1..12) %}
-	{% assign hiddenRow = "" %}
-	{% if unitsRecord and unitsRecord != "" and unitsRecord.fields.MAX_OCCUPANCY and hhSize > unitsRecord.fields.MAX_OCCUPANCY %}
-	  {% assign hiddenRow = "hidden" %}
-	{% endif %}
-	<tr {{hiddenRow}}>
+	<tr>
 	{% assign fieldname = "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD" %}
 	<td>{% indexFieldLabel unitNum, hhSize, unitsFields, fieldname %}</td>
-	<td>${% indexFormField unitNum, unitsFields, unitsRecord, fieldname %} per year</td>
+	<td>${% indexFormField unitNum, unitsFields, fieldname %} per year</td>
 	</tr>
 	{% endfor %}
 	</table>
@@ -196,6 +188,29 @@ function updateMultiselectColors() {
 	}
 }
 
+function prefillForm(data) {
+  let propertySection = document.getElementById("property-data");
+  let unitsSection = document.getElementById("all-units");
+	let propertyFields = propertySection.querySelectorAll("input, textarea, select");
+	let unitsFields = unitsSection.querySelectorAll("input, textarea, select");
+	for (field of propertyFields) {
+	  let value = data.housing.fields[field.name];
+	  if (!value) { continue; }
+    if (field.tagName == "INPUT") {
+      field.value = value;
+    } else if (field.tagName == "TEXTAREA") {
+      field.innerHTML = value;
+    } else if (field.tagName == "SELECT") {
+	    for (option of field.childNodes) {
+	      if (option.value == value) {
+	        option.setAttribute("selected", "selected");
+	        break;
+	      }
+	    }
+    }
+	}
+}
+
 let units = document.querySelectorAll("#all-units div");
 for (unit of units) {
 	let deleteButton = unit.querySelector("button");
@@ -211,6 +226,11 @@ let multiselects = document.querySelectorAll(".multiselect");
 for (multiselect of multiselects) {
 	multiselect.onchange = updateMultiselectColors;
 }
+
+fetch("/housing/affordable-housing/rawdata/{{eleventy.serverless.path.id}}")
+  .then(response => response.json())
+  .then(data => prefillForm(data));
+
 
 </script>
 
