@@ -346,14 +346,21 @@ module.exports = function(eleventyConfig) {
 
   // Gets a subset of all housing results from Airtable based on 'query'.
   eleventyConfig.addFilter("housingResults", async function(query) {
-    console.log("housing query: ");
-    console.log(query);
+    console.log("housing query: " + query);
+    let asset = new EleventyFetch.AssetCache("housing_results");
+    if (!process.env.ELEVENTY_SERVERLESS && !query && asset.isCacheValid("1h")) {
+      console.log("Returning cached housing list.");
+      let housing = await asset.getCachedValue();
+      return housing;
+    }
     const queryStr = buildQueryStr(query);
+    console.log("Fetching housing list.");
     let housing = await fetchHousingList(queryStr);
     console.log("got " + housing.length + " properties.")
     // if (query) {
     //   console.log(JSON.stringify(housing, null, 4));
     // }
+    await asset.save(housing, "json");
     return housing;
   });
 

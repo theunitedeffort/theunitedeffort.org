@@ -2,17 +2,13 @@
 layout: layouts/base.liquid
 title: Check for Affordable Housing Updates
 permalink: 
-  serverless: "/housing/affordable-housing/changes/:id"
   build: "/housing/affordable-housing/changes/index.html"
 ---
 
 {% assign allFields = "foo" | housingFields %}
 {% assign housingFields = allFields.housingDatabase %}
 {% assign unitsFields = allFields.units %}
-{% comment %}
-{% assign record = eleventy.serverless.path.id | housingRecord %}
-{% assign unitsRecords = eleventy.serverless.path.id | unitsRecords %}
-{% endcomment %}
+
 
 <form style="display:block;" id="housing-changes" name="housing_changes" netlify>
 <input type="hidden" name="form-name" value="housing_changes" />
@@ -23,9 +19,13 @@ permalink:
 
 {% fieldLabel "Address", housingFields, "ADDRESS" %}
 {% formField housingFields, "ADDRESS" %}<br/>
-
+<div id="show-second-address">
+<a href="javascript:showSecondAddress()">Add a second address</a>
+</div>
+<div id="second-address" hidden>
 {% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}
 {% formField housingFields, "SECOND_ADDRESS" %}<br/>
+</div>
 
 {% fieldLabel "City", housingFields, "CITY" %}
 {% formField housingFields, "CITY" %}<br/>
@@ -64,6 +64,12 @@ permalink:
 
 {% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
 {% formField housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}<br/>
+
+{% fieldLabel "Only accepts referral applications", housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}
+{% formField housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}<br/>
+
+{% fieldLabel "Prefers applicants within the local city", housingFields, "PREFERS_LOCAL_APPLICANTS" %}
+{% formField housingFields, "PREFERS_LOCAL_APPLICANTS" %}<br/>
 </div>
 
 <div id="all-units">
@@ -115,7 +121,7 @@ permalink:
 
 <button type="button" onclick="addUnit();">Add new unit offering</button>
 <br/>
-<a href="{{serverless.path}}">Reset</a> <button type="submit">Submit</button>
+<a href="changes" id="reset-link">Reset</a> <button type="submit">Submit</button>
 </form>
 
 <script>
@@ -159,6 +165,11 @@ function deleteUnit() {
 	  unitIdx--;
 	  clearUnitForm(deletedUnit);
 	}
+}
+
+function showSecondAddress() {
+	document.getElementById("second-address").removeAttribute("hidden");
+  document.getElementById("show-second-address").setAttribute("hidden", "hidden");
 }
 
 function updateSelectColor() {
@@ -297,14 +308,19 @@ for (occupancy of occupancies) {
 console.log(occupancies);
 
 let unitIdx = 0;
-
-fetch("/housing/affordable-housing/rawdata/{{eleventy.serverless.path.id}}")
+let urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has("id")) {
+  let propertyId = urlParams.get("id");
+	fetch("/housing/affordable-housing/rawdata/" + propertyId)
   .then(response => response.json())
   .then(data => {
     unitIdx = data.units.length - 1;
     prefillForm(data);
     initUnitVisibility(data);
   });
+  document.getElementById("reset-link").href="changes?id=" + propertyId;
+}
+
 
 
 </script>

@@ -25,8 +25,9 @@ const fetchDataFromAirtable = async() => {
 
 module.exports = async function() {
   let asset = new AssetCache("airtable_resources");
-  if (asset.isCacheValid("1m")) {
-    return asset.getCachedValue(); // a promise
+  if (asset.isCacheValid("1h")) {
+    console.log("Returning cached resources data.");
+    return await asset.getCachedValue();
   }
   console.log("Fetching resources.");
   let res = await fetchDataFromAirtable();

@@ -64,12 +64,14 @@ const fetchPages = async() => {
 
 
 module.exports = async function() {
-  // let asset = new AssetCache("airtable_pages");
-  // if (asset.isCacheValid("1m")) {
-  //   return asset.getCachedValue(); // a promise
-  // }
+  let asset = new AssetCache("airtable_pages");
+  if (asset.isCacheValid("1h")) {
+    console.log("Returning cached pages data.")
+    return await asset.getCachedValue();
+  }
   console.log("Fetching pages.");
   let p = await fetchPages();
-  // await asset.save(p, "json");
-  return { pages: p };
+  let ret = {pages: p};
+  await asset.save(ret, "json");
+  return ret;
 }
