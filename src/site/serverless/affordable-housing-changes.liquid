@@ -95,9 +95,11 @@ permalink:
 	{% indexFieldLabel unitNum, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %} = 
 	{% indexFormField unitNum, unitsFields, "MIN_INCOME_RENT_FACTOR" %} times yearly rent<br/>
 
-	<table>
+	<table id="max-income">
+	<tr>
 	<th>Household Size</th>
 	<th>Maximum Income</th>
+	</tr>
 	{% for hhSize in (1..12) %}
 	<tr>
 	{% assign fieldname = "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD" %}
@@ -117,12 +119,11 @@ permalink:
 </form>
 
 <script>
-let unitIdx = {{ unitsRecords | size | plus: -1}};
 
 function addUnit() {
   if (unitIdx < 9) {
     unitIdx++;
-    let newUnit = document.querySelectorAll("#all-units div")[unitIdx];
+    let newUnit = document.querySelectorAll("#all-units > div")[unitIdx];
     newUnit.removeAttribute("hidden");
     //document.getElementById("unit-" + (numUnits - 1)).removeAttribute("hidden");
   }
@@ -188,30 +189,92 @@ function updateMultiselectColors() {
 	}
 }
 
-function prefillForm(data) {
-  let propertySection = document.getElementById("property-data");
-  let unitsSection = document.getElementById("all-units");
-	let propertyFields = propertySection.querySelectorAll("input, textarea, select");
-	let unitsFields = unitsSection.querySelectorAll("input, textarea, select");
-	for (field of propertyFields) {
-	  let value = data.housing.fields[field.name];
-	  if (!value) { continue; }
-    if (field.tagName == "INPUT") {
+function prefillField(field, value) {
+	let isMultiselect = field.parentNode.className == "multiselect";
+  if (!value) { return; }
+  if (field.tagName == "INPUT") {
+    if (field.type == "checkbox") {
+      let doCheck = false;
+      if (isMultiselect) {
+        doCheck = value.includes(field.value);
+      } else {
+        doCheck = value;
+      }
+      if (doCheck) {
+        field.setAttribute("checked", "checked");
+      }
+    } else {
       field.value = value;
-    } else if (field.tagName == "TEXTAREA") {
-      field.innerHTML = value;
-    } else if (field.tagName == "SELECT") {
-	    for (option of field.childNodes) {
-	      if (option.value == value) {
-	        option.setAttribute("selected", "selected");
-	        break;
-	      }
-	    }
     }
-	}
+  } else if (field.tagName == "TEXTAREA") {
+    field.innerHTML = value;
+  } else if (field.tagName == "SELECT") {
+    for (option of field.childNodes) {
+      if (option.value == value) {
+        option.setAttribute("selected", "selected");
+        break;
+      }
+    }
+  } 
+  let fieldChanged = field;
+  if (isMultiselect) {
+    fieldChanged = field.parentNode;
+  }
+  if (fieldChanged.onchange) {
+    fieldChanged.onchange();
+  }
 }
 
-let units = document.querySelectorAll("#all-units div");
+function prefillForm(data) {
+  const fieldSelector = "input, textarea, select";
+  let propertySection = document.getElementById("property-data");
+  let unitsSection = document.getElementById("all-units");
+	let propertyFields = propertySection.querySelectorAll(fieldSelector);
+	console.log(propertyFields);
+	let unitsFields = unitsSection.querySelectorAll(fieldSelector);
+	
+	for (field of propertyFields) {
+	  let value = data.housing.fields[field.name];
+	  prefillField(field, value);
+	}
+
+  for (field of unitsFields) {
+    let [fieldName, index] = field.name.split(":");
+    if (index < data.units.length) {
+      let value = data.units[index].fields[fieldName];
+      prefillField(field, value);
+    }
+  }
+}
+
+function initUnitVisibility(data) {
+  let numUsedUnits = data.units.length;
+	let units = document.querySelectorAll("#all-units > div");
+  for (i = numUsedUnits; i < units.length; i++) {
+    units[i].setAttribute("hidden", "hidden");
+  }
+}
+
+function updateMaxIncomeVisibility() {
+  console.log("updateMaxIncomeVisibility called.");
+  let container = this.parentNode;
+  let maxIncomeRows = container.querySelectorAll("#max-income tr");
+  let minOccupancyField = container.querySelector("[name*=MIN_OCCUPANCY]");
+  let maxOccupancyField = container.querySelector("[name*=MAX_OCCUPANCY]");
+	let minHhSize = parseInt(minOccupancyField.value || 0);
+  let maxHhSize = parseInt(maxOccupancyField.value || maxIncomeRows.length);
+  for (j = 1; j < maxIncomeRows.length; j++) {
+    // Skip the header row, start j at 1.
+    if (j < minHhSize || j > maxHhSize) {
+      maxIncomeRows[j].setAttribute("hidden", "hidden");
+      maxIncomeRows[j].querySelector("input").value = "";
+    } else {
+      maxIncomeRows[j].removeAttribute("hidden");
+    }
+  }
+}
+
+let units = document.querySelectorAll("#all-units > div");
 for (unit of units) {
 	let deleteButton = unit.querySelector("button");
 	deleteButton.onclick = deleteUnit;
@@ -227,9 +290,21 @@ for (multiselect of multiselects) {
 	multiselect.onchange = updateMultiselectColors;
 }
 
+let occupancies = document.querySelectorAll("[name*=OCCUPANCY]");
+for (occupancy of occupancies) {
+	occupancy.onchange = updateMaxIncomeVisibility;
+}
+console.log(occupancies);
+
+let unitIdx = 0;
+
 fetch("/housing/affordable-housing/rawdata/{{eleventy.serverless.path.id}}")
   .then(response => response.json())
-  .then(data => prefillForm(data));
+  .then(data => {
+    unitIdx = data.units.length - 1;
+    prefillForm(data);
+    initUnitVisibility(data);
+  });
 
 
 </script>

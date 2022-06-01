@@ -272,7 +272,7 @@ module.exports = function(eleventyConfig) {
   });
 
   const fieldLabel = function(labelText, fields, fieldName, index="") {
-    let tag = `<label for="${fields[fieldName].id}${index ? ":" + index : ""}">${labelText} `
+    let tag = `<label for="${fields[fieldName].id}${index != "" ? ":" + index : ""}">${labelText} `
     if (fields[fieldName].description) {
       tag += `<span class="tooltip_entry">
 <span class="icon_info"></span>
@@ -289,6 +289,7 @@ module.exports = function(eleventyConfig) {
     let options = "";
     let content = "";
     let endtag = "";
+    let indexStr = index !== "" ? ":" + index : "";
     if (field.type === "singleSelect") {
       tag = "select";
       endtag = "</select>"
@@ -299,8 +300,8 @@ module.exports = function(eleventyConfig) {
     } else if (field.type === "multipleSelects") {
       let checkboxes = [];
       for (const choice of field.options.choices) {
-        let id = `${field.id}:${choice.name.replace(" ", "-").toLowerCase()}${index ? ":" + index : ""}`;
-        checkboxes.push(`<input type="checkbox" id="${id}" name="${field.name}${index ? ":" + index : ""}" data-color="${choice.color}"> <label for="${id}">${choice.name}</label>`);
+        let id = `${field.id}:${choice.name.replace(" ", "-").toLowerCase()}${indexStr}`;
+        checkboxes.push(`<input type="checkbox" id="${id}" name="${field.name}${indexStr}" value="${choice.name}" data-color="${choice.color}"> <label for="${id}">${choice.name}</label>`);
       }
       return checkboxes.join("<br/>");
     } else if (field.type === "multilineText") {
@@ -324,7 +325,7 @@ module.exports = function(eleventyConfig) {
     } else {
       return "";
     }
-    return `<${tag} id="${field.id}${index ? ":" + index : ""}" name="${field.name}${index ? ":" + index : ""}" ${options}>${content}${endtag}`;
+    return `<${tag} id="${field.id}${indexStr}" name="${field.name}${indexStr}" ${options}>${content}${endtag}`;
   }
 
   eleventyConfig.addShortcode("fieldLabel", function(labelText, fields, fieldName) {

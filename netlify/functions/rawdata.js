@@ -33,7 +33,7 @@ exports.handler = async function(event) {
   let unitsRecords = await fetchUnitRecords(housingID);
   let housingRecord = await fetchHousingRecord(housingID);
   let data = {housing: housingRecord, units: unitsRecords};
-  console.log(JSON.stringify(data, null, 2));
+  // console.log(JSON.stringify(data, null, 2));
   return {
     statusCode: 200,
     body: JSON.stringify(data),
