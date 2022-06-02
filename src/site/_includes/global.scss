@@ -37,6 +37,21 @@ body {
   }
 }
 
+body.smaller {
+  @include bp(narrow) {
+    font-size: 14px;
+  }
+  @include bp(mid) {
+    font-size: 16px;
+  }
+  @include bp(wide) {
+    font-size: 18px;
+  }
+  @include bp(ultra) {
+    font-size: 20px;
+  }
+}
+
 a {
   color: currentColor;
 }
@@ -109,4 +124,8 @@ main {
 
 .hidden {
   display:none;
+}
+
+.float-right {
+  float:right;
 }

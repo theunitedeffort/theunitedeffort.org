@@ -32,7 +32,11 @@
         white-space: nowrap;
       }
       input[type=text],
-      input[type=number] {
+      input[type=number],
+      input[type=email],
+      input[type=tel],
+      select,
+      textarea {
         border: solid 2px var(--color-gray-600);
         font-size: 0.8em;
         font-family: var(--font-primary);
@@ -44,6 +48,37 @@
     
     .option_columns {
       columns: 8em 3;
+    }
+
+    #housing-changes {
+      display: block; 
+
+      input,
+      select,
+      textarea {
+        font-size: 1em;
+        padding: 0.5em;
+        margin-bottom: 0.8em;
+      }
+      .multiselect > input[type=checkbox] {
+        margin-bottom: 0em;
+        margin-left: 1em;
+      }
+      .multiselect > label {
+        padding: 0.2em 0.4em;
+        border-radius: 1em;
+      }
+      fieldset {
+        margin-top: 1.5em;
+        width: 100%;
+      }
+      label {
+        font-size: 0.9em;
+      }
+    }
+
+    .label {
+      font-size: 0.8em;
     }
     
 

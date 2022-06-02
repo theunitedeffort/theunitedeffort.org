@@ -272,24 +272,24 @@ module.exports = function(eleventyConfig) {
   });
 
   const fieldLabel = function(labelText, fields, fieldName, index="") {
-    let tag = `<label for="${fields[fieldName].id}${index != "" ? ":" + index : ""}">${labelText} `
+    let tag = `<label for="${fields[fieldName].id}${index != "" ? ":" + index : ""}">${labelText}</label>`
     if (fields[fieldName].description) {
-      tag += `<span class="tooltip_entry">
+      tag += ` <span class="tooltip_entry">
 <span class="icon_info"></span>
 <span class="tooltip_content">${fields[fieldName].description}</span>
 </span>`
     }
-   tag += `</label>`;
    return tag;
   }
 
-  const formField = function(fields, fieldName, index="") {
+  const formField = function(fields, fieldName, width="", index="") {
     let field = fields[fieldName];
     let tag = "";
     let options = "";
     let content = "";
     let endtag = "";
     let indexStr = index !== "" ? ":" + index : "";
+    let style = width !== "" ? `style="width:${width};"` : "";
     if (field.type === "singleSelect") {
       tag = "select";
       endtag = "</select>"
@@ -325,7 +325,7 @@ module.exports = function(eleventyConfig) {
     } else {
       return "";
     }
-    return `<${tag} id="${field.id}${indexStr}" name="${field.name}${indexStr}" ${options}>${content}${endtag}`;
+    return `<${tag} id="${field.id}${indexStr}" name="${field.name}${indexStr}" ${options} ${style}>${content}${endtag}`;
   }
 
   eleventyConfig.addShortcode("fieldLabel", function(labelText, fields, fieldName) {
@@ -336,19 +336,19 @@ module.exports = function(eleventyConfig) {
     return fieldLabel(labelText, fields, fieldName, index);
   });
 
-  eleventyConfig.addShortcode("formField", function(fields, fieldName) {
-    return formField(fields, fieldName);
+  eleventyConfig.addShortcode("formField", function(fields, fieldName, width="") {
+    return formField(fields, fieldName, width);
   });
 
-  eleventyConfig.addShortcode("indexFormField", function(index, fields, fieldName) {
-    return formField(fields, fieldName, index);
+  eleventyConfig.addShortcode("indexFormField", function(index, fields, fieldName, width="") {
+    return formField(fields, fieldName, width, index);
   });
 
   // Gets a subset of all housing results from Airtable based on 'query'.
   eleventyConfig.addFilter("housingResults", async function(query) {
     console.log("housing query: " + query);
     let asset = new EleventyFetch.AssetCache("housing_results");
-    if (!process.env.ELEVENTY_SERVERLESS && !query && asset.isCacheValid("1h")) {
+    if (!process.env.ELEVENTY_SERVERLESS && !query && asset.isCacheValid("1d")) {
       console.log("Returning cached housing list.");
       let housing = await asset.getCachedValue();
       return housing;

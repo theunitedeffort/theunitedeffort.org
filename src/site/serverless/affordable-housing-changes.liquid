@@ -3,6 +3,7 @@ layout: layouts/base.liquid
 title: Check for Affordable Housing Updates
 permalink: 
   build: "/housing/affordable-housing/changes/index.html"
+pageClass: "smaller"
 ---
 
 {% assign allFields = "foo" | housingFields %}
@@ -14,50 +15,54 @@ permalink:
 <input type="hidden" name="form-name" value="housing_changes" />
 
 <div id="property-data">
-{% fieldLabel "Property Name", housingFields, "APT_NAME" %}
-{% formField housingFields, "APT_NAME" %}<br/>
+{% fieldLabel "Property Name", housingFields, "APT_NAME" %}<br/>
+{% formField housingFields, "APT_NAME", "20em" %}<br/>
 
-{% fieldLabel "Address", housingFields, "ADDRESS" %}
+{% fieldLabel "Address", housingFields, "ADDRESS" %}<br/>
 {% formField housingFields, "ADDRESS" %}<br/>
 <div id="show-second-address">
 <a href="javascript:showSecondAddress()">Add a second address</a>
 </div>
 <div id="second-address" hidden>
-{% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}
+{% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}<br/>
 {% formField housingFields, "SECOND_ADDRESS" %}<br/>
 </div>
 
-{% fieldLabel "City", housingFields, "CITY" %}
+{% fieldLabel "City", housingFields, "CITY" %}<br/>
 {% formField housingFields, "CITY" %}<br/>
 
-{% fieldLabel "ZIP Code", housingFields, "ZIP_CODE" %}
-{% formField housingFields, "ZIP_CODE" %}<br/>
+{% fieldLabel "ZIP Code", housingFields, "ZIP_CODE" %}<br/>
+{% formField housingFields, "ZIP_CODE", "6em" %}<br/>
 
-{% fieldLabel "Contact Phone", housingFields, "PHONE" %}
-{% formField housingFields, "PHONE" %}<br/>
+{% fieldLabel "Contact Phone", housingFields, "PHONE" %}<br/>
+{% formField housingFields, "PHONE", "12em" %}<br/>
 
-{% fieldLabel "Contact Email", housingFields, "EMAIL" %}
-{% formField housingFields, "EMAIL" %}<br/>
+{% fieldLabel "Contact Email", housingFields, "EMAIL" %}<br/>
+{% formField housingFields, "EMAIL", "25em" %}<br/>
 
-{% fieldLabel "Management Company", housingFields, "MANAGEMENT_COMPANY" %}
-{% formField housingFields, "MANAGEMENT_COMPANY" %}<br/>
+{% fieldLabel "Management Company", housingFields, "MANAGEMENT_COMPANY" %}<br/>
+{% formField housingFields, "MANAGEMENT_COMPANY", "25em" %}<br/>
 
-{% fieldLabel "URL", housingFields, "PROPERTY_URL" %}
-{% formField housingFields, "PROPERTY_URL" %}<br/>
+{% fieldLabel "URL", housingFields, "PROPERTY_URL" %} <a href="" target="_blank" rel="noopener" class="label" id="property-link">Visit this page</a><sup>&#8599;</sup><br/>
+{% formField housingFields, "PROPERTY_URL", "30em" %}<br/>
 
-{% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}
-{% formField housingFields, "UNITS_CNT" %}<br/>
+{% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}<br/>
+{% formField housingFields, "UNITS_CNT", "4em" %}<br/>
 
-<div class="multiselect">
+<div class="multiselect" id="populations-served">
 {% fieldLabel "Populations Served", housingFields, "POPULATIONS_SERVED" %}<br/>
 {% formField housingFields, "POPULATIONS_SERVED" %}<br/>
 </div>
 
-{% fieldLabel "Minimum Resident Age", housingFields, "MIN_RESIDENT_AGE" %}
-{% formField housingFields, "MIN_RESIDENT_AGE" %}<br/>
+<div id="min-age" hidden>
+{% fieldLabel "Minimum Resident Age", housingFields, "MIN_RESIDENT_AGE" %}<br/>
+{% formField housingFields, "MIN_RESIDENT_AGE", "4em" %}<br/>
+</div>
 
-{% fieldLabel "Maximum Resident Age", housingFields, "MAX_RESIDENT_AGE" %}
-{% formField housingFields, "MAX_RESIDENT_AGE" %}<br/>
+<div id="max-age" hidden>
+{% fieldLabel "Maximum Resident Age", housingFields, "MAX_RESIDENT_AGE" %}<br/>
+{% formField housingFields, "MAX_RESIDENT_AGE", "4em" %}<br/>
+</div>
 
 {% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}
 {% formField housingFields, "ACCEPTS_VOUCHERS" %}<br/>
@@ -77,29 +82,26 @@ permalink:
 	<div id="unit-{{unitNum}}">
 	<fieldset>
 	  <legend>Unit Offering 
-	    <button type="button">Delete</button>
+	    <button type="button" class="btn btn_warning float-right">Delete</button>
 	  </legend>
-	{% indexFieldLabel unitNum, "Type", unitsFields, "TYPE" %}
+	{% indexFieldLabel unitNum, "Type", unitsFields, "TYPE" %}<br/>
 	{% indexFormField unitNum, unitsFields, "TYPE" %}<br/>
 
-	{% indexFieldLabel unitNum, "Status", unitsFields, "STATUS" %}
+	{% indexFieldLabel unitNum, "Status", unitsFields, "STATUS" %}<br/>
 	{% indexFormField unitNum, unitsFields, "STATUS" %}<br/>
 
-  Occupancy
-	{% indexFieldLabel unitNum, "Min", unitsFields, "MIN_OCCUPANCY" %}
-	{% indexFormField unitNum, unitsFields, "MIN_OCCUPANCY" %} to 
+  <span class="label">Occupancy Limits</span><br/>
+	{% indexFormField unitNum, unitsFields, "MIN_OCCUPANCY", "4em" %} to 
+	{% indexFormField unitNum, unitsFields, "MAX_OCCUPANCY", "4em" %} people<br/>
 
-  {% indexFieldLabel unitNum, "Max", unitsFields, "MAX_OCCUPANCY" %}
-	{% indexFormField unitNum, unitsFields, "MAX_OCCUPANCY" %} people<br/>
+	{% indexFieldLabel unitNum, "Percent AMI", unitsFields, "PERCENT_AMI" %}<br/>
+	{% indexFormField unitNum, unitsFields, "PERCENT_AMI", "4em" %}%<br/>
 
-	{% indexFieldLabel unitNum, "Percent AMI", unitsFields, "PERCENT_AMI" %}
-	{% indexFormField unitNum, unitsFields, "PERCENT_AMI" %}%<br/>
+	{% indexFieldLabel unitNum, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}<br/>
+	${% indexFormField unitNum, unitsFields, "RENT_PER_MONTH_USD", "5em" %} per month<br/>
 
-	{% indexFieldLabel unitNum, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}
-	${% indexFormField unitNum, unitsFields, "RENT_PER_MONTH_USD" %} per month<br/>
-
-	{% indexFieldLabel unitNum, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %} = 
-	{% indexFormField unitNum, unitsFields, "MIN_INCOME_RENT_FACTOR" %} times yearly rent<br/>
+	{% indexFieldLabel unitNum, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %}<br/> 
+	{% indexFormField unitNum, unitsFields, "MIN_INCOME_RENT_FACTOR", "4em" %} times yearly rent<br/>
 
 	<table id="max-income">
 	<tr>
@@ -110,7 +112,7 @@ permalink:
 	<tr>
 	{% assign fieldname = "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD" %}
 	<td>{% indexFieldLabel unitNum, hhSize, unitsFields, fieldname %}</td>
-	<td>${% indexFormField unitNum, unitsFields, fieldname %} per year</td>
+	<td>${% indexFormField unitNum, unitsFields, fieldname, "7em" %} per year</td>
 	</tr>
 	{% endfor %}
 	</table>
@@ -119,9 +121,9 @@ permalink:
 {% endfor %}
 </div>
 
-<button type="button" onclick="addUnit();">Add new unit offering</button>
+<button type="button" onclick="addUnit();" class="btn btn_secondary">Add new unit offering</button>
 <br/>
-<a href="changes" id="reset-link">Reset</a> <button type="submit">Submit</button>
+<button type="submit" class="btn btn_primary">Submit</button>
 </form>
 
 <script>
@@ -170,6 +172,10 @@ function deleteUnit() {
 function showSecondAddress() {
 	document.getElementById("second-address").removeAttribute("hidden");
   document.getElementById("show-second-address").setAttribute("hidden", "hidden");
+}
+
+function updatePropertyLink() {
+	document.getElementById("property-link").href = this.value;
 }
 
 function updateSelectColor() {
@@ -227,12 +233,12 @@ function prefillField(field, value) {
       }
     }
   } 
-  let fieldChanged = field;
-  if (isMultiselect) {
-    fieldChanged = field.parentNode;
+ 
+  if (field.onchange) {
+    field.onchange();
   }
-  if (fieldChanged.onchange) {
-    fieldChanged.onchange();
+  if (isMultiselect && field.parentNode.onchange) {
+    field.parentNode.onchange();
   }
 }
 
@@ -285,6 +291,26 @@ function updateMaxIncomeVisibility() {
   }
 }
 
+function updateAgeVisibility() {
+	let seniorsOption = document.getElementById("fldkzU54q8lYtIH7G:seniors");
+	let youthOption = document.getElementById("fldkzU54q8lYtIH7G:youth");
+	let minAge = document.getElementById("min-age");
+	let maxAge = document.getElementById("max-age");
+	if (seniorsOption.checked && youthOption.checked) {
+    minAge.removeAttribute("hidden");
+    maxAge.removeAttribute("hidden");
+	} else if (seniorsOption.checked && !youthOption.checked) {
+    minAge.removeAttribute("hidden");
+    maxAge.setAttribute("hidden", "hidden");
+	} else if (!seniorsOption.checked && youthOption.checked) {
+    minAge.removeAttribute("hidden");
+    maxAge.removeAttribute("hidden");
+	} else {
+    minAge.setAttribute("hidden", "hidden");
+    maxAge.setAttribute("hidden", "hidden");
+	}
+}
+
 let units = document.querySelectorAll("#all-units > div");
 for (unit of units) {
 	let deleteButton = unit.querySelector("button");
@@ -305,7 +331,12 @@ let occupancies = document.querySelectorAll("[name*=OCCUPANCY]");
 for (occupancy of occupancies) {
 	occupancy.onchange = updateMaxIncomeVisibility;
 }
-console.log(occupancies);
+
+// Ensure the live link to the external property page updates when the URL value is changed.
+document.getElementById("fldei8N0xw2VhjX9V").onchange = updatePropertyLink;
+
+document.getElementById("fldkzU54q8lYtIH7G:seniors").onchange = updateAgeVisibility;
+document.getElementById("fldkzU54q8lYtIH7G:youth").onchange = updateAgeVisibility;
 
 let unitIdx = 0;
 let urlParams = new URLSearchParams(window.location.search);
@@ -318,7 +349,7 @@ if (urlParams.has("id")) {
     prefillForm(data);
     initUnitVisibility(data);
   });
-  document.getElementById("reset-link").href="changes?id=" + propertyId;
+  //document.getElementById("reset-link").href="changes?id=" + propertyId;
 }
 
 

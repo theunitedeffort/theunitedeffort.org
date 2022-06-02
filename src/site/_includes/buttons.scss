@@ -57,12 +57,33 @@ main {
     }
   }
 
+  .btn_warning,
+  a.btn_warning {
+    font-weight: 750;
+    background-color: var(--color-red-dark);
+    color: var(--color-white);
+    border-top: solid 2px var(--color-red-dark);
+    border-bottom: solid 2px var(--color-red-dark-b);
+
+    &:hover,
+    &:focus {
+      background-color: var(--color-red-dark-b);
+      cursor: pointer;
+    }
+  }
+
   .btn:disabled,
   a.btn:disabled {
     cursor: default;
       background-color: var(--color-gray-300);
       border-top-color: var(--color-gray-300);
       border-bottom-color: var(--color-gray-100);
+  }
+
+  legend {
+    .btn {
+      padding: 0.3em 1em;
+    }
   }
 
 //   a.btn_print {
