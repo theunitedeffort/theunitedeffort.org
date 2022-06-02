@@ -68,9 +68,12 @@
         padding: 0.2em 0.4em;
         border-radius: 1em;
       }
+      .multiselect {
+        margin-bottom: 0.8em;
+      }
       fieldset {
-        margin-top: 1.5em;
         width: 100%;
+        margin-bottom: 0;
       }
       label {
         font-size: 0.9em;
@@ -78,9 +81,15 @@
     }
 
     .label {
-      font-size: 0.8em;
+      font-size: 0.9em;
     }
     
+    .fieldset-box {
+      border: 3px solid var(--color-gray-600);
+      border-radius: 6px;
+      padding: 1em;
+      margin: 1em 0;
+    }
 
 
     

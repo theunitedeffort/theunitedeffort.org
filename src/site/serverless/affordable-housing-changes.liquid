@@ -10,7 +10,11 @@ pageClass: "smaller"
 {% assign housingFields = allFields.housingDatabase %}
 {% assign unitsFields = allFields.units %}
 
-
+<h2 id="apt-name-header">Loading property data...</h2>
+<h3>Step 1</h3>
+<p><a href="" target="_blank" rel="noopener" class="property-link">Open the official information about this property</a></p>
+<h3>Step 2</h3>
+<p>Make any edits necessary to make the information below match the offical property manager's information.</p>
 <form style="display:block;" id="housing-changes" name="housing_changes" netlify>
 <input type="hidden" name="form-name" value="housing_changes" />
 
@@ -18,11 +22,8 @@ pageClass: "smaller"
 {% fieldLabel "Property Name", housingFields, "APT_NAME" %}<br/>
 {% formField housingFields, "APT_NAME", "20em" %}<br/>
 
-{% fieldLabel "Address", housingFields, "ADDRESS" %}<br/>
+{% fieldLabel "Address", housingFields, "ADDRESS" %} <span id="show-second-address" class="label"><a href="javascript:showSecondAddress()">Add a second address</a></span><br/>
 {% formField housingFields, "ADDRESS" %}<br/>
-<div id="show-second-address">
-<a href="javascript:showSecondAddress()">Add a second address</a>
-</div>
 <div id="second-address" hidden>
 {% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}<br/>
 {% formField housingFields, "SECOND_ADDRESS" %}<br/>
@@ -35,15 +36,15 @@ pageClass: "smaller"
 {% formField housingFields, "ZIP_CODE", "6em" %}<br/>
 
 {% fieldLabel "Contact Phone", housingFields, "PHONE" %}<br/>
-{% formField housingFields, "PHONE", "12em" %}<br/>
+{% formField housingFields, "PHONE", "9em" %}<br/>
 
 {% fieldLabel "Contact Email", housingFields, "EMAIL" %}<br/>
 {% formField housingFields, "EMAIL", "25em" %}<br/>
 
 {% fieldLabel "Management Company", housingFields, "MANAGEMENT_COMPANY" %}<br/>
-{% formField housingFields, "MANAGEMENT_COMPANY", "25em" %}<br/>
+{% formField housingFields, "MANAGEMENT_COMPANY", "20em" %}<br/>
 
-{% fieldLabel "URL", housingFields, "PROPERTY_URL" %} <a href="" target="_blank" rel="noopener" class="label" id="property-link">Visit this page</a><sup>&#8599;</sup><br/>
+{% fieldLabel "URL", housingFields, "PROPERTY_URL" %} <a href="" target="_blank" rel="noopener" class="label property-link">Visit this page</a><sup>&#8599;</sup><br/>
 {% formField housingFields, "PROPERTY_URL", "30em" %}<br/>
 
 {% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}<br/>
@@ -78,52 +79,68 @@ pageClass: "smaller"
 </div>
 
 <div id="all-units">
-{% for unitNum in (0..9) %}
-	<div id="unit-{{unitNum}}">
+{% for unitNum in (0..5) %}
+  {% assign unitIdx = unitNum | append: ":0" %}
+	<div id="unit-{{unitNum}}" class="fieldset-box">
 	<fieldset>
-	  <legend>Unit Offering 
-	    <button type="button" class="btn btn_warning float-right">Delete</button>
-	  </legend>
-	{% indexFieldLabel unitNum, "Type", unitsFields, "TYPE" %}<br/>
-	{% indexFormField unitNum, unitsFields, "TYPE" %}<br/>
+		<legend>Unit Type
+		<button type="button" class="btn btn_warning float-right">Delete</button>
+		</legend>
+		{% indexFieldLabel unitIdx, "Type", unitsFields, "TYPE" %}<br/>
+		{% indexFormField unitIdx, unitsFields, "TYPE" %}<br/>
 
-	{% indexFieldLabel unitNum, "Status", unitsFields, "STATUS" %}<br/>
-	{% indexFormField unitNum, unitsFields, "STATUS" %}<br/>
+		{% indexFieldLabel unitIdx, "Status", unitsFields, "STATUS" %}<br/>
+		{% indexFormField unitIdx, unitsFields, "STATUS" %}<br/>
 
-  <span class="label">Occupancy Limits</span><br/>
-	{% indexFormField unitNum, unitsFields, "MIN_OCCUPANCY", "4em" %} to 
-	{% indexFormField unitNum, unitsFields, "MAX_OCCUPANCY", "4em" %} people<br/>
+	  <span class="label">Occupancy Limits</span><br/>
+		{% indexFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "4em" %} to 
+		{% indexFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "4em" %} people<br/>
 
-	{% indexFieldLabel unitNum, "Percent AMI", unitsFields, "PERCENT_AMI" %}<br/>
-	{% indexFormField unitNum, unitsFields, "PERCENT_AMI", "4em" %}%<br/>
+	  <div id="unit-{{unitNum}}-all-offerings">
+		{% for offerNum in (0..3) %}
+		  <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset-box">
+		  <fieldset>
+			  <legend>Rent Offering
+			  <button type="button" class="btn btn_warning float-right">Delete</button>
+			  </legend>
+			  {% assign offerIdx = unitNum | append: ":" | append: offerNum %}
+			  {% indexFieldLabel offerIdx, "Percent AMI", unitsFields, "PERCENT_AMI" %}<br/>
+				{% indexFormField offerIdx, unitsFields, "PERCENT_AMI", "4em" %}%<br/>
 
-	{% indexFieldLabel unitNum, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}<br/>
-	${% indexFormField unitNum, unitsFields, "RENT_PER_MONTH_USD", "5em" %} per month<br/>
+				{% indexFieldLabel offerIdx, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}<br/>
+				{% indexFormField offerIdx, unitsFields, "RENT_PER_MONTH_USD", "5em" %} $/month<br/>
 
-	{% indexFieldLabel unitNum, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %}<br/> 
-	{% indexFormField unitNum, unitsFields, "MIN_INCOME_RENT_FACTOR", "4em" %} times yearly rent<br/>
+				{% indexFieldLabel offerIdx, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %}<br/> 
+				{% indexFormField offerIdx, unitsFields, "MIN_INCOME_RENT_FACTOR", "4em" %} times yearly rent<br/>
 
-	<table id="max-income">
-	<tr>
-	<th>Household Size</th>
-	<th>Maximum Income</th>
-	</tr>
-	{% for hhSize in (1..12) %}
-	<tr>
-	{% assign fieldname = "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD" %}
-	<td>{% indexFieldLabel unitNum, hhSize, unitsFields, fieldname %}</td>
-	<td>${% indexFormField unitNum, unitsFields, fieldname, "7em" %} per year</td>
-	</tr>
-	{% endfor %}
-	</table>
+				<table class="max-income">
+				<tr>
+				<th>Household Size</th>
+				<th>Maximum Income</th>
+				</tr>
+				{% for hhSize in (1..12) %}
+				<tr>
+				{% assign fieldname = "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD" %}
+				<td>{% indexFieldLabel offerIdx, hhSize, unitsFields, fieldname %}</td>
+				<td>${% indexFormField offerIdx, unitsFields, fieldname, "7em" %} per year</td>
+				</tr>
+				{% endfor %}
+				</table>
+		  </fieldset>
+		  </div>
+		{% endfor %}
+	  </div>	
+	  <button type="button" onclick="addUnit();" class="btn btn_secondary">Add rent offering</button>
 	</fieldset>
 	</div>
 {% endfor %}
 </div>
 
-<button type="button" onclick="addUnit();" class="btn btn_secondary">Add new unit offering</button>
-<br/>
-<button type="submit" class="btn btn_primary">Submit</button>
+<button type="button" onclick="addUnit();" class="btn btn_secondary">Add unit type</button>
+
+<h3>Step 3</h3>
+<p>Submit these changes for review by The United Effort Organization.</p>
+<button type="submit" class="btn btn_primary">Submit for review</button>
 </form>
 
 <script>
@@ -175,7 +192,14 @@ function showSecondAddress() {
 }
 
 function updatePropertyLink() {
-	document.getElementById("property-link").href = this.value;
+	let links = document.getElementsByClassName("property-link");
+	for (link of links) {
+	  link.href = this.value;
+	}
+}
+
+function updatePageTitle() {
+	document.getElementById("apt-name-header").innerHTML = this.value;
 }
 
 function updateSelectColor() {
@@ -256,9 +280,9 @@ function prefillForm(data) {
 	}
 
   for (field of unitsFields) {
-    let [fieldName, index] = field.name.split(":");
-    if (index < data.units.length) {
-      let value = data.units[index].fields[fieldName];
+    let [fieldName, unitIdx, offerIdx] = field.name.split(":");
+    if (unitIdx < data.units.length && offerIdx < data.units[unitIdx].length) {
+      let value = data.units[unitIdx][offerIdx].fields[fieldName];
       prefillField(field, value);
     }
   }
@@ -266,29 +290,41 @@ function prefillForm(data) {
 
 function initUnitVisibility(data) {
   let numUsedUnits = data.units.length;
-	let units = document.querySelectorAll("#all-units > div");
-  for (i = numUsedUnits; i < units.length; i++) {
-    units[i].setAttribute("hidden", "hidden");
+	let unitDivs = document.querySelectorAll("#all-units > div");
+  for (i = 0; i < unitDivs.length; i++) {
+    if (i < numUsedUnits) {
+      let numUsedOfferings = data.units[i].length;
+      let offeringDivs = unitDivs[i].querySelectorAll("#unit-" + i + "-all-offerings > div");
+      for (j = numUsedOfferings; j < offeringDivs.length; j++) {
+        offeringDivs[j].setAttribute("hidden", "hidden");
+      }
+    } else {
+      unitDivs[i].setAttribute("hidden", "hidden");
+    }
   }
 }
 
 function updateMaxIncomeVisibility() {
   console.log("updateMaxIncomeVisibility called.");
-  let container = this.parentNode;
-  let maxIncomeRows = container.querySelectorAll("#max-income tr");
-  let minOccupancyField = container.querySelector("[name*=MIN_OCCUPANCY]");
-  let maxOccupancyField = container.querySelector("[name*=MAX_OCCUPANCY]");
+  let unitContainer = this.parentNode;
+  let offeringContainers = unitContainer.querySelectorAll("fieldset")
+  console.log(offeringContainers);
+  let minOccupancyField = unitContainer.querySelector("[name*=MIN_OCCUPANCY]");
+  let maxOccupancyField = unitContainer.querySelector("[name*=MAX_OCCUPANCY]");
 	let minHhSize = parseInt(minOccupancyField.value || 0);
   let maxHhSize = parseInt(maxOccupancyField.value || maxIncomeRows.length);
-  for (j = 1; j < maxIncomeRows.length; j++) {
-    // Skip the header row, start j at 1.
-    if (j < minHhSize || j > maxHhSize) {
-      maxIncomeRows[j].setAttribute("hidden", "hidden");
-      maxIncomeRows[j].querySelector("input").value = "";
-    } else {
-      maxIncomeRows[j].removeAttribute("hidden");
-    }
-  }
+  for (i = 0; i < offeringContainers.length; i++) {
+	  let maxIncomeRows = offeringContainers[i].querySelectorAll(".max-income tr");
+	  for (j = 1; j < maxIncomeRows.length; j++) {
+	    // Skip the header row, start j at 1.
+	    if (j < minHhSize || j > maxHhSize) {
+	      maxIncomeRows[j].setAttribute("hidden", "hidden");
+	      maxIncomeRows[j].querySelector("input").value = "";
+	    } else {
+	      maxIncomeRows[j].removeAttribute("hidden");
+	    }
+	  }
+	}
 }
 
 function updateAgeVisibility() {
@@ -309,6 +345,24 @@ function updateAgeVisibility() {
     minAge.setAttribute("hidden", "hidden");
     maxAge.setAttribute("hidden", "hidden");
 	}
+}
+
+function groupDataByUnitType(data) {
+	let groupedData = {};
+	groupedData.housing = data.housing;
+	groupedData.units = [];
+	let tempMap = {}
+	for (unitRecord of data.units) {
+    let typeKey = unitRecord.fields["TYPE"];
+    tempMap[typeKey] = tempMap[typeKey] || [];
+    tempMap[typeKey].push(unitRecord);
+  }
+  for (unitType in tempMap) {
+    groupedData.units.push(tempMap[unitType]);
+  }
+  //groupedData.units = tempMap;
+  console.log(groupedData);
+  return groupedData;
 }
 
 let units = document.querySelectorAll("#all-units > div");
@@ -337,6 +391,7 @@ document.getElementById("fldei8N0xw2VhjX9V").onchange = updatePropertyLink;
 
 document.getElementById("fldkzU54q8lYtIH7G:seniors").onchange = updateAgeVisibility;
 document.getElementById("fldkzU54q8lYtIH7G:youth").onchange = updateAgeVisibility;
+document.getElementById("fldMcM49qaNr3EQ2a").onchange = updatePageTitle;
 
 let unitIdx = 0;
 let urlParams = new URLSearchParams(window.location.search);
@@ -345,9 +400,10 @@ if (urlParams.has("id")) {
 	fetch("/housing/affordable-housing/rawdata/" + propertyId)
   .then(response => response.json())
   .then(data => {
-    unitIdx = data.units.length - 1;
-    prefillForm(data);
-    initUnitVisibility(data);
+    let groupedData = groupDataByUnitType(data);
+    unitIdx = groupedData.units - 1;
+    initUnitVisibility(groupedData);
+    prefillForm(groupedData);
   });
   //document.getElementById("reset-link").href="changes?id=" + propertyId;
 }
