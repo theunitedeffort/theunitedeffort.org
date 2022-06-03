@@ -48,3 +48,8 @@ status = 200
 from = "/housing/affordable-housing/rawdata/:id"
 to = "/.netlify/functions/rawdata"
 status = 200
+
+[[redirects]]
+from = "/housing/affordable-housing/changes/digest"
+to = "/.netlify/functions/changes-digest"
+status = 200

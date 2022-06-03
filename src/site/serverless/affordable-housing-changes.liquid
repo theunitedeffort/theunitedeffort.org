@@ -10,7 +10,8 @@ maxHouseholdSize: 12
 ---
 
 {% comment %}
-- fix add/delete
+- enable getting next property or skipping a property
+- make digest generator
 - add unit type string to "add rent offering"
 - highlight changes?
 - disable add buttons when too many are added
@@ -20,15 +21,16 @@ maxHouseholdSize: 12
 {% assign housingFields = allFields.housingDatabase %}
 {% assign unitsFields = allFields.units %}
 
+<button type="button" class="btn btn_secondary">Load next property</button>
 <h2 id="apt-name-header">Loading property data...</h2>
 <h3>Step 1</h3>
 <p><a href="" target="_blank" rel="noopener" class="property-link">Open the official information about this property</a></p>
 <h3>Step 2</h3>
 <p>Make any edits necessary to make the information below match the offical property manager's information.</p>
 <form style="display:block;" id="housing-changes" name="housing_changes" netlify>
-<input type="hidden" name="form-name" value="housing_changes" />
 
 <div id="property-data">
+<input type="hidden" id={{housingFields.ID.id}} name="ID">
 {% fieldLabel "Property Name", housingFields, "APT_NAME" %}<br/>
 {% formField housingFields, "APT_NAME", "20em" %}<br/>
 
@@ -116,6 +118,7 @@ maxHouseholdSize: 12
 			  <button type="button" class="btn btn_warning float-right delete_offering">Delete</button>
 			  </legend>
 			  {% assign offerIdx = unitNum | append: ":" | append: offerNum %}
+			  <input type="hidden" id={{unitsFields.ID.id}} name={{"ID:" | append: offerIdx}}>
 			  {% indexFieldLabel offerIdx, "Percent AMI", unitsFields, "PERCENT_AMI" %}<br/>
 				{% indexFormField offerIdx, unitsFields, "PERCENT_AMI", "4em" %}%<br/>
 
