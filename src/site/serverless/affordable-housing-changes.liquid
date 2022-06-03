@@ -4,7 +4,17 @@ title: Check for Affordable Housing Updates
 permalink: 
   build: "/housing/affordable-housing/changes/index.html"
 pageClass: "smaller"
+maxUnits: 6
+maxOfferings: 5
+maxHouseholdSize: 12
 ---
+
+{% comment %}
+- fix add/delete
+- add unit type string to "add rent offering"
+- highlight changes?
+- disable add buttons when too many are added
+{% endcomment %}
 
 {% assign allFields = "foo" | housingFields %}
 {% assign housingFields = allFields.housingDatabase %}
@@ -79,9 +89,10 @@ pageClass: "smaller"
 </div>
 
 <div id="all-units">
-{% for unitNum in (0..5) %}
+{% assign unitEndIdx = maxUnits | plus: -1 %}
+{% for unitNum in (0..unitEndIdx) %}
   {% assign unitIdx = unitNum | append: ":0" %}
-	<div id="unit-{{unitNum}}" class="fieldset-box">
+	<div id="unit-{{unitNum}}" class="fieldset-box" hidden>
 	<fieldset>
 		<legend>Unit Type
 		<button type="button" class="btn btn_warning float-right">Delete</button>
@@ -96,12 +107,13 @@ pageClass: "smaller"
 		{% indexFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "4em" %} to 
 		{% indexFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "4em" %} people<br/>
 
-	  <div id="unit-{{unitNum}}-all-offerings">
-		{% for offerNum in (0..3) %}
-		  <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset-box">
+	  <div class="all-offerings">
+	  {% assign offeringEndIdx = maxOfferings | plus: -1 %}
+		{% for offerNum in (0..offeringEndIdx) %}
+		  <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset-box" hidden>
 		  <fieldset>
 			  <legend>Rent Offering
-			  <button type="button" class="btn btn_warning float-right">Delete</button>
+			  <button type="button" class="btn btn_warning float-right delete_offering">Delete</button>
 			  </legend>
 			  {% assign offerIdx = unitNum | append: ":" | append: offerNum %}
 			  {% indexFieldLabel offerIdx, "Percent AMI", unitsFields, "PERCENT_AMI" %}<br/>
@@ -118,7 +130,7 @@ pageClass: "smaller"
 				<th>Household Size</th>
 				<th>Maximum Income</th>
 				</tr>
-				{% for hhSize in (1..12) %}
+				{% for hhSize in (1..maxHouseholdSize) %}
 				<tr>
 				{% assign fieldname = "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD" %}
 				<td>{% indexFieldLabel offerIdx, hhSize, unitsFields, fieldname %}</td>
@@ -130,7 +142,7 @@ pageClass: "smaller"
 		  </div>
 		{% endfor %}
 	  </div>	
-	  <button type="button" onclick="addUnit();" class="btn btn_secondary">Add rent offering</button>
+	  <button type="button" class="btn btn_secondary add_offering">Add rent offering</button>
 	</fieldset>
 	</div>
 {% endfor %}
@@ -146,7 +158,7 @@ pageClass: "smaller"
 <script>
 
 function addUnit() {
-  if (unitIdx < 9) {
+  if (unitIdx < {{maxUnits | plus: -1}}) {
     unitIdx++;
     let newUnit = document.querySelectorAll("#all-units > div")[unitIdx];
     newUnit.removeAttribute("hidden");
@@ -154,8 +166,18 @@ function addUnit() {
   }
 }
 
-function clearUnitForm(unitDiv) {
-	let allInputs = unitDiv.querySelectorAll("input, textarea, select");
+function addOffering() {
+  let unitDiv = this.parentNode.parentNode
+  let thisUnitId = unitDiv.id.split("-")[1];
+  if (offeringIdx[thisUnitId] < {{maxOfferings | plus: -1}}) {
+    offeringIdx[thisUnitId] = offeringIdx[thisUnitId] + 1;
+    let newOffering = unitDiv.querySelectorAll(".all-offerings > div")[offeringIdx[thisUnitId]];
+    newOffering.removeAttribute("hidden");
+  }
+}
+
+function clearNodeForm(node) {
+	let allInputs = node.querySelectorAll("input, textarea, select");
 	for (input of allInputs) {
 	  if (input.tagName == "TEXTAREA") {
 	    input.innerHTML = "";
@@ -172,6 +194,9 @@ function clearUnitForm(unitDiv) {
 	      input.value = "";
 	    }
 	  }
+	  if (input.onchange) {
+	    input.onchange();
+	  }
 	}
 }
 
@@ -179,11 +204,33 @@ function deleteUnit() {
   let deletedUnit = this.parentNode.parentNode.parentNode;
 	if (unitIdx >= 0) {
 	  deletedUnit.setAttribute("hidden", "hidden");
+	  let deletedUnitId = deletedUnit.id.split("-")[1];
 	  let unitsContainer = document.getElementById("all-units");
 	  unitsContainer.appendChild(deletedUnit);
 	  unitIdx--;
-	  clearUnitForm(deletedUnit);
+	  clearNodeForm(deletedUnit);
+	  // Remove all offerings from the deleted unit.
+	  let offerings = deletedUnit.querySelectorAll(".all-offerings > div")
+	  for (offering of offerings) {
+	    offering.setAttribute("hidden", "hidden");
+	  }
+	  offeringIdx[deletedUnitId] = -1;
 	}
+}
+
+function deleteOffering() {
+	let deletedOffering = this.parentNode.parentNode.parentNode;
+	let unitDiv = deletedOffering.parentNode.parentNode.parentNode;
+	let thisUnitIdx = unitDiv.id.split("-")[1];
+	if (offeringIdx[thisUnitIdx] >= 0) {
+	  deletedOffering.setAttribute("hidden", "hidden");
+	  let offeringsContainer = unitDiv.querySelector(".all-offerings");
+	  offeringsContainer.appendChild(deletedOffering);
+	  offeringIdx[thisUnitIdx] = offeringIdx[thisUnitIdx] - 1;
+	  clearNodeForm(deletedOffering);
+	}
+
+
 }
 
 function showSecondAddress() {
@@ -271,7 +318,6 @@ function prefillForm(data) {
   let propertySection = document.getElementById("property-data");
   let unitsSection = document.getElementById("all-units");
 	let propertyFields = propertySection.querySelectorAll(fieldSelector);
-	console.log(propertyFields);
 	let unitsFields = unitsSection.querySelectorAll(fieldSelector);
 	
 	for (field of propertyFields) {
@@ -293,10 +339,15 @@ function initUnitVisibility(data) {
 	let unitDivs = document.querySelectorAll("#all-units > div");
   for (i = 0; i < unitDivs.length; i++) {
     if (i < numUsedUnits) {
+      unitDivs[i].removeAttribute("hidden");
       let numUsedOfferings = data.units[i].length;
-      let offeringDivs = unitDivs[i].querySelectorAll("#unit-" + i + "-all-offerings > div");
-      for (j = numUsedOfferings; j < offeringDivs.length; j++) {
-        offeringDivs[j].setAttribute("hidden", "hidden");
+      let offeringDivs = unitDivs[i].querySelectorAll(".all-offerings > div");
+      for (j = 0; j < offeringDivs.length; j++) {
+        if (j < numUsedOfferings) {
+          offeringDivs[j].removeAttribute("hidden");
+        } else {
+          offeringDivs[j].setAttribute("hidden", "hidden");
+        }
       }
     } else {
       unitDivs[i].setAttribute("hidden", "hidden");
@@ -305,14 +356,12 @@ function initUnitVisibility(data) {
 }
 
 function updateMaxIncomeVisibility() {
-  console.log("updateMaxIncomeVisibility called.");
   let unitContainer = this.parentNode;
   let offeringContainers = unitContainer.querySelectorAll("fieldset")
-  console.log(offeringContainers);
   let minOccupancyField = unitContainer.querySelector("[name*=MIN_OCCUPANCY]");
   let maxOccupancyField = unitContainer.querySelector("[name*=MAX_OCCUPANCY]");
 	let minHhSize = parseInt(minOccupancyField.value || 0);
-  let maxHhSize = parseInt(maxOccupancyField.value || maxIncomeRows.length);
+  let maxHhSize = parseInt(maxOccupancyField.value || {{maxHouseholdSize}});
   for (i = 0; i < offeringContainers.length; i++) {
 	  let maxIncomeRows = offeringContainers[i].querySelectorAll(".max-income tr");
 	  for (j = 1; j < maxIncomeRows.length; j++) {
@@ -386,6 +435,16 @@ for (occupancy of occupancies) {
 	occupancy.onchange = updateMaxIncomeVisibility;
 }
 
+let addOfferingButtons = document.querySelectorAll("button.add_offering");
+for (button of addOfferingButtons) {
+	button.onclick = addOffering;
+}
+
+let deleteOfferingButtons = document.querySelectorAll("button.delete_offering");
+for (button of deleteOfferingButtons) {
+	button.onclick = deleteOffering;
+}
+
 // Ensure the live link to the external property page updates when the URL value is changed.
 document.getElementById("fldei8N0xw2VhjX9V").onchange = updatePropertyLink;
 
@@ -394,6 +453,7 @@ document.getElementById("fldkzU54q8lYtIH7G:youth").onchange = updateAgeVisibilit
 document.getElementById("fldMcM49qaNr3EQ2a").onchange = updatePageTitle;
 
 let unitIdx = 0;
+let offeringIdx = new Array({{maxUnits | plus: -1}}).fill(-1);
 let urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has("id")) {
   let propertyId = urlParams.get("id");
@@ -401,7 +461,10 @@ if (urlParams.has("id")) {
   .then(response => response.json())
   .then(data => {
     let groupedData = groupDataByUnitType(data);
-    unitIdx = groupedData.units - 1;
+    unitIdx = groupedData.units.length - 1;
+    for (i = 0; i < groupedData.units.length; i++) {
+      offeringIdx[i] = groupedData.units[i].length - 1;
+    }
     initUnitVisibility(groupedData);
     prefillForm(groupedData);
   });
