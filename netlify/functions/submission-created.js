@@ -5,10 +5,11 @@ const AFFORDABLE_HOUSING_CHANGES_TABLE = "tblXy0hiHoda5UVSR";
 
 exports.handler = async function(event) {
   console.log(event);
-  console.log(event.body.payload);
+  let eventBody = JSON.parse(event.body);
+  console.log(eventBody);
   let table = base(AFFORDABLE_HOUSING_CHANGES_TABLE);
-  let formResponses = event.body.payload.data;
-  console.log(JSON.parse(formResponses));
+  let formResponses = eventBody.payload.data;
+  console.log(formResponses);
   // TODO: error handling. 
   table.create({
     "CAMPAIGN": "First Campaign",
