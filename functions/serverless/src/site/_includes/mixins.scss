@@ -1,0 +1,28 @@
+// Breakpoints
+$bp-narrow: "(min-width: 550px)";
+$bp-mid: "(min-width: 800px)";
+$bp-wide: "(min-width: 1266px)";
+$bp-ultra: "(min-width: 1400px)";
+@mixin bp($point) {
+  @if $point==narrow {
+    @media #{$bp-narrow} {
+      @content;
+    }
+  }
+  @else if $point==mid {
+    @media #{$bp-mid} {
+      @content;
+    }
+  }
+  @else if $point==wide {
+    @media #{$bp-wide} {
+      @content;
+    }
+  }
+  @else if $point==ultra {
+    @media #{$bp-wide} {
+      @content;
+    }
+  }
+}
+

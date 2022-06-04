@@ -1,6 +1,5 @@
 const sass = require("sass");
-const { EleventyEdgePlugin } = require("@11ty/eleventy");
-
+const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 
 
 module.exports = function(eleventyConfig) {
@@ -8,17 +7,21 @@ module.exports = function(eleventyConfig) {
   //pass through static assets
   eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
 
-  eleventyConfig.addPlugin(EleventyEdgePlugin);
-
+  // Eleventy Serverless plugin
+  eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
+    name: "serverless",
+    functionsDir: "./netlify/functions/",
+    copy: [
+      { from: ".cache", to: "cache" }
+    ]
+  });
 
   // add Eleventy filters
   eleventyConfig.addFilter("markdownify", require("./src/filters/markdownify.js"));
   eleventyConfig.addFilter("index", require("./src/filters/index.js"));
   eleventyConfig.addFilter("whereIncluded", require("./src/filters/whereIncluded.js"));
   eleventyConfig.addFilter("whereEmpty", require("./src/filters/whereEmpty.js"));
-  // eleventyConfig.addFilter("sortUnitType", require("./src/filters/sortUnitType.js"));
-  eleventyConfig.addFilter("json", obj => JSON.stringify(obj, null, 2));
-  eleventyConfig.addFilter("isPublishedPage",  require("./src/filters/isPublishedPage.js"));
+  eleventyConfig.addFilter("sortUnitType", require("./src/filters/sortUnitType.js"));
 
 
   // Sass pipeline

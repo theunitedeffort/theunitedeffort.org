@@ -1,0 +1,250 @@
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--color-gray-200);
+    font-family: var(--font-headline);
+    font-weight: 850;
+    line-height: 1.2;
+    margin: 2em 0 0.5em 0;
+  }
+  
+  h1 {
+    font-size: 2.5em;
+    margin: 0.5em 0 0.5em;
+    @include bp(wide) {
+      max-width: 900px;
+    }
+  }
+  
+  h2 {
+    font-size: 1.8em;
+  }
+  
+  h3 {
+    font-size: 1.3em;
+  }
+  
+  main p,
+  main ol,
+  main ul {
+    margin-top: 1em;
+  }
+  
+  main ol,
+  main ul {
+    list-style-position: outside;
+    padding-left: 1em;
+    li {
+      margin-bottom: 0.3em;
+      ul,
+      ol {
+        margin-top: 0;
+        margin-bottom: 0.6em;
+        margin-left: 2em;
+      }
+    }
+  }
+  
+  p {
+    margin-bottom: 1em;
+  }
+  
+  main,
+  .pre-footer {
+    a:link,
+    a:visited {
+      color: var(--color-blue-dark);
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 1px;
+      text-decoration-color: var(--color-blue);
+    }
+    a:hover,
+    a:focus {
+      text-decoration: none;
+    }
+  }
+  
+  address {
+    font-style: normal;
+  }
+  
+  .badge {
+    color: var(--color-black);
+    background-color: var(--color-gray-900);
+    font-size: 1em;
+    border-radius: 3px;
+    padding: 0.2em 0.5em;
+    margin: 0.3em 0 0.3em 0.2em;
+    white-space: nowrap;
+    font-size: 0.9em;
+    @include bp(mid) {
+      font-size: 0.8em;
+    }
+    @include bp(wide) {
+      font-size: 0.7em;
+    }
+    display: inline-block;
+  }
+  
+  .badge__ok {
+    border-left: 0.4em solid var(--color-green);
+    margin-left: 0;
+  }
+  
+  .badge__bad {
+    border-left: 0.4em solid var(--color-red);
+    margin-left: 0;
+  }
+  
+  .badge__warn {
+    border-left: 0.4em solid var(--color-orange);
+    margin-left: 0;
+  }
+  
+  h3 .badge {
+    position: relative;
+    margin-left: 1em;
+    font-size: 0.8em;
+    font-weight: lighter;
+    top: -0.2em;
+  }
+  
+
+  .results_list {
+    font-size: 0.9em;
+    list-style: none;
+    margin: 1em 0 2em;
+    border-bottom: solid 1px var(--color-gray-700);
+    padding: 2em 0 0 0;
+    li {
+      padding-bottom: 3em;
+      break-inside: avoid;
+    }
+    li.no_results {
+      font-size: 1em;
+      font-weight: 600;
+    }
+    p {
+      margin: 0;
+      padding: 0;
+    }
+    h4 {
+      display: inline-block;
+      font-size: 1.3em;
+      font-weight: 600;
+      margin: 0 0 0.2em;
+      padding: 0;
+    }
+  }
+
+  .icon_info,
+  .icon_query {
+    border-radius: 50%;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: .8em;
+    height: 1.4em;
+    width: 1.4em;
+    display: inline-block;
+    padding-top: 0.05em;
+    text-align: center;
+  }
+
+  
+  .icon_query {
+    &:after {
+      content: "?";
+    }
+  }
+  .icon_info {
+    padding-right: 0.2em;
+    &:after {
+      content: "i";
+      font-style: italic;
+    }
+  }
+  
+  .tooltip_entry {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+  }
+  
+  .tooltip_entry .tooltip_content {
+    visibility: hidden;
+    min-width: 10em;
+    max-width: 20em;
+    width: max-content;
+    background-color: var(--color-gray-200);
+    color: var(--color-white);
+    text-align: center;
+    padding: 0.3em 0.3em;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--color-white);
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+  }
+  
+  abbr {
+    text-decoration: none;
+    border-bottom: dotted 1px var(--color-gray-200);
+  }
+  
+  abbr[title]:hover::after,
+  abbr[title]:focus::after {
+    content: ' ' attr(title);
+    font-size: 0.8em;
+  }
+  
+  @media (hover: hover) and (pointer: fine) {
+    abbr[title] {
+      cursor: help;
+    }
+    abbr[title]:hover::after,
+    abbr[title]:focus::after {
+      content: '';
+    }
+  }
+  
+  form {
+    .tooltip_content {
+      font-size: 0.8em;
+    }
+  }
+  
+  .tooltip_entry:hover .tooltip_content {
+    visibility: visible;
+  }
+  
+  .bold {
+    font-weight: 700;
+  }
+
+  code {
+    background-color: var(--color-gray-900);
+    border-radius: 3px;
+    padding: 0.1em 0.4em;
+    font-size: 0.8em;
+  }
+
+sup { vertical-align: top; font-size: 0.6em; }
+
+address {
+  p {
+    line-height: 1.8em;
+  }
+}
+
+  
+  @media print {
+    .results_list {
+      font-size: 0.8em;
+    }
+  }

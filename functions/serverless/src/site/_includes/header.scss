@@ -1,0 +1,76 @@
+header {
+  background-color: var(--color-white);
+  color: var(--color-black);
+  font-size: 0.95rem;
+  font-weight: 700;
+  .container {
+    text-align: center;
+    @include bp(wide) {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+  .logo-home {
+    width: 200px;
+  }
+  .nav-home img {
+    margin: 0 auto 2em auto;
+    @include bp(wide) {
+      margin: 0;
+    }
+  }
+  ul.navigation {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    line-height: 1.8;
+  }
+  li {
+    list-style: none;
+    margin-right: 1rem;
+  }
+  a:link,
+  a:visited {
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  a:hover,
+  a:focus {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--color-orange);
+  }
+}
+
+.page-resources .nav-resources,
+.page-public-assistance .nav-public-assistance,
+body[class^="page-public-assistance"] .nav-public-assistance,
+body[class^="page-resources"] .nav-resources,
+body[class^="page-housing"] .nav-housing,
+.page-about .nav-about {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--color-orange);
+}
+
+@media print {
+  header {
+    .container {
+      text-align: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-home img {
+      margin: 0;
+      width: 100px;
+    }
+  }
+}

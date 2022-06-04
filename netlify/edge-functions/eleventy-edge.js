@@ -7,7 +7,6 @@ import countKeys from "../../src/filters/edgeFilters/countKeys.js";
 import findByString from "../../src/filters/edgeFilters/findByString.js";
 import optionFilter from "../../src/filters/edgeFilters/optionFilter.js";
 import optionFilterUnits from "../../src/filters/edgeFilters/optionFilterUnits.js";
-import updateFilterState from "../../src/filters/edgeFilters/updateFilterState.js";
 import sortUnitType from "../../src/filters/edgeFilters/sortUnitType.js";
 import numFiltersApplied from "../../src/filters/edgeFilters/numFiltersApplied.js";
 import optionSelected from "../../src/filters/edgeFilters/optionSelected.js";
@@ -36,7 +35,6 @@ export default async (request, context) => {
       eleventyConfig.addFilter("findByString", findByString);
       eleventyConfig.addFilter("optionFilter", optionFilter);
       eleventyConfig.addFilter("optionFilterUnits", optionFilterUnits);
-      eleventyConfig.addFilter("updateFilterState", updateFilterState);
       eleventyConfig.addFilter("sortUnitType", sortUnitType);
       eleventyConfig.addFilter("numFiltersApplied", numFiltersApplied);
       eleventyConfig.addFilter("optionSelected", optionSelected);
