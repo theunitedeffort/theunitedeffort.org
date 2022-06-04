@@ -1,6 +1,6 @@
 import { EleventyEdge } from "eleventy:edge";
 import precompiledAppData from "./_generated/eleventy-edge-app-data.js";
-import accommodation from "./_generated/accommodation.json" assert { type: 'json' };
+import accommodation from "./_generated/accommodation.js";
 
 // import searchFilters
 import countKeys from "../../src/filters/edgeFilters/countKeys.js";

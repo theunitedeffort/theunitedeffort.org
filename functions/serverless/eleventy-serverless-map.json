@@ -1,4 +1,0 @@
-{
-  "/data/housing/affordable-housing/filter": "./src/site/affordable-housing-feed.liquid",
-  "/housing/affordable-housing/filter": "./src/site/affordable-housing.liquid"
-}
