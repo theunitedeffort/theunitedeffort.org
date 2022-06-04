@@ -3,5 +3,7 @@ dist
 .netlify
 .cache
 netlify/functions/serverless/**
+netlify/edge-functions/_generated
 !netlify/functions/serverless/index.js
+
 /**/.DS_Store

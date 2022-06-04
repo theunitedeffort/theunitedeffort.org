@@ -51,5 +51,5 @@ async function handler(event) {
 
 exports.handler = handler;
 
-//const { builder } = require("@netlify/functions");
-//exports.handler = builder(handler);
+// const { builder } = require("@netlify/functions");
+// exports.handler = builder(handler);

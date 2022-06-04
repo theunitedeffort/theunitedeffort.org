@@ -53,17 +53,14 @@ const fetchFilterOptions = async() => {
 module.exports = async function() {
   let asset = new AssetCache("affordable_housing_filters");
   // This cache duration will only be used at build time.
-  let cacheDuration = "1m";
-  if(process.env.ELEVENTY_SERVERLESS) {
-    // Use the serverless cache location specified in .eleventy.js
-    asset.cacheDirectory = "cache"; 
-    cacheDuration = "*";  // Infinite duration (data refreshes at each build)
-  }
+  let cacheDuration = "1h";
+
   if (asset.isCacheValid(cacheDuration)) {
     console.log("Returning cached filter options.");
     let filters = await asset.getCachedValue();
     return filters;
   }
+  
   console.log("Fetching filter options.");
   let filterOptions = await fetchFilterOptions();
   let cities = [...new Set(filterOptions.map(({ city }) => city))];

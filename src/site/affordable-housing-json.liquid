@@ -1,0 +1,20 @@
+---
+title: Data — Find Affordable Housing
+permalink:  "/housing/affordable-housing.json"
+---
+
+
+{% assign searchResults = accommodation.locations | sort: "aptName" %}
+{% if eleventy.edge.query.city %}
+  {% assign searchResults = searchResults | optionFilter: "city", eleventy.edge.query.city %}
+{% endif %}
+
+{% if eleventy.edge.query.propertyName %}
+  {% assign searchResults = searchResults | findByString: "aptName", eleventy.edge.query.propertyName %}
+{% endif %}
+
+{% if eleventy.edge.query.status %}
+  {% assign searchResults = searchResults | optionFilterUnits: "status", eleventy.edge.query.status %}
+{% endif %}
+
+{{ searchResults | json }}
