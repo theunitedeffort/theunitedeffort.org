@@ -19,12 +19,9 @@ const fetchDataFromAirtable = async() => {
     .then(records => {
       records.forEach(function(record) {
         
-        // collect the cities available for filtering later
+        // collect some of the available options for populating filtering later
         cities.push(record.get("City (from Housing)")?.[0]);
         populations = populations.concat(record.get("POPULATIONS_SERVED (from Housing)"));
-
-        // console.log(`POPULATIOONS`, record.get("POPULATIONS_SERVED") );
-        
 
         // generate a location from every unit and add ut to a locations array that we'll dedupe later
         locations.push({
@@ -37,13 +34,11 @@ const fetchDataFromAirtable = async() => {
           website: record.get("URL (from Housing)")?.[0] || "",
           email: record.get("EMAIL (from Housing)")?.[0] || "",
           units_count: record.get("UNITS_CNT (from Housing)")?.[0] || "",
-          populations_served: record.get("POPULATIONS_SERVED (from Housing)") || ""
+          populations_served: record.get("POPULATIONS_SERVED (from Housing)") || "",
+          wheelchairAccessibleOnly: record.get("HAS_WHEELCHAIR_ACCESSIBLE_UNITS (from Housing)")?.[0] ? "on" : ""
         }); 
 
         // add the unit info to a units object 
-        // let unit = record.fields;
-        // unit.id = record.get("ID (from Housing)")[0]
-        // units.push(unit);
         units.push({
           id: record.get("ID (from Housing)")?.[0] || "",
           type: record.get("TYPE") || "",
@@ -65,8 +60,6 @@ const fetchDataFromAirtable = async() => {
       locations = [...new Set(locations.map(a => JSON.stringify(a)))].map(a => JSON.parse(a));
       cities = [...new Set(cities)];
       populations = [...new Set(populations)];
-
-      console.log(`POPULATIONS DEDUPED`, populations );
 
       // add the associated units to each location object
       for (const location of locations) {

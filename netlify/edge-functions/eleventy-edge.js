@@ -1,7 +1,6 @@
 import { EleventyEdge } from "eleventy:edge";
 import precompiledAppData from "./_generated/eleventy-edge-app-data.js";
 import accommodation from "./_generated/accommodation.json" assert { type: 'json' };
-import filterValues from "./_generated/filterValues.json" assert { type: 'json' };
 
 // import searchFilters
 import countKeys from "../../src/filters/edgeFilters/countKeys.js";
@@ -31,7 +30,6 @@ export default async (request, context) => {
 
       // Expose data
       eleventyConfig.addGlobalData("accommodation", accommodation);
-      eleventyConfig.addGlobalData("filterValues", filterValues);
       
       // Add filters
       eleventyConfig.addFilter("countKeys", countKeys);
