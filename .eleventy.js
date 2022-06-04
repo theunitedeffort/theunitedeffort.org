@@ -1,3 +1,6 @@
+
+const { EleventyEdgePlugin } = require("@11ty/eleventy");
+
 const markdown = require("marked");
 const sass = require("sass");
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
@@ -40,6 +43,8 @@ const SORT_RANKING = new Map([
 
 
 module.exports = function(eleventyConfig) {
+
+  eleventyConfig.addPlugin(EleventyEdgePlugin);
 
   //pass through static assets
   eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
