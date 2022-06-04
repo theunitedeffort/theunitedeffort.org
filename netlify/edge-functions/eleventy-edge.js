@@ -17,16 +17,11 @@ export default async (request, context) => {
       request,
       context,
       precompiled: precompiledAppData,
-
-      // default is [], add more keys to opt-in e.g. ["appearance", "username"]
       cookies: [],
     });
 
-
     edge.config((eleventyConfig) => {
       
-      // Add some custom Edge-specific configuration
-
       // Expose data
       eleventyConfig.addGlobalData("accommodation", accommodation);
       
@@ -39,12 +34,7 @@ export default async (request, context) => {
       eleventyConfig.addFilter("numFiltersApplied", numFiltersApplied);
       eleventyConfig.addFilter("optionSelected", optionSelected);
       
-
-
     });
-
-
-
 
     return await edge.handleResponse();
   } catch (e) {

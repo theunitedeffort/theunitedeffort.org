@@ -14,5 +14,7 @@ function = "eleventy-edge"
 path = "/housing/affordable-housing/*"
 
 [[edge_functions]]
-function = "eleventy-edge"
-path = "/data/housing/affordable-housing/*"
+function = "eleventy-edge-test"
+path = "/test-edge/*"
+
+
