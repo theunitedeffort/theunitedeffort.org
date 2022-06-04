@@ -1,12 +1,10 @@
 [build]
 commad = "npm run build"
 publish = "dist"
-fucntions = "netlify/functions"
 
 [dev]
 commad = "npm run dev"
 publish = "dist"
-fucntions = "netlify/functions"
 
 
 [[edge_functions]]
