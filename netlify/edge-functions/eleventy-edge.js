@@ -19,11 +19,32 @@ export default async (request, context) => {
       precompiled: precompiledAppData,
       cookies: [],
     });
+    
 
+    // construct an object of all the querystring parameters since the 
+    // built-in eleventy.edge.query does not capture multiple matching 
+    // query params. See the tracking issue for details:
+    //  https://github.com/11ty/eleventy/issues/2422
+    const url = new URL(request.url);
+    let queries = {};
+    for (const [k, v] of url.searchParams.entries()) {
+      if(v) {
+        if(!queries[k]) {
+          queries[k] = v;
+        } else {
+          if(typeof queries[k] == "string") {
+            queries[k] = [queries[k]];
+          }
+          queries[k].push(v);
+        }
+      }
+    }
+    
     edge.config((eleventyConfig) => {
       
       // Expose data
       eleventyConfig.addGlobalData("accommodation", accommodation);
+      eleventyConfig.addGlobalData("searchParams", queries);
       
       // Add filters
       eleventyConfig.addFilter("countKeys", countKeys);
@@ -33,6 +54,7 @@ export default async (request, context) => {
       eleventyConfig.addFilter("sortUnitType", sortUnitType);
       eleventyConfig.addFilter("numFiltersApplied", numFiltersApplied);
       eleventyConfig.addFilter("optionSelected", optionSelected);
+
       
     });
 

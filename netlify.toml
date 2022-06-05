@@ -11,8 +11,5 @@ publish = "dist"
 function = "eleventy-edge"
 path = "/housing/affordable-housing/*"
 
-[[edge_functions]]
-function = "eleventy-edge-test"
-path = "/test-edge/*"
 
 

@@ -7,12 +7,18 @@ pageClass: "page-housing"
 
 {% edge "liquid" %}
 
+
 {% comment %} 
   Sort and filter the accommodation details 
   based on any query string paramaters passed
 {% endcomment %}
 
-{% assign query = eleventy.edge.query %}
+{% comment %} 
+  eleventy.edge.query currently only returns singelton params, 
+  so we'll use our own searchParams object created in the edge functiond
+  to include all querystring params
+{% endcomment %}
+{% assign query = searchParams %}
 
 {% assign searchResults = accommodation.locations | sort: "aptName" %}
 {% if query.city %}
