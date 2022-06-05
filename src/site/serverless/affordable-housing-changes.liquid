@@ -15,6 +15,9 @@ maxHouseholdSize: 12
 - add unit type string to "add rent offering"
 - highlight changes?
 - disable add buttons when too many are added
+- collapsable fieldsets
+- sort units and rent offerings
+- add step to number field
 {% endcomment %}
 
 {% assign allFields = "foo" | housingFields %}
@@ -93,7 +96,7 @@ maxHouseholdSize: 12
 <div id="all-units">
 {% assign unitEndIdx = maxUnits | plus: -1 %}
 {% for unitNum in (0..unitEndIdx) %}
-  {% assign unitIdx = unitNum | append: ":0" %}
+  {% assign unitIdx = unitNum %}
 	<div id="unit-{{unitNum}}" class="fieldset-box" hidden>
 	<fieldset>
 		<legend>Unit Type
@@ -165,7 +168,6 @@ function addUnit() {
     unitIdx++;
     let newUnit = document.querySelectorAll("#all-units > div")[unitIdx];
     newUnit.removeAttribute("hidden");
-    //document.getElementById("unit-" + (numUnits - 1)).removeAttribute("hidden");
   }
 }
 
@@ -330,6 +332,12 @@ function prefillForm(data) {
 
   for (field of unitsFields) {
     let [fieldName, unitIdx, offerIdx] = field.name.split(":");
+    // If there is not offer index, this field applies to all offerings in the unit.
+    // The values of these fields are the same for every offering, so just take
+    // the first one.
+    if (offerIdx === undefined) {
+      offerIdx = 0;
+    }
     if (unitIdx < data.units.length && offerIdx < data.units[unitIdx].length) {
       let value = data.units[unitIdx][offerIdx].fields[fieldName];
       prefillField(field, value);
