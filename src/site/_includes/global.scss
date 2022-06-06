@@ -38,17 +38,18 @@ body {
 }
 
 body.smaller {
+  font-size: 12px;
   @include bp(narrow) {
-    font-size: 14px;
+    font-size: 12px;
   }
   @include bp(mid) {
-    font-size: 16px;
+    font-size: 14px;
   }
   @include bp(wide) {
-    font-size: 18px;
+    font-size: 16px;
   }
   @include bp(ultra) {
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 
