@@ -24,7 +24,7 @@ maxHouseholdSize: 12
 {% assign housingFields = allFields.housingDatabase %}
 {% assign unitsFields = allFields.units %}
 
-<button type="button" class="btn btn_secondary">Load next property</button>
+<a href="" id="next-property" class="btn btn_secondary">Load next property</a>
 <h2 id="apt-name-header">Loading property data...</h2>
 <h3>Step 1</h3>
 <p><a href="" target="_blank" rel="noopener" class="property-link">Open the official information about this property</a></p>
@@ -129,7 +129,7 @@ maxHouseholdSize: 12
 				{% indexFormField offerIdx, unitsFields, "RENT_PER_MONTH_USD", "5em" %} $/month<br/>
 
 				{% indexFieldLabel offerIdx, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %}<br/> 
-				{% indexFormField offerIdx, unitsFields, "MIN_INCOME_RENT_FACTOR", "4em" %} times yearly rent<br/>
+				{% indexFormField offerIdx, unitsFields, "MIN_INCOME_RENT_FACTOR", "5em" %} times yearly rent<br/>
 
 				<table class="max-income">
 				<tr>
@@ -407,6 +407,11 @@ function updateAgeVisibility() {
 	}
 }
 
+function updateNextPropertyButton(id) {
+	let button = document.getElementById("next-property");
+	button.href = "/housing/affordable-housing/changes?id=" + id;
+}
+
 function groupDataByUnitType(data) {
 	let groupedData = {};
 	groupedData.housing = data.housing;
@@ -478,6 +483,11 @@ if (urlParams.has("id")) {
     }
     initUnitVisibility(groupedData);
     prefillForm(groupedData);
+  });
+  fetch("/housing/affordable-housing/next-property/" + propertyId)
+  .then(response => response.json())
+  .then(data => {
+    updateNextPropertyButton(data.nextId);
   });
   //document.getElementById("reset-link").href="changes?id=" + propertyId;
 }

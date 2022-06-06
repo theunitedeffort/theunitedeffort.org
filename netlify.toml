@@ -50,6 +50,11 @@ to = "/.netlify/functions/rawdata"
 status = 200
 
 [[redirects]]
+from = "/housing/affordable-housing/next-property/:id"
+to = "/.netlify/functions/next-property"
+status = 200
+
+[[redirects]]
 from = "/housing/affordable-housing/changes/digest"
 to = "/.netlify/functions/changes-digest"
 status = 200
