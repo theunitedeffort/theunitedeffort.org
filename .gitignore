@@ -5,4 +5,3 @@ dist
 netlify/functions/serverless/**
 !netlify/functions/serverless/index.js
 /**/.DS_Store
-netlify/edge-functions/_generated

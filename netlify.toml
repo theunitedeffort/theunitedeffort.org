@@ -41,7 +41,3 @@ status = 200
 from = "/housing"
 to = "/housing/affordable-housing"
 status = 301
-
-[[edge_functions]]
-path = "/test"
-function = "eleventy-edge"
