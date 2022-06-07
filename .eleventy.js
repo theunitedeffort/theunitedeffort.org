@@ -308,8 +308,9 @@ module.exports = function(eleventyConfig) {
       tag = "textarea"
       endtag = "</textarea>"
     } else if (field.type === "number") {
+      let precision = parseInt(field.options.precision);
       tag = "input"
-      options = `type="number" min="0"`
+      options = `type="number" min="0" step="${10 ** (-1 * precision)}"`
     } else if (field.type === "email") {
       tag = "input"
       options = `type="email"`
