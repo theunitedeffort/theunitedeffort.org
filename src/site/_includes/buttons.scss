@@ -74,10 +74,13 @@ main {
 
   .btn:disabled,
   a.btn:disabled {
-    cursor: default;
-      background-color: var(--color-gray-300);
-      border-top-color: var(--color-gray-300);
-      border-bottom-color: var(--color-gray-100);
+    cursor: not-allowed;
+    color: var(--color-gray-700);
+    background-color: var(--color-gray-300);
+    border-top-color: var(--color-gray-300);
+    border-bottom-color: var(--color-gray-100);
+    border-left: none;
+    border-right: none;
   }
 
   legend {

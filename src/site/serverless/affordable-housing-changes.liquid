@@ -11,13 +11,14 @@ maxHouseholdSize: 12
 
 {% comment %}
 - enable getting next property or skipping a property
-- make digest generator
 - add unit type string to "add rent offering"
 - highlight changes?
 - disable add buttons when too many are added
 - collapsable fieldsets
 - sort units and rent offerings
-- add step to number field
+- add alternate max income input fields
+- pre-check alternate rent and min income boxes if necessary
+- don't hide normal rent/min income fields, just disable them.
 {% endcomment %}
 
 {% assign allFields = "foo" | housingFields %}
@@ -80,17 +81,17 @@ maxHouseholdSize: 12
 {% formField housingFields, "MAX_RESIDENT_AGE", "4em" %}<br/>
 </div>
 
-{% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}
-{% formField housingFields, "ACCEPTS_VOUCHERS" %}<br/>
+{% formField housingFields, "ACCEPTS_VOUCHERS" %}
+{% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}<br/>
 
-{% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
-{% formField housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}<br/>
+{% formField housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
+{% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}<br/>
 
-{% fieldLabel "Only accepts referral applications", housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}
-{% formField housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}<br/>
+{% formField housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}
+{% fieldLabel "Only accepts referral applications", housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}<br/>
 
-{% fieldLabel "Prefers applicants within the local city", housingFields, "PREFERS_LOCAL_APPLICANTS" %}
-{% formField housingFields, "PREFERS_LOCAL_APPLICANTS" %}<br/>
+{% formField housingFields, "PREFERS_LOCAL_APPLICANTS" %}
+{% fieldLabel "Prefers applicants within the local city", housingFields, "PREFERS_LOCAL_APPLICANTS" %}<br/>
 </div>
 
 <div id="all-units">
@@ -112,6 +113,15 @@ maxHouseholdSize: 12
 		{% indexFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "4em" %} to 
 		{% indexFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "4em" %} people<br/>
 
+    <div class="min-income">
+		{% indexFieldLabel unitIdx, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %}<br/> 
+		{% indexFormField unitIdx, unitsFields, "MIN_INCOME_RENT_FACTOR", "5em" %} times yearly rent<br/>
+		</div>
+		<div class="min-income-alternate-hint">
+		Input the minimum income dollar amount within each rent offering below.
+		</div>
+		<input type="checkbox" id="is-alternate-min-income:{{unitIdx}}" class="is-alternate-min-income"> <label for="is-alternate-min-income">The minimum income is given as a dollar amount</label><br/>
+
 	  <div class="all-offerings">
 	  {% assign offeringEndIdx = maxOfferings | plus: -1 %}
 		{% for offerNum in (0..offeringEndIdx) %}
@@ -125,11 +135,20 @@ maxHouseholdSize: 12
 			  {% indexFieldLabel offerIdx, "Percent AMI", unitsFields, "PERCENT_AMI" %}<br/>
 				{% indexFormField offerIdx, unitsFields, "PERCENT_AMI", "4em" %}%<br/>
 
+				<div class="rent-value">
 				{% indexFieldLabel offerIdx, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}<br/>
 				{% indexFormField offerIdx, unitsFields, "RENT_PER_MONTH_USD", "5em" %} $/month<br/>
+				</div>
+				<div class="rent-alternate">
+				{% indexFieldLabel offerIdx, "Rent Description", unitsFields, "RENT_NOTES" %}<br/>
+				{% indexFormField offerIdx, unitsFields, "RENT_NOTES" %}<br/>
+				</div>
+				<input type="checkbox" id="is-alternate-rent:{{offerIdx}}" class="is-alternate-rent"> <label for="is-alternate-rent">The rent is variable or can't be entered as a single number</label><br/>
 
-				{% indexFieldLabel offerIdx, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %}<br/> 
-				{% indexFormField offerIdx, unitsFields, "MIN_INCOME_RENT_FACTOR", "5em" %} times yearly rent<br/>
+        <div class="min-income-alternate">
+		    {% indexFieldLabel offerIdx, "Minimum Income", unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD" %}<br/> 
+		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD", "5em" %} $/year<br/>
+		    </div>
 
 				<table class="max-income">
 				<tr>
@@ -154,7 +173,10 @@ maxHouseholdSize: 12
 {% endfor %}
 </div>
 
-<button type="button" onclick="addUnit();" class="btn btn_secondary">Add unit type</button>
+<button type="button" id="add-unit" class="btn btn_secondary">Add unit type</button>
+
+<br/><br/><label for="user-notes" style="white-space: break-spaces; width: 30em">Not sure how to input some of this property's information? Need to leave a note for the reviewer? Enter it here.</label><br/>
+<textarea id="user-notes" name="userNotes" style="width: 30em; height: 6em"></textarea>
 
 <h3>Step 3</h3>
 <p>Submit these changes for review by The United Effort Organization.</p>
@@ -168,7 +190,10 @@ function addUnit() {
     unitIdx++;
     let newUnit = document.querySelectorAll("#all-units > div")[unitIdx];
     newUnit.removeAttribute("hidden");
-  }
+    if (unitIdx == {{maxUnits | plus: -1}}) {
+      document.getElementById("add-unit").setAttribute("disabled", "disabled");
+    }
+  } 
 }
 
 function addOffering() {
@@ -178,6 +203,9 @@ function addOffering() {
     offeringIdx[thisUnitId] = offeringIdx[thisUnitId] + 1;
     let newOffering = unitDiv.querySelectorAll(".all-offerings > div")[offeringIdx[thisUnitId]];
     newOffering.removeAttribute("hidden");
+    if (offeringIdx[thisUnitId] == {{maxOfferings | plus: -1}}) {
+      unitDiv.querySelector(".add_offering").setAttribute("disabled", "disabled");
+    }
   }
 }
 
@@ -220,6 +248,9 @@ function deleteUnit() {
 	    offering.setAttribute("hidden", "hidden");
 	  }
 	  offeringIdx[deletedUnitId] = -1;
+	  if (unitIdx < {{maxUnits | plus: -1}}) {
+      document.getElementById("add-unit").removeAttribute("disabled");
+    }
 	}
 }
 
@@ -233,6 +264,9 @@ function deleteOffering() {
 	  offeringsContainer.appendChild(deletedOffering);
 	  offeringIdx[thisUnitIdx] = offeringIdx[thisUnitIdx] - 1;
 	  clearNodeForm(deletedOffering);
+	  if (offeringIdx[thisUnitIdx] < {{maxOfferings | plus: -1}}) {
+      unitDiv.querySelector(".add_offering").removeAttribute("disabled");
+    }
 	}
 
 
@@ -398,12 +432,52 @@ function updateAgeVisibility() {
 	} else if (seniorsOption.checked && !youthOption.checked) {
     minAge.removeAttribute("hidden");
     maxAge.setAttribute("hidden", "hidden");
+    clearNodeForm(maxAge);
 	} else if (!seniorsOption.checked && youthOption.checked) {
     minAge.removeAttribute("hidden");
     maxAge.removeAttribute("hidden");
 	} else {
     minAge.setAttribute("hidden", "hidden");
     maxAge.setAttribute("hidden", "hidden");
+    clearNodeForm(minAge);
+    clearNodeForm(maxAge);
+	}
+}
+
+function updateRentVisibility() {
+  let offeringContainer = this.parentNode;
+	let rentValueInput = offeringContainer.getElementsByClassName("rent-value")[0];
+	let rentAlternateInput = offeringContainer.getElementsByClassName("rent-alternate")[0];
+	if (this.checked) {
+	  rentValueInput.setAttribute("hidden", "hidden");
+	  clearNodeForm(rentValueInput);
+	  rentAlternateInput.removeAttribute("hidden");
+	} else {
+	  rentValueInput.removeAttribute("hidden");
+	  rentAlternateInput.setAttribute("hidden", "hidden");
+	  clearNodeForm(rentAlternateInput);
+	}
+}
+
+function updateMinIncomeVisibility() {
+	let unitContainer = this.parentNode;
+	let minIncomeInput = unitContainer.querySelector(".min-income");
+	let minIncomeAlternateHint = unitContainer.querySelector(".min-income-alternate-hint");
+	let minIncomeAlternateInputs = unitContainer.querySelectorAll(".min-income-alternate");
+	if (this.checked) {
+	  minIncomeInput.setAttribute("hidden", "hidden");
+	  clearNodeForm(minIncomeInput);
+	  minIncomeAlternateHint.removeAttribute("hidden");
+	  for (alternateInput of minIncomeAlternateInputs) {
+	    alternateInput.removeAttribute("hidden");
+	  }
+	} else {
+	  minIncomeInput.removeAttribute("hidden");
+	  minIncomeAlternateHint.setAttribute("hidden", "hidden");
+	  for (alternateInput of minIncomeAlternateInputs) {
+	    alternateInput.setAttribute("hidden", "hidden");
+	    clearNodeForm(alternateInput);
+	  }
 	}
 }
 
@@ -467,6 +541,19 @@ document.getElementById("fldei8N0xw2VhjX9V").onchange = updatePropertyLink;
 document.getElementById("fldkzU54q8lYtIH7G:seniors").onchange = updateAgeVisibility;
 document.getElementById("fldkzU54q8lYtIH7G:youth").onchange = updateAgeVisibility;
 document.getElementById("fldMcM49qaNr3EQ2a").onchange = updatePageTitle;
+document.getElementById("add-unit").onclick = addUnit;
+
+let alternateRentCheckboxes = document.querySelectorAll(".is-alternate-rent");
+for (checkbox of alternateRentCheckboxes) {
+  checkbox.onchange = updateRentVisibility;
+  checkbox.onchange();
+}
+
+let alternateMinIncomeCheckboxes = document.querySelectorAll(".is-alternate-min-income");
+for (checkbox of alternateMinIncomeCheckboxes) {
+  checkbox.onchange = updateMinIncomeVisibility;
+  checkbox.onchange();
+}
 
 let unitIdx = 0;
 let offeringIdx = new Array({{maxUnits | plus: -1}}).fill(-1);
