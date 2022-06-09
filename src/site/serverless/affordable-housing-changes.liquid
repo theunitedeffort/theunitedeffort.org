@@ -10,6 +10,7 @@ maxHouseholdSize: 12
 ---
 
 {% comment %}
+- add unit type to heading and ami to offering heading
 - open property website in a new window
 - info tooltips for alternate max income and max occupancy
 - enable getting next property or skipping a property
@@ -98,7 +99,7 @@ maxHouseholdSize: 12
   {% assign unitIdx = unitNum %}
 	<div id="unit-{{unitNum}}" class="fieldset_box" hidden>
 	<fieldset>
-		<legend>Unit Type
+		<legend><span class="section_title">Unit Type</span>
 		<div class="float-right">
       <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
 	  	<button type="button" class="btn btn_warning delete_unit">Delete</button>
@@ -135,7 +136,7 @@ maxHouseholdSize: 12
 		{% for offerNum in (0..offeringEndIdx) %}
 		  <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset_box" hidden>
 		  <fieldset>
-			  <legend>Rent Offering
+			  <legend><span class="section_title">Rent Offering</span>
 			  <div class="float-right">
           <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
 			    <button type="button" class="btn btn_warning delete_offering">Delete</button>
@@ -271,7 +272,6 @@ function clearNodeForm(node) {
 
 function deleteUnit() {
   let deletedUnit = this.parentNode.parentNode.parentNode.parentNode;
-  console.log(deletedUnit);
 	if (unitIdx >= 0) {
 	  deletedUnit.setAttribute("hidden", "hidden");
 	  let deletedUnitId = deletedUnit.id.split("-")[1];
@@ -340,6 +340,24 @@ function updatePropertyLink() {
 
 function updatePageTitle() {
 	document.getElementById("apt-name-header").innerHTML = this.value;
+}
+
+function updateUnitHeading() {
+  let heading = this.parentNode.parentNode.querySelector(".section_title");
+  let unitTypeStr = "";
+  if (this.value)	{
+    unitTypeStr = `: ${this.value}`;
+  } 
+  heading.innerHTML = `Unit Type${unitTypeStr}`;
+}
+
+function updateOfferingHeading() {
+  let heading = this.parentNode.parentNode.querySelector(".section_title");
+  let offeringStr = "";
+  if (this.value)	{
+    offeringStr = `: ${this.value}% AMI`;
+  } 
+  heading.innerHTML = `Rent Offering${offeringStr}`;
 }
 
 function updateSelectColor() {
@@ -690,12 +708,6 @@ function groupDataByUnitType(data) {
   return groupedData;
 }
 
-let units = document.querySelectorAll("#all-units > div");
-for (unit of units) {
-	let deleteButton = unit.querySelector("button.delete_unit");
-	deleteButton.onclick = deleteUnit;
-}
-
 let selects = document.querySelectorAll("#housing-changes select");
 for (select of selects) {
   // Exclude the city field, as the color adds no information without 
@@ -715,6 +727,16 @@ for (occupancy of occupancies) {
 	occupancy.onchange = updateMaxIncomeRowsVisibility;
 }
 
+let unitTypes = document.querySelectorAll("[id*=fldJ4fP1y13NE6ywu]");
+for (unitType of unitTypes) {
+	unitType.onchange = updateUnitHeading;
+}
+
+let amiPercents = document.querySelectorAll("[id*=fldBHf0GmnBHnZBFI]");
+for (amiPercent of amiPercents) {
+	amiPercent.onchange = updateOfferingHeading;
+}
+
 let addOfferingButtons = document.querySelectorAll("button.add_offering");
 for (button of addOfferingButtons) {
 	button.onclick = addOffering;
@@ -723,6 +745,11 @@ for (button of addOfferingButtons) {
 let deleteOfferingButtons = document.querySelectorAll("button.delete_offering");
 for (button of deleteOfferingButtons) {
 	button.onclick = deleteOffering;
+}
+
+let deleteUnitButtons = document.querySelectorAll("button.delete_unit");
+for (button of deleteUnitButtons) {
+	button.onclick = deleteUnit;
 }
 
 let collapseButtons = document.querySelectorAll("button.collapse_control");
