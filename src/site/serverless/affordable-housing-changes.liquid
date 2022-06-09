@@ -101,7 +101,7 @@ maxHouseholdSize: 12
 		<legend>Unit Type
 		<div class="float-right">
       <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
-	  	<button type="button" class="btn btn_warning">Delete</button>
+	  	<button type="button" class="btn btn_warning delete_unit">Delete</button>
 	  </div>
 		</legend>
 		<div class="collapsible_content">
@@ -233,7 +233,7 @@ function addUnit() {
 }
 
 function addOffering() {
-  let unitDiv = this.parentNode.parentNode
+  let unitDiv = this.parentNode.parentNode.parentNode;
   let thisUnitId = unitDiv.id.split("-")[1];
   if (offeringIdx[thisUnitId] < {{maxOfferings | plus: -1}}) {
     offeringIdx[thisUnitId] = offeringIdx[thisUnitId] + 1;
@@ -270,7 +270,8 @@ function clearNodeForm(node) {
 }
 
 function deleteUnit() {
-  let deletedUnit = this.parentNode.parentNode.parentNode;
+  let deletedUnit = this.parentNode.parentNode.parentNode.parentNode;
+  console.log(deletedUnit);
 	if (unitIdx >= 0) {
 	  deletedUnit.setAttribute("hidden", "hidden");
 	  let deletedUnitId = deletedUnit.id.split("-")[1];
@@ -291,8 +292,8 @@ function deleteUnit() {
 }
 
 function deleteOffering() {
-	let deletedOffering = this.parentNode.parentNode.parentNode;
-	let unitDiv = deletedOffering.parentNode.parentNode.parentNode;
+	let deletedOffering = this.parentNode.parentNode.parentNode.parentNode;
+	let unitDiv = deletedOffering.parentNode.parentNode.parentNode.parentNode;
 	let thisUnitIdx = unitDiv.id.split("-")[1];
 	if (offeringIdx[thisUnitIdx] >= 0) {
 	  deletedOffering.setAttribute("hidden", "hidden");
@@ -691,7 +692,7 @@ function groupDataByUnitType(data) {
 
 let units = document.querySelectorAll("#all-units > div");
 for (unit of units) {
-	let deleteButton = unit.querySelector("button");
+	let deleteButton = unit.querySelector("button.delete_unit");
 	deleteButton.onclick = deleteUnit;
 }
 
