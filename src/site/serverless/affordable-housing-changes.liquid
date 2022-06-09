@@ -10,12 +10,14 @@ maxHouseholdSize: 12
 ---
 
 {% comment %}
-- enable getting next property or skipping a property
-- add unit type string to "add rent offering"
-- highlight changes?
-- disable add buttons when too many are added
-- collapsable fieldsets
 - sort units and rent offerings
+- add darker airtable colors
+- collapsable fieldsets
+- open property website in a new window
+- info tooltips for alternate max income and max occupancy
+- enable getting next property or skipping a property
+- add unit type string to "add rent offering"?
+- highlight changes?
 {% endcomment %}
 
 {% assign allFields = "foo" | housingFields %}
@@ -26,8 +28,9 @@ maxHouseholdSize: 12
 <h2 id="apt-name-header">Loading property data...</h2>
 <h3>Step 1</h3>
 <p><a href="" target="_blank" rel="noopener" class="property-link">Open the official information about this property</a></p>
+<p>If the above link is broken or takes you to the wrong page, find a better link for this property and put it in the URL field below. The link above will automatically update.</p>
 <h3>Step 2</h3>
-<p>Make any edits necessary to make the information below match the offical property manager's information. If there is information here you can't find on the property manager's website, do not delete it.  When in doubt, prefer to keep the information you see below.</p>
+<p>Make any edits necessary to make the information below match the offical property manager's information. If there is already information entered here that you can't confirm via the property manager's website, do not delete it.  When in doubt, prefer to keep the information you see below.</p>
 <form style="display:block;" id="housing-changes" name="housing_changes" netlify>
 
 <div id="property-data">
@@ -182,7 +185,7 @@ maxHouseholdSize: 12
 				</table>
 
 				<div class="max-income-alternate">
-				Maximum Income<br/>
+				Maximum Income Range<br/>
 		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD", "7em" %}
 		    {% indexFieldLabel offerIdx, "", unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD" %} to
 		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD", "7em" %}
@@ -456,10 +459,6 @@ function prefillForm(data) {
       }
     }
   }
-
-  //for (conditional of unitsFormConditionals) {
-  //
-  //}
 }
 
 function initUnitVisibility(data) {
@@ -584,6 +583,71 @@ function updateNextPropertyButton(id) {
 	button.href = "/housing/affordable-housing/changes?id=" + id;
 }
 
+function sortRents(values) {
+	let sorted = values.sort(function(a, b) {
+    // Compare rent offerings.
+	  // If both offerings have differing rent, sort according to those.  
+	  // Otherwise, use min income if available.
+	  // Otherwise, use max income (the low end of the range) if available.
+	  // If the offerings have none of those three values, don't sort at all, as 
+	  // there is nothing to compare against.
+	  let compA = 0;
+	  let compB = 0;
+	  if (a.fields.RENT_PER_MONTH_USD && 
+	      b.fields.RENT_PER_MONTH_USD && 
+	      a.fields.RENT_PER_MONTH_USD != b.fields.RENT_PER_MONTH_USD) {
+	    compA = a.fields.RENT_PER_MONTH_USD;
+	    compB = b.fields.RENT_PER_MONTH_USD;
+	  } else if (a.fields.MIN_YEARLY_INCOME_USD && 
+	             b.fields.MIN_YEARLY_INCOME_USD &&
+	             a.fields.MIN_YEARLY_INCOME_USD != b.fields.MIN_YEARLY_INCOME_USD) {
+	    compA = a.fields.MIN_YEARLY_INCOME_USD;
+	    compB = b.fields.MIN_YEARLY_INCOME_USD;
+	  } else if (
+	      a.fields.MAX_YEARLY_INCOME_LOW_USD && 
+	      b.fields.MAX_YEARLY_INCOME_LOW_USD &&
+	      a.fields.MAX_YEARLY_INCOME_LOW_USD != b.fields.MAX_YEARLY_INCOME_LOW_USD) {
+	    compA = a.fields.MAX_YEARLY_INCOME_LOW_USD;
+	    compB = b.fields.MAX_YEARLY_INCOME_LOW_USD;
+	  }
+	  if (compA < compB) {
+	    return -1;
+	  }
+	  if (compA > compB) {
+	    return 1;
+	  }
+	  return 0;
+	});
+	return sorted;
+}
+
+function sortUnitTypes(values) {
+  let sorted = values.sort(function(a, b) {
+    let valA = a;
+    let valB = b;
+    // Return < 0 if 'a' should go before 'b'
+    // Return > 0 if 'b' should go before 'a'
+    if ((valA === "SRO" && valB === "Studio") || // SRO before Studio.
+        (valA === "SRO" || valA === "Studio") || // SRO/Studio always first.
+        (valB === "Others")) { // Others always last.
+      return -1; 
+    }
+    if ((valA === "Studio" && valB === "SRO") || // SRO before Studio
+        (valB === "SRO" || valB === "Studio") || // SRO/Studio always first.
+        (valA === "Others")) { // Others always last.
+      return 1;
+    }
+    if (valA < valB) {
+      return -1;
+    }
+    if (valA > valB) {
+      return 1;
+    }
+    return 0;
+  });
+  return sorted;
+}
+
 function groupDataByUnitType(data) {
 	let groupedData = {};
 	groupedData.housing = data.housing;
@@ -594,10 +658,9 @@ function groupDataByUnitType(data) {
     tempMap[typeKey] = tempMap[typeKey] || [];
     tempMap[typeKey].push(unitRecord);
   }
-  for (unitType in tempMap) {
-    groupedData.units.push(tempMap[unitType]);
+  for (unitType of sortUnitTypes(Object.keys(tempMap))) {
+    groupedData.units.push(sortRents(tempMap[unitType]));
   }
-  //groupedData.units = tempMap;
   console.log(groupedData);
   return groupedData;
 }
