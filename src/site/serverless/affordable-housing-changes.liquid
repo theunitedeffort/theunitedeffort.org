@@ -16,9 +16,6 @@ maxHouseholdSize: 12
 - disable add buttons when too many are added
 - collapsable fieldsets
 - sort units and rent offerings
-- add alternate max income input fields
-- pre-check alternate rent and min income boxes if necessary
-- don't hide normal rent/min income fields, just disable them.
 {% endcomment %}
 
 {% assign allFields = "foo" | housingFields %}
@@ -30,7 +27,7 @@ maxHouseholdSize: 12
 <h3>Step 1</h3>
 <p><a href="" target="_blank" rel="noopener" class="property-link">Open the official information about this property</a></p>
 <h3>Step 2</h3>
-<p>Make any edits necessary to make the information below match the offical property manager's information.</p>
+<p>Make any edits necessary to make the information below match the offical property manager's information. If there is information here you can't find on the property manager's website, do not delete it.  When in doubt, prefer to keep the information you see below.</p>
 <form style="display:block;" id="housing-changes" name="housing_changes" netlify>
 
 <div id="property-data">
@@ -39,7 +36,7 @@ maxHouseholdSize: 12
 {% formField housingFields, "APT_NAME", "20em" %}<br/>
 
 {% fieldLabel "Address", housingFields, "ADDRESS" %} <span id="show-second-address" class="label"><a href="javascript:showSecondAddress()">Add a second address</a></span><br/>
-{% formField housingFields, "ADDRESS" %}<br/>
+{% formField housingFields, "ADDRESS", "20em" %}<br/>
 <div id="second-address" hidden>
 {% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}<br/>
 {% formField housingFields, "SECOND_ADDRESS" %}<br/>
@@ -64,7 +61,7 @@ maxHouseholdSize: 12
 {% formField housingFields, "PROPERTY_URL", "30em" %}<br/>
 
 {% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}<br/>
-{% formField housingFields, "UNITS_CNT", "4em" %}<br/>
+{% formField housingFields, "UNITS_CNT", "5em" %}<br/>
 
 <div class="multiselect" id="populations-served">
 {% fieldLabel "Populations Served", housingFields, "POPULATIONS_SERVED" %}<br/>
@@ -96,9 +93,10 @@ maxHouseholdSize: 12
 
 <div id="all-units">
 {% assign unitEndIdx = maxUnits | plus: -1 %}
+{% assign offeringEndIdx = maxOfferings | plus: -1 %}
 {% for unitNum in (0..unitEndIdx) %}
   {% assign unitIdx = unitNum %}
-	<div id="unit-{{unitNum}}" class="fieldset-box" hidden>
+	<div id="unit-{{unitNum}}" class="fieldset_box" hidden>
 	<fieldset>
 		<legend>Unit Type
 		<button type="button" class="btn btn_warning float-right">Delete</button>
@@ -113,19 +111,25 @@ maxHouseholdSize: 12
 		{% indexFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "4em" %} to 
 		{% indexFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "4em" %} people<br/>
 
+    {% assign alternateMinIncomeStr = "" %}
+      {% for offerIdx in (0..offeringEndIdx) %}
+        {% assign alternateMinIncomeStr = alternateMinIncomeStr | append: "OVERRIDE_MIN_YEARLY_INCOME_USD:" | append: unitIdx | append: ":" | append: offerIdx %}
+        {% if forloop.last == false %}
+          {% assign alternateMinIncomeStr = alternateMinIncomeStr | append: "," %}
+        {% endif %}
+      {% endfor %}
+    <input type="checkbox" id="is-alternate-min-income:{{unitIdx}}" class="form_conditional is-alternate-min-income" data-primary-field="MIN_INCOME_RENT_FACTOR:{{unitIdx}}" data-alternate-field="{{alternateMinIncomeStr}}" data-conflict-resolution="alternate"> <label for="is-alternate-min-income:{{unitIdx}}">The minimum income is given as a dollar amount for this unit</label><br/>
     <div class="min-income">
 		{% indexFieldLabel unitIdx, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %}<br/> 
 		{% indexFormField unitIdx, unitsFields, "MIN_INCOME_RENT_FACTOR", "5em" %} times yearly rent<br/>
 		</div>
-		<div class="min-income-alternate-hint">
+		<div class="min-income-alternate form_hint">
 		Input the minimum income dollar amount within each rent offering below.
 		</div>
-		<input type="checkbox" id="is-alternate-min-income:{{unitIdx}}" class="is-alternate-min-income"> <label for="is-alternate-min-income">The minimum income is given as a dollar amount</label><br/>
 
 	  <div class="all-offerings">
-	  {% assign offeringEndIdx = maxOfferings | plus: -1 %}
 		{% for offerNum in (0..offeringEndIdx) %}
-		  <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset-box" hidden>
+		  <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset_box" hidden>
 		  <fieldset>
 			  <legend>Rent Offering
 			  <button type="button" class="btn btn_warning float-right delete_offering">Delete</button>
@@ -135,21 +139,29 @@ maxHouseholdSize: 12
 			  {% indexFieldLabel offerIdx, "Percent AMI", unitsFields, "PERCENT_AMI" %}<br/>
 				{% indexFormField offerIdx, unitsFields, "PERCENT_AMI", "4em" %}%<br/>
 
+        <input type="checkbox" id="is-alternate-rent:{{offerIdx}}" class="form_conditional is-alternate-rent" data-primary-field="RENT_PER_MONTH_USD:{{offerIdx}}" data-alternate-field="RENT_NOTES:{{offerIdx}}" data-conflict-resolution="primary"> <label for="is-alternate-rent:{{offerIdx}}">The rent is variable or can't be entered as a single number for this rent offering</label><br/>
 				<div class="rent-value">
 				{% indexFieldLabel offerIdx, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}<br/>
 				{% indexFormField offerIdx, unitsFields, "RENT_PER_MONTH_USD", "5em" %} $/month<br/>
 				</div>
 				<div class="rent-alternate">
 				{% indexFieldLabel offerIdx, "Rent Description", unitsFields, "RENT_NOTES" %}<br/>
-				{% indexFormField offerIdx, unitsFields, "RENT_NOTES" %}<br/>
+				{% indexFormField offerIdx, unitsFields, "RENT_NOTES", "25em"%}<br/>
 				</div>
-				<input type="checkbox" id="is-alternate-rent:{{offerIdx}}" class="is-alternate-rent"> <label for="is-alternate-rent">The rent is variable or can't be entered as a single number</label><br/>
 
         <div class="min-income-alternate">
 		    {% indexFieldLabel offerIdx, "Minimum Income", unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD" %}<br/> 
-		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD", "5em" %} $/year<br/>
+		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD", "7em" %} $/year<br/>
 		    </div>
 
+        {% assign primaryMaxIncomeStr = "" %}
+        {% for hhSize in (1..maxHouseholdSize) %}
+          {% assign primaryMaxIncomeStr = primaryMaxIncomeStr | append: "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD:" | append: offerIdx %}
+          {% if forloop.last == false %}
+            {% assign primaryMaxIncomeStr = primaryMaxIncomeStr | append: "," %}
+          {% endif %}
+        {% endfor %}
+ 				<input type="checkbox" id="is-alternate-max-income:{{offerIdx}}" class="form_conditional is-alternate-max-income" data-primary-field="{{primaryMaxIncomeStr}}" data-alternate-field="OVERRIDE_MAX_YEARLY_INCOME_LOW_USD:{{offerIdx}},OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD:{{offerIdx}}" data-conflict-resolution="alternate"> <label for="is-alternate-max-income:{{offerIdx}}">The maximum income is not broken down by household size for this rent offering</label><br/>
 				<table class="max-income">
 				<tr>
 				<th>Household Size</th>
@@ -158,11 +170,25 @@ maxHouseholdSize: 12
 				{% for hhSize in (1..maxHouseholdSize) %}
 				<tr>
 				{% assign fieldname = "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD" %}
-				<td>{% indexFieldLabel offerIdx, hhSize, unitsFields, fieldname %}</td>
+				{% if hhSize == 1 %}
+				  {% assign hhSizeStr = hhSize | append: " person" %}
+				{% else %}
+				  {% assign hhSizeStr = hhSize | append: " people" %}
+				{% endif %}
+				<td>{% indexFieldLabel offerIdx, hhSizeStr, unitsFields, fieldname %}</td>
 				<td>${% indexFormField offerIdx, unitsFields, fieldname, "7em" %} per year</td>
 				</tr>
 				{% endfor %}
 				</table>
+
+				<div class="max-income-alternate">
+				Maximum Income<br/>
+		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD", "7em" %}
+		    {% indexFieldLabel offerIdx, "", unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD" %} to
+		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD", "7em" %}
+		    {% indexFieldLabel offerIdx, "", unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD" %} $/year
+		    <br/>
+		    </div>
 		  </fieldset>
 		  </div>
 		{% endfor %}
@@ -175,7 +201,7 @@ maxHouseholdSize: 12
 
 <button type="button" id="add-unit" class="btn btn_secondary">Add unit type</button>
 
-<br/><br/><label for="user-notes" style="white-space: break-spaces; width: 30em">Not sure how to input some of this property's information? Need to leave a note for the reviewer? Enter it here.</label><br/>
+<br/><br/><label for="user-notes" style="white-space: break-spaces; display: block; width: 30em">Not sure how to input some of this property's information? Need to leave a note for the reviewer? Enter it here.</label>
 <textarea id="user-notes" name="userNotes" style="width: 30em; height: 6em"></textarea>
 
 <h3>Step 3</h3>
@@ -358,6 +384,7 @@ function prefillForm(data) {
   let unitsSection = document.getElementById("all-units");
 	let propertyFields = propertySection.querySelectorAll(fieldSelector);
 	let unitsFields = unitsSection.querySelectorAll(fieldSelector);
+	//let unitsFormConditionals = unitsSection.querySelctorAll(".form_conditional");
 	
 	for (field of propertyFields) {
 	  let value = data.housing.fields[field.name];
@@ -372,11 +399,67 @@ function prefillForm(data) {
     if (offerIdx === undefined) {
       offerIdx = 0;
     }
-    if (unitIdx < data.units.length && offerIdx < data.units[unitIdx].length) {
-      let value = data.units[unitIdx][offerIdx].fields[fieldName];
-      prefillField(field, value);
+    if (field.className.includes("form_conditional")) {
+      if (!field.dataset.primaryField || !field.dataset.alternateField) {
+        continue;
+      }
+      let primaryFields = field.dataset.primaryField.split(",");
+      let alternateFields = field.dataset.alternateField.split(",");
+      let primaryFieldUsed = false;
+      let alternateFieldUsed = false;
+      console.log("primaryFields:");
+      for (primaryField of primaryFields) {
+        let [primaryFieldName, primaryUnitIdx, primaryOfferIdx] = primaryField.split(":");
+        if (primaryOfferIdx === undefined) {
+          primaryOfferIdx = 0;
+        }
+        if (primaryUnitIdx < data.units.length && primaryOfferIdx < data.units[primaryUnitIdx].length) {
+          console.log(" " + primaryField);
+          let primaryValue = data.units[primaryUnitIdx][primaryOfferIdx].fields[primaryFieldName];
+          if (primaryValue) {
+            primaryFieldUsed = true;
+            console.log("  primary has data");
+            break;
+          }
+        }
+      }
+      console.log("alternateFields:");
+      for (alternateField of alternateFields) {
+        let [alternateFieldName, alternateUnitIdx, alternateOfferIdx] = alternateField.split(":");
+        if (alternateOfferIdx === undefined) {
+          alternateOfferIdx = 0;
+        }
+        if (alternateUnitIdx < data.units.length && alternateOfferIdx < data.units[alternateUnitIdx].length) {
+          console.log(" " + alternateField);
+          let alternateValue = data.units[alternateUnitIdx][alternateOfferIdx].fields[alternateFieldName];
+          if (alternateValue) {
+            alternateFieldUsed = true;
+            console.log("  alternate has data");
+            break;
+          }
+        }
+      }
+      console.log(" ");
+      
+      if (alternateFieldUsed) {
+        if (!primaryFieldUsed || (primaryFieldUsed && field.dataset.conflictResolution == "alternate")) {
+          field.checked = true;
+          if (field.onchange) {
+            field.onchange()
+          }
+        }
+      }
+    } else {
+      if (unitIdx < data.units.length && offerIdx < data.units[unitIdx].length) {
+        let value = data.units[unitIdx][offerIdx].fields[fieldName];
+        prefillField(field, value);
+      }
     }
   }
+
+  //for (conditional of unitsFormConditionals) {
+  //
+  //}
 }
 
 function initUnitVisibility(data) {
@@ -400,7 +483,7 @@ function initUnitVisibility(data) {
   }
 }
 
-function updateMaxIncomeVisibility() {
+function updateMaxIncomeRowsVisibility() {
   let unitContainer = this.parentNode;
   let offeringContainers = unitContainer.querySelectorAll("fieldset")
   let minOccupancyField = unitContainer.querySelector("[name*=MIN_OCCUPANCY]");
@@ -462,22 +545,37 @@ function updateRentVisibility() {
 function updateMinIncomeVisibility() {
 	let unitContainer = this.parentNode;
 	let minIncomeInput = unitContainer.querySelector(".min-income");
-	let minIncomeAlternateHint = unitContainer.querySelector(".min-income-alternate-hint");
+	//let minIncomeAlternateHint = unitContainer.querySelector(".min-income-alternate-hint");
 	let minIncomeAlternateInputs = unitContainer.querySelectorAll(".min-income-alternate");
 	if (this.checked) {
 	  minIncomeInput.setAttribute("hidden", "hidden");
 	  clearNodeForm(minIncomeInput);
-	  minIncomeAlternateHint.removeAttribute("hidden");
+	  //minIncomeAlternateHint.removeAttribute("hidden");
 	  for (alternateInput of minIncomeAlternateInputs) {
 	    alternateInput.removeAttribute("hidden");
 	  }
 	} else {
 	  minIncomeInput.removeAttribute("hidden");
-	  minIncomeAlternateHint.setAttribute("hidden", "hidden");
+	  //minIncomeAlternateHint.setAttribute("hidden", "hidden");
 	  for (alternateInput of minIncomeAlternateInputs) {
 	    alternateInput.setAttribute("hidden", "hidden");
 	    clearNodeForm(alternateInput);
 	  }
+	}
+}
+
+function updateMaxIncomeVisibility() {
+	let offeringContainer = this.parentNode;
+	let maxIncomeTable = offeringContainer.querySelector("table.max-income");
+	let maxIncomeAlternateInput = offeringContainer.querySelector(".max-income-alternate");
+	if (this.checked) {
+	  maxIncomeTable.setAttribute("hidden", "hidden");
+	  clearNodeForm(maxIncomeTable);
+	  maxIncomeAlternateInput.removeAttribute("hidden");
+	} else {
+	  maxIncomeTable.removeAttribute("hidden");
+	  maxIncomeAlternateInput.setAttribute("hidden", "hidden");
+	  clearNodeForm(maxIncomeAlternateInput);
 	}
 }
 
@@ -522,7 +620,7 @@ for (multiselect of multiselects) {
 
 let occupancies = document.querySelectorAll("[name*=OCCUPANCY]");
 for (occupancy of occupancies) {
-	occupancy.onchange = updateMaxIncomeVisibility;
+	occupancy.onchange = updateMaxIncomeRowsVisibility;
 }
 
 let addOfferingButtons = document.querySelectorAll("button.add_offering");
@@ -552,6 +650,12 @@ for (checkbox of alternateRentCheckboxes) {
 let alternateMinIncomeCheckboxes = document.querySelectorAll(".is-alternate-min-income");
 for (checkbox of alternateMinIncomeCheckboxes) {
   checkbox.onchange = updateMinIncomeVisibility;
+  checkbox.onchange();
+}
+
+let alternateMaxIncomeCheckboxes = document.querySelectorAll(".is-alternate-max-income");
+for (checkbox of alternateMaxIncomeCheckboxes) {
+  checkbox.onchange = updateMaxIncomeVisibility;
   checkbox.onchange();
 }
 

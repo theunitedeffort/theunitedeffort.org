@@ -58,7 +58,11 @@
       textarea {
         font-size: 1em;
         padding: 0.5em;
-        margin-bottom: 0.8em;
+        margin-bottom: 1em;
+      }
+      input.form_conditional {
+        margin-top: 0.3em;
+        margin-bottom: 0;
       }
       .multiselect > input[type=checkbox] {
         margin-bottom: 0em;
@@ -71,6 +75,9 @@
       .multiselect {
         margin-bottom: 0.8em;
       }
+      table input {
+        margin-bottom: 0;
+      }
       fieldset {
         width: 100%;
         margin-bottom: 0;
@@ -80,11 +87,16 @@
       }
     }
 
+    .form_hint {
+      color: var(--color-gray-600);
+      padding-left: 1em;
+    }
+    
     .label {
       font-size: 0.9em;
     }
     
-    .fieldset-box {
+    .fieldset_box {
       border: 3px solid var(--color-gray-600);
       border-radius: 6px;
       padding: 1em;
