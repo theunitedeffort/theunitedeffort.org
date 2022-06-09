@@ -32,8 +32,7 @@ main {
     border-top: solid 2px var(--color-blue-dark);
     border-bottom: solid 2px var(--color-blue-dark-b);
 
-    &:hover,
-    &:focus {
+    &:hover {
       background-color: var(--color-blue-dark-b);
       cursor: pointer;
     }
@@ -48,8 +47,7 @@ main {
     border-style: solid;
     font-weight: 650;
 
-    &:hover,
-    &:focus {
+    &:hover {
       background-color: var(--color-blue-dark);
       border-bottom-color: var(--color-blue-dark-b);
       color: var(--color-white);
@@ -65,8 +63,7 @@ main {
     border-top: solid 2px var(--color-red-dark);
     border-bottom: solid 2px var(--color-red-dark-b);
 
-    &:hover,
-    &:focus {
+    &:hover {
       background-color: var(--color-red-dark-b);
       cursor: pointer;
     }

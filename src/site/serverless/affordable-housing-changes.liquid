@@ -10,9 +10,6 @@ maxHouseholdSize: 12
 ---
 
 {% comment %}
-- sort units and rent offerings
-- add darker airtable colors
-- collapsable fieldsets
 - open property website in a new window
 - info tooltips for alternate max income and max occupancy
 - enable getting next property or skipping a property
@@ -102,8 +99,12 @@ maxHouseholdSize: 12
 	<div id="unit-{{unitNum}}" class="fieldset_box" hidden>
 	<fieldset>
 		<legend>Unit Type
-		<button type="button" class="btn btn_warning float-right">Delete</button>
+		<div class="float-right">
+      <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
+	  	<button type="button" class="btn btn_warning">Delete</button>
+	  </div>
 		</legend>
+		<div class="collapsible_content">
 		{% indexFieldLabel unitIdx, "Type", unitsFields, "TYPE" %}<br/>
 		{% indexFormField unitIdx, unitsFields, "TYPE" %}<br/>
 
@@ -135,8 +136,12 @@ maxHouseholdSize: 12
 		  <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset_box" hidden>
 		  <fieldset>
 			  <legend>Rent Offering
-			  <button type="button" class="btn btn_warning float-right delete_offering">Delete</button>
+			  <div class="float-right">
+          <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
+			    <button type="button" class="btn btn_warning delete_offering">Delete</button>
+			  </div>
 			  </legend>
+			  <div class="collapsible_content">
 			  {% assign offerIdx = unitNum | append: ":" | append: offerNum %}
 			  <input type="hidden" id={{unitsFields.ID.id}} name={{"ID:" | append: offerIdx}}>
 			  {% indexFieldLabel offerIdx, "Percent AMI", unitsFields, "PERCENT_AMI" %}<br/>
@@ -192,11 +197,13 @@ maxHouseholdSize: 12
 		    {% indexFieldLabel offerIdx, "", unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD" %} $/year
 		    <br/>
 		    </div>
+		    </div>
 		  </fieldset>
 		  </div>
 		{% endfor %}
 	  </div>	
 	  <button type="button" class="btn btn_secondary add_offering">Add rent offering</button>
+	  </div>
 	</fieldset>
 	</div>
 {% endfor %}
@@ -297,8 +304,25 @@ function deleteOffering() {
       unitDiv.querySelector(".add_offering").removeAttribute("disabled");
     }
 	}
+}
 
+function expandCollapsible(content, button) {
+	content.removeAttribute("hidden");
+	button.innerHTML = "Collapse";
+}
 
+function collapseCollapsible(content, button) {
+	content.setAttribute("hidden", "hidden");
+	button.innerHTML = "Expand";
+}
+
+function toggleCollapsible() {
+	let contentDiv = this.parentNode.parentNode.parentNode.querySelector(".collapsible_content");
+	if (contentDiv.hasAttribute("hidden")) {
+	  expandCollapsible(contentDiv, this);
+	} else {
+	  collapseCollapsible(contentDiv, this);
+	}
 }
 
 function showSecondAddress() {
@@ -673,7 +697,11 @@ for (unit of units) {
 
 let selects = document.querySelectorAll("#housing-changes select");
 for (select of selects) {
-	select.onchange = updateSelectColor;
+  // Exclude the city field, as the color adds no information without 
+  // the context of other property records visible.
+  if (select.id != "fldFH0HVaoZY3KV0C") {
+	  select.onchange = updateSelectColor;
+	}
 }
 
 let multiselects = document.querySelectorAll(".multiselect");
@@ -694,6 +722,11 @@ for (button of addOfferingButtons) {
 let deleteOfferingButtons = document.querySelectorAll("button.delete_offering");
 for (button of deleteOfferingButtons) {
 	button.onclick = deleteOffering;
+}
+
+let collapseButtons = document.querySelectorAll("button.collapse_control");
+for (button of collapseButtons) {
+	button.onclick = toggleCollapsible;
 }
 
 // Ensure the live link to the external property page updates when the URL value is changed.
