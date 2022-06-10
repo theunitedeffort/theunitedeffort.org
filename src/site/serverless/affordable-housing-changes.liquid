@@ -3,14 +3,13 @@ layout: layouts/base.liquid
 title: Check for Affordable Housing Updates
 permalink: 
   build: "/housing/affordable-housing/changes/index.html"
-pageClass: "smaller"
+pageClass: "smaller max_width"
 maxUnits: 6
 maxOfferings: 5
 maxHouseholdSize: 12
 ---
 
 {% comment %}
-- add unit type to heading and ami to offering heading
 - open property website in a new window
 - info tooltips for alternate max income and max occupancy
 - enable getting next property or skipping a property
@@ -22,14 +21,17 @@ maxHouseholdSize: 12
 {% assign housingFields = allFields.housingDatabase %}
 {% assign unitsFields = allFields.units %}
 
+<div class="flex align-flex-start">
+<div class="split">
+<div class="split_left_container">
 <a href="" id="next-property" class="btn btn_secondary">Load next property</a>
 <h2 id="apt-name-header">Loading property data...</h2>
 <h3>Step 1</h3>
-<p><a href="" target="_blank" rel="noopener" class="property-link">Open the official information about this property</a></p>
-<p>If the above link is broken or takes you to the wrong page, find a better link for this property and put it in the URL field below. The link above will automatically update.</p>
+<p>The <a href="" target="_blank" rel="noopener" class="property-link">official information</a> about this property is shown to the right.</p>
+<p>If the offical information seems to be broken or shows the wrong page, find a better link for this property and put it in the URL field <a href="#fldei8N0xw2VhjX9V">below</a>. The content to the right will automatically update.</p>
 <h3>Step 2</h3>
 <p>Make any edits necessary to make the information below match the offical property manager's information. If there is already information entered here that you can't confirm via the property manager's website, do not delete it.  When in doubt, prefer to keep the information you see below.</p>
-<form style="display:block;" id="housing-changes" name="housing_changes" netlify>
+<form id="housing-changes" name="housing_changes" netlify>
 
 <div id="property-data">
 <input type="hidden" id={{housingFields.ID.id}} name="ID">
@@ -59,7 +61,7 @@ maxHouseholdSize: 12
 {% formField housingFields, "MANAGEMENT_COMPANY", "20em" %}<br/>
 
 {% fieldLabel "URL", housingFields, "PROPERTY_URL" %} <a href="" target="_blank" rel="noopener" class="label property-link">Visit this page</a><sup>&#8599;</sup><br/>
-{% formField housingFields, "PROPERTY_URL", "30em" %}<br/>
+{% formField housingFields, "PROPERTY_URL", "35em" %}<br/>
 
 {% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}<br/>
 {% formField housingFields, "UNITS_CNT", "5em" %}<br/>
@@ -219,6 +221,14 @@ maxHouseholdSize: 12
 <p>Submit these changes for review by The United Effort Organization.</p>
 <button type="submit" class="btn btn_primary">Submit for review</button>
 </form>
+</div>
+</div>
+<div class="split sticky">
+  <div class="split_right_container">
+    <iframe src="https://www.firstcommunityhousing.org/property-bettyanngardens"></iframe>
+  </div>
+</div>
+</div>
 
 <script>
 
@@ -333,9 +343,14 @@ function showSecondAddress() {
 
 function updatePropertyLink() {
 	let links = document.getElementsByClassName("property-link");
+	let iframe = document.getElementsByTagName("iframe")[0];
+	if (this.value.search(/https?:\/\//) != 0) {
+	  this.value = "http://" + this.value;
+	}
 	for (link of links) {
 	  link.href = this.value;
 	}
+	iframe.src = this.value;
 }
 
 function updatePageTitle() {

@@ -48,9 +48,6 @@ body.smaller {
   @include bp(wide) {
     font-size: 16px;
   }
-  @include bp(ultra) {
-    font-size: 18px;
-  }
 }
 
 a {
@@ -97,6 +94,10 @@ main {
   }
 }
 
+body.smaller .container {
+  width: 95%;
+}
+
 @media print {
   main {
     a[href*="//"]::after {
@@ -106,6 +107,10 @@ main {
   .noprint {
     display: none;
   }
+}
+
+.split {
+  width: 50%;
 }
 
 .align-end {
@@ -119,6 +124,10 @@ main {
   flex-wrap: wrap;
 }
 
+.align-flex-start {
+  align-items: flex-start;
+}
+
 .stack-reversed {
   flex-wrap: wrap-reverse;
 }
@@ -128,5 +137,25 @@ main {
 }
 
 .float-right {
-  float:right;
+  float: right;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+}
+
+.split_right_container {
+  margin-left: 1em;
+}
+
+.split_left_container {
+  margin-right: 1em;
+}
+
+iframe {
+  width: 100%;
+  height: 100vh;
+  border: solid 2px var(--color-gray-600);
 }

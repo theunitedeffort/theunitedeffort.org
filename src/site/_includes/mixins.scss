@@ -20,7 +20,7 @@ $bp-ultra: "(min-width: 1400px)";
     }
   }
   @else if $point==ultra {
-    @media #{$bp-wide} {
+    @media #{$bp-ultra} {
       @content;
     }
   }
