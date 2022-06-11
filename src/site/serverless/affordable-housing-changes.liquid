@@ -10,8 +10,7 @@ maxHouseholdSize: 12
 ---
 
 {% comment %}
-- fix city not populating in safari
-- prevent enter from submitting
+- re-enable color update on unit type dropdown
 - enable getting next property or skipping a property
 - add unit type string to "add rent offering"?
 - highlight changes?
@@ -228,7 +227,7 @@ maxHouseholdSize: 12
 
 <h3>Step 3</h3>
 <p>Submit these changes for review by The United Effort Organization.</p>
-<button type="submit" class="btn btn_primary">Submit for review</button>
+<button type="button" id="submit-button" class="btn btn_primary">Submit for review</button>
 </form>
 </div>
 </div>
@@ -240,6 +239,13 @@ maxHouseholdSize: 12
 </div>
 
 <script>
+
+function submitForm() {
+  // Rather than use a <button type="submit">, handle the submission
+  // with this listener on a normal button.  This prevents an Enter
+  // keystroke from submitting the form.
+  document.getElementById('housing-changes').submit();
+}
 
 function addUnit() {
   if (unitIdx < {{maxUnits | plus: -1}}) {
@@ -733,6 +739,8 @@ function groupDataByUnitType(data) {
   console.log(groupedData);
   return groupedData;
 }
+
+document.querySelector("#submit-button").onclick = submitForm;
 
 let selects = document.querySelectorAll("#housing-changes select");
 for (select of selects) {
