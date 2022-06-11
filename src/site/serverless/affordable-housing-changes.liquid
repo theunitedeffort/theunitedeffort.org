@@ -10,7 +10,6 @@ maxHouseholdSize: 12
 ---
 
 {% comment %}
-- re-enable color update on unit type dropdown
 - enable getting next property or skipping a property
 - add unit type string to "add rent offering"?
 - highlight changes?
@@ -290,9 +289,7 @@ function clearNodeForm(node) {
 	      input.value = "";
 	    }
 	  }
-	  if (input.onchange) {
-	    input.onchange();
-	  }
+	  input.dispatchEvent(new Event("change"));
 	}
 }
 
@@ -448,11 +445,10 @@ function prefillField(field, value) {
 	  field.value = value;
   } 
  
-  if (field.onchange) {
-    field.onchange();
-  }
-  if (isMultiselect && field.parentNode.onchange) {
-    field.parentNode.onchange();
+  let changeEvent = new Event("change");
+  field.dispatchEvent(changeEvent);
+  if (isMultiselect) {
+    field.parentNode.dispatchEvent(changeEvent);
   }
 }
 
@@ -522,9 +518,7 @@ function prefillForm(data) {
       if (alternateFieldUsed) {
         if (!primaryFieldUsed || (primaryFieldUsed && field.dataset.conflictResolution == "alternate")) {
           field.checked = true;
-          if (field.onchange) {
-            field.onchange()
-          }
+          field.dispatchEvent(new Event("change"))
         }
       }
     } else {
@@ -740,81 +734,81 @@ function groupDataByUnitType(data) {
   return groupedData;
 }
 
-document.querySelector("#submit-button").onclick = submitForm;
+document.querySelector("#submit-button").addEventListener("click", submitForm);
 
 let selects = document.querySelectorAll("#housing-changes select");
 for (select of selects) {
   // Exclude the city field, as the color adds no information without 
   // the context of other property records visible.
   if (select.id != "fldFH0HVaoZY3KV0C") {
-	  select.onchange = updateSelectColor;
+	  select.addEventListener("change", updateSelectColor);
 	}
 }
 
 let multiselects = document.querySelectorAll(".multiselect");
 for (multiselect of multiselects) {
-	multiselect.onchange = updateMultiselectColors;
+	multiselect.addEventListener("change", updateMultiselectColors);
 }
 
 let occupancies = document.querySelectorAll("[name*=OCCUPANCY]");
 for (occupancy of occupancies) {
-	occupancy.onchange = updateMaxIncomeRowsVisibility;
+	occupancy.addEventListener("change", updateMaxIncomeRowsVisibility);
 }
 
 let unitTypes = document.querySelectorAll("[id*=fldJ4fP1y13NE6ywu]");
 for (unitType of unitTypes) {
-	unitType.onchange = updateUnitHeading;
+	unitType.addEventListener("change", updateUnitHeading);
 }
 
 let amiPercents = document.querySelectorAll("[id*=fldBHf0GmnBHnZBFI]");
 for (amiPercent of amiPercents) {
-	amiPercent.onchange = updateOfferingHeading;
+	amiPercent.addEventListener("change", updateOfferingHeading);
 }
 
 let addOfferingButtons = document.querySelectorAll("button.add_offering");
 for (button of addOfferingButtons) {
-	button.onclick = addOffering;
+	button.addEventListener("click", addOffering);
 }
 
 let deleteOfferingButtons = document.querySelectorAll("button.delete_offering");
 for (button of deleteOfferingButtons) {
-	button.onclick = deleteOffering;
+	button.addEventListener("click", deleteOffering);
 }
 
 let deleteUnitButtons = document.querySelectorAll("button.delete_unit");
 for (button of deleteUnitButtons) {
-	button.onclick = deleteUnit;
+	button.addEventListener("click", deleteUnit);
 }
 
 let collapseButtons = document.querySelectorAll("button.collapse_control");
 for (button of collapseButtons) {
-	button.onclick = toggleCollapsible;
+	button.addEventListener("click", toggleCollapsible);
 }
 
 // Ensure the live link to the external property page updates when the URL value is changed.
-document.getElementById("fldei8N0xw2VhjX9V").onchange = updatePropertyLink;
+document.getElementById("fldei8N0xw2VhjX9V").addEventListener("change", updatePropertyLink);
 
-document.getElementById("fldkzU54q8lYtIH7G:seniors").onchange = updateAgeVisibility;
-document.getElementById("fldkzU54q8lYtIH7G:youth").onchange = updateAgeVisibility;
-document.getElementById("fldMcM49qaNr3EQ2a").onchange = updatePageTitle;
-document.getElementById("add-unit").onclick = addUnit;
+document.getElementById("fldkzU54q8lYtIH7G:seniors").addEventListener("change", updateAgeVisibility);
+document.getElementById("fldkzU54q8lYtIH7G:youth").addEventListener("change", updateAgeVisibility);
+document.getElementById("fldMcM49qaNr3EQ2a").addEventListener("change", updatePageTitle);
+document.getElementById("add-unit").addEventListener("click", addUnit);
 
 let alternateRentCheckboxes = document.querySelectorAll(".is-alternate-rent");
 for (checkbox of alternateRentCheckboxes) {
-  checkbox.onchange = updateRentVisibility;
-  checkbox.onchange();
+  checkbox.addEventListener("change", updateRentVisibility);
+  checkbox.dispatchEvent(new Event("change"));
 }
 
 let alternateMinIncomeCheckboxes = document.querySelectorAll(".is-alternate-min-income");
 for (checkbox of alternateMinIncomeCheckboxes) {
-  checkbox.onchange = updateMinIncomeVisibility;
-  checkbox.onchange();
+  checkbox.addEventListener("change", updateMinIncomeVisibility);
+  checkbox.dispatchEvent(new Event("change"));
 }
 
 let alternateMaxIncomeCheckboxes = document.querySelectorAll(".is-alternate-max-income");
 for (checkbox of alternateMaxIncomeCheckboxes) {
-  checkbox.onchange = updateMaxIncomeVisibility;
-  checkbox.onchange();
+  checkbox.addEventListener("change", updateMaxIncomeVisibility);
+  checkbox.dispatchEvent(new Event("change"));
 }
 
 let unitIdx = 0;
