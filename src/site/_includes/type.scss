@@ -153,8 +153,11 @@
     text-align: center;
   }
 
-  #housing-changes .icon_info {
-    font-size: 0.7em;
+  #housing-changes {
+    .icon_info,
+    .icon_query {
+      font-size: 0.7em;
+    } 
   }
 
   
@@ -236,6 +239,18 @@
     border-radius: 3px;
     padding: 0.1em 0.4em;
     font-size: 0.8em;
+  }
+
+  .note {
+    border: 2px solid var(--color-blue);
+    background-color: var(--color-blue-light);
+    border-radius: 6px;
+    padding: 1em;
+
+    &::before {
+      content: "Note: ";
+      font-weight: 600;
+    }
   }
 
 sup { vertical-align: top; font-size: 0.6em; }

@@ -10,8 +10,8 @@ maxHouseholdSize: 12
 ---
 
 {% comment %}
-- open property website in a new window
-- info tooltips for alternate max income and max occupancy
+- fix city not populating in safari
+- prevent enter from submitting
 - enable getting next property or skipping a property
 - add unit type string to "add rent offering"?
 - highlight changes?
@@ -27,10 +27,11 @@ maxHouseholdSize: 12
 <a href="" id="next-property" class="btn btn_secondary">Load next property</a>
 <h2 id="apt-name-header">Loading property data...</h2>
 <h3>Step 1</h3>
-<p>The <a href="" target="_blank" rel="noopener" class="property-link">official information</a> about this property is shown to the right.</p>
+<p>The <a href="" target="_blank" rel="noopener" class="property-link">official information</a><sup>&#8599;</sup> about this property is shown to the right.</p>
 <p>If the offical information seems to be broken or shows the wrong page, find a better link for this property and put it in the URL field <a href="#fldei8N0xw2VhjX9V">below</a>. The content to the right will automatically update.</p>
 <h3>Step 2</h3>
-<p>Make any edits necessary to make the information below match the offical property manager's information. If there is already information entered here that you can't confirm via the property manager's website, do not delete it.  When in doubt, prefer to keep the information you see below.</p>
+<p>Make any edits necessary to make the information below match the offical property manager's information.</p>
+<div class="note">If there is information here that you can't confirm via the property manager's website, do not delete it.  When in doubt, keep the information you see below.</div>
 <form id="housing-changes" name="housing_changes" netlify>
 
 <div id="property-data">
@@ -114,7 +115,12 @@ maxHouseholdSize: 12
 		{% indexFieldLabel unitIdx, "Status", unitsFields, "STATUS" %}<br/>
 		{% indexFormField unitIdx, unitsFields, "STATUS" %}<br/>
 
-	  <span class="label">Occupancy Limits</span><br/>
+	  <span class="label">Occupancy Limits</span>
+    <span class="tooltip_entry">
+      <span class="icon_query"></span>
+		  <span class="tooltip_content">The minimum and maximum number of people allowed to live in this unit.</span>
+		</span>
+	  <br/>
 		{% indexFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "4em" %} to 
 		{% indexFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "4em" %} people<br/>
 
@@ -193,11 +199,14 @@ maxHouseholdSize: 12
 				</table>
 
 				<div class="max-income-alternate">
-				Maximum Income Range<br/>
-		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD", "7em" %}
-		    {% indexFieldLabel offerIdx, "", unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD" %} to
-		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD", "7em" %}
-		    {% indexFieldLabel offerIdx, "", unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD" %} $/year
+				<span class="label">Maximum Income Range<span>
+				<span class="tooltip_entry">
+        	<span class="icon_query"></span>
+			  	<span class="tooltip_content">Most properties list the maximum allowed income based on household size.<br/>However, if the maximum income is just given as a simple range of values (e.g. Maximum Income $54,000 - $77,000), then enter the range here.</span>
+				</span>
+				<br/>
+		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD", "7em" %} to
+		    {% indexFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD", "7em" %} $/year
 		    <br/>
 		    </div>
 		    </div>
@@ -267,6 +276,7 @@ function clearNodeForm(node) {
 	      option.removeAttribute("selected");
 	    }
 	    input.firstChild.setAttribute("selected", "selected");
+	    input.value = ""
 	  } else if (input.tagName == "INPUT") {
 	    if (input.type == "checkbox") {
 	      input.removeAttribute("checked");
@@ -429,6 +439,7 @@ function prefillField(field, value) {
         break;
       }
     }
+	  field.value = value;
   } 
  
   if (field.onchange) {
