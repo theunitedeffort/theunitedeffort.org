@@ -12,7 +12,7 @@ layout: "layouts/base.liquid"
 <h1>{{ location.aptName }}</h1>
 
 <table class="deflist">
-  {% render 'locationMetaItem' label: "Address", item: location.address %}
+  {% render 'locationMetaItem' label: "Address", item: location.address, location: location %}
   {% render 'locationMetaItem' label: "City", item: location.city %}
   {% render 'locationMetaItem' label: "Email", item: location.email %}
   {% render 'locationMetaItem' label: "Phone", item: location.phone %}
