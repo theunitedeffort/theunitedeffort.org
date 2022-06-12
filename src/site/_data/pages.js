@@ -6,7 +6,7 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.e
 const fetchSection = (id) => {
   const table = base("tblAkC6dlPJc4o0Je"); // sections table
   return table.find(id).then(record => {
-    // console.log(`CONTENT`, id, record.get("Content"));
+    console.log("Getting section");
     if (record.get("Type") == "Markdown page") {
       return record.get("Markdown");
     } else {
@@ -52,11 +52,14 @@ const fetchPages = async() => {
         }
       };
 
+      console.log("Collected pages data");
+
       // Collect each page array into our pages array
       for (const key in data) {
         const element = data[key];
         pages.push(element);
       }
+
 
       return pages;
     });
@@ -66,11 +69,11 @@ const fetchPages = async() => {
 
 module.exports = async function() {
   let asset = new AssetCache("airtable_pages");
-  if (asset.isCacheValid("1h")) {
+  if (asset.isCacheValid("1m")) {
     return asset.getCachedValue();
   }
   console.log("Fetching pages.");
   let p = await fetchPages();
   await asset.save(p, "json");
-  return { pages: p };
+  return  p ;
 }
