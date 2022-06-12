@@ -1,6 +1,7 @@
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_WRITE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
+// TODO: also update queue to mark this item as complete.
 const AFFORDABLE_HOUSING_CHANGES_TABLE = "tblXy0hiHoda5UVSR";
 
 const createFormResponseRecord = async(formResponses) => {

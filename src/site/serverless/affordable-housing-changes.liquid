@@ -3,6 +3,7 @@ layout: layouts/base.liquid
 title: Check for Affordable Housing Updates
 permalink: 
   build: "/housing/affordable-housing/changes/index.html"
+  serverless: "/housing/affordable-housing/changes-serverless/index.html"
 pageClass: "smaller max_width"
 maxUnits: 6
 maxOfferings: 5
@@ -22,7 +23,7 @@ maxHouseholdSize: 12
 <div class="flex align-flex-start">
 <div class="split">
 <div class="split_left_container">
-<a href="" id="next-property" class="btn btn_secondary">Load next property</a>
+<a href="." id="next-property" class="btn btn_secondary">Load next property</a>
 <h2 id="apt-name-header">Loading property data...</h2>
 <h3>Step 1</h3>
 <p>The <a href="" target="_blank" rel="noopener" class="property-link">official information</a><sup>&#8599;</sup> about this property is shown to the right.</p>
@@ -814,26 +815,28 @@ for (checkbox of alternateMaxIncomeCheckboxes) {
 let unitIdx = 0;
 let offeringIdx = new Array({{maxUnits | plus: -1}}).fill(-1);
 let urlParams = new URLSearchParams(window.location.search);
+let propertyId = "";
 if (urlParams.has("id")) {
-  let propertyId = urlParams.get("id");
-	fetch("/housing/affordable-housing/rawdata/" + propertyId)
-  .then(response => response.json())
-  .then(data => {
-    let groupedData = groupDataByUnitType(data);
-    unitIdx = groupedData.units.length - 1;
-    for (i = 0; i < groupedData.units.length; i++) {
-      offeringIdx[i] = groupedData.units[i].length - 1;
-    }
-    initUnitVisibility(groupedData);
-    prefillForm(groupedData);
-  });
-  fetch("/housing/affordable-housing/next-property/" + propertyId)
-  .then(response => response.json())
-  .then(data => {
-    updateNextPropertyButton(data.nextId);
-  });
-  //document.getElementById("reset-link").href="changes?id=" + propertyId;
+  console.log("TODO: Get property data directly by ID");
+  propertyId = urlParams.get("id");
 }
+fetch("/housing/affordable-housing/next-property/" + "0622")
+.then(response => response.json())
+.then(data => {
+  let groupedData = groupDataByUnitType(data);
+  unitIdx = groupedData.units.length - 1;
+  for (i = 0; i < groupedData.units.length; i++) {
+    offeringIdx[i] = groupedData.units[i].length - 1;
+  }
+  initUnitVisibility(groupedData);
+  prefillForm(groupedData);
+});
+//console.log("fetching next-property");
+//fetch("/housing/affordable-housing/next-property/" + "0622")
+//.then(response => response.json())
+//.then(data => {
+//  updateNextPropertyButton(data.nextId);
+//});
 
 
 

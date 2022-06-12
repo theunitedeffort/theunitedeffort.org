@@ -2,7 +2,30 @@ const Airtable = require('airtable');
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const HOUSING_CHANGE_QUEUE_TABLE = "tblKO2Ea4NGEoDGND";
+const HOUSING_DATABASE_TABLE = "tbl8LUgXQoTYEw2Yh";
+const UNITS_TABLE = "tblRtXBod9CC0mivK";
 
+const fetchUnitRecords = async(housingID) => {
+  const table = base(UNITS_TABLE);
+  return table.select({
+    filterByFormula: `{ID (from Housing)} = "${housingID}"`
+  })
+  .all()
+  .then(records => {
+    return records.map(x => x._rawJson);
+  });
+}
+
+const fetchHousingRecord = async(housingID) => {
+  const table = base(HOUSING_DATABASE_TABLE);
+  return table.select({
+    filterByFormula: `{DISPLAY_ID} = "${housingID}"`
+  })
+  .all()
+  .then(records => {
+    return records[0]._rawJson;
+  });
+}
 
 const fetchNextHousingId = async(campaign) => {
   // TODO: allow in progress items to be returned if forced.
@@ -54,16 +77,21 @@ const fetchNextHousingId = async(campaign) => {
       numInProgress: inProgressItems.length,
       numTodo: todoItems.length,
       numTotal: records.length,
-      nextPropertyId: todoItems.length ? todoItems[0].get("_DISPLAY_ID")[0] : "",
+      nextPropertyId: todoItems.length > 0 ? todoItems[0].get("_DISPLAY_ID")[0] : "",
     };
   });
 }
 
 exports.handler = async function(event) {
   console.log(event.path);
-  // get the housing ID from the URL
+  // Get the campaign name from the URL
   const campaign = event.path.split("next-property/")[1];
-  let data = await fetchNextHousingId(campaign);
+  console.log("fetching next ID");
+  let queueData = await fetchNextHousingId(campaign);
+  let housingId = queueData.nextPropertyId;
+  console.log("fetching unit records and housing record");
+  let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
+  let data = {housing: housingData[0], units: housingData[1], queue: queueData};
   return {
     statusCode: 200,
     body: JSON.stringify(data),
