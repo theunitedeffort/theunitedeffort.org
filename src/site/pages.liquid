@@ -7,7 +7,6 @@ pagination:
 permalink: "{{ thisPage.url }}/index.html"
 eleventyComputed:
   pageClass: "page{{ thisPage.url | replace: '/', '-' }}"
-  title: "{{ thisPage.name }}"
 ---
 
 {% assign cardSet = false %}
