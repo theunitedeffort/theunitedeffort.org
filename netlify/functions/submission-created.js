@@ -4,12 +4,13 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_WRITE_API_KEY }).base(pro
 // TODO: also update queue to mark this item as complete.
 const AFFORDABLE_HOUSING_CHANGES_TABLE = "tblXy0hiHoda5UVSR";
 
-const createFormResponseRecord = async(formResponses) => {
+const createFormResponseRecord = async(formResponses, createdAt) => {
   // TODO: error handling. 
   let table = base(AFFORDABLE_HOUSING_CHANGES_TABLE);
   return table.create({
-    "CAMPAIGN": "First Campaign",
+    "CAMPAIGN": formResponses.campaign || "",
     "FORM_RESPONSE_JSON": JSON.stringify(formResponses),
+    "FORM_SUBMITTED_DATETIME": createdAt,
   });
 }
 
@@ -21,9 +22,10 @@ exports.handler = async function(event) {
   //console.log(eventBody);
   
   let formResponses = eventBody.payload.data;
+  let createdAt = eventBody.payload.created_at;
   //console.log(formResponses);
   console.log("creating record");
-  await createFormResponseRecord(formResponses);
+  await createFormResponseRecord(formResponses, createdAt);
   console.log("record created");
 
   return {

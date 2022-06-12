@@ -33,7 +33,7 @@ maxHouseholdSize: 12
 <div class="note">If there is information here that you can't confirm via the property manager's website, do not delete it.  When in doubt, keep the information you see below.</div>
 <form id="housing-changes" name="housing_changes" netlify>
 <input type="hidden" name="form-name" value="housing_changes" />
-
+<input type="hidden" id="campaign" name="campaign" />
 <div id="property-data">
 <input type="hidden" id={{housingFields.ID.id}} name="ID">
 {% fieldLabel "Property Name", housingFields, "APT_NAME" %}<br/>
@@ -826,29 +826,26 @@ let unitIdx = 0;
 let offeringIdx = new Array({{maxUnits | plus: -1}}).fill(-1);
 let urlParams = new URLSearchParams(window.location.search);
 let propertyId = "";
-if (urlParams.has("id")) {
-  console.log("TODO: Get property data directly by ID");
-  propertyId = urlParams.get("id");
+if (urlParams.has("campaign")) {
+  let campaign = urlParams.get("campaign");
+  document.getElementById("campaign").value = campaign;
+  let pathStr = campaign;
+	if (urlParams.has("id")) {
+	  propertyId = urlParams.get("id");
+	  pathStr += "/" + propertyId;
+	}
+	fetch("/housing/affordable-housing/next-property/" + pathStr)
+	.then(response => response.json())
+	.then(data => {
+	  let groupedData = groupDataByUnitType(data);
+	  unitIdx = groupedData.units.length - 1;
+	  for (i = 0; i < groupedData.units.length; i++) {
+	    offeringIdx[i] = groupedData.units[i].length - 1;
+	  }
+	  initUnitVisibility(groupedData);
+	  prefillForm(groupedData);
+	});
 }
-fetch("/housing/affordable-housing/next-property/" + "0622")
-.then(response => response.json())
-.then(data => {
-  let groupedData = groupDataByUnitType(data);
-  unitIdx = groupedData.units.length - 1;
-  for (i = 0; i < groupedData.units.length; i++) {
-    offeringIdx[i] = groupedData.units[i].length - 1;
-  }
-  initUnitVisibility(groupedData);
-  prefillForm(groupedData);
-});
-//console.log("fetching next-property");
-//fetch("/housing/affordable-housing/next-property/" + "0622")
-//.then(response => response.json())
-//.then(data => {
-//  updateNextPropertyButton(data.nextId);
-//});
-
-
 
 </script>
 

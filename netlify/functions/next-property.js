@@ -85,11 +85,23 @@ const fetchNextHousingId = async(campaign) => {
 exports.handler = async function(event) {
   console.log(event.path);
   // Get the campaign name from the URL
-  const campaign = event.path.split("next-property/")[1];
-  console.log("fetching next ID");
-  let queueData = await fetchNextHousingId(campaign);
-  let housingId = queueData.nextPropertyId;
-  console.log("fetching unit records and housing record");
+  const paramsStr = event.path.split("next-property/")[1];
+  const params = paramsStr.split("/");
+  let campaign = "";
+  let housingId = "";
+  let queueData;
+  if (params.length >= 1) {
+    campaign = params[0];
+  }
+  if (params.length >= 2) {
+    housingId = params[1];
+  }
+  if (!housingId) {
+    console.log("fetching next ID");
+    queueData = await fetchNextHousingId(campaign);
+    housingId = queueData.nextPropertyId;
+  }
+  console.log("fetching unit records and housing record for ID " + housingId);
   let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
   let data = {housing: housingData[0], units: housingData[1], queue: queueData};
   return {
