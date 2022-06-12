@@ -301,7 +301,7 @@ module.exports = function(eleventyConfig) {
     } else if (field.type === "multipleSelects") {
       let checkboxes = [];
       for (const choice of field.options.choices) {
-        let id = `${field.id}:${choice.name.replaceAll(" ", "-").toLowerCase()}${indexStr}`;
+        let id = `${field.id}:${choice.name.replace(/\s/g, "-").toLowerCase()}${indexStr}`;
         checkboxes.push(`<input type="checkbox" id="${id}" name="${field.name}${indexStr}" value="${choice.name}" data-color="${choice.color}"> <label for="${id}">${choice.name}</label>`);
       }
       return checkboxes.join("<br/>");
