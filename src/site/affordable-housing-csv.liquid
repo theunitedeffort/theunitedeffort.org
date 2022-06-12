@@ -1,6 +1,6 @@
 ---
 title: Data — Find Affordable Housing
-permalink:  "/housing/affordable-housing/json/"
+permalink:  "/housing/affordable-housing/csv/"
 ---
 {%- edge "liquid" -%}
 {%- assign searchResults = accommodation.locations | sort: "aptName" -%}
@@ -32,5 +32,9 @@ permalink:  "/housing/affordable-housing/json/"
 {%- if query.income -%}
   {%- assign searchResults = searchResults | filterMinIncome: query.income, query.includeUnknownIncome -%}
 {%- endif -%}
-{{ searchResults | json }}
+
+Contacted, Name, Address, City, Phone, Email, Notes
+{%- for item in searchResults %}
+ , {{ item.aptName }}, {{ item.address }}, {{ item.city }}, {{ item.phone }}, {{ item.email }}, 
+{%- endfor %}
 {%- endedge -%}

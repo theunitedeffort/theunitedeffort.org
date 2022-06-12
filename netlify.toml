@@ -7,12 +7,23 @@ commad = "npm run dev"
 publish = "dist"
 
 
+
 [[edge_functions]]
 function = "eleventy-edge"
 path = "/housing/affordable-housing/*"
+
+[[edge_functions]]
+function = "eleventy-edge"
+path = "/housing/affordable-housing/json/*"
+
+[[edge_functions]]
+function = "eleventy-edge"
+path = "/housing/affordable-housing/csv/*"
+
 
 
 [[redirects]]
 from = "/housing"
 to = "/housing/affordable-housing"
 status = 301
+

@@ -256,6 +256,7 @@ window.onpageshow = function() {OnPageShow()};
 
 
 {% if query %}
+
   <div class="align-end flex stack-reversed" id="results">
     <p class="noprint bold">
     {{num_results_snippet}}
@@ -267,7 +268,7 @@ window.onpageshow = function() {OnPageShow()};
         </svg>
         Print results
       </a>
-      <a class="btn btn_secondary noprint btn_download " title="Download these results in CSV format">
+      <a class="btn btn_secondary noprint btn_download " title="Download these results in CSV format" download="housing-list-{{date}}.csv" href="./csv/?{{ query | flatten }}">
           <svg role="img" aria-hidden="true" focusable="false" class="icon ">
           <use xlink:href="/images/sprites.svg#download"></use>
         </svg>

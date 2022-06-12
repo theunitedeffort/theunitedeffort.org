@@ -12,6 +12,7 @@ import numFiltersApplied from "../../src/filters/edgeFilters/numFiltersApplied.j
 import optionSelected from "../../src/filters/edgeFilters/optionSelected.js";
 import filterMaxRent from "../../src/filters/edgeFilters/filterMaxRent.js";
 import filterMinIncome from "../../src/filters/edgeFilters/filterMinIncome.js";
+import flatten from "../../src/filters/edgeFilters/flatten.js";
 
 export default async (request, context) => {
   try {
@@ -47,6 +48,10 @@ export default async (request, context) => {
       // Expose data
       eleventyConfig.addGlobalData("accommodation", accommodation);
       eleventyConfig.addGlobalData("searchParams", queries);
+      eleventyConfig.addGlobalData("date", () => { 
+        const now = new Date().toLocaleDateString();
+        return now.replaceAll("/","-");
+      });
       
       // Add filters
       eleventyConfig.addFilter("countKeys", countKeys);
@@ -58,6 +63,7 @@ export default async (request, context) => {
       eleventyConfig.addFilter("optionSelected", optionSelected);
       eleventyConfig.addFilter("filterMaxRent", filterMaxRent);
       eleventyConfig.addFilter("filterMinIncome", filterMinIncome);
+      eleventyConfig.addFilter("flatten", flatten);
 
       
     });
