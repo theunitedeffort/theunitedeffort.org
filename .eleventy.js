@@ -1,4 +1,4 @@
-const markdown = require("marked");
+const { EleventyEdgePlugin } = require("@11ty/eleventy");
 const sass = require("sass");
 
 // const UNITS_TABLE = "tblRtXBod9CC0mivK";
