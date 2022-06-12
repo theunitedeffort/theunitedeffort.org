@@ -1,41 +1,16 @@
 [build]
 commad = "npm run build"
 publish = "dist"
-fucntions = "netlify/functions"
 
 [dev]
 commad = "npm run dev"
 publish = "dist"
-fucntions = "netlify/functions"
 
-[[redirects]]
-from = "/housing/affordable-housing/filter"
-to = "/.netlify/functions/serverless"
-status = 200
-force = true
-_generated_by_eleventy_serverless = "serverless"
 
-[[redirects]]
-from = "/data/housing/affordable-housing/filter"
-to = "/.netlify/functions/serverless"
-status = 200
-force = true
-_generated_by_eleventy_serverless = "serverless"
+[[edge_functions]]
+function = "eleventy-edge"
+path = "/housing/affordable-housing/*"
 
-[[redirects]]
-from = "/housing/affordable-housing/search"
-to = "/.netlify/functions/search-housing"
-status = 200
-
-[[redirects]]
-from = "/housing/affordable-housing/:id"
-to = "/.netlify/functions/units"
-status = 200
-
-[[redirects]]
-from = "/data/housing/affordable-housing/:id"
-to = "/.netlify/functions/units"
-status = 200
 
 [[redirects]]
 from = "/housing"
