@@ -245,16 +245,16 @@ function submitForm() {
   // Rather than use a <button type="submit">, handle the submission
   // with this listener on a normal button.  This prevents an Enter
   // keystroke from submitting the form.
-  let myForm = document.getElementById("housing-changes");
-  let formData = new FormData(myForm);
-  fetch("/", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams(formData).toString(),
-  })
-    .then(() => console.log("Form successfully submitted"))
-    .catch((error) => alert(error));
-  //document.getElementById('housing-changes').submit();
+  //let myForm = document.getElementById("housing-changes");
+  //let formData = new FormData(myForm);
+  //fetch("/", {
+  //  method: "POST",
+  //  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  //  body: new URLSearchParams(formData).toString(),
+  //})
+  //  .then(() => console.log("Form successfully submitted"))
+  //  .catch((error) => alert(error));
+  document.getElementById('housing-changes').submit();
 }
 
 function addUnit() {
@@ -745,19 +745,6 @@ function groupDataByUnitType(data) {
   return groupedData;
 }
 
-const handleSubmit = (e) => {
-  e.preventDefault();
-  let myForm = document.querySelector("form");
-  let formData = new FormData(myForm);
-  fetch("/", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams(formData).toString(),
-  })
-    .then(() => console.log("Form successfully submitted"))
-    .catch((error) => alert(error));
-};
-
 document.querySelector("#submit-button").addEventListener("click", submitForm);
 
 let selects = document.querySelectorAll("#housing-changes select");
@@ -834,8 +821,6 @@ for (checkbox of alternateMaxIncomeCheckboxes) {
   checkbox.addEventListener("change", updateMaxIncomeVisibility);
   checkbox.dispatchEvent(new Event("change"));
 }
-
-//document.querySelector("form").addEventListener("submit", handleSubmit);
 
 let unitIdx = 0;
 let offeringIdx = new Array({{maxUnits | plus: -1}}).fill(-1);
