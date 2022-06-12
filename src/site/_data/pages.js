@@ -6,7 +6,6 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.e
 const fetchSection = (id) => {
   const table = base("tblAkC6dlPJc4o0Je"); // sections table
   return table.find(id).then(record => {
-    console.log("Getting section");
     if (record.get("Type") == "Markdown page") {
       return record.get("Markdown");
     } else {
@@ -52,15 +51,11 @@ const fetchPages = async() => {
         }
       };
 
-      console.log("Collected pages data");
-
       // Collect each page array into our pages array
       for (const key in data) {
         const element = data[key];
         pages.push(element);
       }
-
-
       return pages;
     });
 
