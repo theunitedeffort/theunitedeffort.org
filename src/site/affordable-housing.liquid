@@ -51,7 +51,10 @@ pageClass: "page-housing"
 {% assign updateButtonStr = "Update results" %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}
-  Showing {% if num_filters_applied == 0 %}all {% endif %}{{searchResults.length}} {% if searchResults.length == 1 %}property{% else %}properties{% endif %}
+  Showing {% if accommodation.locations.length == searchResults.length %}all {% endif %} 
+  {{searchResults.length}} 
+  {% if accommodation.locations.length != searchResults.length %} of {{accommodation.locations.length}} {% endif %} 
+  {% if searchResults.length == 1 %}property{% else %} properties{% endif %}
 {% endcapture %}
 
 
