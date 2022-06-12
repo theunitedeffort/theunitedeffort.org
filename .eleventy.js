@@ -274,7 +274,6 @@ module.exports = function(eleventyConfig) {
   const fieldLabel = function(labelText, fields, fieldName, index="") {
     let tag = `<label for="${fields[fieldName].id}${index != "" ? ":" + index : ""}">${labelText}</label>`
     if (fields[fieldName].description) {
-      console.log(fields[fieldName].description);
       tag += ` <span class="tooltip_entry">
 <span class="icon_query"></span>
 <span class="tooltip_content">${fields[fieldName].description.replace(/\n/g, "<br/>")}</span>

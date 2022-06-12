@@ -245,7 +245,16 @@ function submitForm() {
   // Rather than use a <button type="submit">, handle the submission
   // with this listener on a normal button.  This prevents an Enter
   // keystroke from submitting the form.
-  document.getElementById('housing-changes').submit();
+  let myForm = document.getElementById("housing-changes");
+  let formData = new FormData(myForm);
+  fetch("/", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(formData).toString(),
+  })
+    .then(() => console.log("Form successfully submitted"))
+    .catch((error) => alert(error));
+  //document.getElementById('housing-changes').submit();
 }
 
 function addUnit() {
@@ -826,7 +835,7 @@ for (checkbox of alternateMaxIncomeCheckboxes) {
   checkbox.dispatchEvent(new Event("change"));
 }
 
-document.querySelector("form").addEventListener("submit", handleSubmit);
+//document.querySelector("form").addEventListener("submit", handleSubmit);
 
 let unitIdx = 0;
 let offeringIdx = new Array({{maxUnits | plus: -1}}).fill(-1);
