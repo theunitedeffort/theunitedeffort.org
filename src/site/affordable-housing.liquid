@@ -255,9 +255,8 @@ window.onpageshow = function() {OnPageShow()};
 
 
 
-{% if query %}
-
   <div class="align-end flex stack-reversed" id="results">
+    {% if query %}
     <p class="noprint bold">
     {{num_results_snippet}}
     </p>
@@ -282,8 +281,8 @@ window.onpageshow = function() {OnPageShow()};
       </a>
       <span id="copy-url-done" hidden>&#10003;</span>
     </div>
-  </div>
-{% endif %}
+  {% endif %}
+ </div>
 
 
 <ul class="results_list">
