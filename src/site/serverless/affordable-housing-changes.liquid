@@ -32,6 +32,7 @@ maxHouseholdSize: 12
 <p>Make any edits necessary to make the information below match the offical property manager's information.</p>
 <div class="note">If there is information here that you can't confirm via the property manager's website, do not delete it.  When in doubt, keep the information you see below.</div>
 <form id="housing-changes" name="housing_changes" netlify>
+<input type="hidden" name="form-name" value="housing_changes" />
 
 <div id="property-data">
 <input type="hidden" id={{housingFields.ID.id}} name="ID">
@@ -735,6 +736,19 @@ function groupDataByUnitType(data) {
   return groupedData;
 }
 
+const handleSubmit = (e) => {
+  e.preventDefault();
+  let myForm = document.querySelector("form");
+  let formData = new FormData(myForm);
+  fetch("/", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(formData).toString(),
+  })
+    .then(() => console.log("Form successfully submitted"))
+    .catch((error) => alert(error));
+};
+
 document.querySelector("#submit-button").addEventListener("click", submitForm);
 
 let selects = document.querySelectorAll("#housing-changes select");
@@ -811,6 +825,8 @@ for (checkbox of alternateMaxIncomeCheckboxes) {
   checkbox.addEventListener("change", updateMaxIncomeVisibility);
   checkbox.dispatchEvent(new Event("change"));
 }
+
+document.querySelector("form").addEventListener("submit", handleSubmit);
 
 let unitIdx = 0;
 let offeringIdx = new Array({{maxUnits | plus: -1}}).fill(-1);
