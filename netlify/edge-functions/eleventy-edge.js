@@ -1,4 +1,4 @@
-import { EleventyEdge } from "eleventy:edge";
+import { EleventyEdge } from "https://cdn.11ty.dev/edge@1.0.1/eleventy-edge.js";
 import precompiledAppData from "./_generated/eleventy-edge-app-data.js";
 import accommodation from "./_generated/accommodation.js";
 
