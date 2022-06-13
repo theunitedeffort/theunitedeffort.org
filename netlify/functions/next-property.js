@@ -27,6 +27,12 @@ const fetchHousingRecord = async(housingID) => {
   });
 }
 
+const markInProgressInQueue = async(recordId) => {
+  const table = base(HOUSING_CHANGE_QUEUE_TABLE);
+  let now = new Date();
+  return table.update(recordId, {"IN_PROGRESS_DATETIME": now.toISOString()});
+}
+
 const fetchNextHousingId = async(campaign) => {
   // TODO: allow in progress items to be returned if forced.
   const table = base(HOUSING_CHANGE_QUEUE_TABLE);
@@ -106,7 +112,12 @@ exports.handler = async function(event) {
   }
   console.log("fetching unit records and housing record for ID " + housingId);
   let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
+  if (queueData.thisProperty) {
+    console.log("updating in progress status for ID " + housingId);
+    await markInProgressInQueue(queueData.thisProperty.recordId);
+  }
   let data = {housing: housingData[0], units: housingData[1], queue: queueData};
+
   return {
     statusCode: 200,
     body: JSON.stringify(data),
