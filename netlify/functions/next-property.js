@@ -77,7 +77,10 @@ const fetchNextHousingId = async(campaign) => {
       numInProgress: inProgressItems.length,
       numTodo: todoItems.length,
       numTotal: records.length,
-      nextPropertyId: todoItems.length > 0 ? todoItems[0].get("_DISPLAY_ID")[0] : "",
+      thisProperty: {
+        id: todoItems.length > 0 ? todoItems[0].get("_DISPLAY_ID")[0] : "",
+        recordId: todoItems.length > 0 ? todoItems[0].id : "",
+      },
     };
   });
 }
@@ -89,7 +92,7 @@ exports.handler = async function(event) {
   const params = paramsStr.split("/");
   let campaign = "";
   let housingId = "";
-  let queueData;
+  let queueData = {};
   if (params.length >= 1) {
     campaign = params[0];
   }
@@ -99,7 +102,7 @@ exports.handler = async function(event) {
   if (!housingId) {
     console.log("fetching next ID");
     queueData = await fetchNextHousingId(campaign);
-    housingId = queueData.nextPropertyId;
+    housingId = queueData.thisProperty.id;
   }
   console.log("fetching unit records and housing record for ID " + housingId);
   let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);

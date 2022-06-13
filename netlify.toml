@@ -23,18 +23,16 @@ force = true
 _generated_by_eleventy_serverless = "serverless"
 
 [[redirects]]
-from = "/housing/affordable-housing/changes/:id"
+from = "/data/housing/affordable-housing/filter"
 to = "/.netlify/functions/serverless"
 status = 200
 force = true
 _generated_by_eleventy_serverless = "serverless"
 
 [[redirects]]
-from = "/data/housing/affordable-housing/filter"
-to = "/.netlify/functions/serverless"
+from = "/housing/affordable-housing/changes/submit-test"
+to = "/.netlify/functions/submission-created"
 status = 200
-force = true
-_generated_by_eleventy_serverless = "serverless"
 
 [[redirects]]
 from = "/housing/affordable-housing/search"

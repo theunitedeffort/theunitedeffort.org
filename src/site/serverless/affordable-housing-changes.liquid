@@ -3,7 +3,6 @@ layout: layouts/base.liquid
 title: Check for Affordable Housing Updates
 permalink: 
   build: "/housing/affordable-housing/changes/index.html"
-  serverless: "/housing/affordable-housing/changes/:id"
 pageClass: "smaller max_width"
 maxUnits: 6
 maxOfferings: 5
@@ -33,9 +32,10 @@ maxHouseholdSize: 12
 <div class="note">If there is information here that you can't confirm via the property manager's website, do not delete it.  When in doubt, keep the information you see below.</div>
 <form id="housing-changes" name="housing_changes" netlify>
 <input type="hidden" name="form-name" value="housing_changes" />
-<input type="hidden" id="campaign" name="campaign" />
+<input type="hidden" id="campaign" name="update_campaign" />
 <div id="property-data">
-<input type="hidden" id={{housingFields.ID.id}} name="ID">
+<input type="hidden" id={{housingFields.ID.id}} name="ID" />
+<input type="hidden" id="queue-record-id" name="queue_record_id" />
 {% fieldLabel "Property Name", housingFields, "APT_NAME" %}<br/>
 {% formField housingFields, "APT_NAME", "20em" %}<br/>
 
@@ -837,6 +837,10 @@ if (urlParams.has("campaign")) {
 	fetch("/housing/affordable-housing/next-property/" + pathStr)
 	.then(response => response.json())
 	.then(data => {
+    if (data.queue.thisProperty) {
+      let queueRecordId = data.queue.thisProperty.recordId;
+      document.getElementById("queue-record-id").value = queueRecordId;
+    }
 	  let groupedData = groupDataByUnitType(data);
 	  unitIdx = groupedData.units.length - 1;
 	  for (i = 0; i < groupedData.units.length; i++) {
