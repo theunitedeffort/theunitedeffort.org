@@ -103,6 +103,7 @@ exports.handler = async function(event) {
     campaign = params[0];
   }
   if (params.length >= 2) {
+    // TODO: mark this ID as in progress if it exists in the queue.
     housingId = params[1];
   }
   if (!housingId) {
