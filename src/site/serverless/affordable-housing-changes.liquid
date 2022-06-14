@@ -824,17 +824,20 @@ for (checkbox of alternateMaxIncomeCheckboxes) {
 
 let unitIdx = 0;
 let offeringIdx = new Array({{maxUnits | plus: -1}}).fill(-1);
-let urlParams = new URLSearchParams(window.location.search);
+let pathDirs = window.location.pathname.split("/");
+pathDirs = pathDirs.filter(x => x);
+let pathParams = pathDirs.slice(pathDirs.lastIndexOf("changes") + 1);
+console.log(pathParams);
 let propertyId = "";
-if (urlParams.has("campaign")) {
-  let campaign = urlParams.get("campaign");
+if (pathParams.length >= 1) {
+  let campaign = pathParams[0];
   document.getElementById("campaign").value = campaign;
-  let pathStr = campaign;
-	if (urlParams.has("id")) {
-	  propertyId = urlParams.get("id");
-	  pathStr += "/" + propertyId;
+  let fetchPathStr = campaign;
+	if (pathParams.length >= 2) {
+	  propertyId = pathParams[1];
+	  fetchPathStr += "/" + propertyId;
 	}
-	fetch("/housing/affordable-housing/next-property/" + pathStr)
+	fetch("/housing/affordable-housing/next-property/" + fetchPathStr)
 	.then(response => response.json())
 	.then(data => {
     if (data.queue.thisProperty) {

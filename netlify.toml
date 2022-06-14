@@ -8,6 +8,12 @@ commad = "npm run dev"
 publish = "dist"
 fucntions = "netlify/functions"
 
+
+[[redirects]]
+from = "/housing/affordable-housing/changes/*"
+to = "/housing/affordable-housing/changes"
+status = 200
+
 [[redirects]]
 from = "/housing/affordable-housing/filter"
 to = "/.netlify/functions/serverless"
@@ -46,4 +52,3 @@ status = 200
 from = "/housing/affordable-housing/next-property/:campaign"
 to = "/.netlify/functions/next-property"
 status = 200
-

@@ -111,10 +111,10 @@ exports.handler = async function(event) {
     queueData = await fetchNextHousingId(campaign);
     housingId = queueData.thisProperty.id;
   }
-  console.log("fetching unit records and housing record for ID " + housingId);
+  console.log("fetching unit records and housing record for ID: " + housingId);
   let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
   if (queueData.thisProperty) {
-    console.log("updating in progress status for ID " + housingId);
+    console.log("updating in progress status for ID: " + housingId);
     await markInProgressInQueue(queueData.thisProperty.recordId);
   }
   let data = {housing: housingData[0], units: housingData[1], queue: queueData};
