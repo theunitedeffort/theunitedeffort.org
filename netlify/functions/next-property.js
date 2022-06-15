@@ -98,7 +98,6 @@ exports.handler = async function(event) {
   const params = paramsStr.split("/");
   let campaign = "";
   let housingId = "";
-  let queueData = {};
   let data = {housing: {}, units: [], queue: {}};
   if (params.length >= 1) {
     campaign = params[0];
@@ -116,9 +115,9 @@ exports.handler = async function(event) {
   if (housingId) {
     console.log("fetching unit records and housing record for ID: " + housingId);
     let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
-    if (queueData.thisProperty) {
+    if (data.queue.thisProperty) {
       console.log("updating in progress status for ID: " + housingId);
-      await markInProgressInQueue(queueData.thisProperty.recordId);
+      await markInProgressInQueue(data.queue.thisProperty.recordId);
     }
     data.housing = housingData[0];
     data.units = housingData[1];
