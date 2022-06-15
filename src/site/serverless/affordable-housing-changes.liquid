@@ -22,7 +22,7 @@ maxHouseholdSize: 12
 <div class="flex align-flex-start">
 <div class="split">
 <div class="split_left_container">
-<a href="." id="next-property" class="btn btn_secondary">Load next property</a>
+<a href="." id="skip-property">Skip this property</a>
 <h2 id="apt-name-header">Loading property data...</h2>
 <h3>Step 1</h3>
 <p>The <a href="" target="_blank" rel="noopener" class="property-link">official information</a><sup>&#8599;</sup> about this property is shown to the right.</p>
@@ -228,7 +228,8 @@ maxHouseholdSize: 12
 
 <h3>Step 3</h3>
 <p>Submit these changes for review by The United Effort Organization.</p>
-<button type="button" id="submit-button" class="btn btn_primary">Submit for review</button>
+<button type="button" id="submit-button-changes" class="btn btn_primary">Submit for review</button>
+<button type="button" id="submit-button-no-changes" class="btn btn_secondary">No changes found</button>
 </form>
 </div>
 </div>
@@ -658,11 +659,6 @@ function updateMaxIncomeVisibility() {
 	}
 }
 
-function updateNextPropertyButton(id) {
-	let button = document.getElementById("next-property");
-	button.href = "/housing/affordable-housing/changes?id=" + id;
-}
-
 function sortRents(values) {
 	let sorted = values.sort(function(a, b) {
     // Compare rent offerings.
@@ -745,7 +741,10 @@ function groupDataByUnitType(data) {
   return groupedData;
 }
 
-document.querySelector("#submit-button").addEventListener("click", submitForm);
+let submitButtons = document.querySelectorAll("[id^=submit-button]");
+for (button of submitButtons) {
+  button.addEventListener("click", submitForm);
+}
 
 let selects = document.querySelectorAll("#housing-changes select");
 for (select of selects) {
@@ -832,6 +831,7 @@ let propertyId = "";
 if (pathParams.length >= 1) {
   let campaign = pathParams[0];
   document.getElementById("campaign").value = campaign;
+  document.getElementById("skip-property").href = "/housing/affordable-housing/changes/" + campaign;
   let fetchPathStr = campaign;
 	if (pathParams.length >= 2) {
 	  propertyId = pathParams[1];
@@ -840,17 +840,21 @@ if (pathParams.length >= 1) {
 	fetch("/housing/affordable-housing/next-property/" + fetchPathStr)
 	.then(response => response.json())
 	.then(data => {
-    if (data.queue.thisProperty) {
-      let queueRecordId = data.queue.thisProperty.recordId;
-      document.getElementById("queue-record-id").value = queueRecordId;
-    }
-	  let groupedData = groupDataByUnitType(data);
-	  unitIdx = groupedData.units.length - 1;
-	  for (i = 0; i < groupedData.units.length; i++) {
-	    offeringIdx[i] = groupedData.units[i].length - 1;
-	  }
-	  initUnitVisibility(groupedData);
-	  prefillForm(groupedData);
+	  if(data.units.length > 0) {
+	    if (data.queue.thisProperty) {
+	      let queueRecordId = data.queue.thisProperty.recordId;
+	      document.getElementById("queue-record-id").value = queueRecordId;
+	    }
+		  let groupedData = groupDataByUnitType(data);
+		  unitIdx = groupedData.units.length - 1;
+		  for (i = 0; i < groupedData.units.length; i++) {
+		    offeringIdx[i] = groupedData.units[i].length - 1;
+		  }
+		  initUnitVisibility(groupedData);
+		  prefillForm(groupedData);
+		} else {
+		  document.getElementById("apt-name-header").innerHTML = "All done!  No more properties to update."
+		}
 	});
 }
 

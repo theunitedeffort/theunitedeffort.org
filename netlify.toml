@@ -9,14 +9,6 @@ publish = "dist"
 fucntions = "netlify/functions"
 
 [[redirects]]
-from = "/housing/affordable-housing/changes/*"
-to = "/housing/affordable-housing/changes"
-status = 200
-# This force is required within the `netlify dev` environment
-# https://github.com/netlify/cli/issues/1242
-force = true
-
-[[redirects]]
 from = "/housing/affordable-housing/filter"
 to = "/.netlify/functions/serverless"
 status = 200
@@ -29,6 +21,14 @@ to = "/.netlify/functions/serverless"
 status = 200
 force = true
 _generated_by_eleventy_serverless = "serverless"
+
+[[redirects]]
+from = "/housing/affordable-housing/changes/*"
+to = "/housing/affordable-housing/changes"
+status = 200
+# This force is required within the `netlify dev` environment
+# https://github.com/netlify/cli/issues/1242
+force = true
 
 [[redirects]]
 from = "/housing/affordable-housing/:id"
