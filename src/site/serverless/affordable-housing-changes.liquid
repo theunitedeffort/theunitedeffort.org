@@ -10,7 +10,8 @@ maxHouseholdSize: 12
 ---
 
 {% comment %}
-- enable getting next property or skipping a property
+- http vs https iframe
+- add field/cookie for person's name
 - add unit type string to "add rent offering"?
 - highlight changes?
 {% endcomment %}
@@ -371,11 +372,15 @@ function updatePropertyLink() {
 	let links = document.getElementsByClassName("property-link");
 	let iframe = document.getElementsByTagName("iframe")[0];
 	if (this.value.search(/https?:\/\//) != 0) {
-	  this.value = "http://" + this.value;
+	  this.value = "https://" + this.value;
 	}
 	for (link of links) {
 	  link.href = this.value;
 	}
+	// TODO: consider forcing this to be https:// no matter the
+	// value of the URL input field.  Any http:// link
+	// is guaranteed to fail to display in the iframe because
+	// this (UEO) page is served over https.
 	iframe.src = this.value;
 }
 
