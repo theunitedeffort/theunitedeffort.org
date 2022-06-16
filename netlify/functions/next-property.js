@@ -33,7 +33,7 @@ const markInProgressInQueue = async(recordId) => {
   return table.update(recordId, {"IN_PROGRESS_DATETIME": now.toISOString()});
 }
 
-const fetchNextHousingId = async(campaign) => {
+const fetchQueueData = async(campaign, getNextId=true) => {
   // TODO: allow in progress items to be returned if forced.
   const table = base(HOUSING_CHANGE_QUEUE_TABLE);
   const staleInProgress = new Date(Date.now() - (8 * 60 * 60 * 1000));
@@ -78,16 +78,19 @@ const fetchNextHousingId = async(campaign) => {
     console.log(JSON.stringify(inProgressItems.map(x => x.fields), null, 2));
     console.log("------------");
     console.log(JSON.stringify(todoItems.map(x => x.fields), null, 2));
-    return {
+    let queueData = {
       numCompleted: completedItems.length,
       numInProgress: inProgressItems.length,
       numTodo: todoItems.length,
       numTotal: records.length,
-      thisProperty: {
+    };
+    if (getNextId) {
+      queueData.thisProperty = {
         id: todoItems.length > 0 ? todoItems[0].get("_DISPLAY_ID")[0] : "",
         recordId: todoItems.length > 0 ? todoItems[0].id : "",
-      },
-    };
+      };
+    }
+    return queueData;
   });
 }
 
@@ -106,12 +109,15 @@ exports.handler = async function(event) {
     // TODO: mark this ID as in progress if it exists in the queue.
     housingId = params[1];
   }
+
+  console.log("fetching queue data");
+  data.queue = await fetchQueueData(campaign, !housingId);
+
   if (!housingId) {
-    console.log("fetching next ID");
-    data.queue = await fetchNextHousingId(campaign);
     housingId = data.queue.thisProperty.id;
   }
 
+  // Check we actually got a housingId, as an empty queue will not give us one.
   if (housingId) {
     console.log("fetching unit records and housing record for ID: " + housingId);
     let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);

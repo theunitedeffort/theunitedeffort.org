@@ -11,7 +11,9 @@ userNameKey: '"userName"'
 ---
 
 {% comment %}
-- http vs https iframe
+- give queue summary
+- clear in progress flag when property is skipped
+- add landing page for no campaign specified or redirect to newest campaign
 - add unit type string to "add rent offering"?
 - highlight changes?
 {% endcomment %}
@@ -26,7 +28,20 @@ userNameKey: '"userName"'
 <p class="bold">Welcome<span id="welcome-name"></span>! <button type="button" class="link" id="edit-user-name" hidden>(Not you?)</button><br/> Thanks for helping out.
 <span id="user-name-input-container"><label for="user-name-input">What is your name?</label> <input id="user-name-input" type="text"></input></span>
 </p>
+<div>
+Property updates queue</br>
+<div class="queue_status">
+<div class="progress_bar flex"><div id="queue-done-bar" class="progress_bar done"></div><div id="queue-in-progress-bar" class="progress_bar partial"></div><div id="queue-to-do-bar" class="progress_bar remaining"></div></div>
+<div class="flex">
+<span class="badge badge__done"><span id="queue-done-val">0</span> done</span>
+<span class="badge badge__partial"><span id="queue-in-progress-val">0</span> in progress</span>
+<span class="badge badge__remaining"><span id="queue-to-do-val">0</span> to-do</span>
+</div>
+</div>
+</div>
 <h2 id="apt-name-header">Loading property data...</h2>
+<div id="empty-queue-content"></div>
+<div id="input-content">
 <a href="." id="skip-property">Skip this property</a>
 <h3>Step 1</h3>
 <p>The <a href="" target="_blank" rel="noopener" class="property-link">official information</a><sup>&#8599;</sup> about this property is shown to the right.</p>
@@ -237,6 +252,7 @@ userNameKey: '"userName"'
 <button type="button" id="submit-button-changes" class="btn btn_primary">Submit for review</button>
 <button type="button" id="submit-button-no-changes" class="btn btn_secondary">No changes found</button>
 </form>
+</div>
 </div>
 </div>
 <div class="split sticky">
@@ -779,6 +795,42 @@ function groupDataByUnitType(data) {
   return groupedData;
 }
 
+function displayQueue(queue) {
+  console.log(queue);
+	let doneVal = document.getElementById("queue-done-val");
+	let inProgressVal = document.getElementById("queue-in-progress-val");
+	let todoVal = document.getElementById("queue-to-do-val");
+	let doneBar = document.getElementById("queue-done-bar");
+	let inProgressBar = document.getElementById("queue-in-progress-bar");
+	let todoBar = document.getElementById("queue-to-do-bar");
+	if (queue.numTotal > 0) {
+	  doneBar.style.width = `${100 * queue.numCompleted / queue.numTotal}%`;
+	  inProgressBar.style.width = `${100 * queue.numInProgress / queue.numTotal}%`;
+	  todoBar.style.width = `${100 * queue.numTodo / queue.numTotal}%`;
+	}
+	doneVal.innerHTML = queue.numCompleted;
+	inProgressVal.innerHTML = queue.numInProgress;
+	todoVal.innerHTML = queue.numTodo;
+}
+
+function setEmptyQueueMessage(queue) {
+	document.getElementById("apt-name-header").innerHTML = "All done!  No more properties to update for now."
+	let nextStepStr = "We will let you know when we need help for the next affordable housing database update."
+	if (queue.numInProgress) {
+	  let verb = queue.numInProgress > 1 ? "are" : "is";
+	  let pluralProperty = queue.numInProgress > 1 ? "properties" : "property";
+	  let pluralUser = queue.numInProgress > 1 ? "users" : "user";
+	  let pronoun = queue.numInProgress > 1 ? "These" : "This";
+	  let adj = queue.numInProgress > 1 ? "other" : "another";
+	  nextStepStr = `However, there ${verb} still ${queue.numInProgress} \
+	    ${pluralProperty} currently assigned to ${adj} ${pluralUser}. ${pronoun} \
+	    ${pluralProperty} may return to the queue later, so check back \
+	    to see if there is more to do.`;
+	}
+	document.getElementById("empty-queue-content").innerHTML = nextStepStr;
+	document.getElementById("input-content").setAttribute("hidden", "hidden");
+}
+
 let submitButtons = document.querySelectorAll("[id^=submit-button]");
 for (button of submitButtons) {
   button.addEventListener("click", submitForm);
@@ -890,6 +942,7 @@ if (pathParams.length >= 1) {
 	fetch("/housing/affordable-housing/next-property/" + fetchPathStr)
 	.then(response => response.json())
 	.then(data => {
+	  displayQueue(data.queue);
 	  if(data.units.length > 0) {
 	    if (data.queue.thisProperty) {
 	      let queueRecordId = data.queue.thisProperty.recordId;
@@ -903,7 +956,7 @@ if (pathParams.length >= 1) {
 		  initUnitVisibility(groupedData);
 		  prefillForm(groupedData);
 		} else {
-		  document.getElementById("apt-name-header").innerHTML = "All done!  No more properties to update."
+		  setEmptyQueueMessage(data.queue);
 		}
 	});
 }
