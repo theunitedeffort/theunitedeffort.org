@@ -381,11 +381,11 @@ function updatePropertyLink() {
 	for (link of links) {
 	  link.href = this.value;
 	}
-	// TODO: consider forcing this to be https:// no matter the
-	// value of the URL input field.  Any http:// link
-	// is guaranteed to fail to display in the iframe because
-	// this (UEO) page is served over https.
-	iframe.src = this.value;
+	// Any http link is guaranteed to fail to display in the iframe because
+	// this (UEO) page is served over https. Set the iframe src to have an 
+	// unspecified protocol to optimisitically request the https version
+	// if there is one.
+	iframe.src = this.value.replace(/https?:/, "");
 }
 
 function updatePageTitle() {
