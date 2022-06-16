@@ -7,11 +7,11 @@ pageClass: "smaller max_width"
 maxUnits: 6
 maxOfferings: 5
 maxHouseholdSize: 12
+userNameKey: '"userName"'
 ---
 
 {% comment %}
 - http vs https iframe
-- add field/cookie for person's name
 - add unit type string to "add rent offering"?
 - highlight changes?
 {% endcomment %}
@@ -23,8 +23,11 @@ maxHouseholdSize: 12
 <div class="flex align-flex-start">
 <div class="split">
 <div class="split_left_container">
-<a href="." id="skip-property">Skip this property</a>
+<p class="bold">Welcome<span id="welcome-name"></span>! <button type="button" class="link" id="edit-user-name" hidden>(Not you?)</button><br/> Thanks for helping out.
+<span id="user-name-input-container"><label for="user-name-input">What is your name?</label> <input id="user-name-input" type="text"></input></span>
+</p>
 <h2 id="apt-name-header">Loading property data...</h2>
+<a href="." id="skip-property">Skip this property</a>
 <h3>Step 1</h3>
 <p>The <a href="" target="_blank" rel="noopener" class="property-link">official information</a><sup>&#8599;</sup> about this property is shown to the right.</p>
 <p>If the offical information seems to be broken or shows the wrong page, find a better link for this property and put it in the URL field <a href="#fldei8N0xw2VhjX9V">below</a>. The content to the right will automatically update.</p>
@@ -35,13 +38,14 @@ maxHouseholdSize: 12
 <form id="housing-changes" name="housing_changes" netlify>
 <input type="hidden" name="form-name" value="housing_changes" />
 <input type="hidden" id="campaign" name="update_campaign" />
+<input type="hidden" id="user-name" name="user_name" />
 <div id="property-data">
 <input type="hidden" id={{housingFields.ID.id}} name="ID" />
 <input type="hidden" id="queue-record-id" name="queue_record_id" />
 {% fieldLabel "Property Name", housingFields, "APT_NAME" %}<br/>
 {% formField housingFields, "APT_NAME", "20em" %}<br/>
 
-{% fieldLabel "Address", housingFields, "ADDRESS" %} <span id="show-second-address" class="label"><a href="javascript:showSecondAddress()">Add a second address</a></span><br/>
+{% fieldLabel "Address", housingFields, "ADDRESS" %} <span class="label"><button type="button" id="show-second-address" class="link">Add a second address</button></span><br/>
 {% formField housingFields, "ADDRESS", "20em" %}<br/>
 <div id="second-address" hidden>
 {% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}<br/>
@@ -386,6 +390,34 @@ function updatePropertyLink() {
 
 function updatePageTitle() {
 	document.getElementById("apt-name-header").innerHTML = this.value;
+}
+
+function setUserName() {
+  let userNameInput = document.getElementById("user-name-input");
+  let userName = userNameInput.value.trim();
+  if (userName) {
+	  document.getElementById("user-name-input-container").setAttribute("hidden", "hidden");
+	  document.getElementById("edit-user-name").removeAttribute("hidden");
+		document.getElementById("user-name").value = userName;
+		userNameInput.value = userName;
+		document.getElementById("welcome-name").innerHTML = ", " + userName;
+		localStorage.setItem({{userNameKey}}, userName);
+	}
+}
+
+function editUserName() {
+  document.getElementById("user-name-input-container").removeAttribute("hidden");
+  document.getElementById("edit-user-name").setAttribute("hidden", "hidden");
+	document.getElementById("welcome-name").innerHTML = "";
+	document.getElementById("user-name-input").focus();
+}
+
+function handleUserNameKeydown(e) {
+  // Allow the user to re-commit their name even if they don't make any changes to it.
+  if (e.code === "Enter") {
+    let inputUserName = document.getElementById("user-name-input");
+    inputUserName.dispatchEvent(new Event("change"));
+  }
 }
 
 function updateUnitHeading() {
@@ -801,14 +833,6 @@ for (button of collapseButtons) {
 	button.addEventListener("click", toggleCollapsible);
 }
 
-// Ensure the live link to the external property page updates when the URL value is changed.
-document.getElementById("fldei8N0xw2VhjX9V").addEventListener("change", updatePropertyLink);
-
-document.getElementById("fldkzU54q8lYtIH7G:seniors").addEventListener("change", updateAgeVisibility);
-document.getElementById("fldkzU54q8lYtIH7G:youth").addEventListener("change", updateAgeVisibility);
-document.getElementById("fldMcM49qaNr3EQ2a").addEventListener("change", updatePageTitle);
-document.getElementById("add-unit").addEventListener("click", addUnit);
-
 let alternateRentCheckboxes = document.querySelectorAll(".is-alternate-rent");
 for (checkbox of alternateRentCheckboxes) {
   checkbox.addEventListener("change", updateRentVisibility);
@@ -825,6 +849,26 @@ let alternateMaxIncomeCheckboxes = document.querySelectorAll(".is-alternate-max-
 for (checkbox of alternateMaxIncomeCheckboxes) {
   checkbox.addEventListener("change", updateMaxIncomeVisibility);
   checkbox.dispatchEvent(new Event("change"));
+}
+
+// Ensure the live link to the external property page updates when the URL value is changed.
+document.getElementById("fldei8N0xw2VhjX9V").addEventListener("change", updatePropertyLink);
+
+document.getElementById("fldkzU54q8lYtIH7G:seniors").addEventListener("change", updateAgeVisibility);
+document.getElementById("fldkzU54q8lYtIH7G:youth").addEventListener("change", updateAgeVisibility);
+document.getElementById("fldMcM49qaNr3EQ2a").addEventListener("change", updatePageTitle);
+document.getElementById("add-unit").addEventListener("click", addUnit);
+document.getElementById("edit-user-name").addEventListener("click", editUserName);
+document.getElementById("show-second-address").addEventListener("click", showSecondAddress);
+
+let userNameInput = document.getElementById("user-name-input");
+userNameInput.addEventListener("change", setUserName);
+userNameInput.addEventListener("focusout", setUserName);
+userNameInput.addEventListener("keydown", handleUserNameKeydown);
+let userName = localStorage.getItem({{userNameKey}});
+if (userName) {
+	userNameInput.value = userName;
+	userNameInput.dispatchEvent(new Event("change")); 
 }
 
 let unitIdx = 0;
