@@ -11,7 +11,6 @@ userNameKey: '"userName"'
 ---
 
 {% comment %}
-- improve messaging around unknown housing ID when explicitly given in URL
 - error handling
 - clear in progress flag when property is skipped?
 - add landing page for no campaign specified or redirect to newest campaign
@@ -832,6 +831,16 @@ function setEmptyQueueMessage(queue) {
 	document.getElementById("property-webpage-frame").setAttribute("hidden", "hidden");
 }
 
+function setInvalidPropertyIdMessage(propertyId, campaignPath) {
+	document.getElementById("apt-name-header").innerHTML = "Oops! That property doesn't seem to exist."
+	document.getElementById("empty-queue-content").innerHTML = `There is no \
+	  property with the ID <span class="bold">${propertyId}</span> in our \
+	  database.  Check your URL and try again or see the \
+	  <a href="${campaignPath}">next property</a> that needs to be checked.`;
+	document.getElementById("input-content").setAttribute("hidden", "hidden");
+	document.getElementById("property-webpage-frame").setAttribute("hidden", "hidden");
+}
+
 let submitButtons = document.querySelectorAll("[id^=submit-button]");
 for (button of submitButtons) {
   button.addEventListener("click", submitForm);
@@ -959,7 +968,11 @@ if (pathParams.length >= 1) {
 		  initUnitVisibility(groupedData);
 		  prefillForm(groupedData);
 		} else {
-		  setEmptyQueueMessage(data.queue);
+		  if (propertyId) {
+		    setInvalidPropertyIdMessage(propertyId, campaignPath)
+		  } else {
+		    setEmptyQueueMessage(data.queue);
+		  }
 		}
 	});
 }

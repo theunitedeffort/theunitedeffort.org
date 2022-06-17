@@ -33,7 +33,7 @@ const fetchHousingRecord = async(housingID) => {
 
 const fetchQueueRecordId = async(campaign, housingID) => {
   if (!housingID) {
-    return;
+    return "";
   }
   const table = base(HOUSING_CHANGE_QUEUE_TABLE);
   return records = table.select({
@@ -45,7 +45,7 @@ const fetchQueueRecordId = async(campaign, housingID) => {
   .all()
   .then(records => {
     if (records.length < 1) {
-      return;
+      return "";
     }
     return records[0].id;
   });
@@ -102,7 +102,6 @@ const fetchQueueData = async(campaign) => {
         recordId: todoItems.length > 0 ? todoItems[0].id : "",
       },
     };
-    console.log(queueData);
     return queueData;
   });
 }
@@ -128,18 +127,17 @@ exports.handler = async function(event) {
   console.log(`queueRecordIdOverride = ${queueRecordIdOverride}`);
   data.queue = queueData[1];
 
-  if (queueRecordIdOverride) {
+  if (housingId) {
     // A housing ID was given explicitly in the URL, and it matches an existing queue item.  Thus,
     // override whatever the queue says is next up with the queue record data for the housing ID given.
     data.queue.thisItem.recordId = queueRecordIdOverride;
     data.queue.thisItem.housingId = housingId;
-  }
-
-  if (!housingId) {
+  } else {
     // Set the housing ID based on the next property in the queue.
     housingId = data.queue.thisItem.housingId;
   }
-
+  console.log(data.queue);
+  
   // Get all the data for the housing ID.
   console.log("fetching unit records and housing record for ID: " + housingId);
   let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
