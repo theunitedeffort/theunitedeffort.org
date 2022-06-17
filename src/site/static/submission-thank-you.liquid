@@ -1,0 +1,28 @@
+---
+layout: "layouts/base.liquid"
+title: "Thank You For Your Submission"
+pageClass: ""
+permalink: /housing/affordable-housing/thank-you/index.html
+---
+
+<h1>{{title}}</h1>
+
+<p>
+  Our affordable housing database can only stay up-to-date with the help of volunteers like you!
+  Thank you for helping members of our community find affordable housing.
+</p>
+
+<a href="/housing/affordable-housing/changes/" class="btn btn_primary" id="back-link">Check Another Property</a>
+<a href="/" class="btn btn_secondary">All Done For Now</a>
+
+<script>
+function setBackLink() {
+	params = new URLSearchParams(window.location.search);
+  if (params.has("campaign")) {
+    let backLink = document.getElementById("back-link");
+    backLink.href = backLink.href + params.get("campaign");
+  }
+}
+
+setBackLink();
+</script>

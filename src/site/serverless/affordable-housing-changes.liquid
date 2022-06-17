@@ -944,7 +944,7 @@ if (pathParams.length >= 1) {
   document.getElementById("campaign").value = campaign;
   let campaignPath = "/housing/affordable-housing/changes/" + campaign;
   document.getElementById("skip-property").href = campaignPath;
-  document.getElementById("housing-changes").action = "/housing/affordable-housing/thank-you";
+  document.getElementById("housing-changes").action = "/housing/affordable-housing/thank-you?campaign=" + campaign;
   let fetchPathStr = campaign;
 	if (pathParams.length >= 2) {
 	  propertyId = pathParams[1];
