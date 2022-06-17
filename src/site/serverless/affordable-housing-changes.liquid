@@ -11,6 +11,7 @@ userNameKey: '"userName"'
 ---
 
 {% comment %}
+- error handling
 - clear in progress flag when property is skipped?
 - add landing page for no campaign specified or redirect to newest campaign
 - add unit type string to "add rent offering"?
@@ -255,7 +256,7 @@ userNameKey: '"userName"'
 </div>
 <div class="split sticky">
   <div class="split_right_container">
-    <iframe src=""></iframe>
+    <iframe id="property-webpage-frame" src=""></iframe>
   </div>
 </div>
 </div>
@@ -827,6 +828,7 @@ function setEmptyQueueMessage(queue) {
 	}
 	document.getElementById("empty-queue-content").innerHTML = nextStepStr;
 	document.getElementById("input-content").setAttribute("hidden", "hidden");
+	document.getElementById("property-webpage-frame").setAttribute("hidden", "hidden");
 }
 
 let submitButtons = document.querySelectorAll("[id^=submit-button]");
@@ -926,7 +928,6 @@ let offeringIdx = new Array({{maxUnits | plus: -1}}).fill(-1);
 let pathDirs = window.location.pathname.split("/");
 pathDirs = pathDirs.filter(x => x);
 let pathParams = pathDirs.slice(pathDirs.lastIndexOf("changes") + 1);
-console.log(pathParams);
 let propertyId = "";
 if (pathParams.length >= 1) {
   let campaign = pathParams[0];
@@ -940,10 +941,11 @@ if (pathParams.length >= 1) {
 	fetch("/housing/affordable-housing/next-property/" + fetchPathStr)
 	.then(response => response.json())
 	.then(data => {
+	  console.log(data);
 	  displayQueue(data.queue);
-	  if(data.units.length > 0) {
-	    if (data.queue.thisProperty) {
-	      let queueRecordId = data.queue.thisProperty.recordId;
+	  if(data.housing) {
+	    if (data.queue.thisItem.recordId) {
+	      let queueRecordId = data.queue.thisItem.recordId;
 	      document.getElementById("queue-record-id").value = queueRecordId;
 	    }
 		  let groupedData = groupDataByUnitType(data);

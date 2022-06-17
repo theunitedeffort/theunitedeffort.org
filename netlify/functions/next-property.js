@@ -4,6 +4,7 @@ const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process
 const HOUSING_CHANGE_QUEUE_TABLE = "tblKO2Ea4NGEoDGND";
 const HOUSING_DATABASE_TABLE = "tbl8LUgXQoTYEw2Yh";
 const UNITS_TABLE = "tblRtXBod9CC0mivK";
+const MAX_IN_PROGRESS_DURATION_HRS = 8;
 
 const fetchUnitRecords = async(housingID) => {
   const table = base(UNITS_TABLE);
@@ -23,7 +24,30 @@ const fetchHousingRecord = async(housingID) => {
   })
   .all()
   .then(records => {
+    if (records.length < 1) {
+      return;
+    }
     return records[0]._rawJson;
+  });
+}
+
+const fetchQueueRecordId = async(campaign, housingID) => {
+  if (!housingID) {
+    return;
+  }
+  const table = base(HOUSING_CHANGE_QUEUE_TABLE);
+  return records = table.select({
+    fields: [],
+    sorts : [{field: "ID", direction: "desc"}],
+    filterByFormula: `AND({CAMPAIGN} = "${campaign}", {_DISPLAY_ID} = "${housingID}")`,
+    maxRecords: 1,
+  })
+  .all()
+  .then(records => {
+    if (records.length < 1) {
+      return;
+    }
+    return records[0].id;
   });
 }
 
@@ -33,13 +57,10 @@ const markInProgressInQueue = async(recordId) => {
   return table.update(recordId, {"IN_PROGRESS_DATETIME": now.toISOString()});
 }
 
-const fetchQueueData = async(campaign, getNextId=true) => {
+const fetchQueueData = async(campaign) => {
   // TODO: allow in progress items to be returned if forced.
   const table = base(HOUSING_CHANGE_QUEUE_TABLE);
-  const staleInProgress = new Date(Date.now() - (8 * 60 * 60 * 1000));
-  //const inProgressTtlStr = inProgressExpiration.toISOString();
-  console.log((new Date()).toISOString());
-  console.log(staleInProgress);
+  const staleInProgress = new Date(Date.now() - (MAX_IN_PROGRESS_DURATION_HRS * 60 * 60 * 1000));
   // let filterFormula = `
   //   AND(
   //     {CAMPAIGN} = "${campaign}",
@@ -50,7 +71,6 @@ const fetchQueueData = async(campaign, getNextId=true) => {
   //     )
   //   )`;
   let filterFormula = `{CAMPAIGN} = "${campaign}"`;
-  console.log(filterFormula);
   return table.select({
     fields: ["ID", "_DISPLAY_ID", "IN_PROGRESS_DATETIME", "COMPLETED_DATETIME"],
     filterByFormula: filterFormula,
@@ -59,7 +79,6 @@ const fetchQueueData = async(campaign, getNextId=true) => {
   })
   .all()
   .then(records => {
-    console.log(JSON.stringify(records.map(x => x.fields), null, 2));
     let numTotalItems = records.length;
     let completedItems = [];
     let inProgressItems = [];
@@ -73,30 +92,24 @@ const fetchQueueData = async(campaign, getNextId=true) => {
         todoItems.push(record);
       }
     }
-    console.log(JSON.stringify(completedItems.map(x => x.fields), null, 2));
-    console.log("------------");
-    console.log(JSON.stringify(inProgressItems.map(x => x.fields), null, 2));
-    console.log("------------");
-    console.log(JSON.stringify(todoItems.map(x => x.fields), null, 2));
     let queueData = {
       numCompleted: completedItems.length,
       numInProgress: inProgressItems.length,
       numTodo: todoItems.length,
       numTotal: records.length,
-    };
-    if (getNextId) {
-      queueData.thisProperty = {
-        id: todoItems.length > 0 ? todoItems[0].get("_DISPLAY_ID")[0] : "",
+      thisItem: {
+        housingId: todoItems.length > 0 ? todoItems[0].get("_DISPLAY_ID")[0] : "",
         recordId: todoItems.length > 0 ? todoItems[0].id : "",
-      };
-    }
+      },
+    };
+    console.log(queueData);
     return queueData;
   });
 }
 
 exports.handler = async function(event) {
   console.log(event.path);
-  // Get the campaign name from the URL
+  // Get the campaign name and optional housing ID from the URL
   const paramsStr = event.path.split("next-property/")[1];
   const params = paramsStr.split("/");
   let campaign = "";
@@ -106,27 +119,38 @@ exports.handler = async function(event) {
     campaign = params[0];
   }
   if (params.length >= 2) {
-    // TODO: mark this ID as in progress if it exists in the queue.
     housingId = params[1];
   }
 
   console.log("fetching queue data");
-  data.queue = await fetchQueueData(campaign, !housingId);
+  let queueData = await Promise.all([fetchQueueRecordId(campaign, housingId), fetchQueueData(campaign)]);
+  let queueRecordIdOverride = queueData[0]; // Get the matching queue item for the given housing ID (if there is one).
+  console.log(`queueRecordIdOverride = ${queueRecordIdOverride}`);
+  data.queue = queueData[1];
 
-  if (!housingId) {
-    housingId = data.queue.thisProperty.id;
+  if (queueRecordIdOverride) {
+    // A housing ID was given explicitly in the URL, and it matches an existing queue item.  Thus,
+    // override whatever the queue says is next up with the queue record data for the housing ID given.
+    data.queue.thisItem.recordId = queueRecordIdOverride;
+    data.queue.thisItem.housingId = housingId;
   }
 
-  // Check we actually got a housingId, as an empty queue will not give us one.
-  if (housingId) {
-    console.log("fetching unit records and housing record for ID: " + housingId);
-    let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
-    if (data.queue.thisProperty) {
-      console.log("updating in progress status for ID: " + housingId);
-      await markInProgressInQueue(data.queue.thisProperty.recordId);
-    }
-    data.housing = housingData[0];
-    data.units = housingData[1];
+  if (!housingId) {
+    // Set the housing ID based on the next property in the queue.
+    housingId = data.queue.thisItem.housingId;
+  }
+
+  // Get all the data for the housing ID.
+  console.log("fetching unit records and housing record for ID: " + housingId);
+  let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
+  data.housing = housingData[0];
+  data.units = housingData[1];
+
+  // If there is a matching queue record for this housing ID, update it to
+  // be in progress.
+  if (data.queue.thisItem.recordId) {
+    console.log("updating in progress status for ID: " + housingId);
+    await markInProgressInQueue(data.queue.thisItem.recordId);
   }
 
   return {
