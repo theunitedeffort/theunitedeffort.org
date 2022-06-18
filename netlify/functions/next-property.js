@@ -137,7 +137,7 @@ exports.handler = async function(event) {
     housingId = data.queue.thisItem.housingId;
   }
   console.log(data.queue);
-  
+
   // Get all the data for the housing ID.
   console.log("fetching unit records and housing record for ID: " + housingId);
   let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
@@ -149,6 +149,9 @@ exports.handler = async function(event) {
   if (data.queue.thisItem.recordId) {
     console.log("updating in progress status for ID: " + housingId);
     await markInProgressInQueue(data.queue.thisItem.recordId);
+    // TODO: Get these updated numbers from the queue?
+    data.queue.numInProgress += 1;
+    data.queue.numTodo -= 1;
   }
 
   return {
