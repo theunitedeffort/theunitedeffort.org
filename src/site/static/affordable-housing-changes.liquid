@@ -2,7 +2,7 @@
 layout: layouts/base.liquid
 title: Check for Affordable Housing Updates
 permalink: 
-  build: "/housing/affordable-housing/changes/index.html"
+  build: "/contrib/affordable-housing/changes/index.html"
 pageClass: "smaller max_width"
 maxUnits: 6
 maxOfferings: 5
@@ -49,8 +49,7 @@ userNameKey: '"userName"'
 <h3>Step 2</h3>
 <p>Make any edits necessary to make the information below match the offical property manager's information.</p>
 <div class="note">If there is information here that you can't confirm via the property manager's website, do not delete it.  When in doubt, keep the information you see below.</div>
-<form id="housing-changes" name="housing_changes" method="POST" action="/housing/affordable-housing/thank-you" netlify>
-<input type="hidden" name="form-name" value="housing_changes" />
+<form id="housing-changes" name="housing_changes" method="POST" action="/housing/affordable-housing/thank-you/" netlify>
 <input type="hidden" id="campaign" name="update_campaign" />
 <input type="hidden" id="user-name" name="user_name" />
 <div id="property-data">
@@ -937,20 +936,20 @@ let unitIdx = 0;
 let offeringIdx = new Array({{maxUnits | plus: -1}}).fill(-1);
 let pathDirs = window.location.pathname.split("/");
 pathDirs = pathDirs.filter(x => x);
-let pathParams = pathDirs.slice(pathDirs.lastIndexOf("changes") + 1);
+let pathParams = pathDirs.slice(pathDirs.lastIndexOf("campaigns") + 1);
 let propertyId = "";
 if (pathParams.length >= 1) {
   let campaign = pathParams[0];
   document.getElementById("campaign").value = campaign;
-  let campaignPath = "/housing/affordable-housing/changes/" + campaign;
+  let campaignPath = "/contrib/affordable-housing/campaigns/" + campaign;
   document.getElementById("skip-property").href = campaignPath;
-  document.getElementById("housing-changes").action = "/housing/affordable-housing/thank-you?campaign=" + campaign;
+  document.getElementById("housing-changes").action = "/contrib/affordable-housing/thank-you/?campaign=" + campaign;
   let fetchPathStr = campaign;
 	if (pathParams.length >= 2) {
 	  propertyId = pathParams[1];
 	  fetchPathStr += "/" + propertyId;
 	}
-	fetch("/housing/affordable-housing/next-property/" + fetchPathStr)
+	fetch("/contrib/affordable-housing/next-property/" + fetchPathStr)
 	.then(response => response.json())
 	.then(data => {
 	  console.log(data);

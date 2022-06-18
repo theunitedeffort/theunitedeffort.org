@@ -23,8 +23,8 @@ force = true
 _generated_by_eleventy_serverless = "serverless"
 
 [[redirects]]
-from = "/housing/affordable-housing/changes/*"
-to = "/housing/affordable-housing/changes"
+from = "/contrib/affordable-housing/campaigns/*"
+to = "/contrib/affordable-housing/changes"
 status = 200
 force = true
 
@@ -44,11 +44,11 @@ to = "/.netlify/functions/rawdata"
 status = 200
 
 [[redirects]]
-from = "/housing/affordable-housing/next-property/:campaign/:id"
+from = "/contrib/affordable-housing/next-property/:campaign/:id"
 to = "/.netlify/functions/next-property"
 status = 200
 
 [[redirects]]
-from = "/housing/affordable-housing/next-property/:campaign"
+from = "/contrib/affordable-housing/next-property/:campaign"
 to = "/.netlify/functions/next-property"
 status = 200
