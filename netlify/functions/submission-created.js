@@ -4,6 +4,8 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_WRITE_API_KEY }).base(pro
 const AFFORDABLE_HOUSING_CHANGES_TABLE = "tblXy0hiHoda5UVSR";
 const AFFORDABLE_HOUSING_CHANGES_QUEUE_TABLE = "tblKO2Ea4NGEoDGND";
 
+// Adds a record to the form responses Airtable corresponding to this
+// form response.
 const createFormResponseRecord = async(formResponses, createdAt) => {
   // TODO: Error handling. 
   let table = base(AFFORDABLE_HOUSING_CHANGES_TABLE);
@@ -14,6 +16,8 @@ const createFormResponseRecord = async(formResponses, createdAt) => {
   });
 }
 
+// Updates the housing updates queue Airtable to mark the property
+// just submitted via this form response as completed.
 const markCompleteInQueue = async(recordId) => {
   // TODO: Error handling. 
   let table = base(AFFORDABLE_HOUSING_CHANGES_QUEUE_TABLE);
