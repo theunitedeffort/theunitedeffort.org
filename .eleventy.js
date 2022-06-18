@@ -183,12 +183,23 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("housingResults", async function(query) {
     console.log("housing query: ");
     console.log(query);
+    let asset = new EleventyFetch.AssetCache("housing_results");
+    let isBuild = !process.env.ELEVENTY_SERVERLESS && !query;
+    if (isBuild && asset.isCacheValid("1d")) {
+      console.log("Returning cached housing list.");
+      let housing = await asset.getCachedValue();
+      return housing;
+    }
     const queryStr = buildQueryStr(query);
+    console.log("Fetching housing list.");
     let housing = await fetchHousingList(queryStr);
     console.log("got " + housing.length + " properties.")
     // if (query) {
     //   console.log(JSON.stringify(housing, null, 4));
     // }
+    if (isBuild) {
+      await asset.save(housing, "json");
+    }
     return housing;
   });
 
