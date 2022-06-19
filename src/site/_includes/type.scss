@@ -59,7 +59,8 @@
   main,
   .pre-footer {
     a:link,
-    a:visited {
+    a:visited,
+    button.link {
       color: var(--color-blue-dark);
       text-decoration: underline;
       text-decoration-thickness: 2px;
@@ -67,8 +68,26 @@
       text-decoration-color: var(--color-blue);
     }
     a:hover,
-    a:focus {
+    a:focus,
+    button.link:hover,
+    button.link:focus {
       text-decoration: none;
+    }
+    /* 
+    A button is not technically type, but we are styling
+    it to look that way, so here it is in type.scss
+    */
+    button.link {
+      cursor: pointer;
+      background: none!important;
+      border: none;
+      padding: 0!important;
+      font-family: var(--font-primary);
+      font-size: inherit;
+    }
+
+    #welcome-name + button.link {
+      font-size: smaller;
     }
   }
   
@@ -165,7 +184,7 @@
       font-size: 0.7em;
     } 
   }
-  
+
   .icon_query {
     &:after {
       content: "?";

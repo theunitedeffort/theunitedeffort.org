@@ -13,11 +13,19 @@ maxUnits: 6
 <div class="flex">
 	<div class="split">
 		<div class="split_left_container">
+			<p class="bold">Welcome<span id="welcome-name"></span>!
+				<button type="button" class="link" id="edit-user-name" hidden>(Not you?)</button><br/>
+			  Thanks for helping out.
+				<span id="user-name-input-container">
+				  <label for="user-name-input">What is your name?</label> <input id="user-name-input" type="text"></input>
+				</span>
+			</p>
 			<h2 id="apt-name-header">Loading property data...</h2>
 			<div id="terminal-content"></div>
 			<div id="input-content">
 				<form id="housing-changes" name="housing_changes" method="POST" action="/contrib/affordable-housing/thank-you" netlify>
 				<input type="hidden" id="campaign" name="update_campaign" />
+				<input type="hidden" id="user-name" name="user_name" />
 					<div id="property-data">
 					  <input type="hidden" id="{{housingFields.ID.id}}" name="ID" />
             <input type="hidden" id="queue-record-id" name="queue_record_id" />
