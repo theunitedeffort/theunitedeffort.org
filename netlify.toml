@@ -23,13 +23,6 @@ force = true
 _generated_by_eleventy_serverless = "serverless"
 
 [[redirects]]
-from = "/contrib/affordable-housing/thank-you"
-to = "/.netlify/functions/serverless"
-status = 200
-force = true
-_generated_by_eleventy_serverless = "serverless"
-
-[[redirects]]
 from = "/contrib/affordable-housing/campaigns/*"
 to = "/contrib/affordable-housing/changes"
 status = 200
