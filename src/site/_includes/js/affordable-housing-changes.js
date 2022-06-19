@@ -1,4 +1,5 @@
 const USER_NAME_KEY = "userName";
+const APT_NAME_FIELD_ID = "fldMcM49qaNr3EQ2a";
 
 // Submits the housing changes form.
 function submitForm() {
@@ -48,6 +49,8 @@ function setInvalidHousingIdMessage(housingId, campaignPath) {
   setTerminalMessage(header, content);
 }
 
+// Sets the value of the user's name from an input field.
+// Also saves the value to local storage for later retrieval.
 function setUserName() {
   let userNameInput = document.getElementById("user-name-input");
   let userName = userNameInput.value.trim();
@@ -62,6 +65,7 @@ function setUserName() {
   }
 }
 
+// Displays the relevant input field so a user can edit their name.
 function editUserName() {
   document.getElementById("user-name-input-container").removeAttribute(
     "hidden");
@@ -75,6 +79,94 @@ function handleUserNameKeydown(e) {
   if (e.code === "Enter") {
     let inputUserName = document.getElementById("user-name-input");
     inputUserName.dispatchEvent(new Event("change"));
+  }
+}
+
+function updatePageTitle() {
+  document.getElementById("apt-name-header").textContent = this.value;
+}
+
+// Fills an existing form field with the given `value`.
+// the parameter 'field' is a <input>, <textarea>, or <select> node.
+function prefillField(field, value) {
+  if (!value) {
+    // Nothing to prefill.
+    return;
+  }
+  let isMultiselect = field.parentNode.className == "multiselect";
+  if (field.tagName == "INPUT") {
+    if (field.type == "checkbox") {
+      let doCheck = false;
+      // Multiselects are displayed not as <select> elements but rather
+      // a set of grouped checkboxes, so handle them here.
+      if (isMultiselect) {
+        doCheck = value.includes(field.value);
+      } else {
+        doCheck = value;
+      }
+      if (doCheck) {
+        field.setAttribute("checked", "checked");
+      }
+    } else {
+      field.setAttribute("value", value);
+    }
+  } else if (field.tagName == "TEXTAREA") {
+    field.textContent = value;
+  } else if (field.tagName == "SELECT") {
+    for (option of field.childNodes) {
+      if (option.value == value) {
+        option.setAttribute("selected", "selected");
+        break;
+      }
+    }
+    field.setAttribute("value", value);
+  } 
+ 
+  // Field values have changed, so trigger the appropriate change
+  // handlers.
+  let changeEvent = new Event("change");
+  field.dispatchEvent(changeEvent);
+  if (isMultiselect) {
+    // Trigger any onchange events handled by the multiselect itself 
+    // (rather than the individual checkboxes within).
+    field.parentNode.dispatchEvent(changeEvent);
+  }
+}
+
+// Prefills the affordable housing changes form with data.
+// The 'data' passed in typically comes from Airtable via fetchFormPrefillData()
+// to show the current state of the database.
+function prefillForm(data) {
+  // Handle queue record ID separately, as it is not part of the affordable
+  // housing database.
+  if (data.queue.thisItem.recordId) {
+    let queueRecordId = data.queue.thisItem.recordId;
+    document.getElementById("queue-record-id").setAttribute("value",
+      queueRecordId);
+  }
+  const fieldSelector = "input, textarea, select";
+  let propertySection = document.getElementById("property-data");
+  let unitsSection = document.getElementById("all-units");
+  let propertyFields = propertySection.querySelectorAll(fieldSelector);
+  let unitsFields = unitsSection.querySelectorAll(fieldSelector);
+  
+  for (field of propertyFields) {
+    let value = data.housing.fields[field.name];
+    prefillField(field, value);
+  }
+
+  for (field of unitsFields) {
+    let [fieldName, unitIdx, offerIdx] = field.name.split(":");
+    // If there is no offer index, this field applies to all offerings in the
+    // unit. The values of these fields are the same for every offering, so
+    // just take the first one.
+    if (offerIdx === undefined) {
+      offerIdx = 0;
+    }
+    if (unitIdx < data.units.length && offerIdx < data.units[unitIdx].length) {
+      let value = data.units[unitIdx][offerIdx].fields[fieldName];
+      prefillField(field, value);
+    }
   }
 }
 
@@ -96,6 +188,26 @@ function getPathParams() {
   return params;
 }
 
+// Groups unit records by unit type.
+// Returns a copy of 'data', but with the units property converted
+// into an array of units records arrays.  Each item in the array corresponds to
+// all the units records of one type (e.g. 1 Bedroom, Studio, etc).
+function groupDataByUnitType(data) {
+  let groupedData = JSON.parse(JSON.stringify(data));
+  // Clear any existing units from the data copy to make way for grouped units.
+  groupedData.units = [];
+  let tempMap = {};
+  for (unitRecord of data.units) {
+    let typeKey = unitRecord.fields["TYPE"];
+    tempMap[typeKey] = tempMap[typeKey] || [];
+    tempMap[typeKey].push(unitRecord);
+  }
+  for (unitType of Object.keys(tempMap)) {
+    groupedData.units.push(tempMap[unitType]);
+  }
+  return groupedData;
+}
+
 // Fetches all data required to prefill the input form fields.
 async function fetchFormPrefillData(params) {
   if (!params.campaign) {
@@ -109,10 +221,12 @@ async function fetchFormPrefillData(params) {
   // TODO: Error handling.
   let response = await fetch(fetchPath);
   let data = await response.json();
-  console.log(data);
-  return data;
+  let groupedData = groupDataByUnitType(data);
+  console.log(groupedData);
+  return groupedData;
 }
 
+// Adds all DOM event listeners.
 function addListeners() {
   // Form submission
   let submitButtons = document.querySelectorAll("[id^=submit-button]");
@@ -127,9 +241,13 @@ function addListeners() {
   userNameInput.addEventListener("change", setUserName);
   userNameInput.addEventListener("focusout", setUserName);
   userNameInput.addEventListener("keydown", handleUserNameKeydown);
+
+  // Form inputs
+  document.getElementById(APT_NAME_FIELD_ID).addEventListener("change",
+    updatePageTitle);
 }
 
-// 
+// Initializes the user's name to the stored value if one exists.
 function initUserName() {
   let userName = localStorage.getItem(USER_NAME_KEY);
   let userNameInput = document.getElementById("user-name-input");
@@ -148,11 +266,7 @@ function initPage(data, params) {
     document.getElementById("housing-changes").setAttribute("action",
      `/contrib/affordable-housing/thank-you?campaign=${safeCampaign}`);
     if (data.housing) {
-      if (data.queue.thisItem.recordId) {
-        let queueRecordId = data.queue.thisItem.recordId;
-        document.getElementById("queue-record-id").setAttribute("value",
-          queueRecordId);
-      }
+      prefillForm(data);
     } else if (params.housingId) {
       let campaignPath = (
         `/contrib/affordable-housing/campaigns/${params.campaign}`);
@@ -173,6 +287,3 @@ async function run() {
     document.getElementById("campaign").setAttribute("value", params.campaign);
   }
 }
-
-
-

@@ -191,7 +191,7 @@ module.exports = function(eleventyConfig) {
   // "id:index".  If the field specified by 'fieldName' includes a description,
   // it will be rendered next to the label text as a hover tooltip icon.
   const fieldLabel = function(labelText, fields, fieldName, index="") {
-    let forAttr = `${fields[fieldName].id}${index != "" ? ":" + index : ""}`;
+    let forAttr = `${fields[fieldName].id}${index !== "" ? ":" + index : ""}`;
     let tag = `<label for="${forAttr}">${labelText}</label>`;
     let tooltip = "";
     if (fields[fieldName].description) {
@@ -220,8 +220,8 @@ module.exports = function(eleventyConfig) {
     let options = "";
     let content = "";
     let endtag = "";
-    let indexStr = index != "" ? ":" + index : "";
-    let style = width != "" ? `style="width:${width};"` : "";
+    let indexStr = index !== "" ? ":" + index : "";
+    let style = width !== "" ? `style="width:${width};"` : "";
     if (field.type === "singleSelect") {
       tag = "select";
       endtag = "</select>";
