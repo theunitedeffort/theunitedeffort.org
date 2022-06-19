@@ -9,7 +9,7 @@ function submitForm() {
 // Sets a message to display instead of the usual input form when a
 // terminal or dead-end action occurs (such as the end of the queue).
 function setTerminalMessage(header, content) {
-  document.getElementById("apt-name-header").innerHTML = header;
+  document.getElementById("apt-name-header").textContent = header;
 	document.getElementById("terminal-content").innerHTML = content;
 	document.getElementById("input-content").setAttribute("hidden", "hidden");
 	document.getElementById("property-webpage-frame").setAttribute(
@@ -66,7 +66,7 @@ function getPathParams() {
 
 // Fetches all data required to prefill the input form fields.
 async function fetchFormPrefillData(params) {
-	let fetchPath = (
+	let fetchPath = encodeURI(
 		`/contrib/affordable-housing/next-property/${params.campaign}`);
 	if (params.housingId) {
     fetchPath += `/${params.housingId}`;
@@ -90,7 +90,8 @@ function initPage(data, params) {
   if(data.housing) {
     if (data.queue.thisItem.recordId) {
       let queueRecordId = data.queue.thisItem.recordId;
-      document.getElementById("queue-record-id").value = queueRecordId;
+      document.getElementById("queue-record-id").setAttribute("value",
+        queueRecordId);
     }
 	} else if (params.housingId) {
 		let campaignPath = (
@@ -106,9 +107,10 @@ async function run() {
 	addListeners();
 	let params = getPathParams();
 	if (params.campaign) {
-	  document.getElementById("campaign").value = params.campaign;
-	  document.getElementById("housing-changes").action = (
-	    `/contrib/affordable-housing/thank-you?campaign=${params.campaign}`);
+	  document.getElementById("campaign").setAttribute("value", params.campaign);
+	  let safeCampaign = encodeURIComponent(params.campaign);
+	  document.getElementById("housing-changes").setAttribute("action",
+	   `/contrib/affordable-housing/thank-you?campaign=${safeCampaign}`);
 		let data = await fetchFormPrefillData(params);
 		initPage(data, params);
 	}

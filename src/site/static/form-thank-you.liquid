@@ -23,10 +23,11 @@ campaign.
 {% endcomment %}
 <script>
 function setBackLink() {
-	params = new URLSearchParams(window.location.search);
+  params = new URLSearchParams(window.location.search);
   if (params.has("campaign")) {
     let backLink = document.getElementById("back-link");
-    backLink.href = backLink.href + params.get("campaign");
+    backLink.setAttribute(
+    	"href", backLink.getAttribute("href") + params.get("campaign"));
   }
 }
 
