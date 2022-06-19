@@ -56,7 +56,7 @@ const fetchQueueRecordId = async(campaign, housingId) => {
     )`;
   return records = table.select({
     fields: [],
-    sorts : [{field: "ID", direction: "desc"}],
+    sort : [{field: "ID", direction: "desc"}],
     filterByFormula: filterStr,
     maxRecords: 1,
   })
@@ -112,7 +112,7 @@ const fetchQueueData = async(campaign) => {
           Date.parse(record.get("IN_PROGRESS_DATETIME")) > staleInProgress) {
         inProgress.push(record);
       } else {
-        todoItems.push(record);
+        todo.push(record);
       }
     }
     let queueData = {
@@ -136,7 +136,7 @@ exports.handler = async function(event) {
   const params = paramsStr.split("/");
   let campaign = "";
   let housingId = "";
-  let data;
+  let data = {};
   if (params.length >= 1) {
     campaign = params[0];
   }

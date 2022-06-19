@@ -1,0 +1,92 @@
+---
+layout: layouts/base.liquid
+title: Check for Affordable Housing Updates
+permalink: 
+  build: "/contrib/affordable-housing/changes/index.html"
+pageClass: "smaller max_width"
+maxUnits: 6
+---
+
+{% assign housingFields = housing %}
+{% assign unitsFields = units %}
+
+<div class="flex">
+  <div class="split">
+    <div class="split_left_container">
+      <p class="bold">Welcome<span id="welcome-name"></span>!
+        <button type="button" class="link" id="edit-user-name" hidden>(Not you?)</button><br/>
+        Thanks for helping out.
+        <span id="user-name-input-container">
+          <label for="user-name-input">What is your name?</label> <input id="user-name-input" type="text"></input>
+        </span>
+      </p>
+      <h2 id="apt-name-header">Loading property data...</h2>
+      <div id="terminal-content"></div>
+      <div id="input-content">
+        <form id="housing-changes" name="housing_changes" method="POST" action="/contrib/affordable-housing/thank-you" netlify>
+        <input type="hidden" id="campaign" name="update_campaign" />
+        <input type="hidden" id="user-name" name="user_name" />
+          <div id="property-data">
+            <input type="hidden" id="{{housingFields.ID.id}}" name="ID" />
+            <input type="hidden" id="queue-record-id" name="queue_record_id" />
+            {% fieldLabel "Property Name", housingFields, "APT_NAME" %}<br/>
+            {% formField housingFields, "APT_NAME", "20em" %}<br/>
+
+            {% fieldLabel "Address", housingFields, "ADDRESS" %}<br/>
+            {% formField housingFields, "ADDRESS", "20em" %}<br/>
+
+            {% fieldLabel "City", housingFields, "CITY" %}<br/>
+            {% formField housingFields, "CITY" %}<br/>
+
+            {% fieldLabel "ZIP Code", housingFields, "ZIP_CODE" %}<br/>
+            {% formField housingFields, "ZIP_CODE", "6em" %}<br/>
+          </div>
+
+          <div id="all-units">
+            {% assign unitEndIdx = maxUnits | plus: -1 %}
+            {% for unitNum in (0..unitEndIdx) %}
+              {% assign unitIdx = unitNum %}
+              <div id="unit-{{unitNum}}" class="fieldset_box">
+                <fieldset>
+                  <legend><span class="section_title">Unit Type</span>
+                  </legend>
+                  {% indexedFieldLabel unitIdx, "Type", unitsFields, "TYPE" %}<br/>
+                  {% indexedFormField unitIdx, unitsFields, "TYPE" %}<br/>
+
+                  {% indexedFieldLabel unitIdx, "Status", unitsFields, "STATUS" %}<br/>
+                  {% indexedFormField unitIdx, unitsFields, "STATUS" %}<br/>
+
+                  <span class="label">Occupancy Limits</span>
+                  <span class="tooltip_entry">
+                    <span class="icon_query"></span>
+                    <span class="tooltip_content">The minimum and maximum number of people allowed to live in this unit.</span>
+                  </span>
+                  <br/>
+                  {% indexedFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "4em" %} to 
+                  {% indexedFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "4em" %} people<br/>
+                </fieldset>
+              </div>
+            {% endfor %}
+          </div>
+
+          <br/><br/><label for="user-notes" style="white-space: break-spaces; display: block; width: 30em">Not sure how to input some of this property's information? Need to leave a note for the reviewer? Enter it here.</label>
+          <textarea id="user-notes" name="userNotes" style="width: 30em; height: 6em"></textarea>
+
+          <button type="button" id="submit-button-changes" class="btn btn_primary">Submit for review</button>
+          <button type="button" id="submit-button-no-changes" class="btn btn_secondary">No changes found</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="split sticky">
+    <div class="split_right_container">
+      <iframe id="property-webpage-frame" src=""></iframe>
+    </div>
+  </div>
+</div>
+
+<script src="/js/affordable-housing-changes.js"></script>
+<script>
+  run();
+</script>
