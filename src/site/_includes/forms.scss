@@ -32,7 +32,12 @@
         white-space: nowrap;
       }
       input[type=text],
-      input[type=number] {
+      input[type=number],
+      input[type=email],
+      input[type=tel],
+      input[type=url],
+      select,
+      textarea {
         border: solid 2px var(--color-gray-600);
         font-size: 0.8em;
         font-family: var(--font-primary);
@@ -44,6 +49,49 @@
     
     .option_columns {
       columns: 8em 3;
+    }
+
+    #housing-changes {
+      display: block; 
+      font-size: 1em;
+
+      input,
+      select,
+      textarea {
+        font-size: 1em;
+        padding: 0.5em;
+        margin-bottom: 1em;
+      }
+      .multiselect > input[type=checkbox] {
+        margin-bottom: 0em;
+        margin-left: 1em;
+      }
+      .multiselect > label {
+        padding: 0.2em 0.4em;
+        border-radius: 1em;
+      }
+      .multiselect {
+        margin-bottom: 0.8em;
+      }
+      fieldset {
+        width: 100%;
+        margin-bottom: 0;
+      }
+      label {
+        font-size: 0.9em;
+        white-space: normal;
+      }
+    }
+
+    .label {
+      font-size: 0.9em;
+    }
+
+    .fieldset_box {
+      border: 3px solid var(--color-gray-600);
+      border-radius: 6px;
+      padding: 1em;
+      margin: 1em 0;
     }
 
     .option_columns.wide {

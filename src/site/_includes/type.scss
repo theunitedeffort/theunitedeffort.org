@@ -159,6 +159,12 @@
     text-align: center;
   }
 
+  #housing-changes {
+    .icon_info,
+    .icon_query {
+      font-size: 0.7em;
+    } 
+  }
   
   .icon_query {
     &:after {
