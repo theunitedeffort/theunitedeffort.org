@@ -139,6 +139,31 @@ function updateAgeVisibility() {
   }
 }
 
+// Shows or hides maximum income table rows depending on the values
+// of min and max occupancy for the unit.
+function updateMaxIncomeRowsVisibility() {
+  let unitContainer = this.parentNode;
+  let offeringContainers = unitContainer.querySelectorAll("fieldset");
+  let minOccupancyField = unitContainer.querySelector("[name*=MIN_OCCUPANCY]");
+  let maxOccupancyField = unitContainer.querySelector("[name*=MAX_OCCUPANCY]");
+  let minHhSize = parseInt(minOccupancyField.value || 0);
+  let maxHhSize = parseInt(maxOccupancyField.value || Number.MAX_SAFE_INT);
+  for (i = 0; i < offeringContainers.length; i++) {
+    let rows = offeringContainers[i].querySelectorAll(".max_income tr");
+    // Skip the header row, start j at 1.
+    for (let j = 1; j < rows.length; j++) {
+      if (j < minHhSize || j > maxHhSize) {
+        rows[j].setAttribute("hidden", "hidden");
+        // Also clear contents when hiding rows so that hidden row data
+        // doesn't get accidentally transmitted on form submit.
+        rows[j].querySelector("input").setAttribute("value", "");
+      } else {
+        rows[j].removeAttribute("hidden");
+      }
+    }
+  }
+}
+
 // Clears any input values from all the form inputs within `node`.
 // Selects will have the first (presumed blank) option selected.
 // Checkboxes will be unchecked.
@@ -336,6 +361,9 @@ function addListeners() {
     .addEventListener("change", updateAgeVisibility);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`)
     .addEventListener("change", updateAgeVisibility);
+  for (occupancy of document.querySelectorAll("[name*=OCCUPANCY]")) {
+    occupancy.addEventListener("change", updateMaxIncomeRowsVisibility);
+  }
 }
 
 // Initializes the user's name to the stored value if one exists.
