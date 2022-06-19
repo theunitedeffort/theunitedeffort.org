@@ -1,5 +1,7 @@
 const USER_NAME_KEY = "userName";
 const APT_NAME_FIELD_ID = "fldMcM49qaNr3EQ2a";
+const POPULATIONS_SERVED_FIELD_ID = "fldkzU54q8lYtIH7G";
+const PROPERTY_URL_FIELD_ID = "fldei8N0xw2VhjX9V";
 
 // Submits the housing changes form.
 function submitForm() {
@@ -75,15 +77,94 @@ function editUserName() {
 }
 
 function handleUserNameKeydown(e) {
-  // Allow the user to re-commit their name even if they don't make any changes to it.
+  // Allow the user to re-commit their name even if they don't make any changes 
+  // to it.
   if (e.code === "Enter") {
     let inputUserName = document.getElementById("user-name-input");
     inputUserName.dispatchEvent(new Event("change"));
   }
 }
 
+// Updates the main header of the page to match the value of the element
+// receiving the event.
 function updatePageTitle() {
   document.getElementById("apt-name-header").textContent = this.value;
+}
+
+// Updates the href attribute of any links with class 'property-link' to
+// be the value of the element receiving the event.
+function updatePropertyLink() {
+  let links = document.querySelectorAll(".property-link");
+  let iframe = document.getElementsByTagName("iframe")[0];
+  // If the URL does not start with https:// or http://,
+  // assume https:// and prepend it to the user's input.
+  if (this.value.search(/https?:\/\//) != 0) {
+    this.setAttribute("value", `https://${this.value}`);
+  }
+  for (link of links) {
+    link.setAttribute("href", this.value);
+  }
+  // Any http link is guaranteed to fail to display in the iframe because
+  // the UEO site is served over https. Set the iframe src to have an 
+  // unspecified protocol to optimisitically request the https version
+  // if there is one (without changing the stored property URL value).
+  iframe.src = this.value.replace(/https?:/, "");
+}
+
+// Shows the second address field.
+function updateSecondAddressVisibility() {
+  document.getElementById("second-address").removeAttribute("hidden");
+  document.getElementById("show-second-address").setAttribute("hidden",
+    "hidden");
+}
+
+// Shows min and max age fields when required and hides them otherwise.
+function updateAgeVisibility() {
+  let seniorsOption = document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`);
+  let youthOption = document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`);
+  let minAge = document.getElementById("min-age");
+  let maxAge = document.getElementById("max-age");
+  if (youthOption.checked) {
+    minAge.removeAttribute("hidden");
+    maxAge.removeAttribute("hidden");
+  } else if (seniorsOption.checked) {
+    minAge.removeAttribute("hidden");
+    maxAge.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(maxAge);
+  } else {
+    minAge.setAttribute("hidden", "hidden");
+    maxAge.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(minAge);
+    clearAllFieldsIn(maxAge);
+  }
+}
+
+// Clears any input values from all the form inputs within `node`.
+// Selects will have the first (presumed blank) option selected.
+// Checkboxes will be unchecked.
+// Textareas and input element values will be an empty string.
+function clearAllFieldsIn(node) {
+  let allInputs = node.querySelectorAll("input, textarea, select");
+  for (input of allInputs) {
+    if (input.tagName == "TEXTAREA") {
+      input.textContent = "";
+    } else if (input.tagName == "SELECT") {
+      let options = input.childNodes;
+      for (option of options) {
+        option.removeAttribute("selected");
+      }
+      input.firstChild.setAttribute("selected", "selected");
+      input.setAttribute("value", "");
+    } else if (input.tagName == "INPUT") {
+      if (input.type == "checkbox") {
+        input.removeAttribute("checked");
+      } else {
+        input.setAttribute("value", "");
+      }
+    }
+    // Input values have changed, so run any change handlers.
+    input.dispatchEvent(new Event("change"));
+  }
 }
 
 // Fills an existing form field with the given `value`.
@@ -242,9 +323,19 @@ function addListeners() {
   userNameInput.addEventListener("focusout", setUserName);
   userNameInput.addEventListener("keydown", handleUserNameKeydown);
 
+  // Form interactions
+  document.getElementById("show-second-address").addEventListener("click",
+    updateSecondAddressVisibility);
+
   // Form inputs
   document.getElementById(APT_NAME_FIELD_ID).addEventListener("change",
     updatePageTitle);
+  document.getElementById(PROPERTY_URL_FIELD_ID).addEventListener("change",
+    updatePropertyLink);
+  document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`)
+    .addEventListener("change", updateAgeVisibility);
+  document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`)
+    .addEventListener("change", updateAgeVisibility);
 }
 
 // Initializes the user's name to the stored value if one exists.

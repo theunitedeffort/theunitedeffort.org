@@ -32,14 +32,62 @@ maxUnits: 6
             {% fieldLabel "Property Name", housingFields, "APT_NAME" %}<br/>
             {% formField housingFields, "APT_NAME", "20em" %}<br/>
 
-            {% fieldLabel "Address", housingFields, "ADDRESS" %}<br/>
+            {% fieldLabel "Address", housingFields, "ADDRESS" %}
+            <span class="label"><button type="button" id="show-second-address" class="link">Add a second address</button></span><br/>
             {% formField housingFields, "ADDRESS", "20em" %}<br/>
+            <div id="second-address" hidden>
+            {% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}<br/>
+            {% formField housingFields, "SECOND_ADDRESS", "20em" %}<br/>
+            </div>
 
             {% fieldLabel "City", housingFields, "CITY" %}<br/>
             {% formField housingFields, "CITY" %}<br/>
 
             {% fieldLabel "ZIP Code", housingFields, "ZIP_CODE" %}<br/>
             {% formField housingFields, "ZIP_CODE", "6em" %}<br/>
+
+            {% fieldLabel "Contact Phone", housingFields, "PHONE" %}<br/>
+            {% formField housingFields, "PHONE", "9em" %}<br/>
+
+            {% fieldLabel "Contact Email", housingFields, "EMAIL" %}<br/>
+            {% formField housingFields, "EMAIL", "25em" %}<br/>
+
+            {% fieldLabel "Management Company", housingFields, "MANAGEMENT_COMPANY" %}<br/>
+            {% formField housingFields, "MANAGEMENT_COMPANY", "20em" %}<br/>
+
+            {% fieldLabel "URL", housingFields, "PROPERTY_URL" %}
+            <a href="" target="_blank" rel="noopener" class="label property-link">Visit this page</a><sup>&#8599;</sup><br/>
+            {% formField housingFields, "PROPERTY_URL", "35em" %}<br/>
+
+            {% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}<br/>
+            {% formField housingFields, "UNITS_CNT", "5em" %}<br/>
+
+            <div class="multiselect" id="populations-served">
+            {% fieldLabel "Populations Served", housingFields, "POPULATIONS_SERVED" %}<br/>
+            {% formField housingFields, "POPULATIONS_SERVED" %}<br/>
+            </div>
+
+            <div id="min-age" hidden>
+            {% fieldLabel "Minimum Resident Age", housingFields, "MIN_RESIDENT_AGE" %}<br/>
+            {% formField housingFields, "MIN_RESIDENT_AGE", "4em" %}<br/>
+            </div>
+
+            <div id="max-age" hidden>
+            {% fieldLabel "Maximum Resident Age", housingFields, "MAX_RESIDENT_AGE" %}<br/>
+            {% formField housingFields, "MAX_RESIDENT_AGE", "4em" %}<br/>
+            </div>
+
+            {% formField housingFields, "ACCEPTS_VOUCHERS" %}
+            {% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}<br/>
+
+            {% formField housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
+            {% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}<br/>
+
+            {% formField housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}
+            {% fieldLabel "Only accepts referral applications", housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}<br/>
+
+            {% formField housingFields, "PREFERS_LOCAL_APPLICANTS" %}
+            {% fieldLabel "Prefers applicants within the local city", housingFields, "PREFERS_LOCAL_APPLICANTS" %}<br/>
           </div>
 
           <div id="all-units">
