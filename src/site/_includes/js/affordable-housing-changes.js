@@ -2,6 +2,8 @@ const USER_NAME_KEY = "userName";
 const APT_NAME_FIELD_ID = "fldMcM49qaNr3EQ2a";
 const POPULATIONS_SERVED_FIELD_ID = "fldkzU54q8lYtIH7G";
 const PROPERTY_URL_FIELD_ID = "fldei8N0xw2VhjX9V";
+const UNIT_TYPE_FIELD_ID = "fldJ4fP1y13NE6ywu";
+const AMI_PERCENT_FIELD_ID = "fldBHf0GmnBHnZBFI";
 
 // Submits the housing changes form.
 function submitForm() {
@@ -116,6 +118,26 @@ function updateSecondAddressVisibility() {
   document.getElementById("second-address").removeAttribute("hidden");
   document.getElementById("show-second-address").setAttribute("hidden",
     "hidden");
+}
+
+// Updates the heading for this unit to match the unit type selected.
+function updateUnitHeading() {
+  let heading = this.parentNode.parentNode.querySelector(".section_title");
+  let unitTypeStr = "";
+  if (this.value) {
+    unitTypeStr = `: ${this.value}`;
+  } 
+  heading.textContent = `Unit Type${unitTypeStr}`;
+}
+
+// Updates the heading for this rent offering to include the AMI % category.
+function updateOfferingHeading() {
+  let heading = this.parentNode.parentNode.querySelector(".section_title");
+  let offeringStr = "";
+  if (this.value) {
+    offeringStr = `: ${this.value}% AMI`;
+  } 
+  heading.textContent = `Rent Offering${offeringStr}`;
 }
 
 // Shows min and max age fields when required and hides them otherwise.
@@ -363,6 +385,13 @@ function addListeners() {
     .addEventListener("change", updateAgeVisibility);
   for (occupancy of document.querySelectorAll("[name*=OCCUPANCY]")) {
     occupancy.addEventListener("change", updateMaxIncomeRowsVisibility);
+  }
+  for (unitType of document.querySelectorAll(`[id*=${UNIT_TYPE_FIELD_ID}]`)) {
+    unitType.addEventListener("change", updateUnitHeading);
+  }
+
+  for (ami of document.querySelectorAll(`[id*=${AMI_PERCENT_FIELD_ID}]`)) {
+    ami.addEventListener("change", updateOfferingHeading);
   }
 }
 
