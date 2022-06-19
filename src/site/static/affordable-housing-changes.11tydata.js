@@ -1,7 +1,7 @@
 const { AssetCache } = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable(
-	{ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+  { apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const HOUSING_DATABASE_SCHEMA_TABLE = "tblfRhO6C1Pi0Ljwc";
 
@@ -16,7 +16,7 @@ const fetchHousingSchema = async() => {
   .all()
   .then(records => {
     housingDbFields = JSON.parse(
-    	records[0].get("HOUSING_DATABASE_FIELDS_JSON"));
+      records[0].get("HOUSING_DATABASE_FIELDS_JSON"));
     unitsFields = JSON.parse(records[0].get("UNITS_FIELDS_JSON"));
     return {
       housing: Object.fromEntries(housingDbFields.map((x) => [x.name, x])),
