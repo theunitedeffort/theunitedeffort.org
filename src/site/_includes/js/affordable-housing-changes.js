@@ -134,7 +134,7 @@ function updatePropertyLink() {
   if (this.value.search(/https?:\/\//) != 0) {
     this.setAttribute("value", `https://${this.value}`);
   }
-  for (link of links) {
+  for (let link of links) {
     link.setAttribute("href", this.value);
   }
   // Any http link is guaranteed to fail to display in the iframe because
@@ -201,7 +201,7 @@ function updateMaxIncomeRowsVisibility() {
   let maxOccupancyField = unitContainer.querySelector("[name*=MAX_OCCUPANCY]");
   let minHhSize = parseInt(minOccupancyField.value || 0);
   let maxHhSize = parseInt(maxOccupancyField.value || Number.MAX_SAFE_INT);
-  for (i = 0; i < offeringContainers.length; i++) {
+  for (let i = 0; i < offeringContainers.length; i++) {
     let rows = offeringContainers[i].querySelectorAll(".max_income tr");
     // Skip the header row, start j at 1.
     for (let j = 1; j < rows.length; j++) {
@@ -261,7 +261,7 @@ function deleteUnit() {
     clearAllFieldsIn(deletedUnit);
     // Reset the visibility of all offerings within this deleted unit.
     let offerings = deletedUnit.querySelectorAll(".all-offerings > div")
-    for (offering of offerings) {
+    for (let offering of offerings) {
       offering.setAttribute("hidden", "hidden");
     }
     lastVisOfferIdx[deletedUnitId] = -1;
@@ -334,12 +334,12 @@ function deleteOffering() {
 // Textareas and input element values will be an empty string.
 function clearAllFieldsIn(node) {
   let allInputs = node.querySelectorAll("input, textarea, select");
-  for (input of allInputs) {
+  for (let input of allInputs) {
     if (input.tagName == "TEXTAREA") {
       input.textContent = "";
     } else if (input.tagName == "SELECT") {
       let options = input.childNodes;
-      for (option of options) {
+      for (let option of options) {
         option.removeAttribute("selected");
       }
       input.firstChild.setAttribute("selected", "selected");
@@ -383,7 +383,7 @@ function prefillField(field, value) {
   } else if (field.tagName == "TEXTAREA") {
     field.textContent = value;
   } else if (field.tagName == "SELECT") {
-    for (option of field.childNodes) {
+    for (let option of field.childNodes) {
       if (option.value == value) {
         option.setAttribute("selected", "selected");
         break;
@@ -420,12 +420,12 @@ function prefillForm(data) {
   let propertyFields = propertySection.querySelectorAll(fieldSelector);
   let unitsFields = unitsSection.querySelectorAll(fieldSelector);
   
-  for (field of propertyFields) {
+  for (let field of propertyFields) {
     let value = data.housing.fields[field.name];
     prefillField(field, value);
   }
 
-  for (field of unitsFields) {
+  for (let field of unitsFields) {
     let [fieldName, unitIdx, offerIdx] = field.name.split(":");
     // If there is no offer index, this field applies to all offerings in the
     // unit. The values of these fields are the same for every offering, so
@@ -485,12 +485,12 @@ function groupDataByUnitType(data) {
   // Clear any existing units from the data copy to make way for grouped units.
   groupedData.units = [];
   let tempMap = {};
-  for (unitRecord of data.units) {
+  for (let unitRecord of data.units) {
     let typeKey = unitRecord.fields["TYPE"];
     tempMap[typeKey] = tempMap[typeKey] || [];
     tempMap[typeKey].push(unitRecord);
   }
-  for (unitType of Object.keys(tempMap)) {
+  for (let unitType of Object.keys(tempMap)) {
     groupedData.units.push(tempMap[unitType]);
   }
   return groupedData;
@@ -518,7 +518,7 @@ async function fetchFormPrefillData(params) {
 function addListeners() {
   // Form submission
   let submitButtons = document.querySelectorAll("[id^=submit-button]");
-  for (button of submitButtons) {
+  for (let button of submitButtons) {
     button.addEventListener("click", submitForm);
   }
 
@@ -533,17 +533,17 @@ function addListeners() {
   // Form interactions
   document.getElementById("show-second-address").addEventListener("click",
     updateSecondAddressVisibility);
-  for (button of document.querySelectorAll("button.collapse_control")) {
+  for (let button of document.querySelectorAll("button.collapse_control")) {
     button.addEventListener("click", toggleCollapsible);
   }
   document.getElementById("add-unit").addEventListener("click", addUnit);
-  for (button of document.querySelectorAll("button.delete_unit")) {
+  for (let button of document.querySelectorAll("button.delete_unit")) {
     button.addEventListener("click", deleteUnit);
   }
-  for (button of document.querySelectorAll("button.add_offering")) {
+  for (let button of document.querySelectorAll("button.add_offering")) {
     button.addEventListener("click", addOffering);
   }
-  for (button of document.querySelectorAll("button.delete_offering")) {
+  for (let button of document.querySelectorAll("button.delete_offering")) {
     button.addEventListener("click", deleteOffering);
   }
 
@@ -556,13 +556,13 @@ function addListeners() {
     .addEventListener("change", updateAgeVisibility);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`)
     .addEventListener("change", updateAgeVisibility);
-  for (occupancy of document.querySelectorAll("[name*=OCCUPANCY]")) {
+  for (let occupancy of document.querySelectorAll("[name*=OCCUPANCY]")) {
     occupancy.addEventListener("change", updateMaxIncomeRowsVisibility);
   }
-  for (unitType of document.querySelectorAll(`[id*=${UNIT_TYPE_FIELD_ID}]`)) {
-    unitType.addEventListener("change", updateUnitHeading);
+  for (let type of document.querySelectorAll(`[id*=${UNIT_TYPE_FIELD_ID}]`)) {
+    type.addEventListener("change", updateUnitHeading);
   }
-  for (ami of document.querySelectorAll(`[id*=${AMI_PERCENT_FIELD_ID}]`)) {
+  for (let ami of document.querySelectorAll(`[id*=${AMI_PERCENT_FIELD_ID}]`)) {
     ami.addEventListener("change", updateOfferingHeading);
   }
 }
