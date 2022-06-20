@@ -78,6 +78,29 @@ function editUserName() {
   document.getElementById("user-name-input").focus();
 }
 
+// Makes a collapsible div visible (expanded).
+function expandCollapsible(content, button) {
+  content.removeAttribute("hidden");
+  button.textContent = "Collapse";
+}
+
+// Makes a collapsible div hidden (collapsed)
+function collapseCollapsible(content, button) {
+  content.setAttribute("hidden", "hidden");
+  button.textContent = "Expand";
+}
+
+// Toggles the collapsed state of this unit or rent offering.
+function toggleCollapsible() {
+  let contentDiv = this.parentNode.parentNode.parentNode.querySelector(
+    ".collapsible_content");
+  if (contentDiv.hasAttribute("hidden")) {
+    expandCollapsible(contentDiv, this);
+  } else {
+    collapseCollapsible(contentDiv, this);
+  }
+}
+
 function handleUserNameKeydown(e) {
   // Allow the user to re-commit their name even if they don't make any changes 
   // to it.
@@ -373,6 +396,9 @@ function addListeners() {
   // Form interactions
   document.getElementById("show-second-address").addEventListener("click",
     updateSecondAddressVisibility);
+  for (button of document.querySelectorAll("button.collapse_control")) {
+    button.addEventListener("click", toggleCollapsible);
+  }
 
   // Form inputs
   document.getElementById(APT_NAME_FIELD_ID).addEventListener("change",
