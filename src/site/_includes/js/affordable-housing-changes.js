@@ -440,6 +440,24 @@ function prefillForm(data) {
   }
 }
 
+function displayQueue(queue) {
+  let doneVal = document.getElementById("queue-done-val");
+  let inProgressVal = document.getElementById("queue-in-progress-val");
+  let todoVal = document.getElementById("queue-to-do-val");
+  let doneBar = document.getElementById("queue-done-bar");
+  let inProgressBar = document.getElementById("queue-in-progress-bar");
+  let todoBar = document.getElementById("queue-to-do-bar");
+  if (queue.numTotal > 0) {
+    doneBar.style.width = `${100 * queue.numCompleted / queue.numTotal}%`;
+    inProgressBar.style.width = `${
+      100 * queue.numInProgress / queue.numTotal}%`;
+    todoBar.style.width = `${100 * queue.numTodo / queue.numTotal}%`;
+  }
+  doneVal.textContent = queue.numCompleted;
+  inProgressVal.textContent = queue.numInProgress;
+  todoVal.textContent = queue.numTodo;
+}
+
 // Gets the campaign and optional housing ID from the URL.
 // Expected URL shape is: /campaigns/{campaign}/{housingId}
 // Returns an object with 'campaign' and 'housingId' keys; the values
@@ -595,6 +613,7 @@ function initUserName() {
 // Prepares the page for display to the user.
 function initPage(data, params) {
   initUserName();
+  displayQueue(data.queue);
   // A campaign is required for nearly all aspects of the page.
   if (params.campaign) {
     let safeCampaign = encodeURIComponent(params.campaign);

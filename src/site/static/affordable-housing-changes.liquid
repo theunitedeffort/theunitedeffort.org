@@ -22,6 +22,14 @@ maxHouseholdSize: 12
           <label for="user-name-input">What is your name?</label> <input id="user-name-input" type="text"></input>
         </span>
       </p>
+      <div class="queue_status">
+        <div class="progress_bar flex"><div id="queue-done-bar" class="progress_bar done"></div><div id="queue-in-progress-bar" class="progress_bar partial"></div><div id="queue-to-do-bar" class="progress_bar remaining"></div></div>
+        <div class="flex">
+          <span class="badge badge__done"><span id="queue-done-val" class="bold">0</span> done</span>
+          <span class="badge badge__partial"><span id="queue-in-progress-val" class="bold">0</span> in progress</span>
+          <span class="badge badge__remaining"><span id="queue-to-do-val" class="bold">0</span> to-do</span>
+        </div>
+      </div>
       <h2 id="apt-name-header">Loading property data...</h2>
       <div id="terminal-content"></div>
       <div id="input-content">
