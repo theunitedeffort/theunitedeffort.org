@@ -5,6 +5,8 @@ permalink:
   build: "/contrib/affordable-housing/changes/index.html"
 pageClass: "smaller max_width"
 maxUnits: 6
+maxOfferings: 5
+maxHouseholdSize: 12
 ---
 
 {% assign housingFields = housing %}
@@ -32,38 +34,136 @@ maxUnits: 6
             {% fieldLabel "Property Name", housingFields, "APT_NAME" %}<br/>
             {% formField housingFields, "APT_NAME", "20em" %}<br/>
 
-            {% fieldLabel "Address", housingFields, "ADDRESS" %}<br/>
+            {% fieldLabel "Address", housingFields, "ADDRESS" %}
+            <span class="label"><button type="button" id="show-second-address" class="link">Add a second address</button></span><br/>
             {% formField housingFields, "ADDRESS", "20em" %}<br/>
+            <div id="second-address" hidden>
+            {% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}<br/>
+            {% formField housingFields, "SECOND_ADDRESS", "20em" %}<br/>
+            </div>
 
             {% fieldLabel "City", housingFields, "CITY" %}<br/>
             {% formField housingFields, "CITY" %}<br/>
 
             {% fieldLabel "ZIP Code", housingFields, "ZIP_CODE" %}<br/>
             {% formField housingFields, "ZIP_CODE", "6em" %}<br/>
+
+            {% fieldLabel "Contact Phone", housingFields, "PHONE" %}<br/>
+            {% formField housingFields, "PHONE", "9em" %}<br/>
+
+            {% fieldLabel "Contact Email", housingFields, "EMAIL" %}<br/>
+            {% formField housingFields, "EMAIL", "25em" %}<br/>
+
+            {% fieldLabel "Management Company", housingFields, "MANAGEMENT_COMPANY" %}<br/>
+            {% formField housingFields, "MANAGEMENT_COMPANY", "20em" %}<br/>
+
+            {% fieldLabel "URL", housingFields, "PROPERTY_URL" %}
+            <a href="" target="_blank" rel="noopener" class="label property-link">Visit this page</a><sup>&#8599;</sup><br/>
+            {% formField housingFields, "PROPERTY_URL", "35em" %}<br/>
+
+            {% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}<br/>
+            {% formField housingFields, "UNITS_CNT", "5em" %}<br/>
+
+            <div class="multiselect" id="populations-served">
+            {% fieldLabel "Populations Served", housingFields, "POPULATIONS_SERVED" %}<br/>
+            {% formField housingFields, "POPULATIONS_SERVED" %}<br/>
+            </div>
+
+            <div id="min-age" hidden>
+            {% fieldLabel "Minimum Resident Age", housingFields, "MIN_RESIDENT_AGE" %}<br/>
+            {% formField housingFields, "MIN_RESIDENT_AGE", "4em" %}<br/>
+            </div>
+
+            <div id="max-age" hidden>
+            {% fieldLabel "Maximum Resident Age", housingFields, "MAX_RESIDENT_AGE" %}<br/>
+            {% formField housingFields, "MAX_RESIDENT_AGE", "4em" %}<br/>
+            </div>
+
+            {% formField housingFields, "ACCEPTS_VOUCHERS" %}
+            {% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}<br/>
+
+            {% formField housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
+            {% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}<br/>
+
+            {% formField housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}
+            {% fieldLabel "Only accepts referral applications", housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}<br/>
+
+            {% formField housingFields, "PREFERS_LOCAL_APPLICANTS" %}
+            {% fieldLabel "Prefers applicants within the local city", housingFields, "PREFERS_LOCAL_APPLICANTS" %}<br/>
           </div>
 
           <div id="all-units">
             {% assign unitEndIdx = maxUnits | plus: -1 %}
             {% for unitNum in (0..unitEndIdx) %}
               {% assign unitIdx = unitNum %}
-              <div id="unit-{{unitNum}}" class="fieldset_box">
+              <div id="unit-{{unitNum}}" class="fieldset_box" hidden>
                 <fieldset>
                   <legend><span class="section_title">Unit Type</span>
+                    <div class="float_right">
+                      <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
+                    </div>
                   </legend>
-                  {% indexedFieldLabel unitIdx, "Type", unitsFields, "TYPE" %}<br/>
-                  {% indexedFormField unitIdx, unitsFields, "TYPE" %}<br/>
+                  <div class="collapsible_content">
+                    {% indexedFieldLabel unitIdx, "Type", unitsFields, "TYPE" %}<br/>
+                    {% indexedFormField unitIdx, unitsFields, "TYPE" %}<br/>
 
-                  {% indexedFieldLabel unitIdx, "Status", unitsFields, "STATUS" %}<br/>
-                  {% indexedFormField unitIdx, unitsFields, "STATUS" %}<br/>
+                    {% indexedFieldLabel unitIdx, "Status", unitsFields, "STATUS" %}<br/>
+                    {% indexedFormField unitIdx, unitsFields, "STATUS" %}<br/>
 
-                  <span class="label">Occupancy Limits</span>
-                  <span class="tooltip_entry">
-                    <span class="icon_query"></span>
-                    <span class="tooltip_content">The minimum and maximum number of people allowed to live in this unit.</span>
-                  </span>
-                  <br/>
-                  {% indexedFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "4em" %} to 
-                  {% indexedFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "4em" %} people<br/>
+                    {% indexedFieldLabel unitIdx, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %}<br/> 
+                    {% indexedFormField unitIdx, unitsFields, "MIN_INCOME_RENT_FACTOR", "5em" %} times yearly rent<br/>
+
+                    <span class="label">Occupancy Limits</span>
+                    <span class="tooltip_entry">
+                      <span class="icon_query"></span>
+                      <span class="tooltip_content">The minimum and maximum number of people allowed to live in this unit.</span>
+                    </span>
+                    <br/>
+                    {% indexedFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "4em" %} to 
+                    {% indexedFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "4em" %} people<br/>
+                    <div class="all_offerings">
+                      {% assign offeringEndIdx = maxOfferings | plus: -1 %}
+                      {% for offerNum in (0..offeringEndIdx) %}
+                        <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset_box" hidden>
+                        <fieldset>
+                          <legend><span class="section_title">Rent Offering</span>
+                            <div class="float_right">
+                              <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
+                            </div>
+                          </legend>
+                          <div class="collapsible_content">
+                            {% assign offerIdx = unitNum | append: ":" | append: offerNum %}
+                            <input type="hidden" id={{unitsFields.ID.id}} name={{"ID:" | append: offerIdx}}>
+                            {% indexedFieldLabel offerIdx, "Percent AMI", unitsFields, "PERCENT_AMI" %}<br/>
+                            {% indexedFormField offerIdx, unitsFields, "PERCENT_AMI", "4em" %}%<br/>
+
+                            {% indexedFieldLabel offerIdx, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}<br/>
+                            {% indexedFormField offerIdx, unitsFields, "RENT_PER_MONTH_USD", "5em" %} $/month<br/>
+
+                            <table class="max_income">
+                              <tr>
+                                <th>Household Size</th>
+                                <th>Maximum Income</th>
+                              </tr>
+                              {% for hhSize in (1..maxHouseholdSize) %}
+                                <tr>
+                                {% assign fieldname = "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD" %}
+                                {% if hhSize == 1 %}
+                                  {% assign hhSizeStr = hhSize | append: " person" %}
+                                {% else %}
+                                  {% assign hhSizeStr = hhSize | append: " people" %}
+                                {% endif %}
+                                  <td>{% indexedFieldLabel offerIdx, hhSizeStr, unitsFields, fieldname %}</td>
+                                  <td>${% indexedFormField offerIdx, unitsFields, fieldname, "7em" %} per year</td>
+                                </tr>
+                              {% endfor %}
+                            </table>
+                          </div>
+                        </fieldset>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
                 </fieldset>
               </div>
             {% endfor %}

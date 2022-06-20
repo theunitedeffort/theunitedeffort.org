@@ -65,6 +65,13 @@ main {
       border-bottom-color: var(--color-gray-100);
   }
 
+  #housing-changes legend {
+    .btn {
+      padding: 0.3em 1em;
+      font-size: inherit;
+    }
+  }
+
 //   a.btn_print {
 //     display: inline-block;
 //     background: url(/images/sprites.svg#instagram) no-repeat;

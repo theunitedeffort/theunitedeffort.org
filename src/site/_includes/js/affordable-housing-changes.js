@@ -1,5 +1,9 @@
 const USER_NAME_KEY = "userName";
 const APT_NAME_FIELD_ID = "fldMcM49qaNr3EQ2a";
+const POPULATIONS_SERVED_FIELD_ID = "fldkzU54q8lYtIH7G";
+const PROPERTY_URL_FIELD_ID = "fldei8N0xw2VhjX9V";
+const UNIT_TYPE_FIELD_ID = "fldJ4fP1y13NE6ywu";
+const AMI_PERCENT_FIELD_ID = "fldBHf0GmnBHnZBFI";
 
 // Submits the housing changes form.
 function submitForm() {
@@ -74,16 +78,163 @@ function editUserName() {
   document.getElementById("user-name-input").focus();
 }
 
+// Makes a collapsible div visible (expanded).
+function expandCollapsible(content, button) {
+  content.removeAttribute("hidden");
+  button.textContent = "Collapse";
+}
+
+// Makes a collapsible div hidden (collapsed)
+function collapseCollapsible(content, button) {
+  content.setAttribute("hidden", "hidden");
+  button.textContent = "Expand";
+}
+
+// Toggles the collapsed state of this unit or rent offering.
+function toggleCollapsible() {
+  let contentDiv = this.parentNode.parentNode.parentNode.querySelector(
+    ".collapsible_content");
+  if (contentDiv.hasAttribute("hidden")) {
+    expandCollapsible(contentDiv, this);
+  } else {
+    collapseCollapsible(contentDiv, this);
+  }
+}
+
 function handleUserNameKeydown(e) {
-  // Allow the user to re-commit their name even if they don't make any changes to it.
+  // Allow the user to re-commit their name even if they don't make any changes 
+  // to it.
   if (e.code === "Enter") {
     let inputUserName = document.getElementById("user-name-input");
     inputUserName.dispatchEvent(new Event("change"));
   }
 }
 
+// Updates the main header of the page to match the value of the element
+// receiving the event.
 function updatePageTitle() {
   document.getElementById("apt-name-header").textContent = this.value;
+}
+
+// Updates the href attribute of any links with class 'property-link' to
+// be the value of the element receiving the event.
+function updatePropertyLink() {
+  let links = document.querySelectorAll(".property-link");
+  let iframe = document.getElementsByTagName("iframe")[0];
+  // If the URL does not start with https:// or http://,
+  // assume https:// and prepend it to the user's input.
+  if (this.value.search(/https?:\/\//) != 0) {
+    this.setAttribute("value", `https://${this.value}`);
+  }
+  for (link of links) {
+    link.setAttribute("href", this.value);
+  }
+  // Any http link is guaranteed to fail to display in the iframe because
+  // the UEO site is served over https. Set the iframe src to have an 
+  // unspecified protocol to optimisitically request the https version
+  // if there is one (without changing the stored property URL value).
+  iframe.src = this.value.replace(/https?:/, "");
+}
+
+// Shows the second address field.
+function updateSecondAddressVisibility() {
+  document.getElementById("second-address").removeAttribute("hidden");
+  document.getElementById("show-second-address").setAttribute("hidden",
+    "hidden");
+}
+
+// Updates the heading for this unit to match the unit type selected.
+function updateUnitHeading() {
+  let heading = this.parentNode.parentNode.querySelector(".section_title");
+  let unitTypeStr = "";
+  if (this.value) {
+    unitTypeStr = `: ${this.value}`;
+  } 
+  heading.textContent = `Unit Type${unitTypeStr}`;
+}
+
+// Updates the heading for this rent offering to include the AMI % category.
+function updateOfferingHeading() {
+  let heading = this.parentNode.parentNode.querySelector(".section_title");
+  let offeringStr = "";
+  if (this.value) {
+    offeringStr = `: ${this.value}% AMI`;
+  } 
+  heading.textContent = `Rent Offering${offeringStr}`;
+}
+
+// Shows min and max age fields when required and hides them otherwise.
+function updateAgeVisibility() {
+  let seniorsOption = document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`);
+  let youthOption = document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`);
+  let minAge = document.getElementById("min-age");
+  let maxAge = document.getElementById("max-age");
+  if (youthOption.checked) {
+    minAge.removeAttribute("hidden");
+    maxAge.removeAttribute("hidden");
+  } else if (seniorsOption.checked) {
+    minAge.removeAttribute("hidden");
+    maxAge.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(maxAge);
+  } else {
+    minAge.setAttribute("hidden", "hidden");
+    maxAge.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(minAge);
+    clearAllFieldsIn(maxAge);
+  }
+}
+
+// Shows or hides maximum income table rows depending on the values
+// of min and max occupancy for the unit.
+function updateMaxIncomeRowsVisibility() {
+  let unitContainer = this.parentNode;
+  let offeringContainers = unitContainer.querySelectorAll("fieldset");
+  let minOccupancyField = unitContainer.querySelector("[name*=MIN_OCCUPANCY]");
+  let maxOccupancyField = unitContainer.querySelector("[name*=MAX_OCCUPANCY]");
+  let minHhSize = parseInt(minOccupancyField.value || 0);
+  let maxHhSize = parseInt(maxOccupancyField.value || Number.MAX_SAFE_INT);
+  for (i = 0; i < offeringContainers.length; i++) {
+    let rows = offeringContainers[i].querySelectorAll(".max_income tr");
+    // Skip the header row, start j at 1.
+    for (let j = 1; j < rows.length; j++) {
+      if (j < minHhSize || j > maxHhSize) {
+        rows[j].setAttribute("hidden", "hidden");
+        // Also clear contents when hiding rows so that hidden row data
+        // doesn't get accidentally transmitted on form submit.
+        rows[j].querySelector("input").setAttribute("value", "");
+      } else {
+        rows[j].removeAttribute("hidden");
+      }
+    }
+  }
+}
+
+// Clears any input values from all the form inputs within `node`.
+// Selects will have the first (presumed blank) option selected.
+// Checkboxes will be unchecked.
+// Textareas and input element values will be an empty string.
+function clearAllFieldsIn(node) {
+  let allInputs = node.querySelectorAll("input, textarea, select");
+  for (input of allInputs) {
+    if (input.tagName == "TEXTAREA") {
+      input.textContent = "";
+    } else if (input.tagName == "SELECT") {
+      let options = input.childNodes;
+      for (option of options) {
+        option.removeAttribute("selected");
+      }
+      input.firstChild.setAttribute("selected", "selected");
+      input.setAttribute("value", "");
+    } else if (input.tagName == "INPUT") {
+      if (input.type == "checkbox") {
+        input.removeAttribute("checked");
+      } else {
+        input.setAttribute("value", "");
+      }
+    }
+    // Input values have changed, so run any change handlers.
+    input.dispatchEvent(new Event("change"));
+  }
 }
 
 // Fills an existing form field with the given `value`.
@@ -242,9 +393,58 @@ function addListeners() {
   userNameInput.addEventListener("focusout", setUserName);
   userNameInput.addEventListener("keydown", handleUserNameKeydown);
 
+  // Form interactions
+  document.getElementById("show-second-address").addEventListener("click",
+    updateSecondAddressVisibility);
+  for (button of document.querySelectorAll("button.collapse_control")) {
+    button.addEventListener("click", toggleCollapsible);
+  }
+
   // Form inputs
   document.getElementById(APT_NAME_FIELD_ID).addEventListener("change",
     updatePageTitle);
+  document.getElementById(PROPERTY_URL_FIELD_ID).addEventListener("change",
+    updatePropertyLink);
+  document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`)
+    .addEventListener("change", updateAgeVisibility);
+  document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`)
+    .addEventListener("change", updateAgeVisibility);
+  for (occupancy of document.querySelectorAll("[name*=OCCUPANCY]")) {
+    occupancy.addEventListener("change", updateMaxIncomeRowsVisibility);
+  }
+  for (unitType of document.querySelectorAll(`[id*=${UNIT_TYPE_FIELD_ID}]`)) {
+    unitType.addEventListener("change", updateUnitHeading);
+  }
+
+  for (ami of document.querySelectorAll(`[id*=${AMI_PERCENT_FIELD_ID}]`)) {
+    ami.addEventListener("change", updateOfferingHeading);
+  }
+}
+
+// Shows only enough units and offerings to fit the unit records in 'data'.
+// The 'data' passed in typically comes from Airtable via
+// fetchFormPrefillData().
+function initUnitVisibility(data) {
+  let numUsedUnits = data.units.length;
+  let unitDivs = document.querySelectorAll("#all-units > div");
+  for (let i = 0; i < unitDivs.length; i++) {
+    if (i < numUsedUnits) {
+      // Show the appropriate number of units.
+      unitDivs[i].removeAttribute("hidden");
+      let numUsedOfferings = data.units[i].length;
+      let offeringDivs = unitDivs[i].querySelectorAll(".all_offerings > div");
+      for (let j = 0; j < offeringDivs.length; j++) {
+        if (j < numUsedOfferings) {
+          // Show the appropriate number of rent offerings in each unit.
+          offeringDivs[j].removeAttribute("hidden");
+        } else {
+          offeringDivs[j].setAttribute("hidden", "hidden");
+        }
+      }
+    } else {
+      unitDivs[i].setAttribute("hidden", "hidden");
+    }
+  }
 }
 
 // Initializes the user's name to the stored value if one exists.
@@ -266,6 +466,7 @@ function initPage(data, params) {
     document.getElementById("housing-changes").setAttribute("action",
      `/contrib/affordable-housing/thank-you?campaign=${safeCampaign}`);
     if (data.housing) {
+      initUnitVisibility(data);
       prefillForm(data);
     } else if (params.housingId) {
       let campaignPath = (
