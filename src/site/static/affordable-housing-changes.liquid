@@ -101,6 +101,7 @@ maxHouseholdSize: 12
                   <legend><span class="section_title">Unit Type</span>
                     <div class="float_right">
                       <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
+                      <button type="button" class="btn btn_warning delete_unit">Delete</button>
                     </div>
                   </legend>
                   <div class="collapsible_content">
@@ -129,6 +130,7 @@ maxHouseholdSize: 12
                           <legend><span class="section_title">Rent Offering</span>
                             <div class="float_right">
                               <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
+                              <button type="button" class="btn btn_warning delete_offering">Delete</button>
                             </div>
                           </legend>
                           <div class="collapsible_content">
@@ -163,11 +165,14 @@ maxHouseholdSize: 12
                         </div>
                       {% endfor %}
                     </div>
+                    <button type="button" class="btn btn_secondary add_offering">Add rent offering</button>
                   </div>
                 </fieldset>
               </div>
             {% endfor %}
           </div>
+
+          <button type="button" id="add-unit" class="btn btn_secondary">Add unit type</button>
 
           <br/><br/><label for="user-notes" style="white-space: break-spaces; display: block; width: 30em">Not sure how to input some of this property's information? Need to leave a note for the reviewer? Enter it here.</label>
           <textarea id="user-notes" name="userNotes" style="width: 30em; height: 6em"></textarea>

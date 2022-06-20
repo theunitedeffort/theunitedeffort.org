@@ -4,6 +4,14 @@ const POPULATIONS_SERVED_FIELD_ID = "fldkzU54q8lYtIH7G";
 const PROPERTY_URL_FIELD_ID = "fldei8N0xw2VhjX9V";
 const UNIT_TYPE_FIELD_ID = "fldJ4fP1y13NE6ywu";
 const AMI_PERCENT_FIELD_ID = "fldBHf0GmnBHnZBFI";
+const MAX_NUM_UNITS = document.querySelectorAll(
+  `#all-units > div[id^="unit-"]`).length;
+const MAX_NUM_OFFERINGS = document.querySelector(
+  ".all_offerings").querySelectorAll(`div[id*="offering-"`).length;
+
+// Global vars for tracking unit and offering section visibility.
+let lastVisUnitIdx = -1;
+let lastVisOfferIdx = new Array(MAX_NUM_UNITS).fill(-1);
 
 // Submits the housing changes form.
 function submitForm() {
@@ -209,6 +217,117 @@ function updateMaxIncomeRowsVisibility() {
   }
 }
 
+// Shows an additional set of unit input fields.
+// When a new unit is "added", the unit section that is immediately after
+// the last currently-visible unit section in the DOM is made visible. 
+function addUnit() {
+  if (lastVisUnitIdx < MAX_NUM_UNITS - 1) {
+    lastVisUnitIdx++;
+    let newUnit = document.querySelectorAll(
+      `#all-units > div[id^="unit-"]`)[lastVisUnitIdx];
+    // Show the unit section corresponding to the updated lastVisUnitIdx.
+    newUnit.removeAttribute("hidden");
+    // TODO: Default the unit section to the expanded state.
+    if (lastVisUnitIdx == MAX_NUM_UNITS - 1) {
+      // Signal to the user more units can't be added.
+      document.getElementById("add-unit").setAttribute("disabled", "disabled");
+    }
+  } 
+}
+
+// Hides a set of unit input fields and clears their contents.
+// When a unit is "deleted", it is hidden and also moved to the end of
+// the list of units in the DOM.  This way, the visible units are always
+// adjacent and units are always "added" right after the visible ones (see 
+// addUnit() ).
+function deleteUnit() {
+  if (lastVisUnitIdx >= 0) {
+    lastVisUnitIdx--;
+    // The unit being deleted is the one assocated with the specific
+    // delete button that got this event.
+    let deletedUnit = this.parentNode.parentNode.parentNode.parentNode;
+    // Hide the unit section being deleted.
+    deletedUnit.setAttribute("hidden", "hidden");
+    let deletedUnitId = deletedUnit.id.split("-")[1];
+    let unitsContainer = document.getElementById("all-units");
+    // Add the unit to the DOM again, causing it to be removed from its
+    // original position and get appended to the end of the set of all 
+    // units.  Note this means the unit ids (e.g. "unit-0", "unit-1") will
+    // not always be in order in the DOM, as the order depends on add/delete
+    // history.
+    unitsContainer.appendChild(deletedUnit);
+    // Ensure all the fields in the deleted unit are cleared to avoid
+    // accidentally transmitting data in hidden fields upon submit.
+    clearAllFieldsIn(deletedUnit);
+    // Reset the visibility of all offerings within this deleted unit.
+    let offerings = deletedUnit.querySelectorAll(".all-offerings > div")
+    for (offering of offerings) {
+      offering.setAttribute("hidden", "hidden");
+    }
+    lastVisOfferIdx[deletedUnitId] = -1;
+    if (lastVisUnitIdx < MAX_NUM_UNITS - 1) {
+      // Re-enable the add unit button since we are no longer at max
+      // unit capacity.
+      document.getElementById("add-unit").removeAttribute("disabled");
+    }
+  }
+}
+
+// Shows an additional set of rent offering input fields.
+// When a new rent offering is "added", the rent offering section that is 
+// immediately after the last currently-visible offering section in the DOM is 
+// made visible. 
+function addOffering() {
+  let unitDiv = this.parentNode.parentNode.parentNode;
+  let unitId = unitDiv.id.split("-")[1];
+  if (lastVisOfferIdx[unitId] < MAX_NUM_OFFERINGS - 1) {
+    lastVisOfferIdx[unitId]++;
+    let newOffering = unitDiv.querySelectorAll(
+      ".all_offerings > div")[lastVisOfferIdx[unitId]];
+    // Show the offering section corresponding to the updated lastVisOfferIdx.
+    newOffering.removeAttribute("hidden");
+    // TODO: Default to the expanded state.
+    if (lastVisOfferIdx[unitId] == MAX_NUM_OFFERINGS - 1) {
+      // Signal to the user more rent offeirngs can't be added.
+      unitDiv.querySelector(".add_offering").setAttribute("disabled",
+        "disabled");
+    }
+  }
+}
+
+// Hides a set of rent offering input fields and clears their contents.
+// When a rent offering is "deleted", it is hidden and also moved to the end of
+// the list of rent offerings in the DOM.  This way, the visible units are
+// always adjacent and offerings are always "added" right after the visible ones
+// (see addOffering() ).
+function deleteOffering() {
+  // The rent offering being deleted is the one assocated with the specific
+  // delete button that got this event.
+  let deletedOffering = this.parentNode.parentNode.parentNode.parentNode;
+  let unitDiv = deletedOffering.parentNode.parentNode.parentNode.parentNode;
+  let unitId = unitDiv.id.split("-")[1];
+  if (lastVisOfferIdx[unitId] >= 0) {
+    lastVisOfferIdx[unitId]--;
+    // Hide the offering section being deleted.
+    deletedOffering.setAttribute("hidden", "hidden");
+    let offeringsContainer = unitDiv.querySelector(".all_offerings");
+    // Add the offering to the DOM again, causing it to be removed from its
+    // original position and get appended to the end of the set of all 
+    // units.  Note this means the offering ids 
+    // (e.g. "offering-0", "offering-1") will not always be in order in the DOM,
+    // as the order depends on add/delete history.
+    offeringsContainer.appendChild(deletedOffering);
+    // Ensure all the fields in the deleted unit are cleared to avoid
+    // accidentally transmitting data in hidden fields upon submit.
+    clearAllFieldsIn(deletedOffering);
+    if (lastVisOfferIdx[unitId] < MAX_NUM_OFFERINGS - 1) {
+      // Re-enable the add offering button since we are no longer at max
+      // offering capacity.
+      unitDiv.querySelector(".add_offering").removeAttribute("disabled");
+    }
+  }
+}
+
 // Clears any input values from all the form inputs within `node`.
 // Selects will have the first (presumed blank) option selected.
 // Checkboxes will be unchecked.
@@ -399,6 +518,16 @@ function addListeners() {
   for (button of document.querySelectorAll("button.collapse_control")) {
     button.addEventListener("click", toggleCollapsible);
   }
+  document.getElementById("add-unit").addEventListener("click", addUnit);
+  for (button of document.querySelectorAll("button.delete_unit")) {
+    button.addEventListener("click", deleteUnit);
+  }
+  for (button of document.querySelectorAll("button.add_offering")) {
+    button.addEventListener("click", addOffering);
+  }
+  for (button of document.querySelectorAll("button.delete_offering")) {
+    button.addEventListener("click", deleteOffering);
+  }
 
   // Form inputs
   document.getElementById(APT_NAME_FIELD_ID).addEventListener("change",
@@ -415,7 +544,6 @@ function addListeners() {
   for (unitType of document.querySelectorAll(`[id*=${UNIT_TYPE_FIELD_ID}]`)) {
     unitType.addEventListener("change", updateUnitHeading);
   }
-
   for (ami of document.querySelectorAll(`[id*=${AMI_PERCENT_FIELD_ID}]`)) {
     ami.addEventListener("change", updateOfferingHeading);
   }
@@ -426,6 +554,13 @@ function addListeners() {
 // fetchFormPrefillData().
 function initUnitVisibility(data) {
   let numUsedUnits = data.units.length;
+  // Initialize state vars for adding/deleting units and offerings.
+  lastVisUnitIdx = numUsedUnits - 1;
+  for (let i = 0; i < numUsedUnits; i++) {
+    lastVisOfferIdx[i] = data.units[i].length - 1;
+  }
+  // Set visibility according to the number of units records in 
+  // the passed data.
   let unitDivs = document.querySelectorAll("#all-units > div");
   for (let i = 0; i < unitDivs.length; i++) {
     if (i < numUsedUnits) {
