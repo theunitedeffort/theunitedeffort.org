@@ -22,9 +22,27 @@ maxHouseholdSize: 12
           <label for="user-name-input">What is your name?</label> <input id="user-name-input" type="text"></input>
         </span>
       </p>
+      <div class="queue_status">
+        <div class="progress_bar flex"><div id="queue-done-bar" class="progress_bar done"></div><div id="queue-in-progress-bar" class="progress_bar partial"></div><div id="queue-to-do-bar" class="progress_bar remaining"></div></div>
+        <div class="flex">
+          <span class="badge badge__done"><span id="queue-done-val" class="bold">0</span> done</span>
+          <span class="badge badge__partial"><span id="queue-in-progress-val" class="bold">0</span> in progress</span>
+          <span class="badge badge__remaining"><span id="queue-to-do-val" class="bold">0</span> to-do</span>
+        </div>
+      </div>
       <h2 id="apt-name-header">Loading property data...</h2>
       <div id="terminal-content"></div>
       <div id="input-content">
+        <a href="." id="skip-property">Skip this property</a>
+        <h3>Step 1</h3>
+        <p>The <a href="" target="_blank" rel="noopener" class="property-link">official information</a><sup>&#8599;</sup> about this property is shown to the right.</p>
+        <p>If the offical information seems to be broken or shows the wrong page, find a better link for this property and put it in the URL field <a href="#fldei8N0xw2VhjX9V">below</a>. The content to the right will automatically update.</p>
+        <p>Still not working?  You'll have to <a href="" target="_blank" rel="noopener" class="property-link">visit the page</a><sup>&#8599;</sup> manually.</p>
+        <h3>Step 2</h3>
+        <p>Make any edits necessary to make the information below match the offical property manager's information.</p>
+        <div class="note">
+          If there is information here that you can't confirm via the property manager's website, do not delete it.  When in doubt, keep the information you see below.
+        </div>
         <form id="housing-changes" name="housing_changes" method="POST" action="/contrib/affordable-housing/thank-you" netlify>
         <input type="hidden" id="campaign" name="update_campaign" />
         <input type="hidden" id="user-name" name="user_name" />
@@ -101,6 +119,7 @@ maxHouseholdSize: 12
                   <legend><span class="section_title">Unit Type</span>
                     <div class="float_right">
                       <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
+                      <button type="button" class="btn btn_warning delete_unit">Delete</button>
                     </div>
                   </legend>
                   <div class="collapsible_content">
@@ -129,6 +148,7 @@ maxHouseholdSize: 12
                           <legend><span class="section_title">Rent Offering</span>
                             <div class="float_right">
                               <button type="button" class="btn btn_secondary collapse_control">Collapse</button>
+                              <button type="button" class="btn btn_warning delete_offering">Delete</button>
                             </div>
                           </legend>
                           <div class="collapsible_content">
@@ -163,15 +183,19 @@ maxHouseholdSize: 12
                         </div>
                       {% endfor %}
                     </div>
+                    <button type="button" class="btn btn_secondary add_offering">Add rent offering</button>
                   </div>
                 </fieldset>
               </div>
             {% endfor %}
           </div>
 
+          <button type="button" id="add-unit" class="btn btn_secondary">Add unit type</button>
+
           <br/><br/><label for="user-notes" style="white-space: break-spaces; display: block; width: 30em">Not sure how to input some of this property's information? Need to leave a note for the reviewer? Enter it here.</label>
           <textarea id="user-notes" name="userNotes" style="width: 30em; height: 6em"></textarea>
-
+          <h3>Step 3</h3>
+          <p>Submit these changes for review by The United Effort Organization.</p>
           <button type="button" id="submit-button-changes" class="btn btn_primary">Submit for review</button>
           <button type="button" id="submit-button-no-changes" class="btn btn_secondary">No changes found</button>
         </form>

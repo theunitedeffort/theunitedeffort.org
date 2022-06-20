@@ -102,7 +102,7 @@ const fetchQueueData = async(campaign) => {
     let todo = [];
     // Group queue items into "completed", "in progress", and "to-do" based
     // on stored timestamps of transitions between these states.
-    for (record of records) {
+    for (let record of records) {
       if (record.get("COMPLETED_DATETIME")) {
         completed.push(record);
       // If an item has been marked as "in progress" for over

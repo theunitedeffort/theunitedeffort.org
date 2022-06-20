@@ -127,6 +127,41 @@
     border-left: 0.4em solid var(--color-orange);
     margin-left: 0;
   }
+
+  .badge__done {
+    border-left: 0.4em solid var(--color-blue-dark);
+    margin-left: 0;
+  }
+
+  .badge__partial {
+    border-left: 0.4em solid var(--color-blue);
+    margin-left: 0;
+  }
+
+  .badge__remaining {
+    border-left: 0.4em solid var(--color-gray-700);
+    margin-left: 0;
+  }
+
+  .progress_bar {
+    background-color: var(--color-gray-900);
+    height: 1em;
+  }
+
+  .progress_bar.done {
+    background-color: var(--color-blue-dark);
+    display: inline-block;
+  }
+
+  .progress_bar.partial {
+    background-color: var(--color-blue);
+    display: inline-block;
+  }
+
+  .progress_bar.remaining {
+    background-color: var(--color-gray-700);
+    display: inline-block;
+  }
   
   h3 .badge {
     position: relative;
@@ -162,6 +197,10 @@
       margin: 0 0 0.2em;
       padding: 0;
     }
+  }
+
+  .queue_status {
+    width: 50%;
   }
 
   .icon_info,
@@ -263,6 +302,18 @@
     border-radius: 3px;
     padding: 0.1em 0.4em;
     font-size: 0.8em;
+  }
+
+ .note {
+    border: 2px solid var(--color-blue);
+    background-color: var(--color-blue-light);
+    border-radius: 6px;
+    padding: 1em;
+
+    &::before {
+      content: "Note: ";
+      font-weight: 600;
+    }
   }
 
 sup { vertical-align: top; font-size: 0.6em; }
