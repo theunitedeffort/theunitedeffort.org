@@ -617,14 +617,16 @@ function initPage(data, params) {
   // A campaign is required for nearly all aspects of the page.
   if (params.campaign) {
     let safeCampaign = encodeURIComponent(params.campaign);
+    let campaignPath = (
+      `/contrib/affordable-housing/campaigns/${safeCampaign}`);
+    document.getElementById("skip-property").setAttribute("href",
+      campaignPath);
     document.getElementById("housing-changes").setAttribute("action",
-     `/contrib/affordable-housing/thank-you?campaign=${safeCampaign}`);
+      `/contrib/affordable-housing/thank-you?campaign=${safeCampaign}`);
     if (data.housing) {
       initUnitVisibility(data);
       prefillForm(data);
     } else if (params.housingId) {
-      let campaignPath = (
-        `/contrib/affordable-housing/campaigns/${params.campaign}`);
       setInvalidHousingIdMessage(params.housingId, campaignPath)
     } else {
       setEmptyQueueMessage(data.queue);
