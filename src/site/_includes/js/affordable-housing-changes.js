@@ -421,6 +421,32 @@ function addListeners() {
   }
 }
 
+// Shows only enough units and offerings to fit the unit records in 'data'.
+// The 'data' passed in typically comes from Airtable via
+// fetchFormPrefillData().
+function initUnitVisibility(data) {
+  let numUsedUnits = data.units.length;
+  let unitDivs = document.querySelectorAll("#all-units > div");
+  for (let i = 0; i < unitDivs.length; i++) {
+    if (i < numUsedUnits) {
+      // Show the appropriate number of units.
+      unitDivs[i].removeAttribute("hidden");
+      let numUsedOfferings = data.units[i].length;
+      let offeringDivs = unitDivs[i].querySelectorAll(".all_offerings > div");
+      for (let j = 0; j < offeringDivs.length; j++) {
+        if (j < numUsedOfferings) {
+          // Show the appropriate number of rent offerings in each unit.
+          offeringDivs[j].removeAttribute("hidden");
+        } else {
+          offeringDivs[j].setAttribute("hidden", "hidden");
+        }
+      }
+    } else {
+      unitDivs[i].setAttribute("hidden", "hidden");
+    }
+  }
+}
+
 // Initializes the user's name to the stored value if one exists.
 function initUserName() {
   let userName = localStorage.getItem(USER_NAME_KEY);
@@ -440,6 +466,7 @@ function initPage(data, params) {
     document.getElementById("housing-changes").setAttribute("action",
      `/contrib/affordable-housing/thank-you?campaign=${safeCampaign}`);
     if (data.housing) {
+      initUnitVisibility(data);
       prefillForm(data);
     } else if (params.housingId) {
       let campaignPath = (

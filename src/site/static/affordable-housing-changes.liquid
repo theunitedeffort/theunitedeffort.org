@@ -96,7 +96,7 @@ maxHouseholdSize: 12
             {% assign unitEndIdx = maxUnits | plus: -1 %}
             {% for unitNum in (0..unitEndIdx) %}
               {% assign unitIdx = unitNum %}
-              <div id="unit-{{unitNum}}" class="fieldset_box">
+              <div id="unit-{{unitNum}}" class="fieldset_box" hidden>
                 <fieldset>
                   <legend><span class="section_title">Unit Type</span>
                     <div class="float_right">
@@ -124,7 +124,7 @@ maxHouseholdSize: 12
                     <div class="all_offerings">
                       {% assign offeringEndIdx = maxOfferings | plus: -1 %}
                       {% for offerNum in (0..offeringEndIdx) %}
-                        <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset_box">
+                        <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset_box" hidden>
                         <fieldset>
                           <legend><span class="section_title">Rent Offering</span>
                             <div class="float_right">
