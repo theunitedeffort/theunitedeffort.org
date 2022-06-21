@@ -537,6 +537,9 @@ function prefillForm(data) {
     // If there is no offer index, this field applies to all offerings in the
     // unit. The values of these fields are the same for every offering, so
     // just take the first one.
+    if (offerIdx === undefined) {
+      offerIdx = 0;
+    }
     if (unitIdx < data.units.length && offerIdx < data.units[unitIdx].length) {
       let value = data.units[unitIdx][offerIdx].fields[fieldName];
       prefillField(field, value);
