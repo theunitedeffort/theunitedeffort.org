@@ -3,6 +3,7 @@ const APT_NAME_FIELD_ID = "fldMcM49qaNr3EQ2a";
 const POPULATIONS_SERVED_FIELD_ID = "fldkzU54q8lYtIH7G";
 const PROPERTY_URL_FIELD_ID = "fldei8N0xw2VhjX9V";
 const UNIT_TYPE_FIELD_ID = "fldJ4fP1y13NE6ywu";
+const UNIT_STATUS_FIELD_ID = "fldTNeFcJ3dhDKLqZ";
 const AMI_PERCENT_FIELD_ID = "fldBHf0GmnBHnZBFI";
 const MAX_NUM_UNITS = document.querySelectorAll(
   `#all-units > div[id^="unit-"]`).length;
@@ -171,6 +172,35 @@ function updateOfferingHeading() {
   heading.textContent = `Rent Offering${offeringStr}`;
 }
 
+function updateSelectColor() {
+  let options = this.childNodes;
+  for (let option of options) {
+    if (option.selected) {
+      let color = option.dataset.color;
+      if (color) {
+        this.style.backgroundColor = `var(--airtable-color-${color})`;
+      } else {
+        this.style.backgroundColor = "";
+      }
+      break;
+    }
+  }
+}
+
+function updateMultiselectColors() {
+  let options = this.querySelectorAll("input[type=checkbox]");
+  for (let option of options) {
+    let label = option.nextSibling.nextSibling;
+    label.style.backgroundColor = "";
+    if (option.checked) {
+      let color = option.dataset.color;
+      if (color) {
+        label.style.backgroundColor = `var(--airtable-color-${color})`;
+      } 
+    }
+  }
+}
+
 // Shows min and max age fields when required and hides them otherwise.
 function updateAgeVisibility() {
   let seniorsOption = document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`);
@@ -217,12 +247,67 @@ function updateMaxIncomeRowsVisibility() {
   }
 }
 
+// Shows the primary or alternate rent input fields based on the state of the
+// checkbox that got this event.
+function updateRentVisibility() {
+  let offering = this.parentNode;
+  let rentInput = offering.querySelector(".rent_value");
+  let rentAlternateInput = offering.querySelector(".rent_alternate");
+  if (this.checked) {
+    rentInput.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(rentInput);
+    rentAlternateInput.removeAttribute("hidden");
+  } else {
+    rentInput.removeAttribute("hidden");
+    rentAlternateInput.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(rentAlternateInput);
+  }
+}
+
+// Shows the primary or alternate minimum income input fields based on the state
+// of the checkbox that got this event.
+function updateMinIncomeVisibility() {
+  let unit = this.parentNode;
+  let minIncomeInput = unit.querySelector(".min_income");
+  let minIncomeAlternateInputs = unit.querySelectorAll(".min_income_alternate");
+  if (this.checked) {
+    minIncomeInput.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(minIncomeInput);
+    for (let alternateInput of minIncomeAlternateInputs) {
+      alternateInput.removeAttribute("hidden");
+    }
+  } else {
+    minIncomeInput.removeAttribute("hidden");
+    for (let alternateInput of minIncomeAlternateInputs) {
+      alternateInput.setAttribute("hidden", "hidden");
+      clearAllFieldsIn(alternateInput);
+    }
+  }
+}
+
+// Shows the primary or alternate maximum income input fields based on the state
+// of the checkbox that got this event.
+function updateMaxIncomeVisibility() {
+  let offering = this.parentNode;
+  let maxIncomeInput = offering.querySelector("table.max_income");
+  let maxIncomeAlternateInput = offering.querySelector(".max_income_alternate");
+  if (this.checked) {
+    maxIncomeInput.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(maxIncomeInput);
+    maxIncomeAlternateInput.removeAttribute("hidden");
+  } else {
+    maxIncomeInput.removeAttribute("hidden");
+    maxIncomeAlternateInput.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(maxIncomeAlternateInput);
+  }
+}
+
 // Shows an additional set of unit input fields.
 // When a new unit is "added", the unit section that is immediately after
 // the last currently-visible unit section in the DOM is made visible. 
 function addUnit() {
   if (lastVisUnitIdx < MAX_NUM_UNITS - 1) {
-    lastVisUnitIdx++;
+    lastVisUnitIdx += 1;
     let newUnit = document.querySelectorAll(
       `#all-units > div[id^="unit-"]`)[lastVisUnitIdx];
     // Show the unit section corresponding to the updated lastVisUnitIdx.
@@ -242,7 +327,7 @@ function addUnit() {
 // addUnit() ).
 function deleteUnit() {
   if (lastVisUnitIdx >= 0) {
-    lastVisUnitIdx--;
+    lastVisUnitIdx -= 1;
     // The unit being deleted is the one assocated with the specific
     // delete button that got this event.
     let deletedUnit = this.parentNode.parentNode.parentNode.parentNode;
@@ -281,7 +366,7 @@ function addOffering() {
   let unitDiv = this.parentNode.parentNode.parentNode;
   let unitId = unitDiv.id.split("-")[1];
   if (lastVisOfferIdx[unitId] < MAX_NUM_OFFERINGS - 1) {
-    lastVisOfferIdx[unitId]++;
+    lastVisOfferIdx[unitId] += 1;
     let newOffering = unitDiv.querySelectorAll(
       ".all_offerings > div")[lastVisOfferIdx[unitId]];
     // Show the offering section corresponding to the updated lastVisOfferIdx.
@@ -307,7 +392,7 @@ function deleteOffering() {
   let unitDiv = deletedOffering.parentNode.parentNode.parentNode.parentNode;
   let unitId = unitDiv.id.split("-")[1];
   if (lastVisOfferIdx[unitId] >= 0) {
-    lastVisOfferIdx[unitId]--;
+    lastVisOfferIdx[unitId] -= 1;
     // Hide the offering section being deleted.
     deletedOffering.setAttribute("hidden", "hidden");
     let offeringsContainer = unitDiv.querySelector(".all_offerings");
@@ -402,6 +487,27 @@ function prefillField(field, value) {
     field.parentNode.dispatchEvent(changeEvent);
   }
 }
+// If the property has data populated in any of the 'fields', returns true.
+// Paramter 'fields' is an array of form field names corresponding to Airtable
+// fields in the Units table. Parameter 'units' is the units portion of 
+// the data returned by fetchFormPrefillData().
+function hasUnitsDataIn(fields, units) {
+  let hasData = false;
+  for (let field of fields) {
+    let [fieldName, unitIdx, offerIdx] = field.split(":");
+    if (offerIdx === undefined) {
+      offerIdx = 0;
+    }
+    if (unitIdx < units.length && offerIdx < units[unitIdx].length) {
+      let value = units[unitIdx][offerIdx].fields[fieldName];
+      if (value) {
+        hasData = true;
+        break;
+      }
+    }
+  }
+  return hasData;
+}
 
 // Prefills the affordable housing changes form with data.
 // The 'data' passed in typically comes from Airtable via fetchFormPrefillData()
@@ -419,12 +525,13 @@ function prefillForm(data) {
   let unitsSection = document.getElementById("all-units");
   let propertyFields = propertySection.querySelectorAll(fieldSelector);
   let unitsFields = unitsSection.querySelectorAll(fieldSelector);
-  
+  let formConditionals = unitsSection.querySelectorAll(".form_conditional");
+  // Fill all property-level fields.
   for (let field of propertyFields) {
     let value = data.housing.fields[field.name];
     prefillField(field, value);
   }
-
+  // Fill all unit-level fields.
   for (let field of unitsFields) {
     let [fieldName, unitIdx, offerIdx] = field.name.split(":");
     // If there is no offer index, this field applies to all offerings in the
@@ -437,6 +544,43 @@ function prefillForm(data) {
       let value = data.units[unitIdx][offerIdx].fields[fieldName];
       prefillField(field, value);
     }
+  }
+  // Special handling for these form conditionals, which are form inputs
+  // that do not map directly to Airtable fields.  Instead, they provide
+  // form-level interactivity only. They do get pre-filled based on other
+  // Airtable fields, howerver. 
+  for (let field of formConditionals) {
+    if (!field.dataset.primaryField || !field.dataset.alternateField) {
+      continue;
+    }
+    let primaryFields = field.dataset.primaryField.split(",");
+    let alternateFields = field.dataset.alternateField.split(",");
+    // Check if any of the primary fields associated with this form
+    // conditional have data.
+    let primaryFieldUsed = hasUnitsDataIn(primaryFields, data.units);
+    // Check if any of the alternate fields associated with this form
+    // conditional have data.
+    let alternateFieldUsed = hasUnitsDataIn(alternateFields, data.units);
+    
+    // Truth table
+    // conflict resolution | primary used | alternate used | checked
+    // -------------------------------------------------------------
+    //      primary               T               F             F
+    //      primary               F               F             F
+    //      primary               F               T             T
+    //      primary               T               T             F
+    // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    //     alternate              T               F             F
+    //     alternate              F               F             F
+    //     alternate              F               T             T
+    //     alternate              T               T             T
+    let conflictResolution = field.dataset.conflictResolution;
+    field.checked = (
+      alternateFieldUsed &&
+      (!primaryFieldUsed ||
+       (primaryFieldUsed && conflictResolution == "alternate")
+      ));
+    field.dispatchEvent(new Event("change"))
   }
 }
 
@@ -476,26 +620,6 @@ function getPathParams() {
   return params;
 }
 
-// Groups unit records by unit type.
-// Returns a copy of 'data', but with the units property converted
-// into an array of units records arrays.  Each item in the array corresponds to
-// all the units records of one type (e.g. 1 Bedroom, Studio, etc).
-function groupDataByUnitType(data) {
-  let groupedData = JSON.parse(JSON.stringify(data));
-  // Clear any existing units from the data copy to make way for grouped units.
-  groupedData.units = [];
-  let tempMap = {};
-  for (let unitRecord of data.units) {
-    let typeKey = unitRecord.fields["TYPE"];
-    tempMap[typeKey] = tempMap[typeKey] || [];
-    tempMap[typeKey].push(unitRecord);
-  }
-  for (let unitType of Object.keys(tempMap)) {
-    groupedData.units.push(tempMap[unitType]);
-  }
-  return groupedData;
-}
-
 // Fetches all data required to prefill the input form fields.
 async function fetchFormPrefillData(params) {
   if (!params.campaign) {
@@ -509,9 +633,8 @@ async function fetchFormPrefillData(params) {
   // TODO: Error handling.
   let response = await fetch(fetchPath);
   let data = await response.json();
-  let groupedData = groupDataByUnitType(data);
-  console.log(groupedData);
-  return groupedData;
+  console.log(data);
+  return data;
 }
 
 // Adds all DOM event listeners.
@@ -546,6 +669,15 @@ function addListeners() {
   for (let button of document.querySelectorAll("button.delete_offering")) {
     button.addEventListener("click", deleteOffering);
   }
+  for (let checkbox of document.querySelectorAll(".is_alternate_rent")) {
+    checkbox.addEventListener("change", updateRentVisibility);
+  }
+  for (let checkbox of document.querySelectorAll(".is_alternate_min_income")) {
+    checkbox.addEventListener("change", updateMinIncomeVisibility);
+  }
+  for (let checkbox of document.querySelectorAll(".is_alternate_max_income")) {
+    checkbox.addEventListener("change", updateMaxIncomeVisibility);
+  }
 
   // Form inputs
   document.getElementById(APT_NAME_FIELD_ID).addEventListener("change",
@@ -564,6 +696,14 @@ function addListeners() {
   }
   for (let ami of document.querySelectorAll(`[id*=${AMI_PERCENT_FIELD_ID}]`)) {
     ami.addEventListener("change", updateOfferingHeading);
+  }
+  let coloredSelects = document.querySelectorAll(
+    `[id*=${UNIT_TYPE_FIELD_ID}], [id*=${UNIT_STATUS_FIELD_ID}]`);
+  for (let select of coloredSelects) {
+    select.addEventListener("change", updateSelectColor);
+  }
+  for (let multiselect of document.querySelectorAll(".multiselect")) {
+    multiselect.addEventListener("change", updateMultiselectColors);
   }
 }
 

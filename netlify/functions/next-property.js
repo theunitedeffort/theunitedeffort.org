@@ -7,6 +7,106 @@ const HOUSING_DATABASE_TABLE = "tbl8LUgXQoTYEw2Yh";
 const UNITS_TABLE = "tblRtXBod9CC0mivK";
 const MAX_IN_PROGRESS_DURATION_HRS = 8;
 
+// Sort ranking for unit type.
+// Highest rank = 1. Types not listed here will be sorted alphabetically.
+// Force an item to be ranked last every time with rank = -1.
+const TYPE_SORT_RANKING = new Map([
+  // Unit Type
+  ["SRO", 1],
+  ["Studio", 2],
+  ["Others", -1],
+]);
+
+// Sorts rent offerings so that the generally cheaper offerings are first.
+function sortRents(values) {
+  let sorted = values.sort(function(a, b) {
+    // Compare rent offerings.
+    // If both offerings have differing rent, sort according to those.  
+    // Otherwise, use min income if available.
+    // Otherwise, use max income (the low end of the range) if available.
+    // If the offerings have none of those three values, don't sort at all, as 
+    // there is nothing to compare against.
+    let compA = 0;
+    let compB = 0;
+    if (a.fields.RENT_PER_MONTH_USD && 
+        b.fields.RENT_PER_MONTH_USD && 
+        a.fields.RENT_PER_MONTH_USD != b.fields.RENT_PER_MONTH_USD) {
+      compA = a.fields.RENT_PER_MONTH_USD;
+      compB = b.fields.RENT_PER_MONTH_USD;
+    } else if (a.fields.MIN_YEARLY_INCOME_USD && 
+               b.fields.MIN_YEARLY_INCOME_USD &&
+               a.fields.MIN_YEARLY_INCOME_USD != b.fields.MIN_YEARLY_INCOME_USD) {
+      compA = a.fields.MIN_YEARLY_INCOME_USD;
+      compB = b.fields.MIN_YEARLY_INCOME_USD;
+    } else if (
+        a.fields.MAX_YEARLY_INCOME_LOW_USD && 
+        b.fields.MAX_YEARLY_INCOME_LOW_USD &&
+        a.fields.MAX_YEARLY_INCOME_LOW_USD != b.fields.MAX_YEARLY_INCOME_LOW_USD) {
+      compA = a.fields.MAX_YEARLY_INCOME_LOW_USD;
+      compB = b.fields.MAX_YEARLY_INCOME_LOW_USD;
+    }
+    if (compA < compB) {
+      return -1;
+    }
+    if (compA > compB) {
+      return 1;
+    }
+    return 0;
+  });
+  return sorted;
+}
+
+// Sorts unit types according to a custom sort order.
+// TODO: Make this sorting function shared within the entire
+// codebase.
+function sortUnitTypes(values) {
+  let sorted = values.sort(function(a, b) {
+    let rankA = TYPE_SORT_RANKING.get(a);
+    let rankB = TYPE_SORT_RANKING.get(b);
+    // Special handling for the -1 rank, which is always sorted last.
+    if (rankB < 0) {
+      return -1;
+    } else if (rankA < 0) {
+      return 1;
+    // Sort by rank if both items have one.
+    } else if (rankA && rankB) {
+      return rankA - rankB;
+    // Put unranked items after the ranked ones.
+    } else if (rankA && !rankB) {
+      return -1;
+    } else if (!rankA && rankB) {
+      return 1;
+    // Sort unranked items alphabetically.
+    } else if (a < b) {
+      return -1;
+    } else if (a > b) {
+      return 1;
+    }
+    return 0;
+  });
+  return sorted;
+}
+
+// Groups unit records by unit type.
+// Returns an array of units records arrays.  Each item in the array is an array
+// of all the units records of one type (e.g. 1 Bedroom, Studio, etc). Inner
+// arrays are sorted by rent offering cost and outer array is sorted by unit
+// type.
+function groupByUnitType(units) {
+  // Clear any existing units from the data copy to make way for grouped units.
+  groupedUnits = [];
+  let tempMap = {};
+  for (let unitRecord of units) {
+    let typeKey = unitRecord.fields["TYPE"];
+    tempMap[typeKey] = tempMap[typeKey] || [];
+    tempMap[typeKey].push(unitRecord);
+  }
+  for (let unitType of sortUnitTypes(Object.keys(tempMap))) {
+    groupedUnits.push(sortRents(tempMap[unitType]));
+  }
+  return groupedUnits;
+}
+
 // Gets all records data about the units within the property with housing ID 
 // 'housingId'.  Returns a list of record objects or an empty list if
 // no units records are found.
@@ -171,7 +271,7 @@ exports.handler = async function(event) {
     console.log("fetching unit records and housing record for ID: " + housingId);
     let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
     data.housing = housingData[0];
-    data.units = housingData[1];
+    data.units = groupByUnitType(housingData[1]);
 
     // If there is a matching queue record for this housing ID, update it to
     // be in progress.
