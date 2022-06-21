@@ -3,6 +3,7 @@ const APT_NAME_FIELD_ID = "fldMcM49qaNr3EQ2a";
 const POPULATIONS_SERVED_FIELD_ID = "fldkzU54q8lYtIH7G";
 const PROPERTY_URL_FIELD_ID = "fldei8N0xw2VhjX9V";
 const UNIT_TYPE_FIELD_ID = "fldJ4fP1y13NE6ywu";
+const UNIT_STATUS_FIELD_ID = "fldTNeFcJ3dhDKLqZ";
 const AMI_PERCENT_FIELD_ID = "fldBHf0GmnBHnZBFI";
 const MAX_NUM_UNITS = document.querySelectorAll(
   `#all-units > div[id^="unit-"]`).length;
@@ -169,6 +170,35 @@ function updateOfferingHeading() {
     offeringStr = `: ${this.value}% AMI`;
   } 
   heading.textContent = `Rent Offering${offeringStr}`;
+}
+
+function updateSelectColor() {
+  let options = this.childNodes;
+  for (let option of options) {
+    if (option.selected) {
+      let color = option.dataset.color;
+      if (color) {
+        this.style.backgroundColor = `var(--airtable-color-${color})`;
+      } else {
+        this.style.backgroundColor = "";
+      }
+      break;
+    }
+  }
+}
+
+function updateMultiselectColors() {
+  let options = this.querySelectorAll("input[type=checkbox]");
+  for (let option of options) {
+    let label = option.nextSibling.nextSibling;
+    label.style.backgroundColor = "";
+    if (option.checked) {
+      let color = option.dataset.color;
+      if (color) {
+        label.style.backgroundColor = `var(--airtable-color-${color})`;
+      } 
+    }
+  }
 }
 
 // Shows min and max age fields when required and hides them otherwise.
@@ -684,6 +714,14 @@ function addListeners() {
   }
   for (let ami of document.querySelectorAll(`[id*=${AMI_PERCENT_FIELD_ID}]`)) {
     ami.addEventListener("change", updateOfferingHeading);
+  }
+  let coloredSelects = document.querySelectorAll(
+    `[id*=${UNIT_TYPE_FIELD_ID}], [id*=${UNIT_STATUS_FIELD_ID}]`);
+  for (let select of coloredSelects) {
+    select.addEventListener("change", updateSelectColor);
+  }
+  for (multiselect of document.querySelectorAll(".multiselect")) {
+    multiselect.addEventListener("change", updateMultiselectColors);
   }
 }
 
