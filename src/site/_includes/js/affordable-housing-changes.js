@@ -217,6 +217,61 @@ function updateMaxIncomeRowsVisibility() {
   }
 }
 
+// Shows the primary or alternate rent input fields based on the state of the
+// checkbox that got this event.
+function updateRentVisibility() {
+  let offering = this.parentNode;
+  let rentInput = offering.querySelector(".rent_value");
+  let rentAlternateInput = offering.querySelector(".rent_alternate");
+  if (this.checked) {
+    rentInput.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(rentInput);
+    rentAlternateInput.removeAttribute("hidden");
+  } else {
+    rentInput.removeAttribute("hidden");
+    rentAlternateInput.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(rentAlternateInput);
+  }
+}
+
+// Shows the primary or alternate minimum income input fields based on the state
+// of the checkbox that got this event.
+function updateMinIncomeVisibility() {
+  let unit = this.parentNode;
+  let minIncomeInput = unit.querySelector(".min_income");
+  let minIncomeAlternateInputs = unit.querySelectorAll(".min_income_alternate");
+  if (this.checked) {
+    minIncomeInput.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(minIncomeInput);
+    for (let alternateInput of minIncomeAlternateInputs) {
+      alternateInput.removeAttribute("hidden");
+    }
+  } else {
+    minIncomeInput.removeAttribute("hidden");
+    for (let alternateInput of minIncomeAlternateInputs) {
+      alternateInput.setAttribute("hidden", "hidden");
+      clearAllFieldsIn(alternateInput);
+    }
+  }
+}
+
+// Shows the primary or alternate maximum income input fields based on the state
+// of the checkbox that got this event.
+function updateMaxIncomeVisibility() {
+  let offering = this.parentNode;
+  let maxIncomeInput = offering.querySelector("table.max_income");
+  let maxIncomeAlternateInput = offering.querySelector(".max_income_alternate");
+  if (this.checked) {
+    maxIncomeInput.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(maxIncomeInput);
+    maxIncomeAlternateInput.removeAttribute("hidden");
+  } else {
+    maxIncomeInput.removeAttribute("hidden");
+    maxIncomeAlternateInput.setAttribute("hidden", "hidden");
+    clearAllFieldsIn(maxIncomeAlternateInput);
+  }
+}
+
 // Shows an additional set of unit input fields.
 // When a new unit is "added", the unit section that is immediately after
 // the last currently-visible unit section in the DOM is made visible. 
@@ -402,6 +457,27 @@ function prefillField(field, value) {
     field.parentNode.dispatchEvent(changeEvent);
   }
 }
+// If the property has data populated in any of the 'fields', returns true.
+// Paramter 'fields' is an array of form field names corresponding to Airtable
+// fields in the Units table. Parameter 'units' is the units portion of 
+// the data returned by fetchFormPrefillData().
+function hasUnitsDataIn(fields, units) {
+  let hasData = false;
+  for (let field of fields) {
+    let [fieldName, unitIdx, offerIdx] = field.split(":");
+    if (offerIdx === undefined) {
+      offerIdx = 0;
+    }
+    if (unitIdx < units.length && offerIdx < units[unitIdx].length) {
+      let value = units[unitIdx][offerIdx].fields[fieldName];
+      if (value) {
+        hasData = true;
+        break;
+      }
+    }
+  }
+  return hasData;
+}
 
 // Prefills the affordable housing changes form with data.
 // The 'data' passed in typically comes from Airtable via fetchFormPrefillData()
@@ -419,24 +495,59 @@ function prefillForm(data) {
   let unitsSection = document.getElementById("all-units");
   let propertyFields = propertySection.querySelectorAll(fieldSelector);
   let unitsFields = unitsSection.querySelectorAll(fieldSelector);
-  
+  let formConditionals = unitsSection.querySelectorAll(".form_conditional");
+  // Fill all property-level fields.
   for (let field of propertyFields) {
     let value = data.housing.fields[field.name];
     prefillField(field, value);
   }
-
+  // Fill all unit-level fields.
   for (let field of unitsFields) {
     let [fieldName, unitIdx, offerIdx] = field.name.split(":");
     // If there is no offer index, this field applies to all offerings in the
     // unit. The values of these fields are the same for every offering, so
     // just take the first one.
-    if (offerIdx === undefined) {
-      offerIdx = 0;
-    }
     if (unitIdx < data.units.length && offerIdx < data.units[unitIdx].length) {
       let value = data.units[unitIdx][offerIdx].fields[fieldName];
       prefillField(field, value);
     }
+  }
+  // Special handling for these form conditionals, which are form inputs
+  // that do not map directly to Airtable fields.  Instead, they provide
+  // form-level interactivity only. They do get pre-filled based on other
+  // Airtable fields, howerver. 
+  for (let field of formConditionals) {
+    if (!field.dataset.primaryField || !field.dataset.alternateField) {
+      continue;
+    }
+    let primaryFields = field.dataset.primaryField.split(",");
+    let alternateFields = field.dataset.alternateField.split(",");
+    // Check if any of the primary fields associated with this form
+    // conditional have data.
+    let primaryFieldUsed = hasUnitsDataIn(primaryFields, data.units);
+    // Check if any of the alternate fields associated with this form
+    // conditional have data.
+    let alternateFieldUsed = hasUnitsDataIn(alternateFields, data.units);
+    
+    // Truth table
+    // conflict resolution | primary used | alternate used | checked
+    // -------------------------------------------------------------
+    //      primary               T               F             F
+    //      primary               F               F             F
+    //      primary               F               T             T
+    //      primary               T               T             F
+    // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    //     alternate              T               F             F
+    //     alternate              F               F             F
+    //     alternate              F               T             T
+    //     alternate              T               T             T
+    let conflictResolution = field.dataset.conflictResolution;
+    field.checked = (
+      alternateFieldUsed &&
+      (!primaryFieldUsed ||
+       (primaryFieldUsed && conflictResolution == "alternate")
+      ));
+    field.dispatchEvent(new Event("change"))
   }
 }
 
@@ -545,6 +656,15 @@ function addListeners() {
   }
   for (let button of document.querySelectorAll("button.delete_offering")) {
     button.addEventListener("click", deleteOffering);
+  }
+  for (let checkbox of document.querySelectorAll(".is_alternate_rent")) {
+    checkbox.addEventListener("change", updateRentVisibility);
+  }
+  for (let checkbox of document.querySelectorAll(".is_alternate_min_income")) {
+    checkbox.addEventListener("change", updateMinIncomeVisibility);
+  }
+  for (let checkbox of document.querySelectorAll(".is_alternate_max_income")) {
+    checkbox.addEventListener("change", updateMaxIncomeVisibility);
   }
 
   // Form inputs
