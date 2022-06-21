@@ -307,7 +307,7 @@ function updateMaxIncomeVisibility() {
 // the last currently-visible unit section in the DOM is made visible. 
 function addUnit() {
   if (lastVisUnitIdx < MAX_NUM_UNITS - 1) {
-    lastVisUnitIdx++;
+    lastVisUnitIdx += 1;
     let newUnit = document.querySelectorAll(
       `#all-units > div[id^="unit-"]`)[lastVisUnitIdx];
     // Show the unit section corresponding to the updated lastVisUnitIdx.
@@ -327,7 +327,7 @@ function addUnit() {
 // addUnit() ).
 function deleteUnit() {
   if (lastVisUnitIdx >= 0) {
-    lastVisUnitIdx--;
+    lastVisUnitIdx -= 1;
     // The unit being deleted is the one assocated with the specific
     // delete button that got this event.
     let deletedUnit = this.parentNode.parentNode.parentNode.parentNode;
@@ -366,7 +366,7 @@ function addOffering() {
   let unitDiv = this.parentNode.parentNode.parentNode;
   let unitId = unitDiv.id.split("-")[1];
   if (lastVisOfferIdx[unitId] < MAX_NUM_OFFERINGS - 1) {
-    lastVisOfferIdx[unitId]++;
+    lastVisOfferIdx[unitId] += 1;
     let newOffering = unitDiv.querySelectorAll(
       ".all_offerings > div")[lastVisOfferIdx[unitId]];
     // Show the offering section corresponding to the updated lastVisOfferIdx.
@@ -392,7 +392,7 @@ function deleteOffering() {
   let unitDiv = deletedOffering.parentNode.parentNode.parentNode.parentNode;
   let unitId = unitDiv.id.split("-")[1];
   if (lastVisOfferIdx[unitId] >= 0) {
-    lastVisOfferIdx[unitId]--;
+    lastVisOfferIdx[unitId] -= 1;
     // Hide the offering section being deleted.
     deletedOffering.setAttribute("hidden", "hidden");
     let offeringsContainer = unitDiv.querySelector(".all_offerings");
