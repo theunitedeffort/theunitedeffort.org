@@ -62,31 +62,94 @@
         padding: 0.5em;
         margin-bottom: 1em;
       }
+      
+      input[type=text],
+      select,
+      textarea {
+        width: 20em;
+      }
+
+      input[type=text].short,
+      select.short,
+      textarea.short {
+        width: 10em;
+      }
+
+      input[type=text].long,
+      select.long,
+      textarea.long {
+        width: 25em;
+      }
+
+      input[type=text].extra_long,
+      select.extra_long,
+      textarea.extra_long {
+        width: 35em;
+      }
+
+      input[type=number] {
+        width: 5em;
+      }
+
+      input[type=number].short {
+        width: 4em
+      }
+
+      input[type=number].long {
+        width: 6em
+      }
+
+      input[type=number].extra_long {
+        width: 7em
+      }
+
+      input[type=email] {
+        width: 25em;
+      }
+
+      input[type=tel] {
+        width: 9em;
+      }
+
+      input[type=url] {
+        width: 35em;
+      }
+
       input.form_conditional {
         margin-top: 0.3em;
         margin-bottom: 0;
       }
+
       .multiselect > input[type=checkbox] {
         margin-bottom: 0em;
         margin-left: 1em;
       }
+
       .multiselect > label {
         padding: 0.2em 0.4em;
         border-radius: 1em;
       }
+
       .multiselect {
         margin-bottom: 0.8em;
       }
+
       table input {
         margin-bottom: 0;
       }
+
       fieldset {
         width: 100%;
         margin-bottom: 0;
       }
+
       label {
         font-size: 0.9em;
         white-space: normal;
+      }
+
+      #user-notes {
+        height: 6em;
       }
     }
 
