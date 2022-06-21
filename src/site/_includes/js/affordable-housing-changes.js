@@ -620,26 +620,6 @@ function getPathParams() {
   return params;
 }
 
-// Groups unit records by unit type.
-// Returns a copy of 'data', but with the units property converted
-// into an array of units records arrays.  Each item in the array corresponds to
-// all the units records of one type (e.g. 1 Bedroom, Studio, etc).
-function groupDataByUnitType(data) {
-  let groupedData = JSON.parse(JSON.stringify(data));
-  // Clear any existing units from the data copy to make way for grouped units.
-  groupedData.units = [];
-  let tempMap = {};
-  for (let unitRecord of data.units) {
-    let typeKey = unitRecord.fields["TYPE"];
-    tempMap[typeKey] = tempMap[typeKey] || [];
-    tempMap[typeKey].push(unitRecord);
-  }
-  for (let unitType of Object.keys(tempMap)) {
-    groupedData.units.push(tempMap[unitType]);
-  }
-  return groupedData;
-}
-
 // Fetches all data required to prefill the input form fields.
 async function fetchFormPrefillData(params) {
   if (!params.campaign) {
@@ -653,9 +633,8 @@ async function fetchFormPrefillData(params) {
   // TODO: Error handling.
   let response = await fetch(fetchPath);
   let data = await response.json();
-  let groupedData = groupDataByUnitType(data);
-  console.log(groupedData);
-  return groupedData;
+  console.log(data);
+  return data;
 }
 
 // Adds all DOM event listeners.
