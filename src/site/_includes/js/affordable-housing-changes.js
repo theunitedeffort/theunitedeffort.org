@@ -702,7 +702,7 @@ function addListeners() {
   for (let select of coloredSelects) {
     select.addEventListener("change", updateSelectColor);
   }
-  for (multiselect of document.querySelectorAll(".multiselect")) {
+  for (let multiselect of document.querySelectorAll(".multiselect")) {
     multiselect.addEventListener("change", updateMultiselectColors);
   }
 }
