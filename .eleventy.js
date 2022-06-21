@@ -18,13 +18,6 @@ const SORT_RANKING = new Map([
   // Unit Type
   ["SRO", 1],
   ["Studio", 2],
-  ["1 Bedroom", 3],
-  ["2 Bedroom", 4],
-  ["3 Bedroom", 5],
-  ["4 Bedroom", 6],
-  ["5 Bedroom", 7],
-  ["6 Bedroom", 8],
-  ["Shared Housing", 9],
   ["Others", -1],
   // Availability
   ["Waitlist Open", 1],
