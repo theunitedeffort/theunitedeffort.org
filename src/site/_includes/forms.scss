@@ -58,11 +58,16 @@
       input,
       select,
       textarea {
+        display: block;
         font-size: 1em;
         padding: 0.5em;
         margin-bottom: 1em;
       }
       
+      input[type=checkbox] {
+        display: inline-block;
+      }
+
       input[type=text],
       select,
       textarea {
@@ -113,6 +118,10 @@
 
       input[type=url] {
         width: 35em;
+      }
+
+      input.inline {
+        display: inline-block;
       }
 
       input.form_conditional {

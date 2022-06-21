@@ -50,51 +50,51 @@ maxHouseholdSize: 12
             <input type="hidden" id="{{housingFields.ID.id}}" name="ID" />
             <input type="hidden" id="queue-record-id" name="queue_record_id" />
             {% fieldLabel "Property Name", housingFields, "APT_NAME" %}<br/>
-            {% formField housingFields, "APT_NAME" %}<br/>
+            {% formField housingFields, "APT_NAME" %}
 
             {% fieldLabel "Address", housingFields, "ADDRESS" %}
             <span class="label"><button type="button" id="show-second-address" class="link">Add a second address</button></span><br/>
-            {% formField housingFields, "ADDRESS" %}<br/>
+            {% formField housingFields, "ADDRESS" %}
             <div id="second-address" hidden>
             {% fieldLabel "Second address", housingFields, "SECOND_ADDRESS" %}<br/>
-            {% formField housingFields, "SECOND_ADDRESS" %}<br/>
+            {% formField housingFields, "SECOND_ADDRESS" %}
             </div>
 
             {% fieldLabel "City", housingFields, "CITY" %}<br/>
-            {% formField housingFields, "CITY", "short" %}<br/>
+            {% formField housingFields, "CITY", "short" %}
 
             {% fieldLabel "ZIP Code", housingFields, "ZIP_CODE" %}<br/>
-            {% formField housingFields, "ZIP_CODE", "long" %}<br/>
+            {% formField housingFields, "ZIP_CODE", "long" %}
 
             {% fieldLabel "Contact Phone", housingFields, "PHONE" %}<br/>
-            {% formField housingFields, "PHONE" %}<br/>
+            {% formField housingFields, "PHONE" %}
 
             {% fieldLabel "Contact Email", housingFields, "EMAIL" %}<br/>
-            {% formField housingFields, "EMAIL" %}<br/>
+            {% formField housingFields, "EMAIL" %}
 
             {% fieldLabel "Management Company", housingFields, "MANAGEMENT_COMPANY" %}<br/>
-            {% formField housingFields, "MANAGEMENT_COMPANY" %}<br/>
+            {% formField housingFields, "MANAGEMENT_COMPANY" %}
 
             {% fieldLabel "URL", housingFields, "PROPERTY_URL" %}
             <a href="" target="_blank" rel="noopener" class="label property-link">Visit this page</a><sup>&#8599;</sup><br/>
-            {% formField housingFields, "PROPERTY_URL" %}<br/>
+            {% formField housingFields, "PROPERTY_URL" %}
 
             {% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}<br/>
-            {% formField housingFields, "UNITS_CNT" %}<br/>
+            {% formField housingFields, "UNITS_CNT" %}
 
             <div class="multiselect" id="populations-served">
             {% fieldLabel "Populations Served", housingFields, "POPULATIONS_SERVED" %}<br/>
-            {% formField housingFields, "POPULATIONS_SERVED" %}<br/>
+            {% formField housingFields, "POPULATIONS_SERVED" %}
             </div>
 
             <div id="min-age" hidden>
             {% fieldLabel "Minimum Resident Age", housingFields, "MIN_RESIDENT_AGE" %}<br/>
-            {% formField housingFields, "MIN_RESIDENT_AGE", "short" %}<br/>
+            {% formField housingFields, "MIN_RESIDENT_AGE", "short" %}
             </div>
 
             <div id="max-age" hidden>
             {% fieldLabel "Maximum Resident Age", housingFields, "MAX_RESIDENT_AGE" %}<br/>
-            {% formField housingFields, "MAX_RESIDENT_AGE", "short" %}<br/>
+            {% formField housingFields, "MAX_RESIDENT_AGE", "short" %}
             </div>
 
             {% formField housingFields, "ACCEPTS_VOUCHERS" %}
@@ -125,10 +125,10 @@ maxHouseholdSize: 12
                   </legend>
                   <div class="collapsible_content">
                     {% indexedFieldLabel unitIdx, "Type", unitsFields, "TYPE" %}<br/>
-                    {% indexedFormField unitIdx, unitsFields, "TYPE", "short" %}<br/>
+                    {% indexedFormField unitIdx, unitsFields, "TYPE", "short" %}
 
                     {% indexedFieldLabel unitIdx, "Status", unitsFields, "STATUS" %}<br/>
-                    {% indexedFormField unitIdx, unitsFields, "STATUS", "short" %}<br/>
+                    {% indexedFormField unitIdx, unitsFields, "STATUS", "short" %}
 
                     <span class="label">Occupancy Limits</span>
                     <span class="tooltip_entry">
@@ -136,8 +136,8 @@ maxHouseholdSize: 12
                       <span class="tooltip_content">The minimum and maximum number of people allowed to live in this unit.</span>
                     </span>
                     <br/>
-                    {% indexedFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "short" %} to 
-                    {% indexedFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "short" %} people<br/>
+                    {% indexedFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "short inline" %} to 
+                    {% indexedFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "short inline" %} people<br/>
 
                     {% assign alternateMinIncomeStr = "" %}
                     {% for offerIdx in (0..offeringEndIdx) %}
@@ -172,21 +172,21 @@ maxHouseholdSize: 12
                             {% assign offerIdx = unitNum | append: ":" | append: offerNum %}
                             <input type="hidden" id={{unitsFields.ID.id}} name={{"ID:" | append: offerIdx}}>
                             {% indexedFieldLabel offerIdx, "Income Bracket", unitsFields, "PERCENT_AMI" %}<br/>
-                            {% indexedFormField offerIdx, unitsFields, "PERCENT_AMI", "short" %}% AMI<br/>
+                            {% indexedFormField offerIdx, unitsFields, "PERCENT_AMI", "short inline" %}% AMI<br/>
 
                             <input type="checkbox" id="is-alternate-rent:{{offerIdx}}" class="form_conditional is_alternate_rent" data-primary-field="RENT_PER_MONTH_USD:{{offerIdx}}" data-alternate-field="RENT_NOTES:{{offerIdx}}" data-conflict-resolution="primary"> <label for="is-alternate-rent:{{offerIdx}}">The rent is variable or can't be entered as a single number for this rent offering</label><br/>
                             <div class="rent_value">
                               {% indexedFieldLabel offerIdx, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}<br/>
-                              {% indexedFormField offerIdx, unitsFields, "RENT_PER_MONTH_USD" %} $/month<br/>
+                              {% indexedFormField offerIdx, unitsFields, "RENT_PER_MONTH_USD", "inline" %} $/month<br/>
                             </div>
                             <div class="rent_alternate" hidden>
                               {% indexedFieldLabel offerIdx, "Rent Description", unitsFields, "RENT_NOTES" %}<br/>
-                              {% indexedFormField offerIdx, unitsFields, "RENT_NOTES", "long"%}<br/>
+                              {% indexedFormField offerIdx, unitsFields, "RENT_NOTES", "long"%}
                             </div>
 
                             <div class="min_income_alternate" hidden>
                               {% indexedFieldLabel offerIdx, "Minimum Income", unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD" %}<br/> 
-                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD", "extra_long" %} $/year<br/>
+                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD", "extra_long inline" %} $/year<br/>
                             </div>
 
                             {% assign primaryMaxIncomeStr = "" %}
@@ -212,7 +212,7 @@ maxHouseholdSize: 12
                                   {% assign hhSizeStr = hhSize | append: " people" %}
                                 {% endif %}
                                   <td>{% indexedFieldLabel offerIdx, hhSizeStr, unitsFields, fieldname %}</td>
-                                  <td>${% indexedFormField offerIdx, unitsFields, fieldname, "extra_long" %} per year</td>
+                                  <td>${% indexedFormField offerIdx, unitsFields, fieldname, "extra_long inline" %} per year</td>
                                 </tr>
                               {% endfor %}
                             </table>
@@ -223,8 +223,8 @@ maxHouseholdSize: 12
                                 <span class="tooltip_content">Most properties list the maximum allowed income based on household size.<br/>However, if the maximum income is just given as a simple range of values (e.g. Maximum Income $54,000 - $77,000), then enter the range here.</span>
                               </span>
                               <br/>
-                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD", "extra_long" %} to
-                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD", "extra_long" %} $/year
+                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD", "extra_long inline" %} to
+                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD", "extra_long inline" %} $/year
                               <br/>
                             </div>
                           </div>
@@ -241,7 +241,7 @@ maxHouseholdSize: 12
 
           <button type="button" id="add-unit" class="btn btn_secondary">Add unit type</button>
 
-          <br/><br/><label for="user-notes" style="white-space: break-spaces; display: block; width: 30em">Not sure how to input some of this property's information? Need to leave a note for the reviewer? Enter it here.</label>
+          <br/><br/><label for="user-notes">Not sure how to input some of this property's information? Need to leave a note for the reviewer? Enter it here.</label>
           <textarea id="user-notes" name="userNotes" class="extra_long"></textarea>
           <h3>Step 3</h3>
           <p>Submit these changes for review by The United Effort Organization.</p>
