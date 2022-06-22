@@ -9,6 +9,7 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
 {% assign housingdb = query | housingResults %}
+{% assign numFiltersApplied = query | numFiltersApplied %}
 
 <div class="flex justify_right">
   <a class="btn btn_secondary noprint" title="Print table" href="javascript:window.print();">
@@ -19,7 +20,9 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
   </a>
 </div>
 
-<p><div>Filters Applied:</div> {% querySummary query %}</p>
+{% if numFiltersApplied > 0 %}
+  <p><div>Filters Applied:</div> {% querySummary query %}</p>
+{% endif %}
 
 <table id="affordable-housing-table-summary">
   <thead>
