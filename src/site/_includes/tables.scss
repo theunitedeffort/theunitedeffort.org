@@ -29,3 +29,11 @@ table.deflist {
   font-size: 1em;
   margin: 0;
 }
+
+#affordable-housing-table-summary {
+  page-break-inside: auto;
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+}

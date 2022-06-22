@@ -4,6 +4,7 @@ title: Affordable Housing Results Summary
 permalink: 
   serverless: "/housing/affordable-housing/table"
 pageClass: "page-housing"
+pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</style>'
 ---
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
@@ -16,7 +17,7 @@ pageClass: "page-housing"
     Print table
   </a>
 </div>
-<table>
+<table id="affordable-housing-table-summary">
   <tr>
     <th>Apartment Name<span class="noprint"> & Link to Website</span></th>
     <th>Address</th>
