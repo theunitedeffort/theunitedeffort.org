@@ -1,0 +1,94 @@
+---
+layout: layouts/base.liquid
+title: Affordable Housing Results Summary
+permalink: 
+  serverless: "/housing/affordable-housing/table"
+pageClass: "page-housing"
+---
+{% assign updateButtonStr = "Update results" %}
+{% assign query = eleventy.serverless.query %}
+{% assign housingdb = query | housingResults %}
+<div class="flex justify_right">
+  <a class="btn btn_secondary noprint" title="Print table" href="javascript:window.print();">
+    <svg role="img" aria-hidden="true" focusable="false" class="icon ">
+      <use xlink:href="/images/sprites.svg#print"></use>
+    </svg>
+    Print table
+  </a>
+</div>
+<table>
+  <tr>
+    <th>Apartment Name<span class="noprint"> & Link to Website</span></th>
+    <th>Address</th>
+    <th>City</th>
+    <th>Unit Types</th>
+    <th>Rent</th>
+    <th>Min Income</th>
+    <th>Max Income</th>
+    <th>Phone #</th>
+    <th>Must be Senior</th>
+  </tr>
+  {% assign sortedHousingdb = housingdb | sort: "aptName" %}
+  {% for address in sortedHousingdb %}
+    <tr>
+      <td>
+        {% if address.website and address.website != '' %}
+          <a class="noprint" href="{{ address.website }}" target="_blank" rel="noopener">{{ address.aptName }}</a>
+          <span class="only_print">{{address.aptName}}</span>
+        {% else %}
+          {{address.aptName}}
+        {% endif %}
+      </td>
+      <td>{{ address.address }}</td>
+      <td>{{ address.city }}</td>
+      <td>{{ address.units | map: "unitType" | uniq | rankSort | join: "<br/>" | replace: "Bedroom", "BR" }}</td>
+      <td>
+        {% assign rents = address.units | map: "rent" | compact | uniq | sort %}
+        {% if rents.size == 1 %}
+          {{ rents | first | money }}
+        {% elsif rents.size >= 2 %}
+          {{ rents | first | money }} - {{ rents | last | money }}
+        {% endif %}
+      </td>
+      <td>
+        {% assign minIncomes = address.units | map: "minIncome" | compact | uniq | sort %}
+        {% if minIncomes.size == 1 %}
+          {{ minIncomes | first | money }}
+        {% elsif minIncomes.size >= 2 %}
+          {{ minIncomes | first | money }} - {{ minIncomes | last | money }}
+        {% endif %}
+      </td>
+      <td>
+        {% assign percentAmis = address.units | map: "incomeBracket" | compact | uniq | sort %}
+        {% if percentAmis.size > 0 %}
+          {% if percentAmis.size == 1 %}
+            {{ percentAmis | first }}% AMI
+          {% elsif percentAmis.size >= 2 %}
+            {{ percentAmis | first }}% - {{ percentAmis | last }}% AMI
+          {% endif %}
+        {% else %}
+          {% assign maxIncomes = address.units | map: "maxIncome" %}
+          {% assign maxIncomeLows = maxIncomes | map: "low" | compact | uniq | sort %}
+          {% assign maxIncomeHighs = maxIncomes | map: "high" | compact | uniq | sort %}
+          {% if maxIncomeLows.size > 0 and maxIncomeHighs.size > 0 %}
+            {% assign maxIncomeLow = maxIncomeLows | first %}
+            {% assign maxIncomeHigh = maxIncomeHighs | last %}
+            {% if maxIncomeLow == maxIncomeHigh %}
+              {{ maxIncomeLow | money }}
+            {% else %}
+              {{ maxIncomeLow | money }} - {{ maxIncomeHigh | money }}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      </td>
+      <td class="nowrap">{{ address.phone }}</td>
+      <td>
+        {% if address.populationsServed contains "Seniors" %}
+          Yes{% if address.minAge > 0 %}, {{ address.minAge }}+{% endif %}
+        {% else %}
+          No
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</table>

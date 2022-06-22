@@ -87,6 +87,20 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
+  // Generates a URL query string from Eleventy serverless query parameters.
+  eleventyConfig.addFilter("queryString", function(queryParams) {
+    const searchParams = new URLSearchParams(queryParams);
+    return searchParams.toString();
+  });
+
+  eleventyConfig.addFilter("money", function(value) {
+    return value.toLocaleString("en-US", {
+      style: "currency", 
+      maximumFractionDigits: 0, 
+      minimumFractionDigits: 0, 
+      currency: "USD"});
+  });
+
   // Sorts items according to the ranking defined in SORT_RANKING.
   eleventyConfig.addFilter("rankSort", function(values, property="") {
     let sorted = values.sort(function(a, b) {
@@ -309,6 +323,26 @@ module.exports = function(eleventyConfig) {
     return housing;
   });
 
+  eleventyConfig.addFilter("summarizeUnits", function(housingList, summarizeBy) {
+    let housingListCopy = JSON.parse(JSON.stringify(housingList));
+    for (let housing of housingListCopy) {
+      let summary = new Set();
+      for (let unit of housing.units) {
+        let unitSummary = {};
+        for (let prop of summarizeBy) {
+          unitSummary[prop] = unit[prop];
+        }
+        // Stringify the unitSummary so that we can ensure uniqueness
+        // via the Set.  If an apartment has a single unit type offered
+        // at multiple rents, we want to ensure the summary only lists
+        // the unit type one time, not once for each rent offering.
+        summary.add(JSON.stringify(unitSummary));
+      }
+      housing.units = [...summary].map(x => JSON.parse(x));
+    }
+    return housingListCopy;
+  });
+
   // Generates an Airtable filter formula string based on 'query'.
   const buildQueryStr = function(query) {
     query = query || "";
@@ -428,42 +462,42 @@ module.exports = function(eleventyConfig) {
               aptName: record.get("APT_NAME")?.[0] || "",
               address: record.get("Address (from Housing)")?.[0] || "",
               city: record.get("City (from Housing)")?.[0] || "",
-              units: {unitType: record.get("TYPE"), openStatus: record.get("STATUS")},
+              unit: {
+                unitType: record.get("TYPE"),
+                openStatus: record.get("STATUS"),
+                incomeBracket: record.get("PERCENT_AMI"),
+                rent: record.get("RENT_PER_MONTH_USD"),
+                minIncome: record.get("MIN_YEARLY_INCOME_USD"),
+                maxIncome: {low: record.get("MAX_YEARLY_INCOME_LOW_USD"),
+                            high: record.get("MAX_YEARLY_INCOME_HIGH_USD")},
+              },
+              units: [], // To be filled later, after grouping by housing ID.
               locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
               phone: record.get("Phone (from Housing)")?.[0] || "",
               website: record.get("URL (from Housing)")?.[0] || "",
               email: record.get("EMAIL (from Housing)")?.[0] || "",
               populationsServed: record.get("_POPULATIONS_SERVED"),
+              minAge: record.get("_MIN_RESIDENT_AGE"),
             });
           }
         });
 
-        // Get a map from housing id to all associated unit type, status pairs.
-        let typeById = {};
+        // Combine entries with the same housing ID by filling the 'units'
+        // property with data from all units for that housing ID.
+        let housingById = {};
         for (idx in housingList) {
-          let unitId = housingList[idx].id;
-          typeById[unitId] = typeById[unitId] || new Set();
-          typeById[unitId].add(JSON.stringify({
-            unitType: housingList[idx].units.unitType,
-            openStatus: housingList[idx].units.openStatus}));
+          let housingId = housingList[idx].id;
+          housingById[housingId] = housingById[housingId] || housingList[idx];
+          housingById[housingId].units.push(housingList[idx].unit);
+          // The 'unit' property was temporary and used only to hold
+          // the unit-level data for each fetched record.  The same data
+          // (plus data for other units with the same housing ID)
+          // now resided in the 'units' property.
+          delete housingById[housingId].unit;
         }
-
-        // Use the housingId:(unitType,openStatus) map to rewrite the units of each record
-        // to be a list of all the units at the property with housingId. This will result
-        // in some duplicate entries, but those will be filtered out next.
-        for (idx in housingList) {
-          let unitsStrArray = [...typeById[housingList[idx].id]];
-          housingList[idx].units = unitsStrArray.map((x) => JSON.parse(x));
-        }
-
-        // De-duplicate results which can be present if the same unit is offered
-        // at different rents for different income levels or if the same property has multiple 
-        // units on offer.
-        return Array.from(
-          new Set(housingList.map((obj) => JSON.stringify(obj)))
-        ).map((string) => JSON.parse(string));
+        return Object.values(housingById);
       });
-  };
+  }
 
   // Sass pipeline
   eleventyConfig.addTemplateFormats("scss");
