@@ -192,15 +192,13 @@ module.exports = function(eleventyConfig) {
   }
 
   const formatCurrency = function(value) {
-    let ret = value.toLocaleString("en-US",
+    return value.toLocaleString("en-US",
     {
       style: "currency", 
       maximumFractionDigits: 0, 
       minimumFractionDigits: 0, 
       currency: "USD"
     });
-    console.log(ret);
-    return ret;
   }
 
   // Generates a label tag for the given 'fieldName'. 
