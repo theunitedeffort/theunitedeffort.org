@@ -94,11 +94,7 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addFilter("money", function(value) {
-    return value.toLocaleString("en-US", {
-      style: "currency", 
-      maximumFractionDigits: 0, 
-      minimumFractionDigits: 0, 
-      currency: "USD"});
+    return formatCurrency(value);
   });
 
   // Sorts items according to the ranking defined in SORT_RANKING.
@@ -186,6 +182,26 @@ module.exports = function(eleventyConfig) {
 
     return filterValuesCopy;
   });
+
+  // https://stackoverflow.com/questions/4149276/how-to-convert-camelcase-to-camel-case
+  const camelCaseToSpaces = function(str) {
+    // Insert space before each capital letter.
+    let spaced = str.replace(/([A-Z])/g, " $1");
+    // The first word is all lowercase, so capitalize it.
+    return `${spaced[0].toUpperCase()}${spaced.slice(1)}`
+  }
+
+  const formatCurrency = function(value) {
+    let ret = value.toLocaleString("en-US",
+    {
+      style: "currency", 
+      maximumFractionDigits: 0, 
+      minimumFractionDigits: 0, 
+      currency: "USD"
+    });
+    console.log(ret);
+    return ret;
+  }
 
   // Generates a label tag for the given 'fieldName'. 
   // 
@@ -297,6 +313,37 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode("indexedFormField", 
       function(index, fields, fieldName, className="") {
     return formField(fields, fieldName, className, index);
+  });
+
+  eleventyConfig.addShortcode("querySummary", function(query) {
+    let queryCopy = JSON.parse(JSON.stringify(query));
+    // The includeUnknown[Rent, Income] parameters only apply if a rent or income
+    // is supplied.
+    if (queryCopy["includeUnknownRent"] && !queryCopy["rentMax"]) {
+      delete queryCopy["includeUnknownRent"];
+    }
+    if (queryCopy["includeUnknownIncome"] && !queryCopy["income"]) {
+      delete queryCopy["includeUnknownIncome"];
+    }
+    let filtersApplied = []
+    for (let parameter in queryCopy) {
+      let value = queryCopy[parameter];
+      if (!value) {
+        continue
+      }
+      if (parameter == "rentMax" || parameter == "income") {
+        value = formatCurrency(Number(value));
+      }
+      if (value == "on") {
+        value = "";
+      }
+      let valueStr = "";
+      if (value) {
+        valueStr = `: ${value}`;
+      }
+      filtersApplied.push(`<span class="badge"><span class="bold">${camelCaseToSpaces(parameter)}</span>${valueStr}</span>`)
+    }
+    return filtersApplied.join(" ");
   });
 
   // Gets a subset of all housing results from Airtable based on 'query'.
