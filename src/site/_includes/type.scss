@@ -325,12 +325,12 @@ address {
 }
 
   
-  @media print {
-    .results_list {
-      font-size: 0.8em;
-    }
-
-    #affordable-housing-table-summary {
-      font-size: 10pt;
-    }
+@media print {
+  .results_list {
+    font-size: 0.8em;
   }
+
+  #affordable-housing-table-summary {
+    font-size: 10pt;
+  }
+}

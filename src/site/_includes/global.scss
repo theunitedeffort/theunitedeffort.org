@@ -50,6 +50,10 @@ body.smaller {
   }
 }
 
+body.page_housing_table {
+  display: block;
+}
+
 a {
   color: currentColor;
 }
@@ -114,6 +118,9 @@ body.max_width {
   }
   .only_print {
     display: revert !important;
+  }
+  .container {
+    width: 100%;
   }
 }
 
