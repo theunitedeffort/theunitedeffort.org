@@ -93,7 +93,6 @@ function sortUnitTypes(values) {
 // arrays are sorted by rent offering cost and outer array is sorted by unit
 // type.
 function groupByUnitType(units) {
-  // Clear any existing units from the data copy to make way for grouped units.
   groupedUnits = [];
   let tempMap = {};
   for (let unitRecord of units) {
