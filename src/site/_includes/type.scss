@@ -261,36 +261,49 @@
     top: -5px;
     left: 105%;
   }
+
+  .tooltip_entry:hover .tooltip_content {
+    visibility: visible;
+  }
   
   abbr {
     text-decoration: none;
     border-bottom: dotted 1px var(--color-gray-200);
+    position: relative;
   }
-  
+
+  abbr[title] {
+    cursor: help;
+  }
+  /* Note the standard browser UI title tooltip will
+  still appear (after a timeout) in addition
+  to this custom-styled tooltip.*/
   abbr[title]:hover::after,
   abbr[title]:focus::after {
-    content: ' ' attr(title);
-    font-size: 0.8em;
+    position: absolute;
+    min-width: 10em;
+    max-width: 20em;
+    width: max-content;
+    background-color: var(--color-gray-200);
+    color: var(--color-white);
+    text-align: center;
+    padding: 0.3em 0.3em;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--color-white);
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+    content: attr(title);
   }
-  
-  @media (hover: hover) and (pointer: fine) {
-    abbr[title] {
-      cursor: help;
-    }
-    abbr[title]:hover::after,
-    abbr[title]:focus::after {
-      content: '';
-    }
-  }
+
   
   form {
     .tooltip_content {
       font-size: 0.8em;
     }
-  }
-  
-  .tooltip_entry:hover .tooltip_content {
-    visibility: visible;
   }
   
   .bold {
