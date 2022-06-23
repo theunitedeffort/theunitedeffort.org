@@ -9,6 +9,13 @@ publish = "dist"
 fucntions = "netlify/functions"
 
 [[redirects]]
+from = "/housing/affordable-housing/table"
+to = "/.netlify/functions/serverless"
+status = 200
+force = true
+_generated_by_eleventy_serverless = "serverless"
+
+[[redirects]]
 from = "/housing/affordable-housing/filter"
 to = "/.netlify/functions/serverless"
 status = 200

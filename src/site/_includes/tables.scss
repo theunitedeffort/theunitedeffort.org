@@ -29,3 +29,26 @@ table.deflist {
   font-size: 1em;
   margin: 0;
 }
+
+
+#affordable-housing-table-summary {
+  page-break-inside: auto;
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  thead {
+    display: table-header-group;
+  }
+}
+
+
+@media print {
+  #affordable-housing-table-summary {
+    th,
+    td {
+      border-bottom-color: var(--color-black);
+      padding: 0.2em 0.5em;
+    }
+  }
+}

@@ -8,7 +8,8 @@ pageClass: "page-housing"
 ---
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
-{% assign housingdb = query | housingResults %}
+{% assign summaryProps = "unitType,openStatus" | split: "," %}
+{% assign housingdb = query | housingResults | summarizeUnits: summaryProps %}
 {% assign num_results = housingdb | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}
@@ -188,19 +189,18 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   </div>
 </form>
 
-{% if eleventy.serverless.query %}
   {% comment %} <p class="noprint">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p> {% endcomment %}
-  {% if num_results > 0 %}
-    <div class="align-end flex stack-reversed">
-      <p class="noprint bold">
-      {{num_results_snippet}}
-      </p>
-      <div>
-        <a class="btn btn_secondary noprint btn_print " title="Print these results" href="javascript:window.print();">
+  <div class="align-end flex stack-reversed">
+    <p class="noprint bold">
+    {{num_results_snippet}}
+    </p>
+    <div>
+      {% if num_results > 0 %}
+        <a class="btn btn_secondary noprint btn_print " title="Print summary of results" href="/housing/affordable-housing/table?{{eleventy.serverless.query | queryString}}">
           <svg role="img" aria-hidden="true" focusable="false" class="icon ">
             <use xlink:href="/images/sprites.svg#print"></use>
           </svg>
-          Print results
+          Print summary of results
         </a>
         {% comment %} 
         <a class="btn btn_secondary noprint btn_download " title="Download these results in CSV format">
@@ -210,6 +210,8 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           CSV
         </a>
         {% endcomment %}
+      {% endif %}
+      {% if num_filters_applied > 0 %}
         <a class="btn btn_secondary noprint btn_bookmark " title="Copy the URL of this search" href="javascript:CopyUrl();">
           <svg role="img" aria-hidden="true" focusable="false" class="icon icon_copy">
             <use xlink:href="/images/sprites.svg#copy"></use>
@@ -217,10 +219,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           Copy URL
         </a>
         <span id="copy-url-done" hidden>&#10003;</span>
-      </div>
+      {% endif %}
     </div>
-  {% endif %}
-{% endif %}
+  </div>
 <ul class="results_list">
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
   {% for address in sortedHousingdb %}
