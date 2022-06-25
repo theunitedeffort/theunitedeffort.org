@@ -29,7 +29,7 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
 <table id="affordable-housing-table-summary">
   <thead>
     <tr>
-      <th>Apartment Name<span class="noprint"> & Link to Website</span></th>
+      <th>Apartment Name<span class="noprint"> & Link</span></th>
       <th>Address</th>
       <th>City</th>
       <th>Waitlist Status</th>
@@ -46,12 +46,8 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
     {% for address in sortedHousingdb %}
       <tr>
         <td>
-          {% if address.website and address.website != '' %}
-            <a class="noprint" href="{{ address.website }}" target="_blank" rel="noopener">{{ address.aptName }}</a>
-            <span class="only_print">{{address.aptName}}</span>
-          {% else %}
-            {{address.aptName}}
-          {% endif %}
+          <a class="noprint" href="/housing/affordable-housing/{{address.id}}" target="_blank" rel="noopener">{{ address.aptName }}</a>
+          <span class="only_print">{{address.aptName}}</span>
         </td>
         <td>{{ address.address }}</td>
         <td>{{ address.city }}</td>
