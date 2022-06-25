@@ -357,7 +357,7 @@ module.exports = function(eleventyConfig) {
     console.log(query);
     let asset = new EleventyFetch.AssetCache("housing_results");
     let isBuild = !process.env.ELEVENTY_SERVERLESS && !query;
-    if (isBuild && asset.isCacheValid("1d")) {
+    if (isBuild && asset.isCacheValid("1m")) {
       console.log("Returning cached housing list.");
       let housing = await asset.getCachedValue();
       return housing;

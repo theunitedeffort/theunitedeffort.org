@@ -29,7 +29,7 @@ const fetchHousingSchema = async() => {
 // units tables.
 module.exports = async function() {
   let asset = new AssetCache("affordable_housing_fields");
-  if (asset.isCacheValid("1d")) {
+  if (asset.isCacheValid("1m")) {
     console.log("Using cached affordable housing fields.");
     return await asset.getCachedValue();
   }
