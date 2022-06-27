@@ -439,7 +439,7 @@ module.exports = function(eleventyConfig) {
 
     if (city) {
       let cities = city.split(", ");
-      let cityQuery = cities.map((x) => `{City (from Housing)} = '${x}'`);
+      let cityQuery = cities.map((x) => `{_CITY} = '${x}'`);
       parameters.push(`OR(${cityQuery.join(",")})`);
     }
 
@@ -493,8 +493,8 @@ module.exports = function(eleventyConfig) {
         `${incomeOp}(${incomeMaxParams.join(",")}))`);
     }
     if (propertyName) {
-      // APT_NAME is a lookup field which is by default an array (in this case with a single entry).
-      parameters.push(`FIND(LOWER('${propertyName}'), LOWER(ARRAYJOIN({APT_NAME}, ''))) > 0`);
+      // _APT_NAME is a lookup field which is by default an array (in this case with a single entry).
+      parameters.push(`FIND(LOWER('${propertyName}'), LOWER(ARRAYJOIN({_APT_NAME}, ''))) > 0`);
     }
 
     let queryStr = `AND(${parameters.join(",")})`;
@@ -516,14 +516,14 @@ module.exports = function(eleventyConfig) {
       .all()
       .then(records => {
         records.forEach(function(record) {
-          let housing_id = record.get("ID (from Housing)")?.[0] || "";
+          let housing_id = record.get("_DISPLAY_ID")?.[0] || "";
           // Ignore any entries that do not have a parent property.
           if (housing_id) {
             housingList.push({
               id: housing_id,
-              aptName: record.get("APT_NAME")?.[0] || "",
-              address: record.get("Address (from Housing)")?.[0] || "",
-              city: record.get("City (from Housing)")?.[0] || "",
+              aptName: record.get("_APT_NAME")?.[0] || "",
+              address: record.get("_ADDRESS")?.[0] || "",
+              city: record.get("_CITY")?.[0] || "",
               unit: {
                 unitType: record.get("TYPE"),
                 openStatus: record.get("STATUS"),
@@ -534,10 +534,10 @@ module.exports = function(eleventyConfig) {
                             high: record.get("MAX_YEARLY_INCOME_HIGH_USD")},
               },
               units: [], // To be filled later, after grouping by housing ID.
-              locCoords: record.get("LOC_COORDS (from Housing)")?.[0] || "",
-              phone: record.get("Phone (from Housing)")?.[0] || "",
-              website: record.get("URL (from Housing)")?.[0] || "",
-              email: record.get("EMAIL (from Housing)")?.[0] || "",
+              locCoords: record.get("_LOC_COORDS")?.[0] || "",
+              phone: record.get("_PHONE")?.[0] || "",
+              website: record.get("_PROPERTY_URL")?.[0] || "",
+              email: record.get("_EMAIL")?.[0] || "",
               populationsServed: record.get("_POPULATIONS_SERVED"),
               minAge: record.get("_MIN_RESIDENT_AGE"),
             });

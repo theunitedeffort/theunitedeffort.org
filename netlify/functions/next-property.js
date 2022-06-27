@@ -112,7 +112,7 @@ function groupByUnitType(units) {
 const fetchUnitRecords = async(housingId) => {
   const table = base(UNITS_TABLE);
   return table.select({
-    filterByFormula: `{ID (from Housing)} = "${housingId}"`
+    filterByFormula: `{_DISPLAY_ID} = "${housingId}"`
   })
   .all()
   .then(records => {

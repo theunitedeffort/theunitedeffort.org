@@ -79,8 +79,8 @@ maxHouseholdSize: 12
             <a href="" target="_blank" rel="noopener" class="label property-link">Visit this page</a><sup>&#8599;</sup><br/>
             {% formField housingFields, "PROPERTY_URL" %}
 
-            {% fieldLabel "Total Units", housingFields, "UNITS_CNT" %}<br/>
-            {% formField housingFields, "UNITS_CNT" %}
+            {% fieldLabel "Total Units", housingFields, "NUM_TOTAL_UNITS" %}<br/>
+            {% formField housingFields, "NUM_TOTAL_UNITS" %}
 
             <div class="multiselect" id="populations-served">
             {% fieldLabel "Target Populations", housingFields, "POPULATIONS_SERVED" %}<br/>
@@ -174,14 +174,14 @@ maxHouseholdSize: 12
                             {% indexedFieldLabel offerIdx, "Income Bracket", unitsFields, "PERCENT_AMI" %}<br/>
                             {% indexedFormField offerIdx, unitsFields, "PERCENT_AMI", "short inline" %}% AMI<br/>
 
-                            <input type="checkbox" id="is-alternate-rent:{{offerIdx}}" class="form_conditional is_alternate_rent" data-primary-field="RENT_PER_MONTH_USD:{{offerIdx}}" data-alternate-field="RENT_NOTES:{{offerIdx}}" data-conflict-resolution="primary"> <label for="is-alternate-rent:{{offerIdx}}">The rent is variable or can't be entered as a single number for this rent offering</label><br/>
+                            <input type="checkbox" id="is-alternate-rent:{{offerIdx}}" class="form_conditional is_alternate_rent" data-primary-field="RENT_PER_MONTH_USD:{{offerIdx}}" data-alternate-field="ALTERNATE_RENT_DESCRIPTION:{{offerIdx}}" data-conflict-resolution="primary"> <label for="is-alternate-rent:{{offerIdx}}">The rent is variable or can't be entered as a single number for this rent offering</label><br/>
                             <div class="rent_value">
                               {% indexedFieldLabel offerIdx, "Rent", unitsFields, "RENT_PER_MONTH_USD" %}<br/>
                               {% indexedFormField offerIdx, unitsFields, "RENT_PER_MONTH_USD", "inline" %} $/month<br/>
                             </div>
                             <div class="rent_alternate" hidden>
-                              {% indexedFieldLabel offerIdx, "Rent Description", unitsFields, "RENT_NOTES" %}<br/>
-                              {% indexedFormField offerIdx, unitsFields, "RENT_NOTES", "long"%}
+                              {% indexedFieldLabel offerIdx, "Rent Description", unitsFields, "ALTERNATE_RENT_DESCRIPTION" %}<br/>
+                              {% indexedFormField offerIdx, unitsFields, "ALTERNATE_RENT_DESCRIPTION", "long"%}
                             </div>
 
                             <div class="min_income_alternate" hidden>

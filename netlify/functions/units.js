@@ -320,26 +320,26 @@ const fetchData = async(housingID) => {
   const table = base(UNITS_TABLE);
   return table.select({
       view: "API all units",
-      filterByFormula: `{ID (from Housing)} = "${housingID}"`
+      filterByFormula: `{_DISPLAY_ID} = "${housingID}"`
     })
     .all()
     .then(records => {
       let units = {"metadata": {"notesData": {}}, "data": []};
       if (records[0]){
         units.metadata["aptName"] = (
-          records[0].fields["APT_NAME"]?.[0]|| "");
+          records[0].fields["_APT_NAME"]?.[0]|| "");
         units.metadata["Address"] = (
-          records[0].fields["Address (from Housing)"]?.[0]|| "");
+          records[0].fields["_ADDRESS"]?.[0]|| "");
         units.metadata["City"] = (
-          records[0].fields["City (from Housing)"]?.[0]|| "");
+          records[0].fields["_CITY"]?.[0]|| "");
         units.metadata["Units"] = (
-          records[0].fields["UNITS_CNT (from Housing)"]?.[0]|| "");
+          records[0].fields["_NUM_TOTAL_UNITS"]?.[0]|| "");
         units.metadata["Email"] = (
-          records[0].fields["EMAIL (from Housing)"]?.[0]|| "");
+          records[0].fields["_EMAIL"]?.[0]|| "");
         units.metadata["Phone"] = (
-          records[0].fields["Phone (from Housing)"]?.[0]|| "");
+          records[0].fields["_PHONE"]?.[0]|| "");
         units.metadata["Website"] = (
-          records[0].fields["URL (from Housing)"]?.[0]|| "");
+          records[0].fields["_PROPERTY_URL"]?.[0]|| "");
         units.metadata.notesData["_POPULATIONS_SERVED"] = (
           records[0].fields["_POPULATIONS_SERVED"]);
         units.metadata.notesData["_MIN_RESIDENT_AGE"] = (

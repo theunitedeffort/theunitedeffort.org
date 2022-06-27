@@ -31,8 +31,8 @@ const fetchFilterOptions = async() => {
       records.forEach(function(record) {
         // TODO(trevorshannon): Figure out how to deal with empty data properly.
         let cityStr = "";
-        if (record.get("City (from Housing)") !== undefined) {
-          cityStr = record.get("City (from Housing)")[0];
+        if (record.get("_CITY") !== undefined) {
+          cityStr = record.get("_CITY")[0];
         }
         options.push({
           city: cityStr,
