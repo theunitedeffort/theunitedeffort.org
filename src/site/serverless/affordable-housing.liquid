@@ -229,9 +229,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     <h4>
       <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
     </h4>
-    <p>
-      {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
-      {% for status in allStatuses %}
+    {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
+    {% for status in allStatuses %}
+      <p>
         <span class="badge
         {% if status == "Call for Status" %}
           badge__warn
@@ -247,9 +247,8 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
             <span class="badge">{{ unit.unitType }}</span>
           {% endif %}
         {% endfor %} 
-        
-      {% endfor %}
-    </p>
+      </p>
+    {% endfor %}
     <address>
       {% if address.address and address.address != '' %}
         <p>
