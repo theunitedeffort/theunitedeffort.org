@@ -280,10 +280,6 @@
   to this custom-styled tooltip.*/
   abbr[title]:hover::after,
   abbr[title]:focus::after {
-    position: absolute;
-    min-width: 10em;
-    max-width: 20em;
-    width: max-content;
     background-color: var(--color-gray-200);
     color: var(--color-white);
     text-align: center;
@@ -296,6 +292,9 @@
     z-index: 1;
     top: -5px;
     left: 105%;
+    white-space: nowrap;
+    /*https://stackoverflow.com/a/40896165*/
+    -webkit-transform: translate3d(0,0,0);
     content: attr(title);
   }
 
