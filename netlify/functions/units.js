@@ -44,15 +44,36 @@ const makeListString = (collection, finalJoinStr) => {
   return strArray.join("");
 }
 
+// TODO: Move this to a liquid template once units.js is deprecated.
 const unknownIdMessage = (housingId) => {
-  return `<h2>Oops!</h2>
-  <p>We looked for an affordable housing property with an ID of
-  <span class="bold">${housingId}</span>,
-  but couldn't find it.</p>
-  <p>Check the URL is correct, or try
-  <a href="/housing/affordable-housing">searching</a>
-  for the property
-  you are looking for.</p>`
+  return `<h1>Oops!</h1>
+  <p>
+    We looked for an affordable housing property with an ID of
+    <span class="bold">${housingId}</span>,
+    but couldn't find it.
+  </p>
+  <p>
+    It could be because a link you followed is out of date, or perhaps we have 
+    moved our pages around. You can always try
+    <a href="/housing/affordable-housing">searching</a>
+    for the property you are looking for.
+  </p>
+  <p>
+    If you'd like some help finding this property, contact us at
+    <a href="mailto:help@theunitedeffort.org?subject=Help finding a missing property listing"
+    target="_blank" rel="noopener">help@theunitedeffort.org</a>. 
+    We'll be glad to help. If you prefer, you can also contact us via the form 
+    below.
+  </p>
+
+  <form name="not_found_contact_us" id="not-found-contact-us" method="POST" action="/message-sent" netlify>
+    <input type="hidden" name="form-name" value="not_found_contact_us" />
+    <label for="email">Email Address</label>
+    <input id="email" type="email" name="email" required></input>
+    <label for="body">Message</label>
+    <textarea id="body" class="large" name="message"></textarea>
+    <button type="submit" class="btn btn_primary">Send</button>
+  </form>`
 }
 
 // Make a definition list from all the data returned about this item
@@ -378,6 +399,13 @@ exports.handler = async function(event) {
       statusCode: 404,
       body: pageTemplate(unknownIdMessage(housingID))
     }
+    // return {
+    //   statusCode: 404,
+    //   headers: {
+    //     Location: '/404.html',
+    //     'Cache-Control': 'no-cache',
+    //   }
+    // }
   }
   console.log(data);
   if (json) {
