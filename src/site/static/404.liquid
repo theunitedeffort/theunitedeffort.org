@@ -16,7 +16,7 @@ permalink: /404.html
   If you'd like some help finding whatever it is you are looking for, contact us at <a href="mailto:{{ emailAddress }}?subject={{ emailSubject | escape }}" target="_blank" rel="noopener">{{ emailAddress }}</a>.  We'll be glad to help. If you prefer, you can also contact us via the form below.
 </p>
 
-<form name="not_found_contact_us" id="not-found-contact-us" netlify>
+<form name="not_found_contact_us" id="not-found-contact-us" method="POST" action="/message-sent" netlify>
   <label for="email">Email Address</label><input id="email" type="email" name="email"></input>
   <label for="body">Message</label><textarea id="body" class="large" name="message"></textarea>
   <button type="submit" class="btn btn_primary">Send</button>
