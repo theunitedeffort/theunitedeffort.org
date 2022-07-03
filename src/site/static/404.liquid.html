@@ -1,0 +1,23 @@
+---
+layout: "layouts/base.liquid"
+title: "Page Not Found"
+pageClass: ""
+permalink: /404.html
+---
+
+<h1>Oops, we couldn't find that page.</h1>
+
+{% assign emailAddress = "help@theunitedeffort.org" %}
+{% assign emailSubject = "Help finding a UEO webpage" %}
+<p>
+  The page you are looking for does not exist.  It could be because a link you followed is out of date, or perhaps we have moved our pages around.
+</p>
+<p>
+  If you'd like some help finding whatever it is you are looking for, contact us at <a href="mailto:{{ emailAddress }}?subject={{ emailSubject | escape }}" target="_blank" rel="noopener">{{ emailAddress }}</a>.  We'll be glad to help. If you prefer, you can also contact us via the form below.
+</p>
+
+<form name="not_found_contact_us" id="not-found-contact-us" netlify>
+  <label for="email">Email Address</label><input id="email" type="email"></input>
+  <label for="body">Message</label><textarea id="body" class="large"></textarea>
+  <button type="submit" class="btn btn_primary">Send</button>
+</form>

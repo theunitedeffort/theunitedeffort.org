@@ -375,7 +375,7 @@ exports.handler = async function(event) {
   let data = await fetchData(housingID);
   if (!data.metadata["aptName"]) {
     return {
-      statusCode: 200,
+      statusCode: 404,
       body: pageTemplate(unknownIdMessage(housingID))
     }
   }
