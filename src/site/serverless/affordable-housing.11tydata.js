@@ -19,9 +19,6 @@ function FilterCheckbox(name, selected = false) {
 
 // Gets values from all housing units that are relevant to future filtering of 
 // results.
-//
-// TODO(trevorshannon): Only fetch filter options at build time, not on every
-// page load.
 const fetchFilterOptions = async() => {
   let options = [];
   const table = base(UNITS_TABLE);
@@ -68,14 +65,14 @@ module.exports = async function() {
   console.log("Fetching filter options.");
   let filterOptions = await fetchFilterOptions();
   let cities = [...new Set(filterOptions.map(o => o.city))];
-  cities = cities.filter(x => x !== undefined);
+  cities = cities.filter(x => x);
   let openStatuses = [...new Set(filterOptions.map(o => o.openStatus))];
-  openStatuses = openStatuses.filter(x => x !== undefined);
+  openStatuses = openStatuses.filter(x => x);
   let unitTypes = [...new Set(filterOptions.map(o => o.unitType))];
-  unitTypes = unitTypes.filter(x => x !== undefined);
+  unitTypes = unitTypes.filter(x => x);
   let allPopulationsServed = filterOptions.map(o => o.populationsServed);
   allPopulationsServed = [...new Set(allPopulationsServed.flat())];
-  allPopulationsServed = allPopulationsServed.filter(x => x !== undefined);
+  allPopulationsServed = allPopulationsServed.filter(x => x);
 
   let filterVals = [
     new FilterSection("City", "city", cities.map(x => new FilterCheckbox(x))),

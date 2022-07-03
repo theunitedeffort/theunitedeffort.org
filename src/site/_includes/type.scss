@@ -59,7 +59,8 @@
   main,
   .pre-footer {
     a:link,
-    a:visited {
+    a:visited,
+    button.link {
       color: var(--color-blue-dark);
       text-decoration: underline;
       text-decoration-thickness: 2px;
@@ -67,8 +68,26 @@
       text-decoration-color: var(--color-blue);
     }
     a:hover,
-    a:focus {
+    a:focus,
+    button.link:hover,
+    button.link:focus {
       text-decoration: none;
+    }
+    /* 
+    A button is not technically type, but we are styling
+    it to look that way, so here it is in type.scss
+    */
+    button.link {
+      cursor: pointer;
+      background: none!important;
+      border: none;
+      padding: 0!important;
+      font-family: var(--font-primary);
+      font-size: inherit;
+    }
+
+    #welcome-name + button.link {
+      font-size: smaller;
     }
   }
   
@@ -108,6 +127,41 @@
     border-left: 0.4em solid var(--color-orange);
     margin-left: 0;
   }
+
+  .badge__done {
+    border-left: 0.4em solid var(--color-blue-dark);
+    margin-left: 0;
+  }
+
+  .badge__partial {
+    border-left: 0.4em solid var(--color-blue);
+    margin-left: 0;
+  }
+
+  .badge__remaining {
+    border-left: 0.4em solid var(--color-gray-700);
+    margin-left: 0;
+  }
+
+  .progress_bar {
+    background-color: var(--color-gray-900);
+    height: 1em;
+  }
+
+  .progress_bar.done {
+    background-color: var(--color-blue-dark);
+    display: inline-block;
+  }
+
+  .progress_bar.partial {
+    background-color: var(--color-blue);
+    display: inline-block;
+  }
+
+  .progress_bar.remaining {
+    background-color: var(--color-gray-700);
+    display: inline-block;
+  }
   
   h3 .badge {
     position: relative;
@@ -145,6 +199,10 @@
     }
   }
 
+  .queue_status {
+    width: 50%;
+  }
+
   .icon_info,
   .icon_query {
     border-radius: 50%;
@@ -159,7 +217,13 @@
     text-align: center;
   }
 
-  
+  #housing-changes {
+    .icon_info,
+    .icon_query {
+      font-size: 0.7em;
+    } 
+  }
+
   .icon_query {
     &:after {
       content: "?";
@@ -197,36 +261,48 @@
     top: -5px;
     left: 105%;
   }
+
+  .tooltip_entry:hover .tooltip_content {
+    visibility: visible;
+  }
   
   abbr {
     text-decoration: none;
     border-bottom: dotted 1px var(--color-gray-200);
+    position: relative;
   }
-  
+
+  abbr[title] {
+    cursor: help;
+  }
+  /* Note the standard browser UI title tooltip will
+  still appear (after a timeout) in addition
+  to this custom-styled tooltip.*/
   abbr[title]:hover::after,
   abbr[title]:focus::after {
-    content: ' ' attr(title);
-    font-size: 0.8em;
+    background-color: var(--color-gray-200);
+    color: var(--color-white);
+    text-align: center;
+    padding: 0.3em 0.3em;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--color-white);
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+    white-space: nowrap;
+    /*https://stackoverflow.com/a/40896165*/
+    -webkit-transform: translate3d(0,0,0);
+    content: attr(title);
   }
-  
-  @media (hover: hover) and (pointer: fine) {
-    abbr[title] {
-      cursor: help;
-    }
-    abbr[title]:hover::after,
-    abbr[title]:focus::after {
-      content: '';
-    }
-  }
+
   
   form {
     .tooltip_content {
       font-size: 0.8em;
     }
-  }
-  
-  .tooltip_entry:hover .tooltip_content {
-    visibility: visible;
   }
   
   .bold {
@@ -240,6 +316,18 @@
     font-size: 0.8em;
   }
 
+ .note {
+    border: 2px solid var(--color-blue);
+    background-color: var(--color-blue-light);
+    border-radius: 6px;
+    padding: 1em;
+
+    &::before {
+      content: "Note: ";
+      font-weight: 600;
+    }
+  }
+
 sup { vertical-align: top; font-size: 0.6em; }
 
 address {
@@ -249,8 +337,12 @@ address {
 }
 
   
-  @media print {
-    .results_list {
-      font-size: 0.8em;
-    }
+@media print {
+  .results_list {
+    font-size: 0.8em;
   }
+
+  #affordable-housing-table-summary {
+    font-size: 10pt;
+  }
+}

@@ -9,6 +9,13 @@ publish = "dist"
 fucntions = "netlify/functions"
 
 [[redirects]]
+from = "/housing/affordable-housing/table"
+to = "/.netlify/functions/serverless"
+status = 200
+force = true
+_generated_by_eleventy_serverless = "serverless"
+
+[[redirects]]
 from = "/housing/affordable-housing/filter"
 to = "/.netlify/functions/serverless"
 status = 200
@@ -23,9 +30,10 @@ force = true
 _generated_by_eleventy_serverless = "serverless"
 
 [[redirects]]
-from = "/housing/affordable-housing/search"
-to = "/.netlify/functions/search-housing"
+from = "/contrib/affordable-housing/campaigns/*"
+to = "/contrib/affordable-housing/changes"
 status = 200
+force = true
 
 [[redirects]]
 from = "/housing/affordable-housing/:id"
@@ -35,6 +43,16 @@ status = 200
 [[redirects]]
 from = "/data/housing/affordable-housing/:id"
 to = "/.netlify/functions/units"
+status = 200
+
+[[redirects]]
+from = "/contrib/affordable-housing/next-property/:campaign/:id"
+to = "/.netlify/functions/next-property"
+status = 200
+
+[[redirects]]
+from = "/contrib/affordable-housing/next-property/:campaign"
+to = "/.netlify/functions/next-property"
 status = 200
 
 [[redirects]]
