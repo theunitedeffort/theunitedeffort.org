@@ -399,13 +399,6 @@ exports.handler = async function(event) {
       statusCode: 404,
       body: pageTemplate(unknownIdMessage(housingID))
     }
-    // return {
-    //   statusCode: 404,
-    //   headers: {
-    //     Location: '/404.html',
-    //     'Cache-Control': 'no-cache',
-    //   }
-    // }
   }
   console.log(data);
   if (json) {
