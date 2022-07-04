@@ -6,7 +6,7 @@ permalink:
 pageClass: "page_housing_table"
 pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</style>'
 ---
-{% assign updateButtonStr = "Update results" %}
+
 {% assign query = eleventy.serverless.query %}
 {% assign housingdb = query | housingResults %}
 {% assign numFiltersApplied = query | numFiltersApplied %}
@@ -26,7 +26,7 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
 {% endif %}
 
 <h3>Showing {{numResults}} {% if numResults == 1 %}property{% else %}properties{% endif %}</h3>
-<table id="affordable-housing-table-summary">
+<table id="affordable-housing-table-summary" class="printed">
   <thead>
     <tr>
       <th>Apartment Name<span class="noprint"> & Link</span></th>

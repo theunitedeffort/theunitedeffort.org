@@ -139,6 +139,10 @@ body.max_width {
   flex-wrap: wrap;
 }
 
+.align_end {
+  align-items: flex-end;
+}
+
 .stack-reversed {
   flex-wrap: wrap-reverse;
 }
@@ -171,6 +175,10 @@ body.max_width {
 
 .split_left_container {
   margin-right: 1em;
+}
+
+.inline_block {
+  display: inline-block;
 }
 
 iframe {

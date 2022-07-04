@@ -14,6 +14,14 @@ td {
   border-bottom: solid 1px var(--color-gray-900);
 }
 
+th[scope=colgroup] {
+  text-align: center;
+}
+
+th.wide {
+  width: 30em;
+}
+
 table.deflist {
   font-size: 1em;
   td {
@@ -31,7 +39,7 @@ table.deflist {
 }
 
 
-#affordable-housing-table-summary {
+table.printed {
   page-break-inside: auto;
   tr {
     page-break-inside: avoid;
@@ -42,12 +50,21 @@ table.deflist {
   }
 }
 
+table.all_borders {
+  border-collapse: collapse;
+  th,
+  td {
+    border: solid 2px var(--color-gray-900);
+  }
+}
+
 
 @media print {
-  #affordable-housing-table-summary {
+  table.printed {
     th,
     td {
-      border-bottom-color: var(--color-black);
+      border-color: var(--color-black);
+      border-width: 1px;
       padding: 0.2em 0.5em;
     }
   }

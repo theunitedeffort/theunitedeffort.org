@@ -1,0 +1,101 @@
+---
+layout: layouts/base.liquid
+title: Affordable Housing Application Tracker
+permalink: 
+  serverless: "/housing/affordable-housing/tracker"
+pageClass: "page_housing_table"
+pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</style>'
+---
+
+{% assign query = eleventy.serverless.query %}
+{% assign housingdb = query | housingResults %}
+{% assign numFiltersApplied = query | numFiltersApplied %}
+{% assign numResults = housingdb | size %}
+
+{% if numFiltersApplied > 0 %}
+  <div>Filters Applied:</div> {% querySummary query %}
+{% endif %}
+
+<div class="flex align_end">
+  <h3>Showing {{numResults}} {% if numResults == 1 %}property{% else %}properties{% endif %}</h3>
+  <a class="btn btn_secondary noprint" title="Print table" href="javascript:window.print();">
+    <svg role="img" aria-hidden="true" focusable="false" class="icon ">
+      <use xlink:href="/images/sprites.svg#print"></use>
+    </svg>
+    Print table
+  </a>
+</div>
+
+<table id="affordable-housing-table-tracker" class="printed all_borders">
+  <colgroup span="3"></colgroup>
+  <colgroup span="2"></colgroup>
+  <colgroup span="2"></colgroup>
+  <thead>
+    <tr>
+      <th rowspan="2">Apartment</th>
+      <th colspan="3" scope="colgroup">Application</th>
+      <th colspan="2" scope="colgroup">1 Month Follow-Up</th>
+      <th colspan="2" scope="colgroup">6 Month Follow-Up</th>
+    </tr>
+    <tr>
+      <th scope="col">Date Submitted</th>
+      <th scope="col">Submitted Via</th>
+      <th scope="col" class="wide">Received By</th>
+      <th scope="col">Contact Details Confirmed</th>
+      <th scope="col">Verified on Waitlist</th>
+      <th scope="col">Contact Details Confirmed</th>
+      <th scope="col">Verified on Waitlist</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% assign sortedHousingdb = housingdb | sort: "aptName" %}
+    {% for address in sortedHousingdb %}
+      <tr>
+        <td>
+          <p>
+            <a class="noprint" href="/housing/affordable-housing/{{address.id}}" target="_blank" rel="noopener">{{ address.aptName }}</a>
+            <span class="only_print">{{address.aptName}}</span>
+          </p>
+          {% if address.address and address.address != '' %}
+            <p>
+              {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %}
+            </p>
+          {% endif %}
+          {% if address.email and address.email != '' %}
+            <p>
+              {{ address.email }}
+            </p>
+          {% endif %}
+          {% if address.phone and address.phone != '' %}
+            <p>
+              {{ address.phone }}
+            </p>
+          {% endif %}
+        </td>
+        <td><span class="date_placeholder"></span><span class="date_placeholder"></span><span class="date_placeholder"></span></td>
+        <td class="nowrap checklist">
+          <p>
+            <span class="print_checkbox inline_block"></span> Website
+          </p>
+          <p>
+            <span class="print_checkbox inline_block"></span> Email
+          </p>
+          <p>
+            <span class="print_checkbox inline_block"></span> Mail
+          </p>
+          <p>
+            <span class="print_checkbox inline_block"></span> Dropoff
+          </p>
+          <p>
+            <span class="print_checkbox inline_block"></span> Other
+          </p>
+        </td>
+        <td></td>
+        <td><div class="print_checkbox"></div></td>
+        <td><div class="print_checkbox"></div></td>
+        <td><div class="print_checkbox"></div></td>
+        <td><div class="print_checkbox"></div></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
