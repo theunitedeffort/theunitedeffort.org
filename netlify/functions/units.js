@@ -108,7 +108,7 @@ const metaData = (units) => {
   }
 
   if (units.metadata.notesData["_DISALLOWS_PUBLIC_APPLICATIONS"]) {
-    metaNotes.push("A referral from a case manager or housing agency is required to apply for this property. Contact the property for details on the referral process.");
+    metaNotes.push("A referral from a housing agency is required to apply for this property. Contact the property for details on the referral process.");
   }
 
   let metaNotesStr = "";
