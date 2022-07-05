@@ -16,6 +16,16 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
   <div>Filters Applied:</div> {% querySummary query %}
 {% endif %}
 
+{% if query.availability == nil or query.availability contains "Waitlist Closed" %}
+  {% comment %}
+  Need to keep what they have in the query, but remove Waitlist Closed.
+  Or, need to add everything to the query except Waitlist Closed.
+  {% endcomment %}
+  <p class="note">
+    The table below includes properties that are currently <span class="strong">not</span> accepting waitlist applications.  <a href="" class="noprint">Hide these properties</a>
+  </p>
+{% endif %}
+
 <div class="flex align_end">
   <h3>Showing {{numResults}} {% if numResults == 1 %}property{% else %}properties{% endif %}</h3>
   <a class="btn btn_secondary noprint" title="Print table" href="javascript:window.print();">
@@ -25,6 +35,10 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
     Print table
   </a>
 </div>
+
+<p class="noprint">
+  Print this table to track your progress applying to these apartments.
+</p>
 
 <table id="affordable-housing-table-tracker" class="printed all_borders">
   <colgroup span="3"></colgroup>
