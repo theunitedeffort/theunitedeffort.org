@@ -43,12 +43,18 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
   <p>Filters Applied:<br/> {% querySummary query %}</p>
 {% endif %}
 
-{% if query.availability == nil or query.availability contains "Waitlist Closed" %}
+{% if query.availability == nil or query.availability == "" or query.availability contains "Waitlist Closed" %}
   {% assign availabilities = filterValues | where: "name", "availability" %}
   {% assign availabilities = availabilities[0].options | map: "name" %}
   {% assign newQuery = query | removeWaitlistClosed: availabilities %}
   <p class="note">
-    The checklist below includes some properties that are currently <span class="bold">not</span> accepting waitlist applications.  <a href="?{{ newQuery }}" class="noprint">Hide these properties</a>
+    {% assign includesStr = "includes some" %}
+    {% assign linkStr = "Hide properties with a closed waitlist" %}
+    {% if query.availability == "Waitlist Closed" %}
+      {% assign includesStr = "only contains" %}
+      {% assign linkStr = "Show properties that may have an open waitlist" %}
+    {% endif %}
+    The checklist below {{includesStr}} properties that are currently <span class="bold">not</span> accepting waitlist applications.  <a href="?{{newQuery}}" class="noprint">{{linkStr}}</a>
   </p>
 {% endif %}
 
