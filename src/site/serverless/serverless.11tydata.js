@@ -51,7 +51,7 @@ const fetchFilterOptions = async() => {
 module.exports = async function() {
   let asset = new AssetCache("affordable_housing_filters");
   // This cache duration will only be used at build time.
-  let cacheDuration = "1m";
+  let cacheDuration = "1d";
   if(process.env.ELEVENTY_SERVERLESS) {
     // Use the serverless cache location specified in .eleventy.js
     asset.cacheDirectory = "cache"; 

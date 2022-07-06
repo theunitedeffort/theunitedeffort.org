@@ -184,6 +184,48 @@ module.exports = function(eleventyConfig) {
     return filterValuesCopy;
   });
 
+
+  // Removes the "Waitlist Closed" filter from the "availability" URL param.
+  // If nothing is set for the availability parameter, all availabilities
+  // will be added to the URL query string *except* "Waitlist Closed". This 
+  // funtion is intended to be used to generate a URL query string that forces
+  // properties with a closed waitlist to be filtered out.  "query" is an
+  // eleventy.serverless.query object and "allAvailabilities" is a list of
+  // all possible values for the availability parameter, generally fetched
+  // ahead of time from Airtable.  Returns a URL query string.
+  eleventyConfig.addFilter("removeWaitlistClosed", function(query, 
+    allAvailabilities) {
+    // Build a URLSearchParams object from the eleventy query object.
+    // Eleventy stores multiple values for the same key as a comma separated
+    // string, but URLSearchParams expects separate entries for each value,
+    // so do that conversion here.
+    const availKey = "availability";
+    let queryParams = new URLSearchParams();
+    for (const key in query) {
+      for (const value of query[key].split(", ")) {
+        queryParams.append(key, value);
+      }
+    }
+    // Store existing availability values that were set by the user.
+    let availabilityValues = queryParams.getAll(availKey);
+    // And delete them from the URLSearchParams object to clear the way.
+    queryParams.delete(availKey);
+    if (!availabilityValues.length) {
+      // The user had no availabilities set, so initialize to the full list.
+      availabilityValues = allAvailabilities.slice(0);
+    }
+    // Remove the Waitlist Closed item from the availability values.
+    let closedIdx = availabilityValues.indexOf("Waitlist Closed");
+    if (closedIdx >= 0) {
+      availabilityValues.splice(closedIdx, 1);
+    }
+    // Push the modified list of availability values to the params.
+    for (const value of availabilityValues) {
+      queryParams.append(availKey, value);
+    }
+    return queryParams.toString();
+  });
+
   // Converts "camelCaseString" to "Camel Case String".
   // https://stackoverflow.com/questions/4149276/how-to-convert-camelcase-to-camel-case
   const camelCaseToSpaces = function(str) {

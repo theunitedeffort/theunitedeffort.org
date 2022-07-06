@@ -17,12 +17,11 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
 {% endif %}
 
 {% if query.availability == nil or query.availability contains "Waitlist Closed" %}
-  {% comment %}
-  Need to keep what they have in the query, but remove Waitlist Closed.
-  Or, need to add everything to the query except Waitlist Closed.
-  {% endcomment %}
+  {% assign availabilities = filterValues | where: "name", "availability" %}
+  {% assign availabilities = availabilities[0].options | map: "name" %}
+  {% assign newQuery = query | removeWaitlistClosed: availabilities %}
   <p class="note">
-    The table below includes properties that are currently <span class="strong">not</span> accepting waitlist applications.  <a href="" class="noprint">Hide these properties</a>
+    The table below includes properties that are currently <span class="strong">not</span> accepting waitlist applications.  <a href="?{{ newQuery }}" class="noprint">Hide these properties</a>
   </p>
 {% endif %}
 
