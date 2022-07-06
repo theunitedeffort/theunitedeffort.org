@@ -18,10 +18,6 @@ th[scope=colgroup] {
   text-align: center;
 }
 
-th.wide {
-  width: 30em;
-}
-
 table.deflist {
   font-size: 1em;
   td {
@@ -36,6 +32,19 @@ table.deflist {
 #housing-changes table {
   font-size: 1em;
   margin: 0;
+}
+
+#affordable-housing-table-tracker th.apartment,
+#affordable-housing-table-tracker td.apartment {
+  min-width: 20em;
+  max-width: 30em;
+  word-break: break-word;
+}
+
+#affordable-housing-table-tracker th.received_by,
+#affordable-housing-table-tracker td.received_by {
+  min-width: 17em;
+  max-width: 17em;
 }
 
 
