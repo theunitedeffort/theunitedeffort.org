@@ -48,7 +48,7 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
   {% assign availabilities = availabilities[0].options | map: "name" %}
   {% assign newQuery = query | removeWaitlistClosed: availabilities %}
   <p class="note">
-    The table below includes properties that are currently <span class="strong">not</span> accepting waitlist applications.  <a href="?{{ newQuery }}" class="noprint">Hide these properties</a>
+    The checklist below includes some properties that are currently <span class="bold">not</span> accepting waitlist applications.  <a href="?{{ newQuery }}" class="noprint">Hide these properties</a>
   </p>
 {% endif %}
 
