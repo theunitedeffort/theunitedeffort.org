@@ -216,7 +216,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </div>
   </div>
   {% if num_filters_applied > 0 %}
-    <p class="noprint">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
+    <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
 <ul class="results_list">
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
