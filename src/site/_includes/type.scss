@@ -111,6 +111,9 @@
       font-size: 0.7em;
     }
     display: inline-block;
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   
   .badge__ok {
@@ -372,6 +375,17 @@ address {
 
   
 @media print {
+  body {
+    font-size: 12pt;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 1em 0 0.5em 0;
+  }
+
   .results_list {
     font-size: 0.8em;
   }

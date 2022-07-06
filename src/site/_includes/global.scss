@@ -104,11 +104,17 @@ body.max_width {
   }
 }
 
+.page_break_after {
+  page-break-after: always;
+}
+
 .only_print {
   display: none !important;
 }
+
 @media print {
   main {
+    padding: 0;
     a[href*="//"]::after {
       content: " (" attr(href) ") ";
     }

@@ -12,7 +12,12 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
 {% assign numFiltersApplied = query | numFiltersApplied %}
 {% assign numResults = housingdb | size %}
 
-<div class="flex justify_right">
+{% if numFiltersApplied > 0 %}
+  <p>Filters Applied:<br/> {% querySummary query %}</p>
+{% endif %}
+
+<div class="flex align_end">
+  <h3>Showing {{numResults}} {% if numResults == 1 %}property{% else %}properties{% endif %}</h3>
   <a class="btn btn_secondary noprint" title="Print table" href="javascript:window.print();">
     <svg role="img" aria-hidden="true" focusable="false" class="icon ">
       <use xlink:href="/images/sprites.svg#print"></use>
@@ -20,12 +25,6 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
     Print table
   </a>
 </div>
-
-{% if numFiltersApplied > 0 %}
-  <div>Filters Applied:</div> {% querySummary query %}
-{% endif %}
-
-<h3>Showing {{numResults}} {% if numResults == 1 %}property{% else %}properties{% endif %}</h3>
 <table id="affordable-housing-table-summary" class="printed">
   <thead>
     <tr>
