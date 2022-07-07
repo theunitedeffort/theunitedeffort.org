@@ -104,11 +104,17 @@ body.max_width {
   }
 }
 
+.page_break_after {
+  page-break-after: always;
+}
+
 .only_print {
   display: none !important;
 }
+
 @media print {
   main {
+    padding: 0;
     a[href*="//"]::after {
       content: " (" attr(href) ") ";
     }
@@ -137,6 +143,10 @@ body.max_width {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.align_end {
+  align-items: flex-end;
 }
 
 .stack-reversed {
@@ -171,6 +181,15 @@ body.max_width {
 
 .split_left_container {
   margin-right: 1em;
+}
+
+.inline_block {
+  display: inline-block;
+}
+
+.collapse_top {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 iframe {

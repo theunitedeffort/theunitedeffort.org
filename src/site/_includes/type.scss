@@ -111,6 +111,9 @@
       font-size: 0.7em;
     }
     display: inline-block;
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   
   .badge__ok {
@@ -198,6 +201,17 @@
       padding: 0;
     }
   }
+
+  table.printed p {
+    margin: 0;
+    padding: 0;
+  }
+
+  table.printed .checklist > p {
+    padding: 0.1em;
+  }
+
+  
 
   .queue_status {
     width: 50%;
@@ -309,6 +323,10 @@
     font-weight: 700;
   }
 
+  .italic {
+    font-style: italic;
+  }
+
   code {
     background-color: var(--color-gray-900);
     border-radius: 3px;
@@ -328,6 +346,29 @@
     }
   }
 
+.print_checkbox {
+  width: 1.5em;
+  height: 1.5em;
+  margin: 0 auto;
+  border: solid 1px var(--color-black); 
+  vertical-align: bottom; 
+}
+
+.date_placeholder {
+  font-size: 1.2em;
+  border-bottom: solid 1px var(--color-black);
+  padding-left: 2em;
+  padding-bottom: 0.3em;
+}
+
+.date_placeholder::after {
+  content: "/";
+}
+
+.date_placeholder:last-child::after {
+  content: "";
+}
+
 sup { vertical-align: top; font-size: 0.6em; }
 
 address {
@@ -338,11 +379,22 @@ address {
 
   
 @media print {
+  body {
+    font-size: 12pt;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 1.5em 0 0.5em 0;
+  }
+
   .results_list {
     font-size: 0.8em;
   }
 
-  #affordable-housing-table-summary {
+  table.printed {
     font-size: 10pt;
   }
 }

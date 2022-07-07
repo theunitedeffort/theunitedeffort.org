@@ -189,7 +189,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   </div>
 </form>
 
-  {% comment %} <p class="noprint">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p> {% endcomment %}
   <div class="align-end flex stack-reversed">
     <p class="noprint bold">
     {{num_results_snippet}}
@@ -202,6 +201,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           </svg>
           Print summary of results
         </a>
+        <a class="btn btn_secondary noprint" title="Show results in a checklist" href="/housing/affordable-housing/tracker?{{eleventy.serverless.query | queryString}}">
+          Show results in a checklist
+        </a>
         {% comment %} 
         <a class="btn btn_secondary noprint btn_download " title="Download these results in CSV format">
            <svg role="img" aria-hidden="true" focusable="false" class="icon ">
@@ -211,17 +213,11 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         </a>
         {% endcomment %}
       {% endif %}
-      {% if num_filters_applied > 0 %}
-        <a class="btn btn_secondary noprint btn_bookmark " title="Copy the URL of this search" href="javascript:CopyUrl();">
-          <svg role="img" aria-hidden="true" focusable="false" class="icon icon_copy">
-            <use xlink:href="/images/sprites.svg#copy"></use>
-          </svg>
-          Copy URL
-        </a>
-        <span id="copy-url-done" hidden>&#10003;</span>
-      {% endif %}
     </div>
   </div>
+  {% if num_filters_applied > 0 %}
+    <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
+  {% endif %}
 <ul class="results_list">
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
   {% for address in sortedHousingdb %}
