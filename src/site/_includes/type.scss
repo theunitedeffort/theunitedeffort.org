@@ -7,6 +7,12 @@
     font-weight: 850;
     line-height: 1.2;
     margin: 2em 0 0.5em 0;
+    .subtitle {
+      display: block;
+      margin-top: 0.16em;
+      margin-bottom: 1.5em;
+      font-size: 0.52em;
+    }
   }
   
   h1 {
@@ -19,12 +25,6 @@
   
   h2 {
     font-size: 1.8em;
-  }
-
-  h2.subtitle {
-    margin-top: -0.8em;
-    margin-bottom: 1.5em;
-    font-size: 1.3em;
   }
   
   h3 {
@@ -166,14 +166,19 @@
     display: inline-block;
   }
   
-  h3 .badge {
-    position: relative;
-    margin-left: 1em;
-    font-size: 0.8em;
-    font-weight: lighter;
-    top: -0.2em;
-  }
   
+  .rent_tables {
+    h2 {
+      font-size: 1.3em;
+    }
+    h2 .badge {
+      position: relative;
+      margin-left: 0.7em;
+      font-size: 0.8em;
+      font-weight: lighter;
+      top: -0.2em;
+    }
+  }
 
   .results_list {
     font-size: 0.9em;
@@ -193,7 +198,7 @@
       margin: 0;
       padding: 0;
     }
-    h4 {
+    h2 {
       display: inline-block;
       font-size: 1.3em;
       font-weight: 600;
@@ -216,49 +221,26 @@
   .queue_status {
     width: 50%;
   }
-
-  .icon_info,
-  .icon_query {
-    border-radius: 50%;
-    background-color: var(--color-black);
-    color: var(--color-white);
-    font-weight: 600;
-    font-size: .8em;
-    height: 1.4em;
-    width: 1.4em;
-    display: inline-block;
-    padding-top: 0.05em;
-    text-align: center;
-  }
-
-  #housing-changes {
-    .icon_info,
-    .icon_query {
-      font-size: 0.7em;
-    } 
-  }
-
-  .icon_query {
-    &:after {
-      content: "?";
-    }
-  }
-  .icon_info {
-    padding-right: 0.2em;
-    &:after {
-      content: "i";
-      font-style: italic;
-    }
-  }
   
+  p[data-toggletip] {
+    font-size: 0.7em;
+    margin-top: 0;
+    font-style: italic;
+  }
+
   .tooltip_entry {
     position: relative;
     display: inline-block;
     cursor: help;
   }
-  
-  .tooltip_entry .tooltip_content {
-    visibility: hidden;
+
+  .toggletip_entry {
+    position: relative;
+    display: inline-block;
+  }
+
+  .toggletip_content,
+  .tooltip_content {
     min-width: 10em;
     max-width: 20em;
     width: max-content;
@@ -276,7 +258,24 @@
     left: 105%;
   }
 
-  .tooltip_entry:hover .tooltip_content {
+  /* Extra area to prevent the toggletip disappearing
+  when the user mouses over to the text content from
+  the toggle icon */
+  .toggletip_content::before {
+    content: "";
+    width: 0.2em;
+    height: 100%;
+    left: -0.2em;
+    top: 0;
+    position: absolute;
+  }
+  
+  .tooltip_entry .tooltip_content {
+    visibility: hidden;
+  }
+
+  .tooltip_entry:hover .tooltip_content,
+  .tooltip_entry:focus .tooltip_content {
     visibility: visible;
   }
   
@@ -286,14 +285,12 @@
     position: relative;
   }
 
-  abbr[title] {
+  abbr[aria-label] {
     cursor: help;
   }
-  /* Note the standard browser UI title tooltip will
-  still appear (after a timeout) in addition
-  to this custom-styled tooltip.*/
-  abbr[title]:hover::after,
-  abbr[title]:focus::after {
+
+  abbr[aria-label]:hover::after,
+  abbr[aria-label]:focus::after {
     background-color: var(--color-gray-200);
     color: var(--color-white);
     text-align: center;
@@ -309,15 +306,17 @@
     white-space: nowrap;
     /*https://stackoverflow.com/a/40896165*/
     -webkit-transform: translate3d(0,0,0);
-    content: attr(title);
+    content: attr(aria-label);
   }
 
   
   form {
-    .tooltip_content {
+    .tooltip_content,
+    .toggletip_content {
       font-size: 0.8em;
     }
   }
+
   
   .bold {
     font-weight: 700;

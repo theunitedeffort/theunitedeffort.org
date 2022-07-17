@@ -130,6 +130,16 @@ body.max_width {
   }
 }
 
+/* https://css-tricks.com/hash-tag-links-padding/ */
+.anchor_context::before {
+  display: block; 
+  content: " "; 
+  margin-top: -15em; 
+  height: 15em; 
+  visibility: hidden; 
+  pointer-events: none;
+}
+
 .split {
   width: 50%;
 }
