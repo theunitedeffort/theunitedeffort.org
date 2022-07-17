@@ -34,7 +34,7 @@ module.exports = (data) => {
       ${data}
       </div>
     </main>
-    <div class="pre-footer">
+    <div class="pre-footer noprint" role="complementary">
       <div class="container">
       <h2>Donate</h2>
       <p>

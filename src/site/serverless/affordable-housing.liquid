@@ -120,7 +120,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
       <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
       {% if opt.name == "SRO" %}
-          {% assign label = '<abbr aria-label="Single Room Occupancy">SRO</abbr>' %}
+          {% assign label = '<abbr role="definition" aria-label="Single Room Occupancy">SRO</abbr>' %}
       {% else %}
           {% assign label = opt.name %}
       {% endif %}
@@ -243,7 +243,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     <address>
       {% if address.address and address.address != '' %}
         <p>
-        {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint"><span aria-hidden="true">(</span><a href="https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a><span aria-hidden="true">)</span></span>
+        {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint"><span aria-hidden="true">(</span><a href="https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}}&country=us" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a><span aria-hidden="true">)</span></span>
         </p>
       {% endif %}
       {% if address.email and address.email != '' %}
@@ -257,7 +257,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         </p>
       {% endif %}
       {% if address.website and address.website != '' %}
-        <a href="{{ address.website }}" target="_blank" rel="noopener">View property website</a><sup>&#8599;</sup>
+        <a href="{{ address.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ address.aptName }}">View property website</a><sup>&#8599;</sup>
       {% endif %}
     </address>
 

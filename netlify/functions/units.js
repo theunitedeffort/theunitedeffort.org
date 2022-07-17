@@ -234,7 +234,7 @@ const unitDetails = (data) => {
     let minIncomeInfo = "";
     let maxIncomeInfo = "";
     if (unit.PERCENT_AMI) {
-      incomeBracketStr = `${unit.PERCENT_AMI}% <abbr aria-label="Area Median Income">AMI</abbr>`;
+      incomeBracketStr = `${unit.PERCENT_AMI}% <abbr role="definition" aria-label="Area Median Income">AMI</abbr>`;
     }
     if (unit.RENT_PER_MONTH_USD) {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
@@ -312,7 +312,7 @@ const unitTables = (units) => {
       statusBadgeClass = "badge__ok";
     }
     tables.push(`
-      <h3>${unitTypes[idx] == "undefined" ? "" : unitTypes[idx]} <span class="badge ${statusBadgeClass}">${openStatus}</span></h3>
+      <h2>${unitTypes[idx] == "undefined" ? "" : unitTypes[idx]} <span class="badge ${statusBadgeClass}">${openStatus}</span></h3>
       Maximum occupancy: ${maxOccupancy}
       <table aria-label="Rent and Income Limits Table">
         <thead>
@@ -331,7 +331,9 @@ const unitTables = (units) => {
   }
   return `
       ${metaData(units)}
+      <div class="rent_tables">
       ${tables.join("")}
+      </div>
   `;
 };
 

@@ -166,14 +166,19 @@
     display: inline-block;
   }
   
-  h3 .badge {
-    position: relative;
-    margin-left: 0.7em;
-    font-size: 0.8em;
-    font-weight: lighter;
-    top: -0.2em;
-  }
   
+  .rent_tables {
+    h2 {
+      font-size: 1.3em;
+    }
+    h2 .badge {
+      position: relative;
+      margin-left: 0.7em;
+      font-size: 0.8em;
+      font-weight: lighter;
+      top: -0.2em;
+    }
+  }
 
   .results_list {
     font-size: 0.9em;
