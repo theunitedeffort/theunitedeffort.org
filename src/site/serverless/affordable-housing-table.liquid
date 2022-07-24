@@ -4,7 +4,8 @@ title: Affordable Housing Results Summary
 permalink: 
   serverless: "/housing/affordable-housing/table"
 pageClass: "page-housing page_housing_table"
-pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>'
+pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
+  <script src="/js/sorttable.js" defer></script>'
 ---
 
 {% assign query = eleventy.serverless.query %}
@@ -25,10 +26,10 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
     Print table
   </a>
 </div>
-<table id="affordable-housing-table-summary" class="printed">
+<table id="affordable-housing-table-summary" class="printed sortable">
   <thead>
     <tr>
-      <th>Apartment Name<span class="noprint"> & Link</span></th>
+      <th class="sorttable_sorted">Apartment Name<span class="noprint"> & Link</span></th>
       <th>Address</th>
       <th>City</th>
       <th>Waitlist Status</th>
