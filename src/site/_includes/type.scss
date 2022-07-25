@@ -239,11 +239,15 @@
     display: inline-block;
   }
 
+  .toggletip_container {
+    position: absolute;
+    width: 20em;
+  }
+
   .toggletip_content,
   .tooltip_content {
     min-width: 10em;
     max-width: 20em;
-    width: max-content;
     background-color: var(--color-gray-200);
     color: var(--color-white);
     text-align: center;
@@ -254,8 +258,8 @@
     border-color: var(--color-white);
     position: absolute;
     z-index: 1;
-    top: -5px;
-    left: 105%;
+    top: -0.3em;
+    left: 0.3em;
   }
 
   /* Extra area to prevent the toggletip disappearing
