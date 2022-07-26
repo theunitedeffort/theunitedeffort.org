@@ -44,6 +44,7 @@
       // Create the live region
       let liveRegion = document.createElement('span');
       liveRegion.setAttribute('role', 'status');
+      liveRegion.setAttribute('class', 'toggletip_container');
       
       // Place the live region in the container
       container.appendChild(liveRegion);
