@@ -81,25 +81,16 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
           {% endif %}
         </td>
         <td>
-          {% assign percentAmis = address.units | map: "incomeBracket" | compact | uniq | sort %}
-          {% if percentAmis.size > 0 %}
-            {% if percentAmis.size == 1 %}
-              {{ percentAmis | first }}% AMI
-            {% elsif percentAmis.size >= 2 %}
-              {{ percentAmis | first }}% - {{ percentAmis | last }}% AMI
-            {% endif %}
-          {% else %}
-            {% assign maxIncomes = address.units | map: "maxIncome" %}
-            {% assign maxIncomeLows = maxIncomes | map: "low" | compact | uniq | sort %}
-            {% assign maxIncomeHighs = maxIncomes | map: "high" | compact | uniq | sort %}
-            {% if maxIncomeLows.size > 0 and maxIncomeHighs.size > 0 %}
-              {% assign maxIncomeLow = maxIncomeLows | first %}
-              {% assign maxIncomeHigh = maxIncomeHighs | last %}
-              {% if maxIncomeLow == maxIncomeHigh %}
-                {{ maxIncomeLow | money }}
-              {% else %}
-                {{ maxIncomeLow | money }} - {{ maxIncomeHigh | money }}
-              {% endif %}
+          {% assign maxIncomes = address.units | map: "maxIncome" %}
+          {% assign maxIncomeLows = maxIncomes | map: "low" | compact | uniq | sort %}
+          {% assign maxIncomeHighs = maxIncomes | map: "high" | compact | uniq | sort %}
+          {% if maxIncomeLows.size > 0 and maxIncomeHighs.size > 0 %}
+            {% assign maxIncomeLow = maxIncomeLows | first %}
+            {% assign maxIncomeHigh = maxIncomeHighs | last %}
+            {% if maxIncomeLow == maxIncomeHigh %}
+              {{ maxIncomeLow | money }}
+            {% else %}
+              {{ maxIncomeLow | money }} - {{ maxIncomeHigh | money }}
             {% endif %}
           {% endif %}
         </td>
