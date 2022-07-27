@@ -213,6 +213,30 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% if num_filters_applied > 0 %}
     <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
+<script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgy4aWlGUJAEQ6pyQjMhSPf4k0lLIpURk&callback=initMap&v=weekly"
+      defer
+    ></script>
+<script>
+  // Initialize and add the map
+  function initMap() {
+    // The location of Uluru
+    const uluru = { lat: -25.344, lng: 131.031 };
+    // The map, centered at Uluru
+    const map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 4,
+      center: uluru,
+    });
+    // The marker, positioned at Uluru
+    const marker = new google.maps.Marker({
+      position: uluru,
+      map: map,
+    });
+  }
+
+  window.initMap = initMap;
+</script>
+<div id="map"></div>
 <ul class="results_list" aria-label="Results List">
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
   {% for address in sortedHousingdb %}
