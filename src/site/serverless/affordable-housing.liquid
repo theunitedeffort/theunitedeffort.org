@@ -213,88 +213,111 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% if num_filters_applied > 0 %}
     <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
-<script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgy4aWlGUJAEQ6pyQjMhSPf4k0lLIpURk&callback=initMap&v=weekly"
-      defer
-    ></script>
-<script>
+  {% assign sortedHousingdb = housingdb | sort: "aptName" %}
+  <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgy4aWlGUJAEQ6pyQjMhSPf4k0lLIpURk&callback=initMap&v=weekly"
+        defer
+      ></script>
+  <script>
+
+  const locations = [
+  {% for address in sortedHousingdb %}
+    {% if address.locCoords and address.locCoords != '' %}
+      {% assign coords = address.locCoords | split: "," %}
+      { lat: {{coords[0]}}, lng: {{coords[1]}} },
+    {% endif %}
+  {% endfor %}
+  ];
+
   // Initialize and add the map
   function initMap() {
-    // The location of Uluru
-    const uluru = { lat: -25.344, lng: 131.031 };
-    // The map, centered at Uluru
+    const centerLatLng = { lat: 37.233907, lng: -121.756180 };
     const map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 4,
-      center: uluru,
+      mapId: "9cafc548a28110af",
+      zoom: 9,
+      center: centerLatLng,
     });
-    // The marker, positioned at Uluru
-    const marker = new google.maps.Marker({
-      position: uluru,
-      map: map,
-    });
+    let bounds = new google.maps.LatLngBounds();
+    for (const loc of locations) {
+      const marker = new google.maps.Marker({
+        position: loc,
+        map: map,
+      });
+      bounds.extend(loc);
+    }
+    map.fitBounds(bounds);
+    // const transitLayer = new google.maps.TransitLayer();
+    // transitLayer.setMap(map);
   }
 
   window.initMap = initMap;
 </script>
-<div id="map"></div>
-<ul class="results_list" aria-label="Results List">
-  {% assign sortedHousingdb = housingdb | sort: "aptName" %}
-  {% for address in sortedHousingdb %}
-  <li>
-    <h2>
-      <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
-    </h2>
-    {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
-    {% for status in allStatuses %}
-      <p>
-        <span class="badge
-        {% if status == "Call for Status" %}
-          badge__warn
-        {% elsif status == "Waitlist Closed" %}
-          badge__bad
-        {% elsif status == "Waitlist Open" %}
-          badge__ok
-        {% endif %}
-        ">{{ status }}</span>
-        {% assign sortedUnits = address.units | where: "openStatus",  status | rankSort: "unitType" %}
-        {% for unit in sortedUnits %}
-          {% if unit.unitType %}
-            <span class="badge">{{ unit.unitType }}</span>
+
+<div class="flex row_reversed">
+  <div class="responsive_split responsive_sticky">
+    <div class="split_right_container">
+      <div id="map"></div>
+    </div>
+  </div>
+  <div class="responsive_split">
+    <ul class="results_list" aria-label="Results List">
+      {% for address in sortedHousingdb %}
+      <li>
+        <h2>
+          <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
+        </h2>
+        {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
+        {% for status in allStatuses %}
+          <p>
+            <span class="badge
+            {% if status == "Call for Status" %}
+              badge__warn
+            {% elsif status == "Waitlist Closed" %}
+              badge__bad
+            {% elsif status == "Waitlist Open" %}
+              badge__ok
+            {% endif %}
+            ">{{ status }}</span>
+            {% assign sortedUnits = address.units | where: "openStatus",  status | rankSort: "unitType" %}
+            {% for unit in sortedUnits %}
+              {% if unit.unitType %}
+                <span class="badge">{{ unit.unitType }}</span>
+              {% endif %}
+            {% endfor %} 
+          </p>
+        {% endfor %}
+        <address>
+          {% if address.address and address.address != '' %}
+            <p>
+            {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint"><span aria-hidden="true">(</span><a href="https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}}&country=us" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a><span aria-hidden="true">)</span></span>
+            </p>
           {% endif %}
-        {% endfor %} 
-      </p>
-    {% endfor %}
-    <address>
-      {% if address.address and address.address != '' %}
-        <p>
-        {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint"><span aria-hidden="true">(</span><a href="https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}}&country=us" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a><span aria-hidden="true">)</span></span>
-        </p>
-      {% endif %}
-      {% if address.email and address.email != '' %}
-        <p>
-          <a href="mailto:{{ address.email }}" target="_blank" rel="noopener">{{ address.email }}</a>
-        </p>
-      {% endif %}
-      {% if address.phone and address.phone != '' %}
-        <p>
-          <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a>
-        </p>
-      {% endif %}
-      {% if address.website and address.website != '' %}
-        <a href="{{ address.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ address.aptName }}">View property website</a><sup>&#8599;</sup>
-      {% endif %}
-    </address>
+          {% if address.email and address.email != '' %}
+            <p>
+              <a href="mailto:{{ address.email }}" target="_blank" rel="noopener">{{ address.email }}</a>
+            </p>
+          {% endif %}
+          {% if address.phone and address.phone != '' %}
+            <p>
+              <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a>
+            </p>
+          {% endif %}
+          {% if address.website and address.website != '' %}
+            <a href="{{ address.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ address.aptName }}">View property website</a><sup>&#8599;</sup>
+          {% endif %}
+        </address>
 
-  </li>
-  {% endfor %}
-  {% if num_results == 0 %}
-    <li class="no_results">
-      Try changing the filter options above to broaden your search and see more results.
-    </li>
-  {% endif %}
-</ul> 
+      </li>
+      {% endfor %}
+      {% if num_results == 0 %}
+        <li class="no_results">
+          Try changing the filter options above to broaden your search and see more results.
+        </li>
+      {% endif %}
+    </ul> 
+  </div>
+</div>
 </section>
-
 
 <div>
 <p>
