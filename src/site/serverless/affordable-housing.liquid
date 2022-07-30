@@ -224,7 +224,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% for address in sortedHousingdb %}
     {% if address.locCoords and address.locCoords != '' %}
       {% assign coords = address.locCoords | split: "," %}
-      { lat: {{coords[0]}}, lng: {{coords[1]}} },
+      { lat: {{coords[0]}}, lng: {{coords[1]}}, title: "{{address.aptName}}" },
     {% endif %}
   {% endfor %}
   ];
@@ -238,10 +238,20 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       center: centerLatLng,
     });
     let bounds = new google.maps.LatLngBounds();
+    let infowindow = new google.maps.InfoWindow();
     for (const loc of locations) {
       const marker = new google.maps.Marker({
-        position: loc,
+        position: new google.maps.LatLng(loc.lat, loc.lng),
         map: map,
+        title: loc.title
+      });
+      marker.addListener("click", () => {
+        infowindow.setContent(loc.title);
+        infowindow.open({
+          anchor: marker,
+          map,
+          shouldFocus: false,
+        });
       });
       bounds.extend(loc);
     }
