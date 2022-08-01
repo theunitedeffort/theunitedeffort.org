@@ -214,63 +214,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
-  <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgy4aWlGUJAEQ6pyQjMhSPf4k0lLIpURk&callback=initMap&v=weekly"
-        defer
-      ></script>
-  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
-  <script>
-
-    const locations = [
-    {% for address in sortedHousingdb %}
-      {% if address.locCoords and address.locCoords != '' %}
-        {% assign coords = address.locCoords | split: "," %}
-        { lat: {{coords[0]}}, lng: {{coords[1]}}, title: "{{address.aptName}}" },
-      {% endif %}
-    {% endfor %}
-    ];
-
-    // Initialize and add the map
-    function initMap() {
-      const centerLatLng = { lat: 37.233907, lng: -121.756180 };
-      const map = new google.maps.Map(document.getElementById("map"), {
-        mapId: "9cafc548a28110af",
-        zoom: 9,
-        center: centerLatLng,
-      });
-      let bounds = new google.maps.LatLngBounds();
-      let infowindow = new google.maps.InfoWindow({
-        disableAutoPan: true
-      });
-      let markers = [];
-      for (const loc of locations) {
-        const marker = new google.maps.Marker({
-          position: new google.maps.LatLng(loc.lat, loc.lng),
-          map: map,
-          title: loc.title
-        });
-        marker.addListener("click", () => {
-          infowindow.setContent(loc.title);
-          infowindow.open({
-            anchor: marker,
-            map,
-            shouldFocus: false,
-          });
-        });
-        bounds.extend(loc);
-        markers.push(marker);
-      }
-      map.fitBounds(bounds);
-
-      let radius = 60;
-      let algorithm = new markerClusterer.SuperClusterAlgorithm({radius});
-      new markerClusterer.MarkerClusterer({ markers, map, algorithm });
-      // const transitLayer = new google.maps.TransitLayer();
-      // transitLayer.setMap(map);
-    }
-
-    window.initMap = initMap;
-  </script>
 
   <div class="flex row_reversed">
     <div class="responsive_split responsive_sticky">
@@ -283,7 +226,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         {% for address in sortedHousingdb %}
         <li>
           <h2>
-            <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
+            <a id="property-{{address.id}}" href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
           </h2>
           {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
           {% for status in allStatuses %}
@@ -343,3 +286,63 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   This affordable housing list is compiled from many separate housing lists across Santa Clara County in order to provide a single searchable resource.  We strive to be as accurate as possible, but always confirm property details with the property manager.
 </p>
 </div>
+
+<script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgy4aWlGUJAEQ6pyQjMhSPf4k0lLIpURk&callback=initMap&v=weekly"
+        defer
+      ></script>
+  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+<script>
+
+  const locations = [
+  {% for address in sortedHousingdb %}
+    {% if address.locCoords and address.locCoords != '' %}
+      {% assign coords = address.locCoords | split: "," %}
+      { lat: {{coords[0]}}, lng: {{coords[1]}}, title: "{{address.aptName}}", id: "{{address.id}}" },
+    {% endif %}
+  {% endfor %}
+  ];
+
+  // Initialize and add the map
+  function initMap() {
+    const centerLatLng = { lat: 37.233907, lng: -121.756180 };
+    const map = new google.maps.Map(document.getElementById("map"), {
+      mapId: "9cafc548a28110af",
+      zoom: 9,
+      center: centerLatLng,
+    });
+    let bounds = new google.maps.LatLngBounds();
+    let infowindow = new google.maps.InfoWindow({
+      disableAutoPan: true
+    });
+    let markers = [];
+    for (const loc of locations) {
+      const marker = new google.maps.Marker({
+        position: new google.maps.LatLng(loc.lat, loc.lng),
+        map: map,
+        title: loc.title
+      });
+      let listItem = document.getElementById("property-" + loc.id);
+      marker.addListener("click", () => {
+        infowindow.setContent(loc.title);
+        infowindow.open({
+          anchor: marker,
+          map,
+          shouldFocus: false,
+        });
+        listItem.scrollIntoView();
+      });
+      bounds.extend(loc);
+      markers.push(marker);
+    }
+    map.fitBounds(bounds);
+
+    let radius = 50;
+    let algorithm = new markerClusterer.SuperClusterAlgorithm({radius});
+    new markerClusterer.MarkerClusterer({ markers, map, algorithm });
+    // const transitLayer = new google.maps.TransitLayer();
+    // transitLayer.setMap(map);
+  }
+
+  window.initMap = initMap;
+</script>
