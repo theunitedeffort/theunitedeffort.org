@@ -44,15 +44,36 @@ const makeListString = (collection, finalJoinStr) => {
   return strArray.join("");
 }
 
+// TODO: Move this to a liquid template once units.js is deprecated.
 const unknownIdMessage = (housingId) => {
-  return `<h2>Oops!</h2>
-  <p>We looked for an affordable housing property with an ID of
-  <span class="bold">${housingId}</span>,
-  but couldn't find it.</p>
-  <p>Check the URL is correct, or try
-  <a href="/housing/affordable-housing">searching</a>
-  for the property
-  you are looking for.</p>`
+  return `<h1>Oops!</h1>
+  <p>
+    We looked for an affordable housing property with an ID of
+    <span class="bold">${housingId}</span>,
+    but couldn't find it.
+  </p>
+  <p>
+    It could be because a link you followed is out of date, or perhaps we have 
+    moved our pages around. You can always try
+    <a href="/housing/affordable-housing">searching</a>
+    for the property you are looking for.
+  </p>
+  <p>
+    If you'd like some help finding this property, contact us at
+    <a href="mailto:help@theunitedeffort.org?subject=Help finding a missing property listing"
+    target="_blank" rel="noopener">help@theunitedeffort.org</a>. 
+    We'll be glad to help. If you prefer, you can also contact us via the form 
+    below.
+  </p>
+
+  <form name="not_found_contact_us" id="not-found-contact-us" method="POST" action="/message-sent" netlify>
+    <input type="hidden" name="form-name" value="not_found_contact_us" />
+    <label for="email">Email Address</label>
+    <input id="email" type="email" name="email" required></input>
+    <label for="body">Message</label>
+    <textarea id="body" class="large" name="message"></textarea>
+    <button type="submit" class="btn btn_primary">Send</button>
+  </form>`
 }
 
 // Make a definition list from all the data returned about this item
@@ -213,13 +234,13 @@ const unitDetails = (data) => {
     let minIncomeInfo = "";
     let maxIncomeInfo = "";
     if (unit.PERCENT_AMI) {
-      incomeBracketStr = `${unit.PERCENT_AMI}% <abbr title="Area Median Income">AMI</abbr>`;
+      incomeBracketStr = `${unit.PERCENT_AMI}% <abbr role="definition" aria-label="Area Median Income">AMI</abbr>`;
     }
     if (unit.RENT_PER_MONTH_USD) {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
     } else if (unit.RENT_NOTES) {
       rentStr = NO_RENT_WITH_NOTES_STRING;
-      rentInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">${unit.RENT_NOTES}</span></span>`;
+      rentInfo = `<p data-toggletip data-toggletip-class="icon_info">${unit.RENT_NOTES}</p>`;
     }
     if (unit.MIN_YEARLY_INCOME_USD) {
       minIncomeStr = formatCurrency(unit.MIN_YEARLY_INCOME_USD);
@@ -234,7 +255,7 @@ const unitDetails = (data) => {
     if (unit.MIN_YEARLY_INCOME_USD && 
         unit.MIN_INCOME_RENT_FACTOR && 
         !unit.OVERRIDE_MIN_YEARLY_INCOME_USD) {
-      minIncomeInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">Calculated as ${unit.MIN_INCOME_RENT_FACTOR} times yearly rent</span></span>`;
+      minIncomeInfo = `<p data-toggletip data-toggletip-class="icon_info">Calculated as ${unit.MIN_INCOME_RENT_FACTOR} times yearly rent</p>`;
     }
     // TODO: Make a "has details" field?
     if (unit.MAX_YEARLY_INCOME_LOW_USD && 
@@ -261,7 +282,7 @@ const unitDetails = (data) => {
         }
         detailStrs.push(`Household of ${householdSize}: ${formatCurrency(value)}`);
       }
-      maxIncomeInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">${detailStrs.join("<br/>")}</span></span>`;
+      maxIncomeInfo = `<p data-toggletip data-toggletip-class="icon_info">${detailStrs.join("<br/>")}</p>`;
     }
     rows.push(`
       <td>${incomeBracketStr}</td>
@@ -291,9 +312,9 @@ const unitTables = (units) => {
       statusBadgeClass = "badge__ok";
     }
     tables.push(`
-      <h3>${unitTypes[idx] == "undefined" ? "" : unitTypes[idx]}<span class="badge ${statusBadgeClass}">${openStatus}</span></h3>
+      <h2>${unitTypes[idx] == "undefined" ? "" : unitTypes[idx]} <span class="badge ${statusBadgeClass}">${openStatus}</span></h3>
       Maximum occupancy: ${maxOccupancy}
-      <table>
+      <table aria-label="Rent and Income Limits Table">
         <thead>
           <tr>
             <th>Income bracket</th>
@@ -310,7 +331,9 @@ const unitTables = (units) => {
   }
   return `
       ${metaData(units)}
+      <div class="rent_tables">
       ${tables.join("")}
+      </div>
   `;
 };
 
@@ -375,7 +398,7 @@ exports.handler = async function(event) {
   let data = await fetchData(housingID);
   if (!data.metadata["aptName"]) {
     return {
-      statusCode: 200,
+      statusCode: 404,
       body: pageTemplate(unknownIdMessage(housingID))
     }
   }

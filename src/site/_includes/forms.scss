@@ -42,10 +42,48 @@
         border-radius: 3px;
         margin-bottom: 0.2em;
       }
+
+      input[type=number].short {
+        width: 4em
+      }
+
+      input[type=number].long {
+        width: 6em
+      }
+
+      input[type=number].extra_long {
+        width: 7em
+      }
+
+      input[type=email] {
+        width: 25em;
+      }
+
+      input[type=tel] {
+        width: 9em;
+      }
+
+      input[type=url] {
+        width: 35em;
+      }
+
+      textarea.large {
+        width: 25em;
+        height: 10em;
+      }
     }
     
     .option_columns {
       columns: 8em 3;
+    }
+
+    #not-found-contact-us {
+      display: block;
+      input,
+      textarea {
+        display: block;
+        margin-bottom: 1em;
+      }
     }
 
     #housing-changes {
@@ -93,29 +131,6 @@
         width: 5em;
       }
 
-      input[type=number].short {
-        width: 4em
-      }
-
-      input[type=number].long {
-        width: 6em
-      }
-
-      input[type=number].extra_long {
-        width: 7em
-      }
-
-      input[type=email] {
-        width: 25em;
-      }
-
-      input[type=tel] {
-        width: 9em;
-      }
-
-      input[type=url] {
-        width: 35em;
-      }
 
       input.inline {
         display: inline-block;

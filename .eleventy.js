@@ -184,6 +184,39 @@ module.exports = function(eleventyConfig) {
     return filterValuesCopy;
   });
 
+
+  // Changes the URL query parameters to get rid of waitlist closed locations.
+  //
+  // If nothing is set for the availability parameter or if "Waitlist Closed" is
+  // the only value set, all availabilities will be added to the URL query 
+  // parameters *except* "Waitlist Closed". 
+  // If there is something set for the availability parameter, "Waitlist Closed"
+  // will simply be removed from the existing list of values.
+  // 
+  // This funtion is intended to be used to generate a URL query string that 
+  // forces properties with a closed waitlist to be filtered out.  "query" is an
+  // eleventy.serverless.query object and "allAvailabilities" is a list of
+  // all possible values for the availability parameter, generally fetched
+  // ahead of time from Airtable.  Returns a URL query string.
+  eleventyConfig.addFilter("removeWaitlistClosed", function(query, 
+    allAvailabilities) {
+    const availKey = "availability";
+    const closedValue = "Waitlist Closed";
+    let queryParams = new URLSearchParams(query);
+    // Copy existing availability values that were set by the user.
+    let availabilityValues = queryParams.get(availKey);
+    if (!availabilityValues || availabilityValues === closedValue) {
+      // The user had no availabilities set or only asked for waitlist closed, 
+      // so initialize to the full list.
+      availabilityValues = allAvailabilities.join(", ");
+    }
+    // Remove the Waitlist Closed item from the availability values.
+    availabilityValues = (availabilityValues.split(", ")
+      .filter(x => x !== closedValue).join(", "));
+    queryParams.set(availKey, availabilityValues);
+    return queryParams.toString();
+  });
+
   // Converts "camelCaseString" to "Camel Case String".
   // https://stackoverflow.com/questions/4149276/how-to-convert-camelcase-to-camel-case
   const camelCaseToSpaces = function(str) {

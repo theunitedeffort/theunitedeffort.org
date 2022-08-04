@@ -14,6 +14,10 @@ td {
   border-bottom: solid 1px var(--color-gray-900);
 }
 
+th[scope=colgroup] {
+  text-align: center;
+}
+
 table.deflist {
   font-size: 1em;
   td {
@@ -25,13 +29,45 @@ table.deflist {
   }
 }
 
+table.sortable_active th {
+  cursor: pointer;
+}
+
+table.sortable th::after {
+  content: "\a0\2193";
+  visibility: hidden;
+}
+
+table.sortable th.sorttable_sorted::after {
+  content: "\a0\2193";
+  visibility: visible;
+}
+
+table.sortable th.sorttable_sorted_reverse::after {
+  content: "\a0\2191";
+  visibility: visible;
+}
+
 #housing-changes table {
   font-size: 1em;
   margin: 0;
 }
 
+#affordable-housing-table-tracker th.apartment,
+#affordable-housing-table-tracker td.apartment {
+  min-width: 20em;
+  max-width: 30em;
+  word-break: break-word;
+}
 
-#affordable-housing-table-summary {
+#affordable-housing-table-tracker th.received_by,
+#affordable-housing-table-tracker td.received_by {
+  min-width: 17em;
+  max-width: 17em;
+}
+
+
+table.printed {
   page-break-inside: auto;
   tr {
     page-break-inside: avoid;
@@ -42,12 +78,20 @@ table.deflist {
   }
 }
 
+table.all_borders {
+  border-collapse: collapse;
+  th,
+  td {
+    border: solid 2px var(--color-gray-900);
+  }
+}
+
 
 @media print {
-  #affordable-housing-table-summary {
+  table.printed {
     th,
     td {
-      border-bottom-color: var(--color-black);
+      border-color: var(--color-black);
       padding: 0.2em 0.5em;
     }
   }
