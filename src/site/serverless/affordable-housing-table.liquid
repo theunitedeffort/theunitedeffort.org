@@ -63,7 +63,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
             {{ waitlistStatuses | first }}
           {% endif %}
         </td>
-        <td>{{ address.units | map: "unitType" | uniq | rankSort | join: "<br/>" | replace: "Bedroom", "BR" }}</td>
+        <td>{{ address.units | map: "unitType" | uniq | rankSort | join: '<br style="mso-data-placement:same-cell;"/>' | replace: "Bedroom", "BR" }}</td>
         <td>
           {% assign rents = address.units | map: "rent" | compact | uniq | sort %}
           {% if rents.size == 1 %}
