@@ -224,9 +224,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     <div class="responsive_split">
       <ul class="results_list" aria-label="Results List">
         {% for address in sortedHousingdb %}
-        <li>
+        <li id="property-{{address.id}}">
           <h2>
-            <a id="property-{{address.id}}" href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
+            <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
           </h2>
           {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
           {% for status in allStatuses %}
@@ -298,8 +298,14 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% for address in sortedHousingdb %}
     {% if address.locCoords and address.locCoords != '' %}
       {% assign coords = address.locCoords | split: "," %}
-      { lat: {{coords[0]}}, lng: {{coords[1]}}, title: "{{address.aptName}}", id: "{{address.id}}" },
+      { lat: {{coords[0]}}, lng: {{coords[1]}}, name: "{{address.aptName}}", id: "{{address.id}}" },
     {% endif %}
+  {% endfor %}
+  ];
+
+  const stops = [
+  {% for stop in transitData %}
+    { lat: {{stop.lat}}, lng: {{stop.lng}}, name: "{{stop.name}}" },
   {% endfor %}
   ];
 
@@ -320,11 +326,11 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       const marker = new google.maps.Marker({
         position: new google.maps.LatLng(loc.lat, loc.lng),
         map: map,
-        title: loc.title
+        title: loc.name
       });
       let listItem = document.getElementById("property-" + loc.id);
       marker.addListener("click", () => {
-        infowindow.setContent(loc.title);
+        infowindow.setContent(loc.name);
         infowindow.open({
           anchor: marker,
           map,
@@ -338,10 +344,44 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     map.fitBounds(bounds);
 
     let radius = 50;
-    let algorithm = new markerClusterer.SuperClusterAlgorithm({radius});
+    let minPoints = 4;
+    let algorithm = new markerClusterer.SuperClusterAlgorithm({radius, minPoints});
     new markerClusterer.MarkerClusterer({ markers, map, algorithm });
     // const transitLayer = new google.maps.TransitLayer();
     // transitLayer.setMap(map);
+
+    // "https://mt.google.com/vt/icon/name=icons/spotlight/measle_8px.png&scale=1"
+    let smallBusIcon = "/images/measle_8px.png"
+    let largeBusIcon = "https://mt.google.com/vt/icon/name=icons/spotlight/transit/bus_small.png&scale=1"
+
+    let stopMarkers = [];
+    for (const stop of stops) {
+      const marker = new google.maps.Marker({
+        position: new google.maps.LatLng(stop.lat, stop.lng),
+        map: map,
+        icon: {
+          url: smallBusIcon,
+          //size: new google.maps.Size(15, 15),
+          //anchor: new google.maps.Point(7, 7)
+        },
+        visible: false,
+      });
+      stopMarkers.push(marker);
+    }
+
+    google.maps.event.addListener(map, 'zoom_changed', function() {
+      const zoom = map.getZoom();
+      console.log(zoom);
+      // iterate over markers and call setVisible
+      for (i = 0; i < stopMarkers.length; i++) {
+        stopMarkers[i].setVisible(zoom > 12);
+        if (zoom > 14) {
+          stopMarkers[i].setIcon(largeBusIcon);
+        } else {
+          stopMarkers[i].setIcon(smallBusIcon);
+        }
+      }
+    });
   }
 
   window.initMap = initMap;
