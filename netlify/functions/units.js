@@ -129,7 +129,7 @@ const metaData = (units) => {
   }
 
   if (units.metadata.notesData["_DISALLOWS_PUBLIC_APPLICATIONS"]) {
-    metaNotes.push("A referral from a case manager or housing agency is required to apply for this property. Contact the property for details on the referral process.");
+    metaNotes.push("A referral from a housing agency is required to apply for this property. Contact the property for details on the referral process.");
   }
 
   let metaNotesStr = "";
@@ -234,13 +234,13 @@ const unitDetails = (data) => {
     let minIncomeInfo = "";
     let maxIncomeInfo = "";
     if (unit.PERCENT_AMI) {
-      incomeBracketStr = `${unit.PERCENT_AMI}% <abbr title="Area Median Income">AMI</abbr>`;
+      incomeBracketStr = `${unit.PERCENT_AMI}% <abbr role="definition" aria-label="Area Median Income">AMI</abbr>`;
     }
     if (unit.RENT_PER_MONTH_USD) {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
     } else if (unit.RENT_NOTES) {
       rentStr = NO_RENT_WITH_NOTES_STRING;
-      rentInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">${unit.RENT_NOTES}</span></span>`;
+      rentInfo = `<p data-toggletip data-toggletip-class="icon_info">${unit.RENT_NOTES}</p>`;
     }
     if (unit.MIN_YEARLY_INCOME_USD) {
       minIncomeStr = formatCurrency(unit.MIN_YEARLY_INCOME_USD);
@@ -255,7 +255,7 @@ const unitDetails = (data) => {
     if (unit.MIN_YEARLY_INCOME_USD && 
         unit.MIN_INCOME_RENT_FACTOR && 
         !unit.OVERRIDE_MIN_YEARLY_INCOME_USD) {
-      minIncomeInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">Calculated as ${unit.MIN_INCOME_RENT_FACTOR} times yearly rent</span></span>`;
+      minIncomeInfo = `<p data-toggletip data-toggletip-class="icon_info">Calculated as ${unit.MIN_INCOME_RENT_FACTOR} times yearly rent</p>`;
     }
     // TODO: Make a "has details" field?
     if (unit.MAX_YEARLY_INCOME_LOW_USD && 
@@ -282,7 +282,7 @@ const unitDetails = (data) => {
         }
         detailStrs.push(`Household of ${householdSize}: ${formatCurrency(value)}`);
       }
-      maxIncomeInfo = `<span class="tooltip_entry"><span class="icon_info"></span><span class="tooltip_content">${detailStrs.join("<br/>")}</span></span>`;
+      maxIncomeInfo = `<p data-toggletip data-toggletip-class="icon_info">${detailStrs.join("<br/>")}</p>`;
     }
     rows.push(`
       <td>${incomeBracketStr}</td>
@@ -312,9 +312,9 @@ const unitTables = (units) => {
       statusBadgeClass = "badge__ok";
     }
     tables.push(`
-      <h3>${unitTypes[idx] == "undefined" ? "" : unitTypes[idx]}<span class="badge ${statusBadgeClass}">${openStatus}</span></h3>
+      <h2>${unitTypes[idx] == "undefined" ? "" : unitTypes[idx]} <span class="badge ${statusBadgeClass}">${openStatus}</span></h3>
       Maximum occupancy: ${maxOccupancy}
-      <table>
+      <table aria-label="Rent and Income Limits Table">
         <thead>
           <tr>
             <th>Income bracket</th>
@@ -331,7 +331,9 @@ const unitTables = (units) => {
   }
   return `
       ${metaData(units)}
+      <div class="rent_tables">
       ${tables.join("")}
+      </div>
   `;
 };
 

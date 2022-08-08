@@ -13,6 +13,7 @@ module.exports = (data) => {
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="stylesheet" href="/styles.css">
+    <script src="/js/accessibility.js" defer></script>
   </head>
   <body class="page-housing">
     <header>
@@ -33,7 +34,7 @@ module.exports = (data) => {
       ${data}
       </div>
     </main>
-    <div class="pre-footer">
+    <div class="pre-footer noprint" role="complementary">
       <div class="container">
       <h2>Donate</h2>
       <p>

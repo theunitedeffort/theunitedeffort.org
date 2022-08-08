@@ -5,6 +5,7 @@ permalink:
   build: "/housing/affordable-housing/index.html"
   serverless: "/housing/affordable-housing/filter"
 pageClass: "page-housing"
+pageHead: '<script src="/js/accessibility.js" defer></script>'
 ---
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
@@ -85,8 +86,8 @@ window.onpageshow = function() {OnPageShow()};
 
 </script>
 
-<h1>{{title}}</h1>
-<h2 class="subtitle">In Santa Clara County</h2>
+<h1>{{title}}
+<span class="subtitle">In Santa Clara County</span></h1>
 <p class="noprint bold">
 {{num_results_snippet}}
 </p>
@@ -101,6 +102,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 {% endif %}
 
 
+<section aria-label="Housing Filter Options">
 <form action="/housing/affordable-housing/filter" action="get" id="housing-search" class="housing_search" onsubmit="ShowLoading();">
   
   {% assign filterValues = filterValues | updateFilterState: query %}
@@ -118,7 +120,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
       <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
       {% if opt.name == "SRO" %}
-          {% assign label = '<abbr title="Single Room Occupancy">SRO</abbr>' %}
+          {% assign label = '<abbr role="definition" aria-label="Single Room Occupancy">SRO</abbr>' %}
       {% else %}
           {% assign label = opt.name %}
       {% endif %}
@@ -145,12 +147,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     <legend>Income</legend>
     <div>
       <label for="income">Yearly Income ($)</label>
-      <span class="tooltip_entry">
-        <span class="icon_query"></span>
-        <span class="tooltip_content">
-          Provide your income to hide properties you are not eligible for. Your information will not be stored.
-        </span>
-      </span>
+      <p data-toggletip data-toggletip-class="icon_query">Provide your income to hide properties you are not eligible for. Your information will not be stored.</p>
       <input type="number" oninput="ToggleIncomeOption();" min="0" id="income" name="income" value="{{query.income | escape}}"><br/>
       <span id="include-unknown-income-container" hidden>
         <input type="checkbox" id="include-unknown-income" name="includeUnknownIncome"
@@ -162,7 +159,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
   <fieldset>
     <legend>More Filters</legend>
-    <a id="results"></a>
     <div>
       <input type="checkbox" id="wheelchair-accessible-only" name="wheelchairAccessibleOnly"
         {% if query.wheelchairAccessibleOnly == "on" %}checked{% endif %}>
@@ -171,12 +167,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       <input type="checkbox" id="include-referrals" name="includeReferrals"
         {% if query.includeReferrals == "on" %}checked{% endif %}>
       <label for="include-referrals">Include properties requiring an agency referral</label>
-      <span class="tooltip_entry">
-        <span class="icon_query"></span>
-        <span class="tooltip_content">
-          Some properties only accept applications by referral through an agency or case manager and do not allow the general public to apply.
-        </span>
-      </span>
+      <p data-toggletip data-toggletip-class="icon_query">  
+        Some properties only accept applications by referral through a housing agency and do not allow the general public to apply.
+      </p>
       <p>
       <label for="property-name">Property Name</label>
       <input type="text" id="property-name" value="{{query.propertyName | escape}}" name="propertyName">
@@ -188,7 +181,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     <input type="submit" id="filter-submit" class="btn btn_primary noprint" value="{{updateButtonStr}}"/>
   </div>
 </form>
+</section>
 
+<section id="results" class="anchor_context" aria-label="Housing Results">
   <div class="align-end flex stack-reversed">
     <p class="noprint bold">
     {{num_results_snippet}}
@@ -218,13 +213,13 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% if num_filters_applied > 0 %}
     <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
-<ul class="results_list">
+<ul class="results_list" aria-label="Results List">
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
   {% for address in sortedHousingdb %}
   <li>
-    <h4>
+    <h2>
       <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
-    </h4>
+    </h2>
     {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
     {% for status in allStatuses %}
       <p>
@@ -248,7 +243,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     <address>
       {% if address.address and address.address != '' %}
         <p>
-        {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint">(<a href="https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)</span>
+        {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint"><span aria-hidden="true">(</span><a href="https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}}&country=us" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a><span aria-hidden="true">)</span></span>
         </p>
       {% endif %}
       {% if address.email and address.email != '' %}
@@ -262,7 +257,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         </p>
       {% endif %}
       {% if address.website and address.website != '' %}
-        <a href="{{ address.website }}" target="_blank" rel="noopener">View property website</a><sup>&#8599;</sup>
+        <a href="{{ address.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ address.aptName }}">View property website</a><sup>&#8599;</sup>
       {% endif %}
     </address>
 
@@ -274,6 +269,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </li>
   {% endif %}
 </ul> 
+</section>
 
 
 <div>
