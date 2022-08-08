@@ -17,7 +17,9 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
 {% endif %}
 
 <div class="flex align_end">
-  <h3>Showing {{numResults}} {% if numResults == 1 %}property{% else %}properties{% endif %}</h3>
+   <!-- <h3>Showing {{numResults}} {% if numResults == 1 %}property{% else %}properties{% endif %}</h3> -->
+  <h3>Showing {% if numFiltersApplied == 0 %}all {% endif %} {{numResults}} {% if numResults == 1 %}property{% else %}properties{% endif %}</h3>
+
   <a class="btn btn_secondary noprint" title="Print table" href="javascript:window.print();">
     <svg role="img" aria-hidden="true" focusable="false" class="icon ">
       <use xlink:href="/images/sprites.svg#print"></use>
