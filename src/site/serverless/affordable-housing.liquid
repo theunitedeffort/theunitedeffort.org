@@ -215,7 +215,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% endif %}
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
 
-  <div class="flex row_reversed">
+  <div class="flex row_reversed results_container">
     <div class="responsive_split responsive_sticky">
       <div class="split_right_container">
         <div id="map"></div>
@@ -277,7 +277,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
             Try changing the filter options above to broaden your search and see more results.
           </li>
         {% endif %}
-      </ul> 
+      </ul>
     </div>
   </div>
 </section>
