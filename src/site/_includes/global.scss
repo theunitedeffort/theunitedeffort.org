@@ -235,3 +235,28 @@ iframe {
     height: 100vh;
   }
 }
+
+#map-legend {
+  background: #fff;
+  border: 2px solid #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(0,0,0,.1);
+  padding: 10px;
+  margin: 10px;
+}
+
+#map-legend h3 {
+  margin-top: 0;
+}
+
+#map-legend img {
+  vertical-align: middle;
+  display: inline;
+}
+
+.info-window-content {
+  h1 {
+    font-size: 1.0em;
+    margin-top: 0;
+  }
+}

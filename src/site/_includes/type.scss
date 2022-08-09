@@ -187,8 +187,13 @@
     border-bottom: solid 1px var(--color-gray-700);
     padding: 2em 0 0 0;
     li {
-      padding-bottom: 3em;
+      margin-bottom: 3em;
+      padding: 0.5em;
       break-inside: avoid;
+    }
+    li.highlighted {
+      border: 2px solid var(--color-gray-200);
+      border-left: 6px solid var(--color-gray-200);
     }
     li.no_results {
       font-size: 1em;

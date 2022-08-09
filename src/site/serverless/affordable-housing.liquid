@@ -219,6 +219,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     <div class="responsive_split responsive_sticky">
       <div class="split_right_container">
         <div id="map"></div>
+        <div id="map-legend"><h3>Legend</h3></div>
       </div>
     </div>
     <div class="responsive_split">
@@ -316,37 +317,60 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       mapId: "9cafc548a28110af",
       zoom: 9,
       center: centerLatLng,
+      gestureHandling: "greedy",
+      mapTypeControlOptions: {
+        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+        mapTypeIds: ["roadmap", "satellite"],
+    },
     });
     let bounds = new google.maps.LatLngBounds();
     let infowindow = new google.maps.InfoWindow({
-      disableAutoPan: true
+      disableAutoPan: false
     });
     let markers = [];
     for (const loc of locations) {
       const marker = new google.maps.Marker({
         position: new google.maps.LatLng(loc.lat, loc.lng),
         map: map,
-        title: loc.name
+        title: loc.name,
       });
       let listItem = document.getElementById("property-" + loc.id);
       marker.addListener("click", () => {
-        infowindow.setContent(loc.name);
+        if (infowindow.listItem) {
+          infowindow.listItem.classList.remove('highlighted');
+        }
+        infowindow.setContent(
+          '<div class="info-window-content">' +
+          '<h1>' + loc.name + '</h1>' +
+          '<div>' +
+          '<a href="/housing/affordable-housing/' + loc.id + '">More Info</a>' +
+          '</div>' +
+          '</div>'
+        );
         infowindow.open({
           anchor: marker,
           map,
           shouldFocus: false,
         });
-        listItem.scrollIntoView();
+    
+        listItem.scrollIntoView({behavior: 'smooth'});
+        listItem.classList.add('highlighted');
+        infowindow.listItem = listItem;
       });
       bounds.extend(loc);
       markers.push(marker);
     }
     map.fitBounds(bounds);
 
+    google.maps.event.addListener(infowindow,'closeclick',function(){
+      this.listItem.classList.remove('highlighted');
+    });
+
     let radius = 50;
     let minPoints = 4;
     let algorithm = new markerClusterer.SuperClusterAlgorithm({radius, minPoints});
-    new markerClusterer.MarkerClusterer({ markers, map, algorithm });
+    //new markerClusterer.MarkerClusterer({ markers, map, algorithm });
+    
     // const transitLayer = new google.maps.TransitLayer();
     // transitLayer.setMap(map);
 
@@ -366,8 +390,28 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         },
         visible: false,
       });
+      marker.addListener("click", () => {
+        infowindow.setContent(
+          '<div class="info-window-content">' +
+          '<h1>VTA Bus Stop</h1>' + 
+          stop.name +
+          '</div>');
+        infowindow.open({
+          anchor: marker,
+          map,
+          shouldFocus: false,
+        });
+      });
       stopMarkers.push(marker);
     }
+
+    const legend = document.getElementById("map-legend");
+    const div = document.createElement("div");
+
+    div.innerHTML = '<img src="' + smallBusIcon + '"> ' + 'Bus Stop';
+    legend.appendChild(div);
+
+    map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
 
     google.maps.event.addListener(map, 'zoom_changed', function() {
       const zoom = map.getZoom();
@@ -380,6 +424,16 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         } else {
           stopMarkers[i].setIcon(smallBusIcon);
         }
+      }
+      if (zoom > 12) {
+        legend.removeAttribute("hidden");
+      } else {
+        legend.setAttribute("hidden", "hidden");
+      }
+      if (zoom > 14) {
+        div.innerHTML = '<img src="' + largeBusIcon + '"> ' + 'Bus Stop';
+      } else {
+        div.innerHTML = '<img src="' + smallBusIcon + '"> ' + 'Bus Stop';
       }
     });
   }
