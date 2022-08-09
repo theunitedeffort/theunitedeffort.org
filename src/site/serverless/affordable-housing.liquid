@@ -252,7 +252,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           <address>
             {% if address.address and address.address != '' %}
               <p>
-              {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint"><span aria-hidden="true">(</span><a href="https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}}&country=us" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a><span aria-hidden="true">)</span></span>
+              {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint"><span aria-hidden="true">(</span><button type="button" class="map_link link" aria-label="Map for {{ address.aptName }}">Show on map</button><span aria-hidden="true">)</span></span>
               </p>
             {% endif %}
             {% if address.email and address.email != '' %}
@@ -335,6 +335,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         title: loc.name,
       });
       let listItem = document.getElementById("property-" + loc.id);
+
       marker.addListener("click", () => {
         if (infowindow.listItem) {
           infowindow.listItem.classList.remove('highlighted');
@@ -357,6 +358,20 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         listItem.classList.add('highlighted');
         infowindow.listItem = listItem;
       });
+
+      // TODO: add the link button from scratch here instead of finding it in
+      // the DOM. Also,  only add the button if a marker exists for that list
+      // item.
+      let linkButton = listItem.querySelector("button.map_link");
+      console.log(listItem);
+      console.log(linkButton);
+      if (linkButton) {
+        linkButton.addEventListener("click", () => {
+          google.maps.event.trigger(marker, "click");
+          //map.setCenter();
+        });
+      }
+
       bounds.extend(loc);
       markers.push(marker);
     }
@@ -413,6 +428,8 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
     map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
 
+    // TODO: redraw markers only after idle event fires so as not to 
+    // cause zoom animation lag.
     google.maps.event.addListener(map, 'zoom_changed', function() {
       const zoom = map.getZoom();
       console.log(zoom);
