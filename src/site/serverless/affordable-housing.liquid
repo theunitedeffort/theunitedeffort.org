@@ -252,7 +252,14 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           <address>
             {% if address.address and address.address != '' %}
               <p>
-              {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint"><span aria-hidden="true">(</span><button type="button" class="map_link link" aria-label="Map for {{ address.aptName }}">Show on map</button><span aria-hidden="true">)</span></span>
+              {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %}
+                <span class="noprint"><span aria-hidden="true">(</span>
+                {%- if address.locCoords and address.locCoords != '' -%}
+                  <button type="button" class="map_link link" aria-label="Highlight {{ address.aptName }} on map">Show on map</button>
+                {%- else -%}
+                  <a href="https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}}&country=us" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a>
+                {%- endif -%}
+                <span aria-hidden="true">)</span></span>
               </p>
             {% endif %}
             {% if address.email and address.email != '' %}
@@ -278,6 +285,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           </li>
         {% endif %}
       </ul>
+      <div class="map_toggle">
+        <button type="button" class="btn btn_secondary">Show Map</button>
+      </div>
     </div>
   </div>
 </section>

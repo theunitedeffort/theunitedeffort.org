@@ -183,8 +183,11 @@
   .results_container {
     border-bottom: solid 1px var(--color-gray-700);
     margin-bottom: 2em;
-    padding-bottom: 3em;
+    padding-bottom: 1.5em;
     padding-top: 3em;
+    @include bp(mid) {
+      padding-bottom: 3em;
+    }
   }
 
   .results_list {
