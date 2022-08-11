@@ -216,13 +216,13 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
 
   <div class="flex row_reversed results_container">
-    <div class="responsive_split responsive_sticky">
+    <div id="map-container" class="responsive_split responsive_sticky">
       <div class="split_right_container">
         <div id="map"></div>
         <div id="map-legend"><h3>Legend</h3></div>
       </div>
     </div>
-    <div class="responsive_split">
+    <div id="list-container" class="responsive_split">
       <ul class="results_list" aria-label="Results List">
         {% for address in sortedHousingdb %}
         <li id="property-{{address.id}}">
@@ -285,10 +285,10 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           </li>
         {% endif %}
       </ul>
-      <div class="map_toggle">
-        <button type="button" class="btn btn_secondary">Show Map</button>
-      </div>
     </div>
+  </div>
+  <div id="map-toggle">
+    <button type="button" class="btn btn_secondary">Show Map</button>
   </div>
 </section>
 
@@ -304,6 +304,23 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       ></script>
   <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 <script>
+
+  let toggleButton = document.querySelector("#map-toggle button");
+  let mapContainer = document.getElementById("map-container");
+  let listContainer = document.getElementById("list-container");
+  
+  toggleButton.addEventListener("click", () => {
+    if (listContainer.style.display === "none") {
+      listContainer.style.display = "block";
+      mapContainer.style.display = "none";
+      toggleButton.textContent = "Show Map";
+    } else {
+      mapContainer.style.display = "block";
+      listContainer.style.display = "none";
+      mapContainer.scrollIntoView();
+      toggleButton.textContent ="Show List";
+    }
+  });
 
   const locations = [
   {% for address in sortedHousingdb %}
@@ -373,8 +390,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       // the DOM. Also,  only add the button if a marker exists for that list
       // item.
       let linkButton = listItem.querySelector("button.map_link");
-      console.log(listItem);
-      console.log(linkButton);
       if (linkButton) {
         linkButton.addEventListener("click", () => {
           google.maps.event.trigger(marker, "click");
@@ -442,7 +457,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     // cause zoom animation lag.
     google.maps.event.addListener(map, 'zoom_changed', function() {
       const zoom = map.getZoom();
-      console.log(zoom);
       // iterate over markers and call setVisible
       for (i = 0; i < stopMarkers.length; i++) {
         stopMarkers[i].setVisible(zoom > 12);
