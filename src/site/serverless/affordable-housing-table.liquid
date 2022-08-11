@@ -4,7 +4,8 @@ title: Affordable Housing Results Summary
 permalink: 
   serverless: "/housing/affordable-housing/table"
 pageClass: "page-housing page_housing_table"
-pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</style>'
+pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
+  <script src="/js/sorttable.js" defer></script>'
 ---
 
 {% assign query = eleventy.serverless.query %}
@@ -26,10 +27,10 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
     Print table
   </a>
 </div>
-<table id="affordable-housing-table-summary" class="printed">
+<table id="affordable-housing-table-summary" class="printed sortable">
   <thead>
     <tr>
-      <th>Apartment Name<span class="noprint"> & Link</span></th>
+      <th class="sorttable_sorted">Apartment Name<span class="noprint"> & Link</span></th>
       <th>Address</th>
       <th>City</th>
       <th>Waitlist Status</th>
@@ -63,7 +64,7 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
             {{ waitlistStatuses | first }}
           {% endif %}
         </td>
-        <td>{{ address.units | map: "unitType" | uniq | rankSort | join: "<br/>" | replace: "Bedroom", "BR" }}</td>
+        <td>{{ address.units | map: "unitType" | uniq | rankSort | join: '<br style="mso-data-placement:same-cell;"/>' | replace: "Bedroom", "BR" }}</td>
         <td>
           {% assign rents = address.units | map: "rent" | compact | uniq | sort %}
           {% if rents.size == 1 %}
@@ -81,25 +82,23 @@ pageStyles: '<style type="text/css" media="print">@page {size: landscape;}</styl
           {% endif %}
         </td>
         <td>
+          {% assign maxIncomes = address.units | map: "maxIncome" %}
+          {% assign maxIncomeLows = maxIncomes | map: "low" | compact | uniq | sort %}
+          {% assign maxIncomeHighs = maxIncomes | map: "high" | compact | uniq | sort %}
           {% assign percentAmis = address.units | map: "incomeBracket" | compact | uniq | sort %}
-          {% if percentAmis.size > 0 %}
+          {% if maxIncomeLows.size > 0 and maxIncomeHighs.size > 0 %}
+            {% assign maxIncomeLow = maxIncomeLows | first %}
+            {% assign maxIncomeHigh = maxIncomeHighs | last %}
+            {% if maxIncomeLow == maxIncomeHigh %}
+              {{ maxIncomeLow | money }}
+            {% else %}
+              {{ maxIncomeLow | money }} - {{ maxIncomeHigh | money }}
+            {% endif %}
+          {% elsif percentAmis.size > 0 %}
             {% if percentAmis.size == 1 %}
               {{ percentAmis | first }}% AMI
             {% elsif percentAmis.size >= 2 %}
               {{ percentAmis | first }}% - {{ percentAmis | last }}% AMI
-            {% endif %}
-          {% else %}
-            {% assign maxIncomes = address.units | map: "maxIncome" %}
-            {% assign maxIncomeLows = maxIncomes | map: "low" | compact | uniq | sort %}
-            {% assign maxIncomeHighs = maxIncomes | map: "high" | compact | uniq | sort %}
-            {% if maxIncomeLows.size > 0 and maxIncomeHighs.size > 0 %}
-              {% assign maxIncomeLow = maxIncomeLows | first %}
-              {% assign maxIncomeHigh = maxIncomeHighs | last %}
-              {% if maxIncomeLow == maxIncomeHigh %}
-                {{ maxIncomeLow | money }}
-              {% else %}
-                {{ maxIncomeLow | money }} - {{ maxIncomeHigh | money }}
-              {% endif %}
             {% endif %}
           {% endif %}
         </td>

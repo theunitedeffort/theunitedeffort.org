@@ -10,6 +10,7 @@ main {
     text-decoration: none;
     display: inline-block;
     margin-bottom: 0.2em;
+    cursor: pointer;
     
     font-size: 0.8rem;
     @include bp(mid) {
@@ -35,7 +36,6 @@ main {
     &:hover,
     &:focus {
       background-color: var(--color-blue-dark-b);
-      cursor: pointer;
     }
   }
 
@@ -53,7 +53,6 @@ main {
       background-color: var(--color-blue-dark);
       border-bottom-color: var(--color-blue-dark-b);
       color: var(--color-white);
-      cursor: pointer;
     }
   }
 
@@ -68,7 +67,6 @@ main {
     &:hover,
     &:focus {
       background-color: var(--color-red-dark-b);
-      cursor: pointer;
     }
   }
 
@@ -81,6 +79,32 @@ main {
     border-bottom-color: var(--color-gray-100);
     border-left: none;
     border-right: none;
+  }
+
+  .icon_info,
+  .icon_query {
+    border-radius: 50%;
+    border-width: 0;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: .8em;
+    height: 1.4em;
+    width: 1.4em;
+    display: inline-block;
+    padding: 0;
+    text-align: center;
+  }
+
+  .icon_query {
+    &:after {
+      content: "?";
+    }
+  }
+  .icon_info {
+    &:after {
+      content: "i";
+    }
   }
 
   #housing-changes legend {
