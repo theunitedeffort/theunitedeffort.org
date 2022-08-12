@@ -207,6 +207,17 @@ body.max_width {
   }
 }
 
+@include bp-max(mid) {
+  .responsive_hidden {
+    display: none;
+  }
+
+  .responsive_visible {
+    display: block;
+  }
+}
+
+
 .split_right_container {
   margin-left: 1em;
 }

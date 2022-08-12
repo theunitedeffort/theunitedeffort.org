@@ -1,9 +1,20 @@
 // Breakpoints
-$bp-narrow: "(min-width: 550px)";
-$bp-mid: "(min-width: 800px)";
-$bp-midwide: "(min-width: 1050px)";
-$bp-wide: "(min-width: 1266px)";
-$bp-ultra: "(min-width: 1400px)";
+$width-narrow: "550px";
+$width-mid: "800px";
+$width-midwide: "1050px";
+$width-wide: "1266px";
+$width-ultra: "1400px";
+$bp-narrow: "(min-width: #{$width-narrow})";
+$bp-mid: "(min-width: #{$width-mid})";
+$bp-midwide: "(min-width: #{$width-midwide})";
+$bp-wide: "(min-width: #{$width-wide})";
+$bp-ultra: "(min-width: #{$width-ultra})";
+$bp-max-narrow: "(max-width: #{$width-narrow})";
+$bp-max-mid: "(max-width: #{$width-mid})";
+$bp-max-midwide: "(max-width: #{$width-midwide})";
+$bp-max-wide: "(max-width: #{$width-wide})";
+$bp-max-ultra: "(max-width: #{$width-ultra})";
+
 @mixin bp($point) {
   @if $point==narrow {
     @media #{$bp-narrow} {
@@ -27,6 +38,34 @@ $bp-ultra: "(min-width: 1400px)";
   }
   @else if $point==ultra {
     @media #{$bp-ultra} {
+      @content;
+    }
+  }
+}
+
+@mixin bp-max($point) {
+  @if $point==narrow {
+    @media #{$bp-max-narrow} {
+      @content;
+    }
+  }
+  @else if $point==mid {
+    @media #{$bp-max-mid} {
+      @content;
+    }
+  }
+  @else if $point==midwide {
+    @media #{$bp-max-midwide} {
+      @content;
+    }
+  }
+  @else if $point==wide {
+    @media #{$bp-max-wide} {
+      @content;
+    }
+  }
+  @else if $point==ultra {
+    @media #{$bp-max-ultra} {
       @content;
     }
   }

@@ -310,14 +310,19 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   let listContainer = document.getElementById("list-container");
   
   toggleButton.addEventListener("click", () => {
-    if (listContainer.style.display === "none") {
-      listContainer.style.display = "block";
-      mapContainer.style.display = "none";
+    if (listContainer.classList.contains("responsive_hidden")) {
+      // Hide map and show list
+      listContainer.classList.remove("responsive_hidden");
+      listContainer.classList.add("responsive_visible");
+      mapContainer.classList.remove("responsive_visible");
+      mapContainer.classList.add("responsive_hidden");
       toggleButton.textContent = "Show Map";
     } else {
-      mapContainer.style.display = "block";
-      listContainer.style.display = "none";
-      mapContainer.scrollIntoView();
+      // Hide list and show map.
+      mapContainer.classList.remove("responsive_hidden");
+      mapContainer.classList.add("responsive_visible");
+      listContainer.classList.remove("responsive_visible");
+      listContainer.classList.add("responsive_hidden");
       toggleButton.textContent ="Show List";
     }
   });
