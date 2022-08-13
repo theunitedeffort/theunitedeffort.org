@@ -243,12 +243,11 @@ iframe {
 
 #map-toggle {
   position: sticky;
-  bottom: 0;
+  top: 1.5em;
   text-align: center;
-  background-color: var(--color-white);
-  padding-bottom: 1.5em;
-  padding-top: 1.5em;
+  margin: -1.5em auto 1.5em;
   display: block;
+  z-index: 1;
   @include bp(mid) {
     display: none;
   }

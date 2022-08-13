@@ -216,6 +216,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
 
   <div class="flex row_reversed results_container">
+    <div id="map-toggle">
+      <button type="button" class="btn btn_secondary">Show Map</button>
+    </div>
     <div id="map-container" class="responsive_split responsive_sticky">
       <div class="split_right_container">
         <div id="map"></div>
@@ -287,9 +290,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       </ul>
     </div>
   </div>
-  <div id="map-toggle">
-    <button type="button" class="btn btn_secondary">Show Map</button>
-  </div>
 </section>
 
 <div>
@@ -324,6 +324,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       listContainer.classList.remove("responsive_visible");
       listContainer.classList.add("responsive_hidden");
       toggleButton.textContent ="Show List";
+      mapContainer.scrollIntoView();
     }
   });
 
