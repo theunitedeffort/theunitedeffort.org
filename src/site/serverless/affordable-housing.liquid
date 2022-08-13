@@ -305,29 +305,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 <script>
 
-  let toggleButton = document.querySelector("#map-toggle button");
-  let mapContainer = document.getElementById("map-container");
-  let listContainer = document.getElementById("list-container");
-  
-  toggleButton.addEventListener("click", () => {
-    if (listContainer.classList.contains("responsive_hidden")) {
-      // Hide map and show list
-      listContainer.classList.remove("responsive_hidden");
-      listContainer.classList.add("responsive_visible");
-      mapContainer.classList.remove("responsive_visible");
-      mapContainer.classList.add("responsive_hidden");
-      toggleButton.textContent = "Show Map";
-    } else {
-      // Hide list and show map.
-      mapContainer.classList.remove("responsive_hidden");
-      mapContainer.classList.add("responsive_visible");
-      listContainer.classList.remove("responsive_visible");
-      listContainer.classList.add("responsive_hidden");
-      toggleButton.textContent ="Show List";
-      mapContainer.scrollIntoView();
-    }
-  });
-
   const locations = [
   {% for address in sortedHousingdb %}
     {% if address.locCoords and address.locCoords != '' %}
@@ -481,6 +458,30 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         div.innerHTML = '<img src="' + largeBusIcon + '"> ' + 'Bus Stop';
       } else {
         div.innerHTML = '<img src="' + smallBusIcon + '"> ' + 'Bus Stop';
+      }
+    });
+
+    let toggleButton = document.querySelector("#map-toggle button");
+    let mapContainer = document.getElementById("map-container");
+    let listContainer = document.getElementById("list-container");
+    
+    toggleButton.addEventListener("click", () => {
+      if (listContainer.classList.contains("responsive_hidden")) {
+        // Hide map and show list
+        listContainer.classList.remove("responsive_hidden");
+        listContainer.classList.add("responsive_visible");
+        mapContainer.classList.remove("responsive_visible");
+        mapContainer.classList.add("responsive_hidden");
+        toggleButton.textContent = "Show Map";
+      } else {
+        // Hide list and show map.
+        mapContainer.classList.remove("responsive_hidden");
+        mapContainer.classList.add("responsive_visible");
+        listContainer.classList.remove("responsive_visible");
+        listContainer.classList.add("responsive_hidden");
+        toggleButton.textContent ="Show List";
+        map.fitBounds(bounds);
+        mapContainer.scrollIntoView();
       }
     });
   }
