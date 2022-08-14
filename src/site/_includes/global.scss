@@ -242,12 +242,9 @@ iframe {
 }
 
 #map-toggle {
-  position: sticky;
-  top: 1.5em;
   text-align: center;
-  margin: -1.5em auto 1.5em;
+  margin: 0 auto 0.5em;
   display: block;
-  z-index: 1;
   @include bp(mid) {
     display: none;
   }
