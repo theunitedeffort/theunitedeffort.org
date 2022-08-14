@@ -216,7 +216,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
 
   <div class="flex row_reversed results_container">
-    <div id="map-toggle">
+    <div id="map-toggle" class="noprint">
       <button type="button" class="btn btn_secondary">Show Map</button>
     </div>
     <div id="map-container" class="responsive_split responsive_sticky">
@@ -346,7 +346,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       });
       let listItem = document.getElementById("property-" + loc.id);
 
-      marker.addListener("click", () => {
+      marker.addListener("click", (e, doScroll=true) => {
+        console.log(e);
+        console.log(doScroll);
         if (infowindow.listItem) {
           infowindow.listItem.classList.remove('highlighted');
         }
@@ -364,7 +366,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           shouldFocus: false,
         });
     
-        listItem.scrollIntoView({behavior: 'smooth'});
+        if (doScroll) {
+          listItem.scrollIntoView({behavior: 'smooth'});
+        }
         listItem.classList.add('highlighted');
         infowindow.listItem = listItem;
       });
@@ -375,8 +379,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       let linkButton = listItem.querySelector("button.map_link");
       if (linkButton) {
         linkButton.addEventListener("click", () => {
-          google.maps.event.trigger(marker, "click");
-          //map.setCenter();
+          google.maps.event.trigger(marker, "click", null, false);
         });
       }
 

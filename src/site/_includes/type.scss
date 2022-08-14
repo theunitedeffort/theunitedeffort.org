@@ -203,10 +203,12 @@
       padding: 0.5em;
       break-inside: avoid;
     }
-    li.highlighted {
-      border: 2px solid var(--color-gray-200);
-      border-left: 6px solid var(--color-gray-200);
-      border-radius: 3px;
+    @media screen {
+      li.highlighted {
+        border: 2px solid var(--color-gray-200);
+        border-left: 6px solid var(--color-gray-200);
+        border-radius: 3px;
+      }
     }
     li.no_results {
       font-size: 1em;
