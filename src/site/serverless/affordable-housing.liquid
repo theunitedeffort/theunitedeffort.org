@@ -277,6 +277,10 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
   // Initialize and add the map
   function initMap() {
+    let toggleButton = document.querySelector("#map-toggle button");
+    let mapContainer = document.getElementById("map-container");
+    let listContainer = document.getElementById("list-container");
+
     const centerLatLng = { lat: 37.233907, lng: -121.756180 };
     const map = new google.maps.Map(document.getElementById("map"), {
       mapId: "9cafc548a28110af",
@@ -339,6 +343,13 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       if (linkButton) {
         linkButton.addEventListener("click", () => {
           google.maps.event.trigger(marker, "click", null, true);
+          // Hide list and show map.
+          mapContainer.classList.remove("responsive_hidden");
+          mapContainer.classList.add("responsive_visible");
+          listContainer.classList.remove("responsive_visible");
+          listContainer.classList.add("responsive_hidden");
+          toggleButton.textContent ="Show List";
+          toggleButton.scrollIntoView();
         });
       }
 
@@ -422,10 +433,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         div.innerHTML = '<img src="' + smallBusIcon + '"> ' + 'Bus Stop';
       }
     });
-
-    let toggleButton = document.querySelector("#map-toggle button");
-    let mapContainer = document.getElementById("map-container");
-    let listContainer = document.getElementById("list-container");
     
     toggleButton.addEventListener("click", () => {
       if (listContainer.classList.contains("responsive_hidden")) {
