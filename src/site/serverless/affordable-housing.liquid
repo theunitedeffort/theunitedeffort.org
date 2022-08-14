@@ -252,7 +252,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgy4aWlGUJAEQ6pyQjMhSPf4k0lLIpURk&callback=initMap&v=weekly"
         defer
       ></script>
-  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 <script>
 
   const locations = [
@@ -361,11 +360,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     google.maps.event.addListener(infowindow,'closeclick',function(){
       this.listItem.classList.remove('highlighted');
     });
-
-    let radius = 50;
-    let minPoints = 4;
-    let algorithm = new markerClusterer.SuperClusterAlgorithm({radius, minPoints});
-    //new markerClusterer.MarkerClusterer({ markers, map, algorithm });
     
     // const transitLayer = new google.maps.TransitLayer();
     // transitLayer.setMap(map);
