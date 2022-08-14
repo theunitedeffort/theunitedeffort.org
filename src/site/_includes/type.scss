@@ -214,6 +214,10 @@
       font-size: 1em;
       font-weight: 600;
     }
+  }
+
+  .map_infowindow_content,
+  .results_list {
     p {
       margin: 0;
       padding: 0;
@@ -227,6 +231,20 @@
     }
   }
 
+  .map_infowindow_content {
+    font-family: var(--font-primary);
+    font-weight: 400;
+    font-size: 13px;
+    @include bp(narrow) {
+      font-size: 14px;
+    }
+
+    .badge {
+      font-size: 0.8em;
+    }
+  }
+
+
   table.printed p {
     margin: 0;
     padding: 0;
@@ -235,8 +253,6 @@
   table.printed .checklist > p {
     padding: 0.1em;
   }
-
-  
 
   .queue_status {
     width: 50%;

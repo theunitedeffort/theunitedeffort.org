@@ -228,59 +228,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     <div id="list-container" class="responsive_split">
       <ul class="results_list" aria-label="Results List">
         {% for address in sortedHousingdb %}
-        <li id="property-{{address.id}}">
-          <h2>
-            <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
-          </h2>
-          {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
-          {% for status in allStatuses %}
-            <p>
-              <span class="badge
-              {% if status == "Call for Status" %}
-                badge__warn
-              {% elsif status == "Waitlist Closed" %}
-                badge__bad
-              {% elsif status == "Waitlist Open" %}
-                badge__ok
-              {% endif %}
-              ">{{ status }}</span>
-              {% assign sortedUnits = address.units | where: "openStatus",  status | rankSort: "unitType" %}
-              {% for unit in sortedUnits %}
-                {% if unit.unitType %}
-                  <span class="badge">{{ unit.unitType }}</span>
-                {% endif %}
-              {% endfor %} 
-            </p>
-          {% endfor %}
-          <address>
-            {% if address.address and address.address != '' %}
-              <p>
-              {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %}
-                <span class="noprint"><span aria-hidden="true">(</span>
-                {%- if address.locCoords and address.locCoords != '' -%}
-                  <button type="button" class="map_link link" aria-label="Highlight {{ address.aptName }} on map">Show on map</button>
-                {%- else -%}
-                  <a href="https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}}&country=us" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a>
-                {%- endif -%}
-                <span aria-hidden="true">)</span></span>
-              </p>
-            {% endif %}
-            {% if address.email and address.email != '' %}
-              <p>
-                <a href="mailto:{{ address.email }}" target="_blank" rel="noopener">{{ address.email }}</a>
-              </p>
-            {% endif %}
-            {% if address.phone and address.phone != '' %}
-              <p>
-                <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a>
-              </p>
-            {% endif %}
-            {% if address.website and address.website != '' %}
-              <a href="{{ address.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ address.aptName }}">View property website</a><sup>&#8599;</sup>
-            {% endif %}
-          </address>
-
-        </li>
+          <li id="property-{{address.id}}">
+            {% render "affordable-housing-item.liquid", address: address, showMapLink: true %}
+          </li>
         {% endfor %}
         {% if num_results == 0 %}
           <li class="no_results">
@@ -309,7 +259,12 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% for address in sortedHousingdb %}
     {% if address.locCoords and address.locCoords != '' %}
       {% assign coords = address.locCoords | split: "," %}
-      { lat: {{coords[0]}}, lng: {{coords[1]}}, name: "{{address.aptName}}", id: "{{address.id}}" },
+      {% capture rawContent %}
+        <div id="infowindow-{{address.id}}" class="map_infowindow_content">
+          {% render "affordable-housing-item.liquid", address: address, showMapLink: false %}
+        </div> 
+      {% endcapture %}
+      { lat: {{coords[0]}}, lng: {{coords[1]}}, content: '{{ rawContent | replace: "\n", ""}}', id: "{{address.id}}" },
     {% endif %}
   {% endfor %}
   ];
@@ -331,6 +286,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       mapTypeControlOptions: {
         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
         mapTypeIds: ["roadmap", "satellite"],
+      },
+      fullscreenControlOptions: {
+      position: google.maps.ControlPosition.BOTTOM_LEFT,
     },
     });
     let bounds = new google.maps.LatLngBounds();
@@ -346,31 +304,32 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       });
       let listItem = document.getElementById("property-" + loc.id);
 
-      marker.addListener("click", (e, doScroll=true) => {
-        console.log(e);
-        console.log(doScroll);
+      marker.addListener("click", (e, disableScroll) => {
         if (infowindow.listItem) {
           infowindow.listItem.classList.remove('highlighted');
         }
-        infowindow.setContent(
-          '<div class="info-window-content">' +
-          '<h1>' + loc.name + '</h1>' +
-          '<div>' +
-          '<a href="/housing/affordable-housing/' + loc.id + '">More Info</a>' +
-          '</div>' +
-          '</div>'
-        );
+        infowindow.setContent(loc.content);
+        // infowindow.setContent(
+        //   '<div class="info-window-content">' +
+        //   '<h1>' + loc.name + '</h1>' +
+        //   '<div>' +
+        //   '<a href="/housing/affordable-housing/' + loc.id + '">More Info</a>' +
+        //   '</div>' +
+        //   '</div>'
+        // );
         infowindow.open({
           anchor: marker,
           map,
           shouldFocus: false,
         });
     
-        if (doScroll) {
+        if (!disableScroll) {
           listItem.scrollIntoView({behavior: 'smooth'});
         }
         listItem.classList.add('highlighted');
         infowindow.listItem = listItem;
+        map.setZoom(15);
+        map.panTo(marker.getPosition());
       });
 
       // TODO: add the link button from scratch here instead of finding it in
@@ -379,7 +338,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       let linkButton = listItem.querySelector("button.map_link");
       if (linkButton) {
         linkButton.addEventListener("click", () => {
-          google.maps.event.trigger(marker, "click", null, false);
+          google.maps.event.trigger(marker, "click", null, true);
         });
       }
 
@@ -437,7 +396,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     div.innerHTML = '<img src="' + smallBusIcon + '"> ' + 'Bus Stop';
     legend.appendChild(div);
 
-    map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(legend);
 
     // TODO: redraw markers only after idle event fires so as not to 
     // cause zoom animation lag.
