@@ -270,7 +270,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
   const stops = [
   {% for stop in transitData %}
-    { lat: {{stop.lat}}, lng: {{stop.lng}}, name: "{{stop.name}}" },
+    { lat: {{stop.lat}}, lng: {{stop.lng}}, name: "{{stop.name}}", operator: "{{stop.operator}}" },
   {% endfor %}
   ];
 
@@ -387,7 +387,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       marker.addListener("click", () => {
         infowindow.setContent(
           '<div class="info-window-content">' +
-          '<h1>VTA Bus Stop</h1>' + 
+          '<h1>' + stop.operator + ' Bus Stop</h1>' + 
           stop.name +
           '</div>');
         infowindow.open({
