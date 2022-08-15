@@ -404,6 +404,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
     div.innerHTML = '<img src="' + stopMarkers[0].getIcon().url + '" width="' + stopMarkers[0].getIcon().scaledSize.width + '" height="' + stopMarkers[0].getIcon().scaledSize.height + '"> ' + 'Bus Stop';
     legend.appendChild(div);
+    legend.setAttribute("hidden", "hidden");
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(legend);
 
