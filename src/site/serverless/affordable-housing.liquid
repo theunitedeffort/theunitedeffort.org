@@ -403,29 +403,36 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(legend);
 
-    // TODO: redraw markers only after idle event fires so as not to 
-    // cause zoom animation lag.
-    google.maps.event.addListener(map, 'zoom_changed', function() {
-      const zoom = map.getZoom();
-      // iterate over markers and call setVisible
-      for (i = 0; i < stopMarkers.length; i++) {
-        stopMarkers[i].setVisible(zoom > 12);
-        if (zoom > 14) {
-          stopMarkers[i].setIcon(largeBusIcon);
-        } else {
-          stopMarkers[i].setIcon(smallBusIcon);
+    let prevZoom = 0;
+    google.maps.event.addListener(map, 'zoom_changed', () => {
+      google.maps.event.addListenerOnce(map, 'idle', () => {
+        const zoom = map.getZoom();
+        if ((zoom > 12 && prevZoom <= 12) || (zoom <= 12 && prevZoom > 12)) {
+          // Display bus stops
+          let isVisible = zoom > 12;
+          for (i = 0; i < stopMarkers.length; i++) {
+            stopMarkers[i].setVisible(isVisible);
+          }
+          if (isVisible) {
+            legend.removeAttribute("hidden");
+          } else {
+            legend.setAttribute("hidden", "hidden");
+          }
         }
-      }
-      if (zoom > 12) {
-        legend.removeAttribute("hidden");
-      } else {
-        legend.setAttribute("hidden", "hidden");
-      }
-      if (zoom > 14) {
-        div.innerHTML = '<img src="' + largeBusIcon + '"> ' + 'Bus Stop';
-      } else {
-        div.innerHTML = '<img src="' + smallBusIcon + '"> ' + 'Bus Stop';
-      }
+
+        if ((zoom > 14 && prevZoom <= 14) || (zoom <= 14 && prevZoom > 14)) {
+          // Change bus stop icon
+          let busIcon = smallBusIcon;
+          if (zoom > 14) {
+            busIcon = largeBusIcon;
+          }
+          for (i = 0; i < stopMarkers.length; i++) {
+            stopMarkers[i].setIcon(busIcon);
+          }
+          div.innerHTML = '<img src="' + busIcon + '"> ' + 'Bus Stop';
+        }
+        prevZoom = zoom;
+      });
     });
     
     toggleButton.addEventListener("click", () => {
