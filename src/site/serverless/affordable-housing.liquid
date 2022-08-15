@@ -358,15 +358,17 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     map.fitBounds(bounds);
 
     google.maps.event.addListener(infowindow,'closeclick',function(){
-      this.listItem.classList.remove('highlighted');
+      if (this.listItem) {
+        this.listItem.classList.remove('highlighted');
+      }
     });
     
     // const transitLayer = new google.maps.TransitLayer();
     // transitLayer.setMap(map);
 
     // "https://mt.google.com/vt/icon/name=icons/spotlight/measle_8px.png&scale=1"
-    let smallBusIcon = "/images/measle_8px.png"
-    let largeBusIcon = "https://mt.google.com/vt/icon/name=icons/spotlight/transit/bus_small.png&scale=1"
+    let smallBusIconPath = "/images/measle_2x.png";
+    let largeBusIconPath = "/images/bus_small_2x.png";
 
     let stopMarkers = [];
     for (const stop of stops) {
@@ -374,11 +376,13 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         position: new google.maps.LatLng(stop.lat, stop.lng),
         map: map,
         icon: {
-          url: smallBusIcon,
-          //size: new google.maps.Size(15, 15),
-          //anchor: new google.maps.Point(7, 7)
+          url: smallBusIconPath,
+          size: new google.maps.Size(16, 16),
+          scaledSize: new google.maps.Size(8, 8),
+          anchor: new google.maps.Point(4, 4)
         },
         visible: false,
+        anchorPoint: new google.maps.Point(0, -5),
       });
       marker.addListener("click", () => {
         infowindow.setContent(
@@ -398,7 +402,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     const legend = document.getElementById("map-legend");
     const div = document.createElement("div");
 
-    div.innerHTML = '<img src="' + smallBusIcon + '"> ' + 'Bus Stop';
+    div.innerHTML = '<img src="' + stopMarkers[0].getIcon().url + '" width="' + stopMarkers[0].getIcon().scaledSize.width + '" height="' + stopMarkers[0].getIcon().scaledSize.height + '"> ' + 'Bus Stop';
     legend.appendChild(div);
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(legend);
@@ -422,14 +426,30 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
         if ((zoom > 14 && prevZoom <= 14) || (zoom <= 14 && prevZoom > 14)) {
           // Change bus stop icon
-          let busIcon = smallBusIcon;
+          let markerOptions = {
+            icon: {
+              url: smallBusIconPath,
+              size: new google.maps.Size(16, 16),
+              scaledSize: new google.maps.Size(8, 8),
+              anchor: new google.maps.Point(4, 4)
+            },
+            anchorPoint: new google.maps.Point(0, -5),
+          };
           if (zoom > 14) {
-            busIcon = largeBusIcon;
+            markerOptions = {
+              icon: {
+                url: largeBusIconPath,
+                size: new google.maps.Size(30, 30),
+                scaledSize: new google.maps.Size(15, 15),
+                anchor: new google.maps.Point(7, 7)
+              },
+              anchorPoint: new google.maps.Point(0, -8),
+            };
           }
           for (i = 0; i < stopMarkers.length; i++) {
-            stopMarkers[i].setIcon(busIcon);
+            stopMarkers[i].setOptions(markerOptions);
           }
-          div.innerHTML = '<img src="' + busIcon + '"> ' + 'Bus Stop';
+          div.innerHTML = '<img src="' + markerOptions.icon.url + '" width="' + markerOptions.icon.scaledSize.width + '" height="' + markerOptions.icon.scaledSize.height + '"> ' + 'Bus Stop';
         }
         prevZoom = zoom;
       });
