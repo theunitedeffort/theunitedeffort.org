@@ -364,7 +364,7 @@ const fetchData = async(housingID) => {
         units.metadata["Website"] = (
           records[0].fields["_PROPERTY_URL"]?.[0]|| "");
         units.metadata.notesData["_POPULATIONS_SERVED"] = (
-          records[0].fields["_POPULATIONS_SERVED"]);
+          records[0].fields["_POPULATIONS_SERVED"] || []);
         units.metadata.notesData["_MIN_RESIDENT_AGE"] = (
           records[0].fields["_MIN_RESIDENT_AGE"]?.[0]|| "");
         units.metadata.notesData["_MAX_RESIDENT_AGE"] = (

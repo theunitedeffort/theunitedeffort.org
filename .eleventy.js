@@ -489,6 +489,12 @@ module.exports = function(eleventyConfig) {
       // See https://community.airtable.com/t/return-rows-that-contain-multiple-select-item/42187/4
       // for a complicated solution.
       let populationsQuery = populations.map(x => `FIND('${x}', {_POPULATIONS_SERVED})`);
+      if (populations.includes("General Population")) {
+        // Entries with an empty _POPULATIONS_SERVED field are interpreted as
+        // being open to the general public, so allow those entries as well if
+        // the user wants General Population entries.
+        populationsQuery.push("{_POPULATIONS_SERVED} = BLANK()");
+      }
       parameters.push(`OR(${populationsQuery.join(",")})`);
     }
 
