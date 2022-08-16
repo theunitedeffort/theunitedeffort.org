@@ -229,7 +229,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       <ul class="results_list" aria-label="Results List">
         {% for address in sortedHousingdb %}
           <li id="property-{{address.id}}">
-            {% render "affordable-housing-item.liquid", address: address, showMapLink: true %}
+            {% render "affordable-housing-item.liquid", address: address, isInfoWindow: false %}
           </li>
         {% endfor %}
         {% if num_results == 0 %}
@@ -260,7 +260,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       {% assign coords = address.locCoords | split: "," %}
       {% capture rawContent %}
         <div id="infowindow-{{address.id}}" class="map_infowindow_content">
-          {% render "affordable-housing-item.liquid", address: address, showMapLink: false %}
+          {% render "affordable-housing-item.liquid", address: address, isInfoWindow: true %}
         </div> 
       {% endcapture %}
       { lat: {{coords[0]}}, lng: {{coords[1]}}, content: '{{ rawContent | replace: "\n", "" | replace: "'", "&apos;"}}', id: "{{address.id}}" },
