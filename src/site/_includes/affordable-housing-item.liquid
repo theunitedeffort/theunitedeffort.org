@@ -34,7 +34,7 @@ https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city
           {%- if address.locCoords and address.locCoords != '' -%}
             <button type="button" class="map_link link" aria-label="Highlight {{ address.aptName }} on map">Show on map</button>
           {%- else -%}
-            <a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a>
+            <a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a><sup>&#8599;</sup>
           {%- endif -%}
         <span aria-hidden="true">)</span></span>
       {%- endunless -%}
@@ -51,11 +51,13 @@ https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city
     </p>
   {% endif %}
   {% if address.website and address.website != '' %}
+    <p>
       <a href="{{ address.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ address.aptName }}">View property website</a><sup>&#8599;</sup>
+    </p>
   {% endif %}
   {% if isInfoWindow and address.address and address.address != '' %}
     <p class="map_infowindow_footer">
-      <a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{address.aptName}} on Google Maps">View on Google Maps</a>
+      <a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{address.aptName}} on Google Maps">View on Google Maps</a><sup>&#8599;</sup>
     </p>
   {% endif %}
 </address>

@@ -413,7 +413,10 @@
   content: "";
 }
 
-sup { vertical-align: top; font-size: 0.6em; }
+sup { 
+  line-height: 100%;
+  font-size: 0.7em;
+}
 
 address {
   p {
