@@ -2,34 +2,113 @@
 
   const MAP_CENTER_LAT = 37.233907;  // Center of Santa Clara County.
   const MAP_CENTER_LNG = -121.756180;  // Center of Santa Clara County.
-  const MAP_ID = "9cafc548a28110af";
-  const MAP_INIT_ZOOM = 9;
-  const MAP_HIGHLIGHT_ZOOM = 15;
+  const MAP_ID = "9cafc548a28110af";  // For custom map styling.
+  const MAP_INIT_ZOOM = 9;  // Zoom level
+  const MAP_HIGHLIGHT_ZOOM = 15;  // Zoom level
 
   // https://mt.google.com/vt/icon/name=icons/spotlight/measle_8px.png&scale=2
   const SMALL_BUS_ICON_PATH = "/images/measle_2x.png";
-  const SMALL_BUS_ICON_WIDTH = 16;
-  const SMALL_BUS_ICON_HEIGHT = 16;
+  const SMALL_BUS_ICON_WIDTH = 16;  // px
+  const SMALL_BUS_ICON_HEIGHT = 16;  // px
+  const SMALL_BUS_ICON_SCALE = 2;
   // https://mt.google.com/vt/icon/name=icons/spotlight/transit/bus_small.png&scale=2
   const LARGE_BUS_ICON_PATH = "/images/bus_small_2x.png";
-  const LARGE_BUS_ICON_WIDTH = 30;
-  const LARGE_BUS_ICON_HEIGHT = 30;
+  const LARGE_BUS_ICON_WIDTH = 30;  // px
+  const LARGE_BUS_ICON_HEIGHT = 30;  // px
+  const LARGE_BUS_ICON_SCALE = 2;
 
-  let toggleButton = document.querySelector("#map-toggle button");
-  let mapContainer = document.getElementById("map-container");
-  let listContainer = document.getElementById("list-container");
+  const TRANSIT_ICON_VISIBLE_BP = 12;  // Zoom level
+  const TRANSIT_ICON_SIZE_BP = 14;  // Zooom level
+
+  function switchToMapView(interface) {
+    interface.mapContainer.classList.remove("responsive_hidden");
+    interface.mapContainer.classList.add("responsive_visible");
+    interface.listContainer.classList.remove("responsive_visible");
+    interface.listContainer.classList.add("responsive_hidden");
+    interface.toggleButton.textContent ="Show List";
+  }
+
+  function switchToListView(interface) {
+    interface.listContainer.classList.remove("responsive_hidden");
+    interface.listContainer.classList.add("responsive_visible");
+    interface.mapContainer.classList.remove("responsive_visible");
+    interface.mapContainer.classList.add("responsive_hidden");
+    interface.toggleButton.textContent = "Show Map";
+    const selectedItem = document.querySelector("li.highlighted");
+    if (selectedItem) {
+      selectedItem.scrollIntoView();
+    }
+  }
 
   function setMapBounds(map, markers) {
-    let bounds = new google.maps.LatLngBounds();
+    const bounds = new google.maps.LatLngBounds();
     for (const marker of markers) {
       bounds.extend(marker.position);
     }
     map.fitBounds(bounds);
+    return bounds;
   }
 
-  function setUpAptListeners(map, markers, infowindow) {
+  function crossedZoomBp(zoom, prevZoom, breakpoint) {
+    return (
+      (zoom > breakpoint && prevZoom <= breakpoint) ||
+      (zoom <= breakpoint && prevZoom > breakpoint));
+  }
+
+  function makeMarkerOpts(path, width, height, scale) {
+    return {
+      icon: {
+        url: path,
+        size: new google.maps.Size(width, height),
+        scaledSize: new google.maps.Size(width / scale, height / scale),
+        anchor: new google.maps.Point(0.5 * width / scale,
+          0.5 * height / scale),
+      },
+      anchorPoint: new google.maps.Point(0, (-0.5 * height / scale) - 1),
+    };
+  }
+
+  function setLegendIcon(legend, icon) {
+    legend.lastChild.innerHTML = '<img ' +
+      'src="' + icon.url + 
+      '" width="' + icon.scaledSize.width + 
+      '" height="' + icon.scaledSize.height + 
+      '"> ' + 'Bus Stop';
+  }
+
+  function addLegend(map, icon) {
+    const legend = document.getElementById("map-legend");
+    legend.setAttribute("hidden", "hidden");
+    const legendContent = document.createElement("div");
+    legend.appendChild(legendContent);
+
+    setLegendIcon(legend, icon);
+
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(legend);
+    return legend;
+  }
+
+  function displayTransit(transitMarkers, legend, isVisible) {
+    for (i = 0; i < transitMarkers.length; i++) {
+      transitMarkers[i].setVisible(isVisible);
+    }
+    if (isVisible) {
+      legend.removeAttribute("hidden");
+    } else {
+      legend.setAttribute("hidden", "hidden");
+    }
+  }
+
+  function setTransitMarkerOptions(transitMarkers, legend, markerOptions) {
+    for (i = 0; i < transitMarkers.length; i++) {
+      transitMarkers[i].setOptions(markerOptions);
+    }
+    setLegendIcon(legend, markerOptions.icon);
+  }
+
+  function setUpAptListeners(map, markers, infowindow, interface) {
     for (const marker of markers) {
-      let listItem = document.getElementById("property-" + marker.apt.id);
+      const listItem = document.getElementById("property-" + marker.apt.id);
       marker.addListener("click", (e, disableScroll) => {
         if (infowindow.listItem) {
           infowindow.listItem.classList.remove('highlighted');
@@ -53,17 +132,12 @@
       // TODO: add the link button from scratch here instead of finding it in
       // the DOM. Also,  only add the button if a marker exists for that list
       // item.
-      let mapLink = listItem.querySelector("button.map_link");
+      const mapLink = listItem.querySelector("button.map_link");
       if (mapLink) {
         mapLink.addEventListener("click", () => {
           google.maps.event.trigger(marker, "click", null, true);
-          // Hide list and show map.
-          mapContainer.classList.remove("responsive_hidden");
-          mapContainer.classList.add("responsive_visible");
-          listContainer.classList.remove("responsive_visible");
-          listContainer.classList.add("responsive_hidden");
-          toggleButton.textContent ="Show List";
-          toggleButton.scrollIntoView();
+          switchToMapView(interface);
+          interface.toggleButton.scrollIntoView();
         });
       }
     }
@@ -71,7 +145,7 @@
 
   // Adds a marker for each apartment and sets up listeners for that marker.
   function addAptMarkers(map) {
-    let markers = [];
+    const markers = [];
     for (const loc of aptLocations) {
       const marker = new google.maps.Marker({
         position: new google.maps.LatLng(loc.lat, loc.lng),
@@ -102,7 +176,7 @@
   }
 
   function addTransitMarkers(map, markerOptions) {
-    let transitMarkers = [];
+    const transitMarkers = [];
     for (const stop of transitStops) {
       const marker = new google.maps.Marker({
         position: new google.maps.LatLng(stop.lat, stop.lng),
@@ -116,56 +190,21 @@
     return transitMarkers;
   }
 
-  function addLegend(map) {
-    const legend = document.getElementById("map-legend");
-    legend.setAttribute("hidden", "hidden");
-
-    const legendContent = document.createElement("div");
-    legendContent.innerHTML = '<img ' +
-      'src="' + SMALL_BUS_ICON_PATH + 
-      '" width="' + SMALL_BUS_ICON_WIDTH / 2 +
-      '" height="' + SMALL_BUS_ICON_HEIGHT / 2 + 
-      '"> ' + 'Bus Stop';
-    legend.appendChild(legendContent);
-
-    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(legend);
-    return legend;
-  }
-
   // Initialize and add the map
   function initMap() {
-    let smallTransitMarkerOpts = {
-      icon: {
-        url: SMALL_BUS_ICON_PATH,
-        size: new google.maps.Size(SMALL_BUS_ICON_WIDTH,
-          SMALL_BUS_ICON_HEIGHT),
-        scaledSize: new google.maps.Size(SMALL_BUS_ICON_WIDTH / 2,
-          SMALL_BUS_ICON_HEIGHT / 2),
-        anchor: new google.maps.Point(SMALL_BUS_ICON_WIDTH / 4,
-          SMALL_BUS_ICON_HEIGHT / 4)
-      },
-      anchorPoint: new google.maps.Point(0,
-        (-1 * SMALL_BUS_ICON_HEIGHT / 4) - 1),
+    const smallTransitMarkerOpts = makeMarkerOpts(SMALL_BUS_ICON_PATH, 
+      SMALL_BUS_ICON_WIDTH, SMALL_BUS_ICON_HEIGHT, SMALL_BUS_ICON_SCALE);
+    const largeTransitMarkerOpts = makeMarkerOpts(LARGE_BUS_ICON_PATH, 
+      LARGE_BUS_ICON_WIDTH, LARGE_BUS_ICON_HEIGHT, LARGE_BUS_ICON_SCALE);
+    const interface = {
+      toggleButton: document.querySelector("#map-toggle button"),
+      mapContainer: document.getElementById("map-container"),
+      listContainer: document.getElementById("list-container"),
     };
-    let largeTransitMarkerOpts = {
-      icon: {
-        url: LARGE_BUS_ICON_PATH,
-        size: new google.maps.Size(LARGE_BUS_ICON_WIDTH,
-          LARGE_BUS_ICON_HEIGHT),
-        scaledSize: new google.maps.Size(LARGE_BUS_ICON_WIDTH / 2,
-          LARGE_BUS_ICON_HEIGHT / 2),
-        anchor: new google.maps.Point(LARGE_BUS_ICON_WIDTH / 4,
-          LARGE_BUS_ICON_HEIGHT / 4)
-      },
-      anchorPoint: new google.maps.Point(0,
-        (-1 * LARGE_BUS_ICON_HEIGHT / 4) - 1),
-    };
-
-    const mapCenter = { lat: MAP_CENTER_LAT, lng: MAP_CENTER_LNG };
     const map = new google.maps.Map(document.getElementById("map"), {
       mapId: MAP_ID,
       zoom: MAP_INIT_ZOOM,
-      center: mapCenter,
+      center: new google.maps.LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG),
       gestureHandling: "greedy",
       mapTypeControlOptions: {
         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
@@ -176,46 +215,29 @@
       },
     });
 
-    let infowindow = new google.maps.InfoWindow({
-      disableAutoPan: false
-    });
-    let aptMarkers = addAptMarkers(map);
-    setUpAptListeners(map, aptMarkers, infowindow);
-    setMapBounds(map, aptMarkers);
+    const infowindow = new google.maps.InfoWindow();
+    const aptMarkers = addAptMarkers(map);
+    setUpAptListeners(map, aptMarkers, infowindow, interface);
+    const bounds = setMapBounds(map, aptMarkers);
 
-    let transitMarkers = addTransitMarkers(map, smallTransitMarkerOpts);
+    const transitMarkers = addTransitMarkers(map, smallTransitMarkerOpts);
     setUpTransitListeners(map, transitMarkers, infowindow);
 
-    let legend = addLegend(map);
+    const legend = addLegend(map, smallTransitMarkerOpts.icon);
 
     let prevZoom = 0;
-    let div = legend.querySelector("div");
     google.maps.event.addListener(map, 'zoom_changed', () => {
       google.maps.event.addListenerOnce(map, 'idle', () => {
         const zoom = map.getZoom();
-        if ((zoom > 12 && prevZoom <= 12) || (zoom <= 12 && prevZoom > 12)) {
-          // Display bus stops
-          let isVisible = zoom > 12;
-          for (i = 0; i < transitMarkers.length; i++) {
-            transitMarkers[i].setVisible(isVisible);
-          }
-          if (isVisible) {
-            legend.removeAttribute("hidden");
-          } else {
-            legend.setAttribute("hidden", "hidden");
-          }
+        if (crossedZoomBp(zoom, prevZoom, 12)) {
+          // Hide or show bus stops.
+          displayTransit(transitMarkers, legend, zoom > 12);
         }
-
-        if ((zoom > 14 && prevZoom <= 14) || (zoom <= 14 && prevZoom > 14)) {
-          // Change bus stop icon
-          let markerOptions = smallTransitMarkerOpts;
-          if (zoom > 14) {
-            markerOptions = largeTransitMarkerOpts;
-          }
-          for (i = 0; i < transitMarkers.length; i++) {
-            transitMarkers[i].setOptions(markerOptions);
-          }
-          div.innerHTML = '<img src="' + markerOptions.icon.url + '" width="' + markerOptions.icon.scaledSize.width + '" height="' + markerOptions.icon.scaledSize.height + '"> ' + 'Bus Stop';
+        if (crossedZoomBp(zoom, prevZoom, 14)) {
+          // Choose appropriate bus icon.
+          const markerOptions = (
+            zoom > 14 ? largeTransitMarkerOpts : smallTransitMarkerOpts);
+          setTransitMarkerOptions(transitMarkers, legend, markerOptions);
         }
         prevZoom = zoom;
       });
@@ -227,25 +249,11 @@
       }
     });
 
-    toggleButton.addEventListener("click", () => {
-      if (listContainer.classList.contains("responsive_hidden")) {
-        // Hide map and show list
-        listContainer.classList.remove("responsive_hidden");
-        listContainer.classList.add("responsive_visible");
-        mapContainer.classList.remove("responsive_visible");
-        mapContainer.classList.add("responsive_hidden");
-        toggleButton.textContent = "Show Map";
-        let selectedItem = document.querySelector("li.highlighted");
-        if (selectedItem) {
-          selectedItem.scrollIntoView();
-        }
+    interface.toggleButton.addEventListener("click", () => {
+      if (interface.listContainer.classList.contains("responsive_hidden")) {
+        switchToListView(interface);
       } else {
-        // Hide list and show map.
-        mapContainer.classList.remove("responsive_hidden");
-        mapContainer.classList.add("responsive_visible");
-        listContainer.classList.remove("responsive_visible");
-        listContainer.classList.add("responsive_hidden");
-        toggleButton.textContent ="Show List";
+        switchToMapView(interface);
         map.fitBounds(bounds);
       }
     });
