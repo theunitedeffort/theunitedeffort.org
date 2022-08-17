@@ -30,7 +30,7 @@ https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city
     <p>
     {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %}
       {%- unless isInfoWindow %}
-        <span class="noprint"><span aria-hidden="true">(</span>
+        <span class="noprint nowrap"><span aria-hidden="true">(</span>
           {%- if address.locCoords and address.locCoords != '' -%}
             <button type="button" class="map_link link" aria-label="Highlight {{ address.aptName }} on map">Show on map</button>
           {%- else -%}
