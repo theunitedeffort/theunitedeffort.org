@@ -5,7 +5,9 @@ permalink:
   build: "/housing/affordable-housing/index.html"
   serverless: "/housing/affordable-housing/filter"
 pageClass: "page-housing"
-pageHead: '<script src="/js/accessibility.js" defer></script>'
+pageHead: '<script src="/js/accessibility.js" defer></script>
+  <script src="/js/affordable-housing-map.js" defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgy4aWlGUJAEQ6pyQjMhSPf4k0lLIpURk&callback=initMap&v=weekly" defer></script>'
 ---
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
@@ -248,7 +250,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 </p>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgy4aWlGUJAEQ6pyQjMhSPf4k0lLIpURk&callback=initMap&v=weekly" defer></script>
 <script>
   const aptLocations = [
   {% for address in sortedHousingdb %}
@@ -270,5 +271,3 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% endfor %}
   ];
 </script>
-
-<script src="/js/affordable-housing-map.js"></script>
