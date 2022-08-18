@@ -5,12 +5,14 @@
   const MAP_ID = "9cafc548a28110af";  // For custom map styling.
   const MAP_INIT_ZOOM = 9;  // Zoom level
   const MAP_HIGHLIGHT_ZOOM = 15;  // Zoom level
-
+  
+  // Icon from
   // https://mt.google.com/vt/icon/name=icons/spotlight/measle_8px.png&scale=2
   const SMALL_BUS_ICON_PATH = "/images/measle_2x.png";
   const SMALL_BUS_ICON_WIDTH = 16;  // px
   const SMALL_BUS_ICON_HEIGHT = 16;  // px
   const SMALL_BUS_ICON_SCALE = 2;
+  // Icon from
   // https://mt.google.com/vt/icon/name=icons/spotlight/transit/bus_small.png&scale=2
   const LARGE_BUS_ICON_PATH = "/images/bus_small_2x.png";
   const LARGE_BUS_ICON_WIDTH = 30;  // px
@@ -20,6 +22,8 @@
   const TRANSIT_ICON_VISIBLE_BP = 12;  // Zoom level
   const TRANSIT_ICON_SIZE_BP = 14;  // Zooom level
 
+  // Sets element visibility to show the map view rather than the
+  // list view on small screens.
   function switchToMapView(interface) {
     interface.mapContainer.classList.remove("responsive_hidden");
     interface.mapContainer.classList.add("responsive_visible");
@@ -28,6 +32,8 @@
     interface.toggleButton.textContent ="Show List";
   }
 
+  // Sets element visibility to show the list view rather than the
+  // map view on small screens.
   function switchToListView(interface) {
     interface.listContainer.classList.remove("responsive_hidden");
     interface.listContainer.classList.add("responsive_visible");
@@ -36,10 +42,14 @@
     interface.toggleButton.textContent = "Show Map";
     const selectedItem = document.querySelector("li.highlighted");
     if (selectedItem) {
+      // When switching into the list view, make sure that any highlighted list 
+      // item is visible on the screen.
       selectedItem.scrollIntoView();
     }
   }
 
+  // Computes bounds to show all 'markers' on 'map.'
+  // This updates the map to those bounds and returns the bounds themselves.
   function setMapBounds(map, markers) {
     const bounds = new google.maps.LatLngBounds();
     for (const marker of markers) {
@@ -49,12 +59,17 @@
     return bounds;
   }
 
+  // Returns true if the zoom level has crossed the given breakpoint.
+  // i.e. 'prevZoom' and 'zoom' are on opposite sides of 'breakpoint'.
   function crossedZoomBp(zoom, prevZoom, breakpoint) {
     return (
       (zoom > breakpoint && prevZoom <= breakpoint) ||
       (zoom <= breakpoint && prevZoom > breakpoint));
   }
 
+  // Creates MarkerOptions for the icon at 'path'.
+  // 'width' and 'height' are specified in px, and scale gives the factor
+  // to reduce the icon's size by before render -- useful for high dpi displays.
   function makeMarkerOpts(path, width, height, scale) {
     return {
       icon: {
@@ -68,7 +83,9 @@
     };
   }
 
-  function setLegendIcon(legend, icon) {
+  // Sets the legend content to display the given icon
+  // The text "Bus Stop" will be displayed next to the icon.
+  function setLegendContent(legend, icon) {
     legend.lastChild.innerHTML = '<img ' +
       'src="' + icon.url + 
       '" width="' + icon.scaledSize.width + 
@@ -76,6 +93,8 @@
       '"> ' + 'Bus Stop';
   }
 
+  // Adds a legend to the map with 'icon' showing by default.
+  // An element with id "map-legend" must be present in th DOM.
   function addLegend(map, icon) {
     const legend = document.getElementById("map-legend");
     legend.setAttribute("class", "map_legend");
@@ -88,12 +107,14 @@
     const legendContent = document.createElement("div");
     legend.appendChild(legendContent);
 
-    setLegendIcon(legend, icon);
+    setLegendContent(legend, icon);
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(legend);
     return legend;
   }
 
+  // Turns on or off the custom public transit layer based on 'isVisible'.
+  // The custom transit layer consists of transit stop markers and a legend.
   function displayTransit(transitMarkers, legend, isVisible) {
     for (i = 0; i < transitMarkers.length; i++) {
       transitMarkers[i].setVisible(isVisible);
@@ -105,13 +126,17 @@
     }
   }
 
+  // Sets the marker options for all transit markers.
+  // This is useful to change the transit marker icon.  The transit stop legend 
+  // will also be updated to use the same icon.
   function setTransitMarkerOptions(transitMarkers, legend, markerOptions) {
     for (i = 0; i < transitMarkers.length; i++) {
       transitMarkers[i].setOptions(markerOptions);
     }
-    setLegendIcon(legend, markerOptions.icon);
+    setLegendContent(legend, markerOptions.icon);
   }
 
+  // Sets up listeners for the apartment location markers.
   function setUpAptListeners(map, markers, infowindow, interface) {
     for (const marker of markers) {
       marker.addListener("click", (e, disableScroll) => {
@@ -136,7 +161,7 @@
     }
   }
 
-  // Adds a marker for each apartment and sets up listeners for that marker.
+  // Adds a marker for each apartment to the map.
   function addAptMarkers(map) {
     const markers = [];
     for (const loc of aptLocations) {
@@ -152,6 +177,7 @@
     return markers;
   }
 
+  // Sets up listeners for the transit stop markers.
   function setUpTransitListeners(map, markers, infowindow) {
     for (const marker of markers) {
       marker.addListener("click", () => {
@@ -169,6 +195,7 @@
     }
   }
 
+  // Adds a marker for each public transit stop to the map.
   function addTransitMarkers(map, markerOptions) {
     const transitMarkers = [];
     for (const stop of transitStops) {
@@ -184,7 +211,10 @@
     return transitMarkers;
   }
 
+  // Initializes the map's surrounding interface and sets up relevant listeners.
   function initInterface(interface, markers) {
+    // Show the map, toggle button, and interactive list item map links since 
+    // javascript is working.
     interface.toggleButton.parentNode.classList.remove("hidden");
     interface.listContainer.classList.add("responsive_split");
     interface.mapContainer.classList.add("responsive_split");
@@ -201,9 +231,11 @@
         interface.toggleButton.scrollIntoView();
       });
     }
+    // Start the user out with a list view.
+    switchToListView(interface);
   }
 
-  // Initialize and add the map
+  // Initialize and add the map, set up all markers.
   function initMap() {
     const smallTransitMarkerOpts = makeMarkerOpts(SMALL_BUS_ICON_PATH, 
       SMALL_BUS_ICON_WIDTH, SMALL_BUS_ICON_HEIGHT, SMALL_BUS_ICON_SCALE);
@@ -244,14 +276,16 @@
     google.maps.event.addListener(map, 'zoom_changed', () => {
       google.maps.event.addListenerOnce(map, 'idle', () => {
         const zoom = map.getZoom();
-        if (crossedZoomBp(zoom, prevZoom, 12)) {
+        if (crossedZoomBp(zoom, prevZoom, TRANSIT_ICON_VISIBLE_BP)) {
           // Hide or show bus stops.
-          displayTransit(transitMarkers, legend, zoom > 12);
+          displayTransit(transitMarkers, legend,
+            zoom > TRANSIT_ICON_VISIBLE_BP);
         }
-        if (crossedZoomBp(zoom, prevZoom, 14)) {
+        if (crossedZoomBp(zoom, prevZoom, TRANSIT_ICON_SIZE_BP)) {
           // Choose appropriate bus icon.
           const markerOptions = (
-            zoom > 14 ? largeTransitMarkerOpts : smallTransitMarkerOpts);
+            zoom > TRANSIT_ICON_SIZE_BP ? 
+            largeTransitMarkerOpts : smallTransitMarkerOpts);
           setTransitMarkerOptions(transitMarkers, legend, markerOptions);
         }
         prevZoom = zoom;
