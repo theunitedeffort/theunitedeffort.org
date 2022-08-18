@@ -78,7 +78,13 @@
 
   function addLegend(map, icon) {
     const legend = document.getElementById("map-legend");
+    legend.setAttribute("class", "map_legend");
     legend.setAttribute("hidden", "hidden");
+
+    const legendTitle = document.createElement("h3");
+    legendTitle.textContent = "Legend";
+    legend.appendChild(legendTitle);
+
     const legendContent = document.createElement("div");
     legend.appendChild(legendContent);
 
@@ -108,7 +114,6 @@
 
   function setUpAptListeners(map, markers, infowindow, interface) {
     for (const marker of markers) {
-      const listItem = document.getElementById("property-" + marker.apt.id);
       marker.addListener("click", (e, disableScroll) => {
         if (infowindow.listItem) {
           infowindow.listItem.classList.remove('highlighted');
@@ -121,25 +126,13 @@
         });
     
         if (!disableScroll) {
-          listItem.scrollIntoView();
+          marker.listItem.scrollIntoView();
         }
-        listItem.classList.add('highlighted');
-        infowindow.listItem = listItem;
+        marker.listItem.classList.add('highlighted');
+        infowindow.listItem = marker.listItem;
         map.setZoom(MAP_HIGHLIGHT_ZOOM);
         map.panTo(marker.getPosition());
       });
-
-      // TODO: add the link button from scratch here instead of finding it in
-      // the DOM. Also,  only add the button if a marker exists for that list
-      // item.
-      const mapLink = listItem.querySelector("button.map_link");
-      if (mapLink) {
-        mapLink.addEventListener("click", () => {
-          google.maps.event.trigger(marker, "click", null, true);
-          switchToMapView(interface);
-          interface.toggleButton.scrollIntoView();
-        });
-      }
     }
   }
 
@@ -153,6 +146,7 @@
         title: loc.name,
       });
       marker.apt = loc;
+      marker.listItem = document.getElementById("property-" + loc.id);
       markers.push(marker);
     }
     return markers;
@@ -190,6 +184,25 @@
     return transitMarkers;
   }
 
+  function initInterface(interface, markers) {
+    interface.toggleButton.parentNode.classList.remove("hidden");
+    interface.listContainer.classList.add("responsive_split");
+    interface.mapContainer.classList.add("responsive_split");
+    interface.mapContainer.classList.remove("hidden");
+    for (const marker of markers) {
+      const showMapButton = marker.listItem.querySelector("button.map_link");
+      const extMapLink = marker.listItem.querySelector("span.ext_map_link");
+      showMapButton.classList.remove("hidden");
+      extMapLink.classList.add("hidden");
+
+      showMapButton.addEventListener("click", () => {
+        google.maps.event.trigger(marker, "click", null, true);
+        switchToMapView(interface);
+        interface.toggleButton.scrollIntoView();
+      });
+    }
+  }
+
   // Initialize and add the map
   function initMap() {
     const smallTransitMarkerOpts = makeMarkerOpts(SMALL_BUS_ICON_PATH, 
@@ -224,6 +237,8 @@
     setUpTransitListeners(map, transitMarkers, infowindow);
 
     const legend = addLegend(map, smallTransitMarkerOpts.icon);
+
+    initInterface(interface, aptMarkers);
 
     let prevZoom = 0;
     google.maps.event.addListener(map, 'zoom_changed', () => {

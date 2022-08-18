@@ -217,17 +217,11 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% endif %}
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
 
-  <div class="flex row_reversed results_container">
-    <div id="map-toggle" class="noprint">
+  <div class="flex results_container">
+    <div id="map-toggle" class="noprint hidden">
       <button type="button" class="btn btn_secondary">Show Map</button>
     </div>
-    <div id="map-container" class="responsive_split map_container">
-      <div class="split_right_container">
-        <div id="map"></div>
-        <div id="map-legend"><h3>Legend</h3></div>
-      </div>
-    </div>
-    <div id="list-container" class="responsive_split">
+    <div id="list-container">
       <ul class="results_list" aria-label="Results List">
         {% for address in sortedHousingdb %}
           <li id="property-{{address.id}}">
@@ -240,6 +234,12 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           </li>
         {% endif %}
       </ul>
+    </div>
+    <div id="map-container" class="map_container hidden">
+      <div class="split_right_container">
+        <div id="map"></div>
+        <div id="map-legend"></div>
+      </div>
     </div>
   </div>
 </section>
