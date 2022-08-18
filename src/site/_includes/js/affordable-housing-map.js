@@ -291,6 +291,26 @@
         prevZoom = zoom;
       });
     });
+
+    // If the page loads with the map hidden, the map bounds are incorrect
+    // when the map is eventually shown.  The bounds_changed listeners below
+    // are a bit of a hack to get the bounds reset when the map is shown for
+    // the first time.
+    google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+      // bounds_changed fires once on map load.  If the map is hidden,
+      // it will fire a second time when it's shown.  The map can become visible
+      // either by increasing the browser window size or clicking the Show Map
+      // button, and this will handle both of those cases.
+      // The check for zero width is important because without it, the first 
+      // user interaction with a map that is visible on initial page load will
+      // be overridden by the call to fitBounds().
+      const mapWidth = document.getElementById("map").offsetWidth;
+      if (mapWidth <= 0) {
+        google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+          map.fitBounds(bounds);
+        });
+      }
+    });
     
     google.maps.event.addListener(infowindow,'closeclick',function(){
       if (this.listItem) {
@@ -303,7 +323,6 @@
         switchToListView(interface);
       } else {
         switchToMapView(interface);
-        map.fitBounds(bounds);
       }
     });
   }
