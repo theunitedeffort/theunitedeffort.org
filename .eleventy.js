@@ -574,6 +574,7 @@ module.exports = function(eleventyConfig) {
               },
               units: [], // To be filled later, after grouping by housing ID.
               locCoords: record.get("_LOC_COORDS")?.[0] || "",
+              verifiedLocCoords: record.get("_VERIFIED_LOC_COORDS")?.[0] || false,
               phone: record.get("_PHONE")?.[0] || "",
               website: record.get("_PROPERTY_URL")?.[0] || "",
               email: record.get("_EMAIL")?.[0] || "",
