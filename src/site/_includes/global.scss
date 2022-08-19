@@ -144,6 +144,13 @@ body.max_width {
   width: 50%;
 }
 
+.responsive_split {
+  width: 100%;
+  @include bp(mid) {
+    width: 50%;
+  }
+}
+
 .align-end {
   text-align: right;
 }
@@ -164,7 +171,7 @@ body.max_width {
 }
 
 .hidden {
-  display:none;
+  display:none !important;
 }
 
 .float_right {
