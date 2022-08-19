@@ -141,7 +141,7 @@
     for (const marker of markers) {
       marker.addListener("click", (e, disableScroll) => {
         if (infowindow.listItem) {
-          infowindow.listItem.classList.remove('highlighted');
+          infowindow.listItem.classList.remove("highlighted");
         }
         infowindow.setContent(marker.apt.content);
         infowindow.open({
@@ -153,7 +153,7 @@
         if (!disableScroll) {
           marker.listItem.scrollIntoView();
         }
-        marker.listItem.classList.add('highlighted');
+        marker.listItem.classList.add("highlighted");
         infowindow.listItem = marker.listItem;
         map.setZoom(MAP_HIGHLIGHT_ZOOM);
         map.panTo(marker.getPosition());
@@ -314,7 +314,7 @@
     
     google.maps.event.addListener(infowindow,'closeclick',function(){
       if (this.listItem) {
-        this.listItem.classList.remove('highlighted');
+        this.listItem.classList.remove("highlighted");
       }
     });
 

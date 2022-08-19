@@ -15,7 +15,7 @@ const fetchTransitData = async(operator_id) => {
   // the beginning, so the built-in eleventy-fetch json parsing
   // (type: "json") will not work.
   let options = {type: "text", duration: "1m", verbose: true};
-  if(process.env.ELEVENTY_SERVERLESS) {
+  if (process.env.ELEVENTY_SERVERLESS) {
     options.duration = "*"; // Infinite duration (data refreshes at each build)
     // Use the serverless cache location specified in .eleventy.js
     options.directory = "cache";
