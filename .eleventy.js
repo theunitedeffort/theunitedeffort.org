@@ -98,6 +98,24 @@ module.exports = function(eleventyConfig) {
     return formatCurrency(value);
   });
 
+  eleventyConfig.addFilter("getValidatedLocCoords", function(address) {
+    if (address.verifiedLocCoords && 
+        address.locCoords) {
+      const coords = address.locCoords.split(",");
+      if (coords.length == 2) {
+        const lat = Number.parseFloat(coords[0]);
+        const lng = Number.parseFloat(coords[1]);
+        // Basic bounds checking. Note this also kicks out coordinates that
+        // can't be parsed, since NaN will always fail the below check.
+        if (lat > 35.952462 && lat < 38.216103 &&
+          lng > -123.069952 && lng < -120.806286) {
+          return [lat, lng];
+        }
+      }
+    }
+    return;
+  });
+
   // Sorts items according to the ranking defined in SORT_RANKING.
   eleventyConfig.addFilter("rankSort", function(values, property="") {
     let sorted = values.sort(function(a, b) {

@@ -254,8 +254,8 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 <script>
   const aptLocations = [
   {% for address in sortedHousingdb %}
-    {% if address.verifiedLocCoords and address.locCoords and address.locCoords != '' %}
-      {% assign coords = address.locCoords | split: "," %}
+    {% assign coords = address | getValidatedLocCoords %}
+    {% if coords %}
       {% capture rawContent %}
         <div id="infowindow-{{address.id}}" class="map_infowindow_content">
           {% render "affordable-housing-item.liquid", address: address, isInfoWindow: true %}
