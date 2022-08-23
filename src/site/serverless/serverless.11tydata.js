@@ -12,9 +12,10 @@ function FilterSection(heading, name, options) {
 }
 
 // A single checkbox for filtering housing results.
-function FilterCheckbox(name, selected = false) {
+function FilterCheckbox(name, label, selected) {
   this.name = name;
-  this.selected = selected;
+  this.label = label || name;
+  this.selected = selected || false;
 }
 
 // Gets values from all housing units that are relevant to future filtering of 
@@ -74,16 +75,44 @@ module.exports = async function() {
   allPopulationsServed = [...new Set(allPopulationsServed.flat())];
   allPopulationsServed = allPopulationsServed.filter(x => x);
 
-  let filterVals = [
-    new FilterSection("City", "city", cities.map(x => new FilterCheckbox(x))),
-    new FilterSection("Type of Unit", "unitType",
-      unitTypes.map(x => new FilterCheckbox(x))),
-    new FilterSection("Availability", "availability",
-      openStatuses.map(x => new FilterCheckbox(x))),
-    new FilterSection("Populations Served", "populationsServed",
-      allPopulationsServed.map(x => new FilterCheckbox(x))),
-    
-  ];
+  let filterVals = [];
+  filterVals.push(new FilterSection("City", "city",
+    cities.map(x => new FilterCheckbox(x))));
+
+  // Special handling for some unit types
+  // Any "{N} Bedroom" entries that have 4 or greater bedrooms will get grouped 
+  // together into one filter checkbox.
+  const unitTypeOptions = [];
+  const bedroomSizes = [];
+  for (const unitType of unitTypes) {
+    const match = unitType.match(/^(\d) bedroom$/i);
+    if (match) {
+      bedroomSizes.push({num: parseInt(match[1]), str: unitType});
+    }
+  }
+  const catchallSize = Math.min(Math.max(...bedroomSizes.map(x => x.num)), 4);
+  if (catchallSize >= 4) {
+    // Get all unit types that will be grouped together
+    const groupedSizes = bedroomSizes.filter(x => x.num >= catchallSize);
+    for (const bedroomSize of groupedSizes) {
+      const idx = unitTypes.indexOf(bedroomSize.str);
+      // Remove the type from the unit types so it can be grouped instead.
+      unitTypes.splice(idx, 1);
+    }
+    // Add in all the grouped sizes as a single entry.
+    const groupedStr = groupedSizes.map(x => x.str).join(", ")
+    // TODO: get "Bedroom" programmatically.
+    unitTypeOptions.push(new FilterCheckbox(groupedStr, "4+ Bedroom"));
+  }
+  unitTypeOptions.push(...unitTypes.map(x => new FilterCheckbox(x)));
+  filterVals.push(new FilterSection("Type of Unit", "unitType",
+    unitTypeOptions));
+  
+  filterVals.push(new FilterSection("Availability", "availability",
+      openStatuses.map(x => new FilterCheckbox(x))));
+  filterVals.push(new FilterSection("Populations Served", "populationsServed",
+      allPopulationsServed.map(x => new FilterCheckbox(x))));
+
   console.log("Got filter options.");
   let filterData = { filterValues: filterVals };
 
