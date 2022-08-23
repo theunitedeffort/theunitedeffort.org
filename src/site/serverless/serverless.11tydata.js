@@ -3,6 +3,7 @@ var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const UNITS_TABLE = "tblRtXBod9CC0mivK";
+const HIGH_CAPACITY_UNIT = 4;  // Bedrooms
 
 // A group of checkboxes for filtering housing results.
 function FilterSection(heading, name, options) {
@@ -80,29 +81,33 @@ module.exports = async function() {
     cities.map(x => new FilterCheckbox(x))));
 
   // Special handling for some unit types
-  // Any "{N} Bedroom" entries that have 4 or greater bedrooms will get grouped 
-  // together into one filter checkbox.
+  // Any "{N} Bedroom" entries that have HIGH_CAPACITY_UNIT or greater bedrooms
+  // will get grouped  together into one filter checkbox.
   const unitTypeOptions = [];
   const bedroomSizes = [];
+  let bedroomStr = "";
   for (const unitType of unitTypes) {
-    const match = unitType.match(/^(\d) bedroom$/i);
+    const match = unitType.match(/^(\d) ?(bedroom|br)$/i);
     if (match) {
       bedroomSizes.push({num: parseInt(match[1]), str: unitType});
+      bedroomStr = match[2];
     }
   }
-  const catchallSize = Math.min(Math.max(...bedroomSizes.map(x => x.num)), 4);
-  if (catchallSize >= 4) {
+  const catchallSize = Math.min(Math.max(...bedroomSizes.map(x => x.num)),
+    HIGH_CAPACITY_UNIT);
+  // Only do grouping if the unit types list includes units with at least
+  // HIGH_CAPACITY_UNIT bedrooms.
+  if (catchallSize >= HIGH_CAPACITY_UNIT) {
     // Get all unit types that will be grouped together
     const groupedSizes = bedroomSizes.filter(x => x.num >= catchallSize);
     for (const bedroomSize of groupedSizes) {
       const idx = unitTypes.indexOf(bedroomSize.str);
-      // Remove the type from the unit types so it can be grouped instead.
+      // Remove it from the unit types list so it can be grouped instead.
       unitTypes.splice(idx, 1);
     }
-    // Add in all the grouped sizes as a single entry.
+    // Make a single entry out of all the grouped sizes.
     const groupedStr = groupedSizes.map(x => x.str).join(", ")
-    // TODO: get "Bedroom" programmatically.
-    unitTypeOptions.push(new FilterCheckbox(groupedStr, "4+ Bedroom"));
+    unitTypeOptions.push(new FilterCheckbox(groupedStr, `${HIGH_CAPACITY_UNIT}+ ${bedroomStr}`));
   }
   unitTypeOptions.push(...unitTypes.map(x => new FilterCheckbox(x)));
   filterVals.push(new FilterSection("Type of Unit", "unitType",
