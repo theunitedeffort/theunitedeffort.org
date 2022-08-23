@@ -238,9 +238,9 @@ const unitDetails = (data) => {
     }
     if (unit.RENT_PER_MONTH_USD) {
       rentStr = formatCurrency(unit.RENT_PER_MONTH_USD);
-    } else if (unit.RENT_NOTES) {
+    } else if (unit.ALTERNATE_RENT_DESCRIPTION) {
       rentStr = NO_RENT_WITH_NOTES_STRING;
-      rentInfo = `<p data-toggletip data-toggletip-class="icon_info">${unit.RENT_NOTES}</p>`;
+      rentInfo = `<p data-toggletip data-toggletip-class="icon_info">${unit.ALTERNATE_RENT_DESCRIPTION}</p>`;
     }
     if (unit.MIN_YEARLY_INCOME_USD) {
       minIncomeStr = formatCurrency(unit.MIN_YEARLY_INCOME_USD);
