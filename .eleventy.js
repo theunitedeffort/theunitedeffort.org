@@ -187,9 +187,9 @@ module.exports = function(eleventyConfig) {
       let selectedOptions = queryValue.split(", ");
       let filterIdx = filterValuesCopy.findIndex(f => f.name == filterName);
       if (filterIdx < 0) { return; }
-      for (i = 0; i < selectedOptions.length; i++) {
+      for (const selectedOption of selectedOptions) {
         let idx = filterValuesCopy[filterIdx].options.findIndex(
-          v => v.name === selectedOptions[i]);
+          v => v.name.split(", ").includes(selectedOption));
         if (idx >= 0) {
           filterValuesCopy[filterIdx].options[idx].selected = true;
         }
