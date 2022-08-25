@@ -55,7 +55,14 @@
     for (const marker of markers) {
       bounds.extend(marker.position);
     }
+    // Prevent the map from zooming in too far when setting bounds to avoid
+    // getting very close in for small bounds (e.g. a single marker).
+    map.setOptions({maxZoom: MAP_HIGHLIGHT_ZOOM});
     map.fitBounds(bounds);
+    // Then reset the max zoom so the user can zoom freely.
+    google.maps.event.addListenerOnce(map, 'idle', () => {
+      map.setOptions({maxZoom: null});
+    });
     return bounds;
   }
 
@@ -215,10 +222,14 @@
   function initInterface(interface, markers) {
     // Show the map, toggle button, and interactive list item map links since 
     // javascript is working.
-    interface.toggleButton.parentNode.classList.remove("hidden");
-    interface.listContainer.classList.add("responsive_split");
-    interface.mapContainer.classList.add("responsive_split");
-    interface.mapContainer.classList.remove("hidden");
+    if (markers.length > 0) {
+      interface.toggleButton.parentNode.classList.remove("hidden");
+      interface.listContainer.classList.add("responsive_split");
+      interface.mapContainer.classList.add("responsive_split");
+      interface.mapContainer.classList.remove("hidden");
+    } else {
+      interface.listContainer.querySelector("ul").classList.add("no_results");
+    }
     for (const marker of markers) {
       const showMapButton = marker.listItem.querySelector("button.map_link");
       const extMapLink = marker.listItem.querySelector("span.ext_map_link");
@@ -307,7 +318,7 @@
       const mapWidth = document.getElementById("map").offsetWidth;
       if (mapWidth <= 0) {
         google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-          map.fitBounds(bounds);
+          setMapBounds(aptMarkers);
         });
       }
     });
