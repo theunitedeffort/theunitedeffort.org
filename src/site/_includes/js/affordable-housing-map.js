@@ -55,7 +55,14 @@
     for (const marker of markers) {
       bounds.extend(marker.position);
     }
+    // Prevent the map from zooming in too far when setting bounds to avoid
+    // getting very close in for small bounds (e.g. a single marker).
+    map.setOptions({maxZoom: MAP_HIGHLIGHT_ZOOM});
     map.fitBounds(bounds);
+    // Then reset the max zoom so the user can zoom freely.
+    google.maps.event.addListenerOnce(map, 'idle', () => {
+      map.setOptions({maxZoom: null});
+    });
     return bounds;
   }
 
@@ -311,7 +318,7 @@
       const mapWidth = document.getElementById("map").offsetWidth;
       if (mapWidth <= 0) {
         google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-          map.fitBounds(bounds);
+          setMapBounds(aptMarkers);
         });
       }
     });
