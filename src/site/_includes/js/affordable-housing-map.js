@@ -215,10 +215,14 @@
   function initInterface(interface, markers) {
     // Show the map, toggle button, and interactive list item map links since 
     // javascript is working.
-    interface.toggleButton.parentNode.classList.remove("hidden");
-    interface.listContainer.classList.add("responsive_split");
-    interface.mapContainer.classList.add("responsive_split");
-    interface.mapContainer.classList.remove("hidden");
+    if (markers.length > 0) {
+      interface.toggleButton.parentNode.classList.remove("hidden");
+      interface.listContainer.classList.add("responsive_split");
+      interface.mapContainer.classList.add("responsive_split");
+      interface.mapContainer.classList.remove("hidden");
+    } else {
+      interface.listContainer.querySelector("ul").classList.add("no_results");
+    }
     for (const marker of markers) {
       const showMapButton = marker.listItem.querySelector("button.map_link");
       const extMapLink = marker.listItem.querySelector("span.ext_map_link");
