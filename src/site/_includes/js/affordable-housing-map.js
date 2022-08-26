@@ -318,7 +318,7 @@
       const mapWidth = document.getElementById("map").offsetWidth;
       if (mapWidth <= 0) {
         google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-          setMapBounds(aptMarkers);
+          setMapBounds(map, aptMarkers);
         });
       }
     });
