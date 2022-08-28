@@ -35,10 +35,8 @@
   // Sets element visibility to show the list view rather than the
   // map view on small screens.
   function switchToListView(interface) {
-    interface.listContainer.classList.remove("responsive_hidden");
-    interface.listContainer.classList.add("responsive_visible");
-    interface.mapContainer.classList.remove("responsive_visible");
-    interface.mapContainer.classList.add("responsive_hidden");
+    interface.listContainer.classList.replace("responsive_hidden", "responsive_visible");
+    interface.mapContainer.classList.replace("responsive_visible", "responsive_hidden");
     interface.toggleButton.textContent = "Show Map";
     const selectedItem = document.querySelector("li.highlighted");
     if (selectedItem) {
@@ -225,16 +223,18 @@
     if (markers.length > 0) {
       interface.toggleButton.parentNode.classList.remove("hidden");
       interface.listContainer.classList.add("responsive_split");
+      interface.listContainer.classList.add("responsive_visible");
       interface.mapContainer.classList.add("responsive_split");
+      interface.mapContainer.classList.add("responsive_hidden");
       interface.mapContainer.classList.remove("hidden");
     } else {
       interface.listContainer.querySelector("ul").classList.add("no_results");
     }
     for (const marker of markers) {
       const showMapButton = marker.listItem.querySelector("button.map_link");
-      const extMapLink = marker.listItem.querySelector("span.ext_map_link");
+      // const extMapLink = marker.listItem.querySelector("span.ext_map_link");
       showMapButton.classList.remove("hidden");
-      extMapLink.classList.add("hidden");
+      // extMapLink.classList.add("hidden");
 
       showMapButton.addEventListener("click", () => {
         google.maps.event.trigger(marker, "click", null, true);
