@@ -239,7 +239,7 @@
   }
 
   // Initializes the map's surrounding interface and sets up relevant listeners.
-  function initInterface(interface, markers) {
+  function initInterface(interface, map, markers) {
     // Show the map, toggle button, and interactive list item map links since 
     // javascript is working.
     if (markers.length > 0) {
@@ -259,6 +259,11 @@
       extMapLink.classList.add("hidden");
 
       showMapButton.addEventListener("click", () => {
+        // On page load, there is a bounds_changed listener that helps
+        // set the initial map bounds properly if the map is hidden.  Make sure
+        // that listener is not active before highlighting the marker so
+        // the map can zoom and pan uninterrupted.
+        google.maps.event.clearListeners(map, 'bounds_changed');
         google.maps.event.trigger(marker, "click", null, true);
         switchToMapView(interface);
         interface.toggleButton.scrollIntoView();
@@ -302,7 +307,7 @@
 
     const legend = addLegend(map, smallTransitMarkerOpts.icon);
 
-    initInterface(interface, aptMarkers);
+    initInterface(interface, map, aptMarkers);
 
     let prevZoom = 0;
     google.maps.event.addListener(map, 'zoom_changed', () => {
