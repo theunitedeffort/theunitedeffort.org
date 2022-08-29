@@ -120,9 +120,13 @@
 
   // Turns on or off the custom public transit layer based on 'isVisible'.
   // The custom transit layer consists of transit stop markers and a legend.
-  function displayTransit(transitMarkers, legend, isVisible) {
+  function displayTransit(map, transitMarkers, legend, isVisible) {
+    let mapRef = null;
+    if (isVisible) {
+      mapRef = map;
+    }
     for (i = 0; i < transitMarkers.length; i++) {
-      transitMarkers[i].setVisible(isVisible);
+      transitMarkers[i].setMap(mapRef);
     }
     if (isVisible) {
       legend.removeAttribute("hidden");
@@ -169,12 +173,16 @@
   // Adds a marker for each apartment to the map.
   function addAptMarkers(map) {
     const markers = [];
+    const options = {
+      position: {lat: 0, lng: 0},
+      map: map,
+      title: "",
+    };
     for (const loc of aptLocations) {
-      const marker = new google.maps.Marker({
-        position: new google.maps.LatLng(loc.lat, loc.lng),
-        map: map,
-        title: loc.name,
-      });
+      options.position.lat = loc.lat;
+      options.position.lng = loc.lng;
+      options.title = loc.name;
+      const marker = new google.maps.Marker(options);
       marker.apt = loc;
       marker.listItem = document.getElementById("property-" + loc.id);
       markers.push(marker);
@@ -200,17 +208,18 @@
     }
   }
 
-  // Adds a marker for each public transit stop to the map.
-  function addTransitMarkers(map, markerOptions) {
+  // Makes an array of markers, one for each public transit stop.
+  // The markers are not added to the map.
+  function makeTransitMarkers() {
     const transitMarkers = [];
+    const options = {
+      position: {lat: 0, lng: 0},
+    };
     for (const stop of transitStops) {
-      const marker = new google.maps.Marker({
-        position: new google.maps.LatLng(stop.lat, stop.lng),
-        map: map,
-        visible: false,
-      });
+      options.position.lat = stop.lat;
+      options.position.lng = stop.lng;
+      const marker = new google.maps.Marker(options);
       marker.stop = stop;
-      marker.setOptions(markerOptions);
       transitMarkers.push(marker);
     }
     return transitMarkers;
@@ -284,12 +293,7 @@
     const bounds = setMapBounds(map, aptMarkers);
     console.timeEnd("bounds");
 
-    console.time("transitMarkers");
-    const transitMarkers = addTransitMarkers(map, smallTransitMarkerOpts);
-    console.timeEnd("transitMarkers");
-    console.time("transitListeners");
-    setUpTransitListeners(map, transitMarkers, infowindow);
-    console.timeEnd("transitListeners");
+    let transitMarkers = [];
 
     const legend = addLegend(map, smallTransitMarkerOpts.icon);
 
@@ -303,7 +307,20 @@
         const zoom = map.getZoom();
         if (crossedZoomBp(zoom, prevZoom, TRANSIT_ICON_VISIBLE_BP)) {
           // Hide or show bus stops.
-          displayTransit(transitMarkers, legend,
+          if (zoom > TRANSIT_ICON_VISIBLE_BP) {
+            if (transitMarkers.length == 0) {
+              // Only make the transit markers when they are first needed.
+              console.time("transitMarkers");
+              transitMarkers = makeTransitMarkers();
+              console.timeEnd("transitMarkers");
+              console.time("transitListeners");
+              setUpTransitListeners(map, transitMarkers, infowindow);
+              console.timeEnd("transitListeners");
+            }
+            setTransitMarkerOptions(transitMarkers, legend,
+              smallTransitMarkerOpts);
+          }
+          displayTransit(map, transitMarkers, legend,
             zoom > TRANSIT_ICON_VISIBLE_BP);
         }
         if (crossedZoomBp(zoom, prevZoom, TRANSIT_ICON_SIZE_BP)) {
