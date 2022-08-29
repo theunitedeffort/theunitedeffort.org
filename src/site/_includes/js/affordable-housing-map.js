@@ -148,7 +148,7 @@
         if (infowindow.listItem) {
           infowindow.listItem.classList.remove("highlighted");
         }
-        infowindow.setContent(marker.apt.content);
+        infowindow.setContent('<div class="map_infowindow_content">' + marker.listItem.innerHTML + '</div>');
         infowindow.open({
           anchor: marker,
           map: map,
@@ -248,6 +248,7 @@
 
   // Initialize and add the map, set up all markers.
   function initMap() {
+    console.time("declare");
     const smallTransitMarkerOpts = makeMarkerOpts(SMALL_BUS_ICON_PATH, 
       SMALL_BUS_ICON_WIDTH, SMALL_BUS_ICON_HEIGHT, SMALL_BUS_ICON_SCALE);
     const largeTransitMarkerOpts = makeMarkerOpts(LARGE_BUS_ICON_PATH, 
@@ -270,18 +271,31 @@
         position: google.maps.ControlPosition.BOTTOM_LEFT,
       },
     });
+    console.timeEnd("declare");
 
     const infowindow = new google.maps.InfoWindow();
+    console.time("aptMarkers");
     const aptMarkers = addAptMarkers(map);
+    console.timeEnd("aptMarkers");
+    console.time("aptListeners");
     setUpAptListeners(map, aptMarkers, infowindow, interface);
+    console.timeEnd("aptListeners");
+    console.time("bounds");
     const bounds = setMapBounds(map, aptMarkers);
+    console.timeEnd("bounds");
 
+    console.time("transitMarkers");
     const transitMarkers = addTransitMarkers(map, smallTransitMarkerOpts);
+    console.timeEnd("transitMarkers");
+    console.time("transitListeners");
     setUpTransitListeners(map, transitMarkers, infowindow);
+    console.timeEnd("transitListeners");
 
     const legend = addLegend(map, smallTransitMarkerOpts.icon);
 
+    console.time("interface");
     initInterface(interface, aptMarkers);
+    console.timeEnd("interface");
 
     let prevZoom = 0;
     google.maps.event.addListener(map, 'zoom_changed', () => {
