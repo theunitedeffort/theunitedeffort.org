@@ -43,7 +43,8 @@ https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city
   {% endif %}
   {% if address.phone and address.phone != '' %}
     <p>
-      <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a>
+      {% assign formattedPhone = address.phone | replace: '(', '' | replace: ') ', '-' %}
+      <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
     </p>
   {% endif %}
   {% if address.website and address.website != '' %}
