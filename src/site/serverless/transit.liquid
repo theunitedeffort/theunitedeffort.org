@@ -2,13 +2,8 @@
 permalink: /js/transit.js
 ---
 
-// const aptLocations = [];
-// const transitStops = [];
-console.time("literals");
-
 const transitStops = [
 {%- for stop in transitData -%}
    {lat:{{stop.lat}},lng:{{stop.lng}},name:"{{stop.name}}",operator:"{{stop.operator}}"},
  {%- endfor -%}
- ];
-console.timeEnd("literals");
+];

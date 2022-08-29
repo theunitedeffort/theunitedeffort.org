@@ -152,7 +152,20 @@
         if (infowindow.listItem) {
           infowindow.listItem.classList.remove("highlighted");
         }
-        infowindow.setContent('<div class="map_infowindow_content">' + marker.listItem.innerHTML + '</div>');
+        const container = document.createElement("div");
+        container.className = "map_infowindow_content";
+        container.innerHTML = marker.listItem.innerHTML;
+        const mapLink = container.querySelector(".map_link_container");
+        if (mapLink) {
+          mapLink.remove();
+          const gmapsLink = mapLink.querySelector(".ext_map_link");
+          if (gmapsLink) {
+            gmapsLink.className = "map_infowindow_footer";
+            gmapsLink.firstChild.textContent = "View on Google Maps";
+            container.appendChild(gmapsLink);
+          }
+        }
+        infowindow.setContent(container);
         infowindow.open({
           anchor: marker,
           map: map,
@@ -241,9 +254,9 @@
     }
     for (const marker of markers) {
       const showMapButton = marker.listItem.querySelector("button.map_link");
-      // const extMapLink = marker.listItem.querySelector("span.ext_map_link");
+      const extMapLink = marker.listItem.querySelector("span.ext_map_link");
       showMapButton.classList.remove("hidden");
-      // extMapLink.classList.add("hidden");
+      extMapLink.classList.add("hidden");
 
       showMapButton.addEventListener("click", () => {
         google.maps.event.trigger(marker, "click", null, true);
