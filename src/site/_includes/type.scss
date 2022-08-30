@@ -226,6 +226,9 @@
       margin: 0;
       padding: 0;
     }
+    p.contact {
+      line-height: 1.8em;
+    }
     h2 {
       display: inline-block;
       font-size: 1.3em;
@@ -255,6 +258,7 @@
     .map_infowindow_footer {
       padding-top: 1.5em;
       font-size: 0.8em;
+      display: block;
     }
   }
 

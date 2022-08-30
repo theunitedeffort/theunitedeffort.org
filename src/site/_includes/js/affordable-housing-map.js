@@ -29,7 +29,7 @@
     interface.mapContainer.classList.add("responsive_visible");
     interface.listContainer.classList.remove("responsive_visible");
     interface.listContainer.classList.add("responsive_hidden");
-    interface.toggleButton.textContent ="Show List";
+    interface.toggleButton.textContent = "Show List";
   }
 
   // Sets element visibility to show the list view rather than the
@@ -122,9 +122,13 @@
 
   // Turns on or off the custom public transit layer based on 'isVisible'.
   // The custom transit layer consists of transit stop markers and a legend.
-  function displayTransit(transitMarkers, legend, isVisible) {
+  function displayTransit(map, transitMarkers, legend, isVisible) {
+    let mapRef = null;
+    if (isVisible) {
+      mapRef = map;
+    }
     for (i = 0; i < transitMarkers.length; i++) {
-      transitMarkers[i].setVisible(isVisible);
+      transitMarkers[i].setMap(mapRef);
     }
     if (isVisible) {
       legend.removeAttribute("hidden");
@@ -150,7 +154,20 @@
         if (infowindow.listItem) {
           infowindow.listItem.classList.remove("highlighted");
         }
-        infowindow.setContent(marker.apt.content);
+        const container = document.createElement("div");
+        container.className = "map_infowindow_content";
+        container.innerHTML = marker.listItem.innerHTML;
+        const mapLink = container.querySelector(".map_link_container");
+        if (mapLink) {
+          const gmapsLink = mapLink.querySelector(".ext_map_link");
+          mapLink.remove();
+          if (gmapsLink) {
+            gmapsLink.className = "map_infowindow_footer";
+            gmapsLink.firstChild.textContent = "View on Google Maps";
+            container.appendChild(gmapsLink);
+          }
+        }
+        infowindow.setContent(container);
         infowindow.open({
           anchor: marker,
           map: map,
@@ -171,12 +188,17 @@
   // Adds a marker for each apartment to the map.
   function addAptMarkers(map) {
     const markers = [];
+    // Reusable options for faster looping.
+    const options = {
+      position: {lat: 0, lng: 0},
+      map: map,
+      title: "",
+    };
     for (const loc of aptLocations) {
-      const marker = new google.maps.Marker({
-        position: new google.maps.LatLng(loc.lat, loc.lng),
-        map: map,
-        title: loc.name,
-      });
+      options.position.lat = loc.lat;
+      options.position.lng = loc.lng;
+      options.title = loc.name;
+      const marker = new google.maps.Marker(options);
       marker.apt = loc;
       marker.listItem = document.getElementById("property-" + loc.id);
       markers.push(marker);
@@ -202,17 +224,19 @@
     }
   }
 
-  // Adds a marker for each public transit stop to the map.
-  function addTransitMarkers(map, markerOptions) {
+  // Makes an array of markers, one for each public transit stop.
+  // The markers are not added to the map.
+  function makeTransitMarkers() {
     const transitMarkers = [];
+    // Reusable options for faster looping.
+    const options = {
+      position: {lat: 0, lng: 0},
+    };
     for (const stop of transitStops) {
-      const marker = new google.maps.Marker({
-        position: new google.maps.LatLng(stop.lat, stop.lng),
-        map: map,
-        visible: false,
-      });
+      options.position.lat = stop.lat;
+      options.position.lng = stop.lng;
+      const marker = new google.maps.Marker(options);
       marker.stop = stop;
-      marker.setOptions(markerOptions);
       transitMarkers.push(marker);
     }
     return transitMarkers;
@@ -281,8 +305,9 @@
     setUpAptListeners(map, aptMarkers, infowindow, interface);
     const bounds = setMapBounds(map, aptMarkers);
 
-    const transitMarkers = addTransitMarkers(map, smallTransitMarkerOpts);
-    setUpTransitListeners(map, transitMarkers, infowindow);
+    // This array will be filled when the transit markers are first
+    // requested to be visible, i.e. when the map gets zoomed in enough.
+    let transitMarkers = [];
 
     const legend = addLegend(map, smallTransitMarkerOpts.icon);
 
@@ -294,7 +319,18 @@
         const zoom = map.getZoom();
         if (crossedZoomBp(zoom, prevZoom, TRANSIT_ICON_VISIBLE_BP)) {
           // Hide or show bus stops.
-          displayTransit(transitMarkers, legend,
+          if (zoom > TRANSIT_ICON_VISIBLE_BP) {
+            if (transitMarkers.length == 0) {
+              // Only make the transit markers when they are first needed.
+              // TODO: Only make markers that will be visible in the viewport?
+              transitMarkers = makeTransitMarkers();
+              setUpTransitListeners(map, transitMarkers, infowindow);
+            }
+            // Transit markers show up with the small icon.
+            setTransitMarkerOptions(transitMarkers, legend,
+              smallTransitMarkerOpts);
+          }
+          displayTransit(map, transitMarkers, legend,
             zoom > TRANSIT_ICON_VISIBLE_BP);
         }
         if (crossedZoomBp(zoom, prevZoom, TRANSIT_ICON_SIZE_BP)) {

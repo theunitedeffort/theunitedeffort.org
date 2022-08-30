@@ -6,6 +6,7 @@ permalink:
   serverless: "/housing/affordable-housing/filter"
 pageClass: "page-housing"
 pageHead: '<script src="/js/accessibility.js" defer></script>
+  <script src="/js/transit.js" defer></script>
   <script src="/js/affordable-housing-map.js" defer></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA17udd4ePocbxKrOkHiMhSUHlvf3daZMs&callback=initMap&v=weekly" defer></script>'
 ---
@@ -222,7 +223,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       <ul class="results_list" aria-label="Results List">
         {% for address in sortedHousingdb %}
           <li id="property-{{address.id}}">
-            {% render "affordable-housing-item.liquid", address: address, isInfoWindow: false %}
+            {% render "affordable-housing-item.liquid", address: address %}
           </li>
         {% endfor %}
         {% if num_results == 0 %}
@@ -253,19 +254,8 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% for address in sortedHousingdb %}
     {% assign coords = address | getValidatedLocCoords %}
     {% if coords %}
-      {% capture rawContent %}
-        <div id="infowindow-{{address.id}}" class="map_infowindow_content">
-          {% render "affordable-housing-item.liquid", address: address, isInfoWindow: true %}
-        </div> 
-      {% endcapture %}
-      { lat: {{coords[0]}}, lng: {{coords[1]}}, content: '{{ rawContent | replace: "\n", "" | replace: "'", "&apos;"}}', id: "{{address.id}}" },
+      {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{address.id}}"},
     {% endif %}
-  {% endfor %}
-  ];
-
-  const transitStops = [
-  {% for stop in transitData %}
-    { lat: {{stop.lat}}, lng: {{stop.lng}}, name: "{{stop.name}}", operator: "{{stop.operator}}" },
   {% endfor %}
   ];
 </script>

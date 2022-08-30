@@ -1,60 +1,50 @@
-{% capture mapUrl %}
+{%- capture mapUrl -%}
 https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}},+CA
-{% endcapture %}
-
+{%- endcapture -%}
 <h2>
   <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
 </h2>
-{% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
-{% for status in allStatuses %}
+{%- assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse -%}
+{%- for status in allStatuses -%}
   <p>
     <span class="badge
-    {% if status == "Call for Status" %}
+    {%- if status == "Call for Status" %}
       badge__warn
-    {% elsif status == "Waitlist Closed" %}
+    {%- elsif status == "Waitlist Closed" %}
       badge__bad
-    {% elsif status == "Waitlist Open" %}
+    {%- elsif status == "Waitlist Open" %}
       badge__ok
-    {% endif %}
+    {%- endif %}
     ">{{ status }}</span>
-    {% assign sortedUnits = address.units | where: "openStatus",  status | rankSort: "unitType" %}
-    {% for unit in sortedUnits %}
-      {% if unit.unitType %}
+    {%- assign sortedUnits = address.units | where: "openStatus",  status | rankSort: "unitType" -%}
+    {%- for unit in sortedUnits -%}
+      {%- if unit.unitType %}
         <span class="badge">{{ unit.unitType }}</span>
-      {% endif %}
-    {% endfor %} 
+      {%- endif -%}
+    {%- endfor -%} 
   </p>
-{% endfor %}
-<address>
-  {% if address.address and address.address != '' %}
-    <p>
-    {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %}
-      {% unless isInfoWindow %}
-        <span class="noprint nowrap">
-          <span aria-hidden="true">(</span><button type="button" class="map_link link hidden" aria-label="Highlight {{ address.aptName }} on map">Show on map</button><span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a><sup>&#8599;</sup></span><span aria-hidden="true">)</span>
-        </span>
-      {% endunless %}
+{%- endfor -%}
+  {%- if address.address and address.address != '' -%}
+    <p class="contact">
+    {{ address.address }}{%- if address.city and address.city != '' -%}, {{ address.city }}{%- endif -%}
+      <span class="map_link_container noprint nowrap">
+        (<button type="button" class="map_link link hidden" aria-label="Highlight {{ address.aptName }} on map">Show on map</button><span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ address.aptName }} on Google Maps">map</a><sup>&#8599;</sup></span>)
+      </span>
     </p>
-  {% endif %}
-  {% if address.email and address.email != '' %}
-    <p>
+  {%- endif -%}
+  {%- if address.email and address.email != '' -%}
+    <p class="contact"> 
       <a href="mailto:{{ address.email }}" target="_blank" rel="noopener">{{ address.email }}</a>
     </p>
   {% endif %}
   {% if address.phone and address.phone != '' %}
-    <p>
+    <p class="contact">
       {% assign formattedPhone = address.phone | replace: '(', '' | replace: ') ', '-' %}
       <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
     </p>
-  {% endif %}
-  {% if address.website and address.website != '' %}
-    <p>
+  {%- endif -%}
+  {%- if address.website and address.website != '' -%}
+    <p class="contact">
       <a href="{{ address.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ address.aptName }}">View property website</a><sup>&#8599;</sup>
     </p>
-  {% endif %}
-  {% if isInfoWindow and address.address and address.address != '' %}
-    <p class="map_infowindow_footer">
-      <a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{address.aptName}} on Google Maps">View on Google Maps</a><sup>&#8599;</sup>
-    </p>
-  {% endif %}
-</address>
+  {%- endif -%}

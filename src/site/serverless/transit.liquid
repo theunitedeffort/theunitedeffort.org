@@ -1,0 +1,9 @@
+---
+permalink: /js/transit.js
+---
+
+const transitStops = [
+{%- for stop in transitData -%}
+   {lat:{{stop.lat}},lng:{{stop.lng}},name:"{{stop.name}}",operator:"{{stop.operator}}"},
+ {%- endfor -%}
+];
