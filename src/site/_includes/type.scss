@@ -180,23 +180,54 @@
     }
   }
 
+  .results_container {
+    border-bottom: solid 1px var(--color-gray-700);
+    margin-bottom: 2em;
+    padding-bottom: 1.5em;
+    padding-top: 3em;
+    @include bp(mid) {
+      padding-bottom: 3em;
+    }
+  }
+
   .results_list {
     font-size: 0.9em;
     list-style: none;
-    margin: 1em 0 2em;
-    border-bottom: solid 1px var(--color-gray-700);
-    padding: 2em 0 0 0;
+    margin-top: 0;
+    padding: 0;
+    @include bp(mid) {
+      padding-bottom: 80vh;
+    }
     li {
-      padding-bottom: 3em;
+      margin-bottom: 2em;
+      padding: 0.5em;
       break-inside: avoid;
+    }
+    @media screen {
+      li.highlighted {
+        border: 2px solid var(--color-gray-300);
+        border-left-width: 6px;
+        border-radius: 3px;
+      }
     }
     li.no_results {
       font-size: 1em;
       font-weight: 600;
     }
+  }
+
+  .results_list.no_results {
+    padding: 0;
+  }
+
+  .map_infowindow_content,
+  .results_list {
     p {
       margin: 0;
       padding: 0;
+    }
+    p.contact {
+      line-height: 1.8em;
     }
     h2 {
       display: inline-block;
@@ -207,6 +238,35 @@
     }
   }
 
+  .map_infowindow_content {
+    font-family: var(--font-primary);
+    font-weight: 400;
+    font-size: 13px;
+    @include bp(narrow) {
+      font-size: 14px;
+    }
+
+    h1 {
+      font-size: 1.0em;
+      margin-top: 0;
+    }
+
+    .badge {
+      font-size: 0.8em;
+    }
+
+    .map_infowindow_footer {
+      padding-top: 1.5em;
+      font-size: 0.8em;
+      display: block;
+    }
+  }
+
+  .map_legend h3 {
+    margin-top: 0;
+    font-weight: 700;
+  }
+
   table.printed p {
     margin: 0;
     padding: 0;
@@ -215,8 +275,6 @@
   table.printed .checklist > p {
     padding: 0.1em;
   }
-
-  
 
   .queue_status {
     width: 50%;
@@ -372,12 +430,21 @@
   content: "";
 }
 
-sup { vertical-align: top; font-size: 0.6em; }
+sup { 
+  line-height: 100%;
+  font-size: 0.7em;
+}
 
 address {
   p {
     line-height: 1.8em;
   }
+}
+
+.attribution {
+  font-size: 0.7em;
+  margin-top: 0.3em;
+  text-align: right;
 }
 
   

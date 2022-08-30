@@ -13,13 +13,14 @@ module.exports = (data) => {
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="stylesheet" href="/styles.css">
+    <link rel="preload" href="/fonts/Inter-Variable-subset.woff2" as="font" type="font/woff2" crossorigin>
     <script src="/js/accessibility.js" defer></script>
   </head>
   <body class="page-housing">
     <header>
       <div class="container">  
         <a href="/" class="nav-home" title="Home">
-          <img src="/images/ueo-logo.png" class="logo-home"  alt="">
+          <img src="/images/ueo-logo.png" width="200" height="61" class="logo-home"  alt="The United Effort Organization logo">
         </a>
         <ul class="navigation">
           <li><a href="/housing/affordable-housing" class="nav-housing">Find Affordable Housing</a></li>

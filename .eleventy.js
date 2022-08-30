@@ -98,6 +98,24 @@ module.exports = function(eleventyConfig) {
     return formatCurrency(value);
   });
 
+  eleventyConfig.addFilter("getValidatedLocCoords", function(address) {
+    if (address.verifiedLocCoords && 
+        address.locCoords) {
+      const coords = address.locCoords.split(",");
+      if (coords.length == 2) {
+        const lat = Number.parseFloat(coords[0]);
+        const lng = Number.parseFloat(coords[1]);
+        // Basic bounds checking. Note this also kicks out coordinates that
+        // can't be parsed, since NaN will always fail the below check.
+        if (lat > 35.952462 && lat < 38.216103 &&
+          lng > -123.069952 && lng < -120.806286) {
+          return [lat, lng];
+        }
+      }
+    }
+    return;
+  });
+
   // Sorts items according to the ranking defined in SORT_RANKING.
   eleventyConfig.addFilter("rankSort", function(values, property="") {
     let sorted = values.sort(function(a, b) {
@@ -169,9 +187,9 @@ module.exports = function(eleventyConfig) {
       let selectedOptions = queryValue.split(", ");
       let filterIdx = filterValuesCopy.findIndex(f => f.name == filterName);
       if (filterIdx < 0) { return; }
-      for (i = 0; i < selectedOptions.length; i++) {
+      for (const selectedOption of selectedOptions) {
         let idx = filterValuesCopy[filterIdx].options.findIndex(
-          v => v.name === selectedOptions[i]);
+          v => v.name.split(", ").includes(selectedOption));
         if (idx >= 0) {
           filterValuesCopy[filterIdx].options[idx].selected = true;
         }
@@ -574,6 +592,7 @@ module.exports = function(eleventyConfig) {
               },
               units: [], // To be filled later, after grouping by housing ID.
               locCoords: record.get("_LOC_COORDS")?.[0] || "",
+              verifiedLocCoords: record.get("_VERIFIED_LOC_COORDS")?.[0] || false,
               phone: record.get("_PHONE")?.[0] || "",
               website: record.get("_PROPERTY_URL")?.[0] || "",
               email: record.get("_EMAIL")?.[0] || "",

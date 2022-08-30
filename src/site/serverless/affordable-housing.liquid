@@ -5,7 +5,10 @@ permalink:
   build: "/housing/affordable-housing/index.html"
   serverless: "/housing/affordable-housing/filter"
 pageClass: "page-housing"
-pageHead: '<script src="/js/accessibility.js" defer></script>'
+pageHead: '<script src="/js/accessibility.js" defer></script>
+  <script src="/js/transit.js" defer></script>
+  <script src="/js/affordable-housing-map.js" defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA17udd4ePocbxKrOkHiMhSUHlvf3daZMs&callback=initMap&v=weekly" defer></script>'
 ---
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
@@ -122,7 +125,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       {% if opt.name == "SRO" %}
           {% assign label = '<abbr role="definition" aria-label="Single Room Occupancy">SRO</abbr>' %}
       {% else %}
-          {% assign label = opt.name %}
+          {% assign label = opt.label %}
       {% endif %}
       <label for="{{optId}}">{{label}}</label><br/>
     {% endfor %}
@@ -190,14 +193,11 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </p>
     <div>
       {% if num_results > 0 %}
-        <a class="btn btn_secondary noprint btn_print " title="Print summary of results" href="/housing/affordable-housing/table?{{eleventy.serverless.query | queryString}}">
-          <svg role="img" aria-hidden="true" focusable="false" class="icon ">
-            <use xlink:href="/images/sprites.svg#print"></use>
-          </svg>
-          Print summary of results
+        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/housing/affordable-housing/table?{{eleventy.serverless.query | queryString}}">
+          Show printable summary
         </a>
-        <a class="btn btn_secondary noprint" title="Show results in a checklist" href="/housing/affordable-housing/tracker?{{eleventy.serverless.query | queryString}}">
-          Show results in a checklist
+        <a class="btn btn_secondary noprint" title="Get printable application checklist" href="/housing/affordable-housing/tracker?{{eleventy.serverless.query | queryString}}">
+          Show printable checklist
         </a>
         {% comment %} 
         <a class="btn btn_secondary noprint btn_download " title="Download these results in CSV format">
@@ -213,67 +213,49 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% if num_filters_applied > 0 %}
     <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
-<ul class="results_list" aria-label="Results List">
   {% assign sortedHousingdb = housingdb | sort: "aptName" %}
-  {% for address in sortedHousingdb %}
-  <li>
-    <h2>
-      <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
-    </h2>
-    {% assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse %}
-    {% for status in allStatuses %}
-      <p>
-        <span class="badge
-        {% if status == "Call for Status" %}
-          badge__warn
-        {% elsif status == "Waitlist Closed" %}
-          badge__bad
-        {% elsif status == "Waitlist Open" %}
-          badge__ok
+
+  <div class="flex results_container">
+    <div id="map-toggle" class="noprint hidden">
+      <button type="button" class="btn btn_secondary">Show Map</button>
+    </div>
+    <div id="list-container">
+      <ul class="results_list" aria-label="Results List">
+        {% for address in sortedHousingdb %}
+          <li id="property-{{address.id}}">
+            {% render "affordable-housing-item.liquid", address: address %}
+          </li>
+        {% endfor %}
+        {% if num_results == 0 %}
+          <li class="no_results">
+            Try changing the filter options above to broaden your search and see more results.
+          </li>
         {% endif %}
-        ">{{ status }}</span>
-        {% assign sortedUnits = address.units | where: "openStatus",  status | rankSort: "unitType" %}
-        {% for unit in sortedUnits %}
-          {% if unit.unitType %}
-            <span class="badge">{{ unit.unitType }}</span>
-          {% endif %}
-        {% endfor %} 
-      </p>
-    {% endfor %}
-    <address>
-      {% if address.address and address.address != '' %}
-        <p>
-        {{ address.address }}{% if address.city and address.city != '' %}, {{ address.city }}{% endif %} <span class="noprint"><span aria-hidden="true">(</span><a href="https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}}&country=us" target="_blank" rel="noopener" aria-label="Map for {{ address.aptName }}">map</a><span aria-hidden="true">)</span></span>
-        </p>
-      {% endif %}
-      {% if address.email and address.email != '' %}
-        <p>
-          <a href="mailto:{{ address.email }}" target="_blank" rel="noopener">{{ address.email }}</a>
-        </p>
-      {% endif %}
-      {% if address.phone and address.phone != '' %}
-        <p>
-          <a href="tel:+1{{ address.phone | replace: '-', '' }}">{{ address.phone }}</a>
-        </p>
-      {% endif %}
-      {% if address.website and address.website != '' %}
-        <a href="{{ address.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ address.aptName }}">View property website</a><sup>&#8599;</sup>
-      {% endif %}
-    </address>
-
-  </li>
-  {% endfor %}
-  {% if num_results == 0 %}
-    <li class="no_results">
-      Try changing the filter options above to broaden your search and see more results.
-    </li>
-  {% endif %}
-</ul> 
+      </ul>
+    </div>
+    <div id="map-container" class="map_container hidden">
+      <div class="split_right_container">
+        <div id="map"></div>
+        <div id="map-legend"></div>
+        <p class="attribution">Transit data provided by <a href=http://www.511.org target="_blank" rel="noopener">511.org</a></p>
+      </div>
+    </div>
+  </div>
 </section>
-
 
 <div>
 <p>
   This affordable housing list is compiled from many separate housing lists across Santa Clara County in order to provide a single searchable resource.  We strive to be as accurate as possible, but always confirm property details with the property manager.
 </p>
 </div>
+
+<script>
+  const aptLocations = [
+  {% for address in sortedHousingdb %}
+    {% assign coords = address | getValidatedLocCoords %}
+    {% if coords %}
+      {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{address.id}}"},
+    {% endif %}
+  {% endfor %}
+  ];
+</script>
