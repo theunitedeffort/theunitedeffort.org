@@ -13,6 +13,7 @@ module.exports = (data) => {
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="stylesheet" href="/styles.css">
+    <link rel="preload" href="/fonts/Inter-Variable-subset.woff2" as="font" type="font/woff2" crossorigin>
     <script src="/js/accessibility.js" defer></script>
   </head>
   <body class="page-housing">
