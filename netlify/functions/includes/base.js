@@ -20,7 +20,7 @@ module.exports = (data) => {
     <header>
       <div class="container">  
         <a href="/" class="nav-home" title="Home">
-          <img src="/images/ueo-logo.png" class="logo-home"  alt="">
+          <img src="/images/ueo-logo.png" width="200" height="61" class="logo-home"  alt="The United Effort Organization logo">
         </a>
         <ul class="navigation">
           <li><a href="/housing/affordable-housing" class="nav-housing">Find Affordable Housing</a></li>
