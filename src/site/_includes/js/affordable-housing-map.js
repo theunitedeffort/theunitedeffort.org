@@ -150,7 +150,20 @@
         if (infowindow.listItem) {
           infowindow.listItem.classList.remove("highlighted");
         }
-        infowindow.setContent(marker.apt.content);
+        const container = document.createElement("div");
+        container.className = "map_infowindow_content";
+        container.innerHTML = marker.listItem.innerHTML;
+        const mapLink = container.querySelector(".map_link_container");
+        if (mapLink) {
+          const gmapsLink = mapLink.querySelector(".ext_map_link");
+          mapLink.remove();
+          if (gmapsLink) {
+            gmapsLink.className = "map_infowindow_footer";
+            gmapsLink.firstChild.textContent = "View on Google Maps";
+            container.appendChild(gmapsLink);
+          }
+        }
+        infowindow.setContent(container);
         infowindow.open({
           anchor: marker,
           map: map,
