@@ -403,27 +403,24 @@ module.exports = function(eleventyConfig) {
   });
 
   // Gets a subset of all housing results from Airtable based on 'query'.
-  eleventyConfig.addFilter("housingResults", async function(query) {
-    console.log("housing query: ");
-    console.log(query);
-    let asset = new EleventyFetch.AssetCache("housing_results");
-    let isBuild = !process.env.ELEVENTY_SERVERLESS && !query;
-    if (isBuild && asset.isCacheValid("1m")) {
-      console.log("Returning cached housing list.");
-      let housing = await asset.getCachedValue();
-      return housing;
+  eleventyConfig.addFilter("groupUnits", async function(housingList) {
+    // Combine entries with the same housing ID by filling the 'units'
+    // property with data from all units for that housing ID.
+    let housingListCopy = JSON.parse(JSON.stringify(housingList));
+    let housingById = {};
+    for (idx in housingListCopy) {
+      let housingId = housingListCopy[idx].id;
+      housingById[housingId] = housingById[housingId] || housingListCopy[idx];
+      housingById[housingId].units.push(housingListCopy[idx].unit);
+      // The 'unit' property was temporary and used only to hold
+      // the unit-level data for each fetched record.  The same data
+      // (plus data for other units with the same housing ID)
+      // now resides in the 'units' property.
+      delete housingById[housingId].unit;
     }
-    const queryStr = buildQueryStr(query);
-    console.log("Fetching housing list.");
-    let housing = await fetchHousingList(queryStr);
-    console.log("got " + housing.length + " properties.")
-    // if (query) {
-    //   console.log(JSON.stringify(housing, null, 4));
-    // }
-    if (isBuild) {
-      await asset.save(housing, "json");
-    }
-    return housing;
+    // Each housing ID key is also stored in the value as the 'id' property
+    // so the object can be converted to an array without information loss.
+    return Object.values(housingById);
   });
 
   // Summarizes the 'units' array of each item in 'housingList' by the
@@ -559,67 +556,6 @@ module.exports = function(eleventyConfig) {
     console.log(queryStr);
     return queryStr;
   };
-
-  // Get housing units from Airtable, filtered by the Airtable formula string
-  // 'queryStr'.
-  const fetchHousingList = async(queryStr) => {
-    let housingList = [];
-    const table = base(UNITS_TABLE);
-
-    return table.select({
-        view: "API all units",
-        filterByFormula: queryStr
-      })
-      .all()
-      .then(records => {
-        records.forEach(function(record) {
-          let housing_id = record.get("_DISPLAY_ID")?.[0] || "";
-          // Ignore any entries that do not have a parent property.
-          if (housing_id) {
-            housingList.push({
-              id: housing_id,
-              aptName: record.get("_APT_NAME")?.[0] || "",
-              address: record.get("_ADDRESS")?.[0] || "",
-              city: record.get("_CITY")?.[0] || "",
-              unit: {
-                unitType: record.get("TYPE"),
-                openStatus: record.get("STATUS"),
-                incomeBracket: record.get("PERCENT_AMI"),
-                rent: record.get("RENT_PER_MONTH_USD"),
-                minIncome: record.get("MIN_YEARLY_INCOME_USD"),
-                maxIncome: {low: record.get("MAX_YEARLY_INCOME_LOW_USD"),
-                            high: record.get("MAX_YEARLY_INCOME_HIGH_USD")},
-              },
-              units: [], // To be filled later, after grouping by housing ID.
-              locCoords: record.get("_LOC_COORDS")?.[0] || "",
-              verifiedLocCoords: record.get("_VERIFIED_LOC_COORDS")?.[0] || false,
-              phone: record.get("_PHONE")?.[0] || "",
-              website: record.get("_PROPERTY_URL")?.[0] || "",
-              email: record.get("_EMAIL")?.[0] || "",
-              populationsServed: record.get("_POPULATIONS_SERVED"),
-              minAge: record.get("_MIN_RESIDENT_AGE"),
-            });
-          }
-        });
-
-        // Combine entries with the same housing ID by filling the 'units'
-        // property with data from all units for that housing ID.
-        let housingById = {};
-        for (idx in housingList) {
-          let housingId = housingList[idx].id;
-          housingById[housingId] = housingById[housingId] || housingList[idx];
-          housingById[housingId].units.push(housingList[idx].unit);
-          // The 'unit' property was temporary and used only to hold
-          // the unit-level data for each fetched record.  The same data
-          // (plus data for other units with the same housing ID)
-          // now resides in the 'units' property.
-          delete housingById[housingId].unit;
-        }
-        // Each housing ID key is also stored in the value as the 'id' property
-        // so the object can be converted to an array without information loss.
-        return Object.values(housingById);
-      });
-  }
 
   // Sass pipeline
   eleventyConfig.addTemplateFormats("scss");

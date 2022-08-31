@@ -47,23 +47,7 @@ const fetchFilterOptions = async() => {
     });
 };
 
-// Returns an object containing a list of FilterSections with each FilterSection
-// having a unique list of FilterCheckboxes encompassing all the values
-// available in the Airtable data at that time.
-module.exports = async function() {
-  let asset = new AssetCache("affordable_housing_filters");
-  // This cache duration will only be used at build time.
-  let cacheDuration = "1m";
-  if(process.env.ELEVENTY_SERVERLESS) {
-    // Use the serverless cache location specified in .eleventy.js
-    asset.cacheDirectory = "cache"; 
-    cacheDuration = "*";  // Infinite duration (data refreshes at each build)
-  }
-  if (asset.isCacheValid(cacheDuration)) {
-    console.log("Returning cached filter options.");
-    let filters = await asset.getCachedValue();
-    return filters;
-  }
+const filterOptions = async() => {
   console.log("Fetching filter options.");
   let filterOptions = await fetchFilterOptions();
   let cities = [...new Set(filterOptions.map(o => o.city))];
@@ -119,8 +103,86 @@ module.exports = async function() {
       allPopulationsServed.map(x => new FilterCheckbox(x))));
 
   console.log("Got filter options.");
-  let filterData = { filterValues: filterVals };
+  return filterVals;
+}
 
-  await asset.save(filterData, "json");
-  return filterData;
+
+// Get housing units from Airtable, filtered by the Airtable formula string
+// 'queryStr'.
+const fetchHousingList = async() => {
+  let housingList = [];
+  const table = base(UNITS_TABLE);
+
+  return table.select({
+      view: "API all units",
+      //filterByFormula: queryStr
+    })
+    .all()
+    .then(records => {
+      records.forEach(function(record) {
+        let housing_id = record.get("_DISPLAY_ID")?.[0] || "";
+        // Ignore any entries that do not have a parent property.
+        if (housing_id) {
+          housingList.push({
+            id: housing_id,
+            aptName: record.get("_APT_NAME")?.[0] || "",
+            address: record.get("_ADDRESS")?.[0] || "",
+            city: record.get("_CITY")?.[0] || "",
+            unit: {
+              unitType: record.get("TYPE"),
+              openStatus: record.get("STATUS"),
+              incomeBracket: record.get("PERCENT_AMI"),
+              rent: record.get("RENT_PER_MONTH_USD"),
+              minIncome: record.get("MIN_YEARLY_INCOME_USD"),
+              maxIncome: {low: record.get("MAX_YEARLY_INCOME_LOW_USD"),
+                          high: record.get("MAX_YEARLY_INCOME_HIGH_USD")},
+            },
+            units: [], // To be filled later, after grouping by housing ID.
+            locCoords: record.get("_LOC_COORDS")?.[0] || "",
+            verifiedLocCoords: record.get("_VERIFIED_LOC_COORDS")?.[0] || false,
+            phone: record.get("_PHONE")?.[0] || "",
+            website: record.get("_PROPERTY_URL")?.[0] || "",
+            email: record.get("_EMAIL")?.[0] || "",
+            populationsServed: record.get("_POPULATIONS_SERVED"),
+            minAge: record.get("_MIN_RESIDENT_AGE"),
+          });
+        }
+      });
+      return housingList;
+    });
+}
+
+const housingData = async() => {
+  console.log("Fetching housing list.");
+  const housing = await fetchHousingList();
+  console.log("got " + housing.length + " properties.");
+  return housing;
+}
+
+
+// Returns an object containing a list of FilterSections with each FilterSection
+// having a unique list of FilterCheckboxes encompassing all the values
+// available in the Airtable data at that time.
+module.exports = async function() {
+  const asset = new AssetCache("affordable_housing_data");
+  // This cache duration will only be used at build time.
+  let cacheDuration = "1d";
+  if(process.env.ELEVENTY_SERVERLESS) {
+    // Use the serverless cache location specified in .eleventy.js
+    asset.cacheDirectory = "cache"; 
+    cacheDuration = "*";  // Infinite duration (data refreshes at each build)
+  }
+  if (asset.isCacheValid(cacheDuration)) {
+    console.log("Returning cached housing data.");
+    const data = await asset.getCachedValue();
+    return data;
+  }
+
+  const filterVals = await filterOptions();
+  const housing = await housingData();
+  
+  let data = {filterValues: filterVals, housingList: housing};
+
+  await asset.save(data, "json");
+  return data;
 }

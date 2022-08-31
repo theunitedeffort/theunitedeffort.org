@@ -13,7 +13,7 @@ pageHead: '<script src="/js/accessibility.js" defer></script>
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
 {% assign summaryProps = "unitType,openStatus" | split: "," %}
-{% assign housingdb = query | housingResults | summarizeUnits: summaryProps %}
+{% assign housingdb = housingList | groupUnits | summarizeUnits: summaryProps %}
 {% assign num_results = housingdb | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}

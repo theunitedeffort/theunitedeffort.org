@@ -8,7 +8,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
 ---
 
 {% assign query = eleventy.serverless.query %}
-{% assign housingdb = query | housingResults %}
+{% assign housingdb = housingList | groupUnits %}
 {% assign numFiltersApplied = query | numFiltersApplied %}
 {% assign numResults = housingdb | size %}
 
