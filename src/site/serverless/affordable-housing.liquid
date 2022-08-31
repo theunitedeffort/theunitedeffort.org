@@ -221,11 +221,11 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </div>
     <div id="list-container">
       <ul class="results_list" aria-label="Results List">
-        {% for address in sortedHousingdb %}
+        {%- for address in sortedHousingdb -%}
           <li id="property-{{address.id}}">
-            {% render "affordable-housing-item.liquid", address: address %}
+            {%- render "affordable-housing-item.liquid", address: address -%}
           </li>
-        {% endfor %}
+        {%- endfor -%}
         {% if num_results == 0 %}
           <li class="no_results">
             Try changing the filter options above to broaden your search and see more results.
@@ -251,11 +251,11 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
 <script>
   const aptLocations = [
-  {% for address in sortedHousingdb %}
-    {% assign coords = address | getValidatedLocCoords %}
-    {% if coords %}
+  {%- for address in sortedHousingdb -%}
+    {%- assign coords = address | getValidatedLocCoords -%}
+    {%- if coords -%}
       {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{address.id}}"},
-    {% endif %}
-  {% endfor %}
+    {%- endif -%}
+  {%- endfor -%}
   ];
 </script>
