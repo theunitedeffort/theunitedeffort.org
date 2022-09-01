@@ -60,16 +60,6 @@ footer {
 .pre-footer {
   background-color: var(--color-purple-lightest);
   padding-bottom: 4em;
-  .container {
-    h2,
-    div,
-    p,
-    a {
-      max-width: 600px;
-      margin-left: 0;
-      margin-right: auto;
-    }
-  }
 }
 
 @media print {
