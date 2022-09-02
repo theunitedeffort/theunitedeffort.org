@@ -10,10 +10,11 @@ pageHead: '<script src="/js/accessibility.js" defer></script>
   <script src="/js/affordable-housing-map.js" defer></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA17udd4ePocbxKrOkHiMhSUHlvf3daZMs&callback=initMap&v=weekly" defer></script>'
 ---
+
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
 {% assign summaryProps = "unitType,openStatus" | split: "," %}
-{% assign housingdb = housingList | groupUnits | summarizeUnits: summaryProps %}
+{% assign housingdb = housingList | filterByQuery: query | groupUnits | summarizeUnits: summaryProps %}
 {% assign num_results = housingdb | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}

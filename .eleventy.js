@@ -58,7 +58,7 @@ module.exports = function(eleventyConfig) {
   // Get all of the unique values of a property
   eleventyConfig.addFilter("index", function(collection, property) {
     let values = [];
-    for (item in collection) {
+    for (const item in collection) {
       if (collection[item][property]) {
         values = values.concat(collection[item][property]);
       }
@@ -69,7 +69,7 @@ module.exports = function(eleventyConfig) {
   // Filter a data set by a value present in an array property
   eleventyConfig.addFilter("whereIncluded", function(collection, key, value) {
     let filtered = [];
-    for (item in collection) {
+    for (const item in collection) {
       if (collection[item][key] && collection[item][key].includes(value)) {
         filtered.push(collection[item]);
       }
@@ -79,7 +79,7 @@ module.exports = function(eleventyConfig) {
   // Filter a data set by a value present in an array property
   eleventyConfig.addFilter("whereEmpty", function(collection, key) {
     let filtered = [];
-    for (item in collection) {
+    for (const item in collection) {
       if (!collection[item][key]) {
         filtered.push(collection[item]);
       }
@@ -161,7 +161,7 @@ module.exports = function(eleventyConfig) {
       "includeReferrals",
     ];
     let count = 0;
-    for (key in query) {
+    for (const key in query) {
       if (allowedFilters.includes(key) && query[key]) {
         count++;
       }
@@ -195,7 +195,7 @@ module.exports = function(eleventyConfig) {
         }
       }
     }
-    for (section in query){
+    for (const section in query){
       updateFilterSection(query[section], section);
     }
 
@@ -408,7 +408,7 @@ module.exports = function(eleventyConfig) {
     // property with data from all units for that housing ID.
     let housingListCopy = JSON.parse(JSON.stringify(housingList));
     let housingById = {};
-    for (idx in housingListCopy) {
+    for (const idx in housingListCopy) {
       let housingId = housingListCopy[idx].id;
       housingById[housingId] = housingById[housingId] || housingListCopy[idx];
       housingById[housingId].units.push(housingListCopy[idx].unit);
@@ -453,109 +453,85 @@ module.exports = function(eleventyConfig) {
     return housingListCopy;
   });
 
-  // Generates an Airtable filter formula string based on 'query'.
-  const buildQueryStr = function(query) {
+  eleventyConfig.addFilter("filterByQuery", function(housingList, query) {
     query = query || "";
-    const {
-      availability,
-      city,
-      unitType,
-      populationsServed,
-      rentMin,
-      rentMax,
-      income,
-      includeUnknownRent,
-      includeUnknownIncome,
-      propertyName,
-      wheelchairAccessibleOnly,
-      includeReferrals,
-    } = query;
-
-    
-    let parameters = [];
-
-    // By default, hide any units not allowing public applications (i.e. referrals only).
-    if(!includeReferrals) {
-      parameters.push("{_DISALLOWS_PUBLIC_APPLICATIONS} = 0")
+    console.log(query);
+    let housingListCopy = JSON.parse(JSON.stringify(housingList));
+    if (!query.includeReferrals) {
+      housingListCopy = housingListCopy.filter(x => !x.disallowsPublicApps);
     }
 
-    if (unitType) {
-      let rooms = unitType.split(", ");
-      let roomsQuery = rooms.map((x) => `{TYPE} = '${x}'`)
-      parameters.push(`OR(${roomsQuery.join(",")})`);
+    if (query.unitType) {
+      const rooms = query.unitType.split(", ");
+      housingListCopy = housingListCopy.filter(
+        x => rooms.includes(x.unit.unitType));
     }
 
-    if (city) {
-      let cities = city.split(", ");
-      let cityQuery = cities.map((x) => `{_CITY} = '${x}'`);
-      parameters.push(`OR(${cityQuery.join(",")})`);
+    if (query.city) {
+      const cities = query.city.split(", ");
+      housingListCopy = housingListCopy.filter(x => cities.includes(x.city));
     }
 
-    if (availability) {
-      let availabilities = availability.split(", ");
-      let availabilityQuery = availabilities.map((x) => `{STATUS} = '${x}'`);
-      parameters.push(`OR(${availabilityQuery.join(",")})`);
+    if (query.availability) {
+      const availabilities = query.availability.split(", ");
+      housingListCopy = housingListCopy.filter(
+        x => availabilities.includes(x.unit.openStatus));
     }
 
-    if (populationsServed) {
-      let populations = populationsServed.split(", ");
-      // Note this formula will break if one population option is a substring of another.
-      // e.g. "developmentally disabled" and "disabled"
-      // See https://community.airtable.com/t/return-rows-that-contain-multiple-select-item/42187/4
-      // for a complicated solution.
-      let populationsQuery = populations.map(x => `FIND('${x}', {_POPULATIONS_SERVED})`);
-      if (populations.includes("General Population")) {
-        // Entries with an empty _POPULATIONS_SERVED field are interpreted as
-        // being open to the general public, so allow those entries as well if
-        // the user wants General Population entries.
-        populationsQuery.push("{_POPULATIONS_SERVED} = BLANK()");
-      }
-      parameters.push(`OR(${populationsQuery.join(",")})`);
+    if (query.populationsServed) {
+      const populations = query.populationsServed.split(", ");
+      housingListCopy = housingListCopy.filter(x => {
+        if (!x.populationsServed.length &&
+            populations.includes("General Population")) {
+          // Entries with an empty _POPULATIONS_SERVED field are interpreted as
+          // being open to the general public, so allow those entries as well if
+          // the user wants General Population entries.
+          return true;
+        }
+        for (const population of populations) {
+          if (x.populationsServed.includes(population)) {
+            return true;
+          }
+        }
+      });
     }
 
-    if (wheelchairAccessibleOnly) {
-      parameters.push(`{_HAS_WHEELCHAIR_ACCESSIBLE_UNITS} = 1`);
+    if (query.wheelchairAccessibleOnly) {
+      housingListCopy = housingListCopy.filter(
+        x => x.hasWheelchairAccessibleUnits);
     }
 
-    if (rentMax) {
-      let rentMaxParams = [`{RENT_PER_MONTH_USD} <= '${rentMax}'`];
-      // Airtable says that blank (unknown) rents are == 0, so records with
-      // unknown rents will automatically be included in a simple "rent <= max"
-      // filter.  If user does not want records with unknown rent, explicitly
-      // exclude records with blank rent values by first casting to a string as
-      // suggested in 
-      // https://community.airtable.com/t/blank-zero-problem/5662/13
-      if (!includeUnknownRent) {
-        rentMaxParams.push(`({RENT_PER_MONTH_USD} & "")`);
-      }
-      parameters.push(`AND(${rentMaxParams.join(",")})`);
-    }
-    if (income) {
-      let incomeMinParams = [`{MIN_YEARLY_INCOME_USD} <= '${income}'`];
-      let incomeMaxParams = [`{MAX_YEARLY_INCOME_HIGH_USD} >= '${income}'`];
-      let incomeOp = "OR";
-      if (includeUnknownIncome) {
-        incomeMinParams.push(`NOT({MIN_YEARLY_INCOME_USD} & "")`);
-        incomeMaxParams.push(`NOT({MAX_YEARLY_INCOME_HIGH_USD} & "")`);
-      } else {
-        incomeMinParams.push(`({MIN_YEARLY_INCOME_USD} & "")`);
-        incomeMaxParams.push(`({MAX_YEARLY_INCOME_HIGH_USD} & "")`);
-        incomeOp = "AND"
-      }
-      parameters.push(
-        `AND(${incomeOp}(${incomeMinParams.join(",")}),` +
-        `${incomeOp}(${incomeMaxParams.join(",")}))`);
-    }
-    if (propertyName) {
-      // _APT_NAME is a lookup field which is by default an array (in this case with a single entry).
-      parameters.push(`FIND(LOWER('${propertyName}'), LOWER(ARRAYJOIN({_APT_NAME}, ''))) > 0`);
+    if (query.rentMax) {
+      const rentMax = Number(query.rentMax);
+      housingListCopy = housingListCopy.filter(x => {
+        return (
+          (query.includeUnknownRent && !x.unit.rent) ||
+          Number(x.unit.rent) <= rentMax);
+      });
     }
 
-    let queryStr = `AND(${parameters.join(",")})`;
-    console.log("Airtable query:");
-    console.log(queryStr);
-    return queryStr;
-  };
+    if (query.income) {
+      const income = Number(query.income);
+      housingListCopy = housingListCopy.filter(x => {
+        const minIncomeMatch = (
+          (query.includeUnknownIncome && !x.unit.minIncome) ||
+          Number(x.unit.minIncome) <= income);
+        const maxIncomeMatch = (
+          (query.includeUnknownIncome && !x.unit.maxIncome.high) ||
+          Number(x.unit.maxIncome.high) >= income);
+        return minIncomeMatch && maxIncomeMatch;
+      })
+    }
+
+    if (query.propertyName) {
+      const propertyName = query.propertyName.toLowerCase();
+      housingListCopy = housingListCopy.filter(
+        x => x.aptName.toLowerCase().includes(propertyName));
+    }
+
+    return housingListCopy;
+  });
+
 
   // Sass pipeline
   eleventyConfig.addTemplateFormats("scss");

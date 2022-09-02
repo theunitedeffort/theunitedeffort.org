@@ -145,6 +145,10 @@ const fetchHousingList = async() => {
             email: record.get("_EMAIL")?.[0] || "",
             populationsServed: record.get("_POPULATIONS_SERVED"),
             minAge: record.get("_MIN_RESIDENT_AGE"),
+            disallowsPublicApps: record.get(
+              "_DISALLOWS_PUBLIC_APPLICATIONS")?.[0] || false,
+            hasWheelchairAccessibleUnits: record.get(
+              "_HAS_WHEELCHAIR_ACCESSIBLE_UNITS")?.[0] || false,
           });
         }
       });
