@@ -7,18 +7,19 @@ https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city
 {%- assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse -%}
 {%- for status in allStatuses -%}
   <p>
-    <span class="badge
-    {%- if status == "Call for Status" %}
-      badge__warn
-    {%- elsif status == "Waitlist Closed" %}
-      badge__bad
-    {%- elsif status == "Waitlist Open" %}
-      badge__ok
-    {%- endif %}
-    ">{{ status }}</span>
+    {%- capture badgeMod -%}
+      {%- if status == "Call for Status" -%}
+        badge__warn
+      {%- elsif status == "Waitlist Closed" -%}
+        badge__bad
+      {%- elsif status == "Waitlist Open" -%}
+        badge__ok
+      {%- endif -%}
+    {%- endcapture -%}
+    <span class="badge {{ badgeMod }}">{{ status }}</span>
     {%- assign sortedUnits = address.units | where: "openStatus",  status | rankSort: "unitType" -%}
     {%- for unit in sortedUnits -%}
-      {%- if unit.unitType %}
+      {%- if unit.unitType -%}
         <span class="badge">{{ unit.unitType }}</span>
       {%- endif -%}
     {%- endfor -%} 
@@ -36,10 +37,10 @@ https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city
     <p class="contact"> 
       <a href="mailto:{{ address.email }}" target="_blank" rel="noopener">{{ address.email }}</a>
     </p>
-  {% endif %}
-  {% if address.phone and address.phone != '' %}
+  {%- endif -%}
+  {%- if address.phone and address.phone != '' -%}
     <p class="contact">
-      {% assign formattedPhone = address.phone | replace: '(', '' | replace: ') ', '-' %}
+      {%- assign formattedPhone = address.phone | replace: '(', '' | replace: ') ', '-' -%}
       <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
     </p>
   {%- endif -%}
