@@ -402,27 +402,6 @@ module.exports = function(eleventyConfig) {
     return filtersApplied.join(" ");
   });
 
-  // Gets a subset of all housing results from Airtable based on 'query'.
-  eleventyConfig.addFilter("groupUnits", async function(housingList) {
-    // Combine entries with the same housing ID by filling the 'units'
-    // property with data from all units for that housing ID.
-    let housingListCopy = JSON.parse(JSON.stringify(housingList));
-    let housingById = {};
-    for (const idx in housingListCopy) {
-      let housingId = housingListCopy[idx].id;
-      housingById[housingId] = housingById[housingId] || housingListCopy[idx];
-      housingById[housingId].units.push(housingListCopy[idx].unit);
-      // The 'unit' property was temporary and used only to hold
-      // the unit-level data for each fetched record.  The same data
-      // (plus data for other units with the same housing ID)
-      // now resides in the 'units' property.
-      delete housingById[housingId].unit;
-    }
-    // Each housing ID key is also stored in the value as the 'id' property
-    // so the object can be converted to an array without information loss.
-    return Object.values(housingById);
-  });
-
   // Summarizes the 'units' array of each item in 'housingList' by the
   // 'summarizeBy' keys.
   // 'housingList' is an array of apartments returned by the housingResults
@@ -457,31 +436,45 @@ module.exports = function(eleventyConfig) {
     query = query || "";
     console.log(query);
     let housingListCopy = JSON.parse(JSON.stringify(housingList));
+
+    // When filtering on unit-level data, it's important to filter out
+    // units and not entire apartments.  A certain apartment may have
+    // some units that match the query criteria and some that don't.
+    // If none of an apartment's units match the criteria, the apartment
+    // will stay in housingListCopy, but the 'units' array within will be empty.
+    // These apartments will be filtered out just prior to returning the
+    // final filtered array.
     if (!query.includeReferrals) {
-      housingListCopy = housingListCopy.filter(x => !x.disallowsPublicApps);
+      housingListCopy = housingListCopy.filter(a => !a.disallowsPublicApps);
     }
 
     if (query.unitType) {
       const rooms = query.unitType.split(", ");
-      housingListCopy = housingListCopy.filter(
-        x => rooms.includes(x.unit.unitType));
+      housingListCopy = housingListCopy.map(apt => {
+        apt.units = (
+          apt.units.filter(u => rooms.includes(u.unitType)));
+        return apt;
+      });
     }
 
     if (query.city) {
       const cities = query.city.split(", ");
-      housingListCopy = housingListCopy.filter(x => cities.includes(x.city));
+      housingListCopy = housingListCopy.filter(a => cities.includes(a.city));
     }
 
     if (query.availability) {
       const availabilities = query.availability.split(", ");
-      housingListCopy = housingListCopy.filter(
-        x => availabilities.includes(x.unit.openStatus));
+      housingListCopy = housingListCopy.map(apt => {
+        apt.units = (
+          apt.units.filter(u => availabilities.includes(u.openStatus)));
+        return apt;
+      });
     }
 
     if (query.populationsServed) {
       const populations = query.populationsServed.split(", ");
-      housingListCopy = housingListCopy.filter(x => {
-        if (!x.populationsServed.length &&
+      housingListCopy = housingListCopy.filter(apt => {
+        if (!apt.populationsServed.length &&
             populations.includes("General Population")) {
           // Entries with an empty _POPULATIONS_SERVED field are interpreted as
           // being open to the general public, so allow those entries as well if
@@ -489,7 +482,7 @@ module.exports = function(eleventyConfig) {
           return true;
         }
         for (const population of populations) {
-          if (x.populationsServed.includes(population)) {
+          if (apt.populationsServed.includes(population)) {
             return true;
           }
         }
@@ -497,39 +490,46 @@ module.exports = function(eleventyConfig) {
     }
 
     if (query.wheelchairAccessibleOnly) {
-      housingListCopy = housingListCopy.filter(
-        x => x.hasWheelchairAccessibleUnits);
+      housingListCopy = (
+        housingListCopy.filter(a => a.hasWheelchairAccessibleUnits));
     }
 
     if (query.rentMax) {
       const rentMax = Number(query.rentMax);
-      housingListCopy = housingListCopy.filter(x => {
-        return (
-          (query.includeUnknownRent && !x.unit.rent) ||
-          Number(x.unit.rent) <= rentMax);
+      housingListCopy = housingListCopy.map(apt => {
+        apt.units = apt.units.filter(unit => {
+          return ((query.includeUnknownRent && !unit.rent) || 
+            Number(unit.rent) <= rentMax);
+        });
+        return apt;
       });
     }
 
     if (query.income) {
       const income = Number(query.income);
-      housingListCopy = housingListCopy.filter(x => {
-        const minIncomeMatch = (
-          (query.includeUnknownIncome && !x.unit.minIncome) ||
-          Number(x.unit.minIncome) <= income);
-        const maxIncomeMatch = (
-          (query.includeUnknownIncome && !x.unit.maxIncome.high) ||
-          Number(x.unit.maxIncome.high) >= income);
-        return minIncomeMatch && maxIncomeMatch;
-      })
+      housingListCopy = housingListCopy.map(apt => {
+        apt.units = apt.units.filter(unit => {
+          const minIncomeMatch = (
+            (query.includeUnknownIncome && !unit.minIncome) ||
+            Number(unit.minIncome) <= income);
+          const maxIncomeMatch = (
+            (query.includeUnknownIncome && !unit.maxIncome.high) ||
+            Number(unit.maxIncome.high) >= income);
+          return minIncomeMatch && maxIncomeMatch;
+        });
+        return apt;
+      });
     }
 
     if (query.propertyName) {
-      const propertyName = query.propertyName.toLowerCase();
+      const aptName = query.propertyName.toLowerCase();
       housingListCopy = housingListCopy.filter(
-        x => x.aptName.toLowerCase().includes(propertyName));
+        a => a.aptName.toLowerCase().includes(aptName));
     }
 
-    return housingListCopy;
+    // Some properties may have had all their associated units filtered out,
+    // so remove those before returning the final list of filtered properties.
+    return housingListCopy.filter(a => a.units.length);
   });
 
 

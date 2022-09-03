@@ -8,7 +8,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
 ---
 
 {% assign query = eleventy.serverless.query %}
-{% assign housingdb = housingList | groupUnits %}
+{% assign housingdb = housing.housingList | filterByQuery: query %}
 {% assign numFiltersApplied = query | numFiltersApplied %}
 {% assign numResults = housingdb | size %}
 
@@ -48,12 +48,13 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   <p>Filters Applied:<br/> {% querySummary query %}</p>
 {% endif %}
 
+{% comment %} TODO: actually check results for closed waitlists {% endcomment %}
 {% if query.availability == nil or query.availability == "" or query.availability contains "Waitlist Closed" %}
-  {% assign availabilities = filterValues | where: "name", "availability" %}
+  {% assign availabilities = housing.filterValues | where: "name", "availability" %}
   {% assign availabilities = availabilities[0].options | map: "name" %}
   {% assign newQuery = query | removeWaitlistClosed: availabilities %}
   <p class="note">
-    {% assign includesStr = "includes some" %}
+    {% assign includesStr = "may include some" %}
     {% assign linkStr = "Hide properties with a closed waitlist" %}
     {% if query.availability == "Waitlist Closed" %}
       {% assign includesStr = "only contains" %}

@@ -14,7 +14,7 @@ pageHead: '<script src="/js/accessibility.js" defer></script>
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
 {% assign summaryProps = "unitType,openStatus" | split: "," %}
-{% assign housingdb = housingList | filterByQuery: query | groupUnits | summarizeUnits: summaryProps %}
+{% assign housingdb = housing.housingList | filterByQuery: query | summarizeUnits: summaryProps %}
 {% assign num_results = housingdb | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}
@@ -109,7 +109,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 <section aria-label="Housing Filter Options">
 <form action="/housing/affordable-housing/filter" action="get" id="housing-search" class="housing_search" onsubmit="ShowLoading();">
   
-  {% assign filterValues = filterValues | updateFilterState: query %}
+  {% assign filterValues = housing.filterValues | updateFilterState: query %}
 
   {% for section in filterValues %}
   <fieldset>

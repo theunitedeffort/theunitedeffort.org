@@ -152,7 +152,22 @@ const fetchHousingList = async() => {
           });
         }
       });
-      return housingList;
+
+      let housingById = {};
+      // TODO: change loop to "for of"
+      for (const idx in housingList) {
+        let housingId = housingList[idx].id;
+        housingById[housingId] = housingById[housingId] || housingList[idx];
+        housingById[housingId].units.push(housingList[idx].unit);
+        // The 'unit' property was temporary and used only to hold
+        // the unit-level data for each fetched record.  The same data
+        // (plus data for other units with the same housing ID)
+        // now resides in the 'units' property.
+        delete housingById[housingId].unit;
+      }
+      // Each housing ID key is also stored in the value as the 'id' property
+      // so the object can be converted to an array without information loss.
+      return Object.values(housingById);
     });
 }
 
@@ -168,6 +183,7 @@ const housingData = async() => {
 // having a unique list of FilterCheckboxes encompassing all the values
 // available in the Airtable data at that time.
 module.exports = async function() {
+  
   const asset = new AssetCache("affordable_housing_data");
   // This cache duration will only be used at build time.
   let cacheDuration = "1d";
@@ -184,7 +200,7 @@ module.exports = async function() {
 
   const filterVals = await filterOptions();
   const housing = await housingData();
-  
+
   let data = {filterValues: filterVals, housingList: housing};
 
   await asset.save(data, "json");
