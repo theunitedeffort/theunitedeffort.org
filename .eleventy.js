@@ -58,7 +58,7 @@ module.exports = function(eleventyConfig) {
   // Get all of the unique values of a property
   eleventyConfig.addFilter("index", function(collection, property) {
     let values = [];
-    for (item in collection) {
+    for (const item in collection) {
       if (collection[item][property]) {
         values = values.concat(collection[item][property]);
       }
@@ -69,7 +69,7 @@ module.exports = function(eleventyConfig) {
   // Filter a data set by a value present in an array property
   eleventyConfig.addFilter("whereIncluded", function(collection, key, value) {
     let filtered = [];
-    for (item in collection) {
+    for (const item in collection) {
       if (collection[item][key] && collection[item][key].includes(value)) {
         filtered.push(collection[item]);
       }
@@ -79,7 +79,7 @@ module.exports = function(eleventyConfig) {
   // Filter a data set by a value present in an array property
   eleventyConfig.addFilter("whereEmpty", function(collection, key) {
     let filtered = [];
-    for (item in collection) {
+    for (const item in collection) {
       if (!collection[item][key]) {
         filtered.push(collection[item]);
       }
@@ -161,7 +161,7 @@ module.exports = function(eleventyConfig) {
       "includeReferrals",
     ];
     let count = 0;
-    for (key in query) {
+    for (const key in query) {
       if (allowedFilters.includes(key) && query[key]) {
         count++;
       }
@@ -195,7 +195,7 @@ module.exports = function(eleventyConfig) {
         }
       }
     }
-    for (section in query){
+    for (const section in query){
       updateFilterSection(query[section], section);
     }
 
@@ -402,30 +402,6 @@ module.exports = function(eleventyConfig) {
     return filtersApplied.join(" ");
   });
 
-  // Gets a subset of all housing results from Airtable based on 'query'.
-  eleventyConfig.addFilter("housingResults", async function(query) {
-    console.log("housing query: ");
-    console.log(query);
-    let asset = new EleventyFetch.AssetCache("housing_results");
-    let isBuild = !process.env.ELEVENTY_SERVERLESS && !query;
-    if (isBuild && asset.isCacheValid("1m")) {
-      console.log("Returning cached housing list.");
-      let housing = await asset.getCachedValue();
-      return housing;
-    }
-    const queryStr = buildQueryStr(query);
-    console.log("Fetching housing list.");
-    let housing = await fetchHousingList(queryStr);
-    console.log("got " + housing.length + " properties.")
-    // if (query) {
-    //   console.log(JSON.stringify(housing, null, 4));
-    // }
-    if (isBuild) {
-      await asset.save(housing, "json");
-    }
-    return housing;
-  });
-
   // Summarizes the 'units' array of each item in 'housingList' by the
   // 'summarizeBy' keys.
   // 'housingList' is an array of apartments returned by the housingResults
@@ -456,170 +432,106 @@ module.exports = function(eleventyConfig) {
     return housingListCopy;
   });
 
-  // Generates an Airtable filter formula string based on 'query'.
-  const buildQueryStr = function(query) {
+  eleventyConfig.addFilter("filterByQuery", function(housingList, query) {
     query = query || "";
-    const {
-      availability,
-      city,
-      unitType,
-      populationsServed,
-      rentMin,
-      rentMax,
-      income,
-      includeUnknownRent,
-      includeUnknownIncome,
-      propertyName,
-      wheelchairAccessibleOnly,
-      includeReferrals,
-    } = query;
+    console.log(query);
+    let housingListCopy = JSON.parse(JSON.stringify(housingList));
 
-    
-    let parameters = [];
-
-    // By default, hide any units not allowing public applications (i.e. referrals only).
-    if(!includeReferrals) {
-      parameters.push("{_DISALLOWS_PUBLIC_APPLICATIONS} = 0")
+    // When filtering on unit-level data, it's important to filter out
+    // units and not entire apartments.  A certain apartment may have
+    // some units that match the query criteria and some that don't.
+    // If none of an apartment's units match the criteria, the apartment
+    // will stay in housingListCopy, but the 'units' array within will be empty.
+    // These apartments will be filtered out just prior to returning the
+    // final filtered array.
+    if (!query.includeReferrals) {
+      housingListCopy = housingListCopy.filter(a => !a.disallowsPublicApps);
     }
 
-    if (unitType) {
-      let rooms = unitType.split(", ");
-      let roomsQuery = rooms.map((x) => `{TYPE} = '${x}'`)
-      parameters.push(`OR(${roomsQuery.join(",")})`);
-    }
-
-    if (city) {
-      let cities = city.split(", ");
-      let cityQuery = cities.map((x) => `{_CITY} = '${x}'`);
-      parameters.push(`OR(${cityQuery.join(",")})`);
-    }
-
-    if (availability) {
-      let availabilities = availability.split(", ");
-      let availabilityQuery = availabilities.map((x) => `{STATUS} = '${x}'`);
-      parameters.push(`OR(${availabilityQuery.join(",")})`);
-    }
-
-    if (populationsServed) {
-      let populations = populationsServed.split(", ");
-      // Note this formula will break if one population option is a substring of another.
-      // e.g. "developmentally disabled" and "disabled"
-      // See https://community.airtable.com/t/return-rows-that-contain-multiple-select-item/42187/4
-      // for a complicated solution.
-      let populationsQuery = populations.map(x => `FIND('${x}', {_POPULATIONS_SERVED})`);
-      if (populations.includes("General Population")) {
-        // Entries with an empty _POPULATIONS_SERVED field are interpreted as
-        // being open to the general public, so allow those entries as well if
-        // the user wants General Population entries.
-        populationsQuery.push("{_POPULATIONS_SERVED} = BLANK()");
-      }
-      parameters.push(`OR(${populationsQuery.join(",")})`);
-    }
-
-    if (wheelchairAccessibleOnly) {
-      parameters.push(`{_HAS_WHEELCHAIR_ACCESSIBLE_UNITS} = 1`);
-    }
-
-    if (rentMax) {
-      let rentMaxParams = [`{RENT_PER_MONTH_USD} <= '${rentMax}'`];
-      // Airtable says that blank (unknown) rents are == 0, so records with
-      // unknown rents will automatically be included in a simple "rent <= max"
-      // filter.  If user does not want records with unknown rent, explicitly
-      // exclude records with blank rent values by first casting to a string as
-      // suggested in 
-      // https://community.airtable.com/t/blank-zero-problem/5662/13
-      if (!includeUnknownRent) {
-        rentMaxParams.push(`({RENT_PER_MONTH_USD} & "")`);
-      }
-      parameters.push(`AND(${rentMaxParams.join(",")})`);
-    }
-    if (income) {
-      let incomeMinParams = [`{MIN_YEARLY_INCOME_USD} <= '${income}'`];
-      let incomeMaxParams = [`{MAX_YEARLY_INCOME_HIGH_USD} >= '${income}'`];
-      let incomeOp = "OR";
-      if (includeUnknownIncome) {
-        incomeMinParams.push(`NOT({MIN_YEARLY_INCOME_USD} & "")`);
-        incomeMaxParams.push(`NOT({MAX_YEARLY_INCOME_HIGH_USD} & "")`);
-      } else {
-        incomeMinParams.push(`({MIN_YEARLY_INCOME_USD} & "")`);
-        incomeMaxParams.push(`({MAX_YEARLY_INCOME_HIGH_USD} & "")`);
-        incomeOp = "AND"
-      }
-      parameters.push(
-        `AND(${incomeOp}(${incomeMinParams.join(",")}),` +
-        `${incomeOp}(${incomeMaxParams.join(",")}))`);
-    }
-    if (propertyName) {
-      // _APT_NAME is a lookup field which is by default an array (in this case with a single entry).
-      parameters.push(`FIND(LOWER('${propertyName}'), LOWER(ARRAYJOIN({_APT_NAME}, ''))) > 0`);
-    }
-
-    let queryStr = `AND(${parameters.join(",")})`;
-    console.log("Airtable query:");
-    console.log(queryStr);
-    return queryStr;
-  };
-
-  // Get housing units from Airtable, filtered by the Airtable formula string
-  // 'queryStr'.
-  const fetchHousingList = async(queryStr) => {
-    let housingList = [];
-    const table = base(UNITS_TABLE);
-
-    return table.select({
-        view: "API all units",
-        filterByFormula: queryStr
-      })
-      .all()
-      .then(records => {
-        records.forEach(function(record) {
-          let housing_id = record.get("_DISPLAY_ID")?.[0] || "";
-          // Ignore any entries that do not have a parent property.
-          if (housing_id) {
-            housingList.push({
-              id: housing_id,
-              aptName: record.get("_APT_NAME")?.[0] || "",
-              address: record.get("_ADDRESS")?.[0] || "",
-              city: record.get("_CITY")?.[0] || "",
-              unit: {
-                unitType: record.get("TYPE"),
-                openStatus: record.get("STATUS"),
-                incomeBracket: record.get("PERCENT_AMI"),
-                rent: record.get("RENT_PER_MONTH_USD"),
-                minIncome: record.get("MIN_YEARLY_INCOME_USD"),
-                maxIncome: {low: record.get("MAX_YEARLY_INCOME_LOW_USD"),
-                            high: record.get("MAX_YEARLY_INCOME_HIGH_USD")},
-              },
-              units: [], // To be filled later, after grouping by housing ID.
-              locCoords: record.get("_LOC_COORDS")?.[0] || "",
-              verifiedLocCoords: record.get("_VERIFIED_LOC_COORDS")?.[0] || false,
-              phone: record.get("_PHONE")?.[0] || "",
-              website: record.get("_PROPERTY_URL")?.[0] || "",
-              email: record.get("_EMAIL")?.[0] || "",
-              populationsServed: record.get("_POPULATIONS_SERVED"),
-              minAge: record.get("_MIN_RESIDENT_AGE"),
-            });
-          }
-        });
-
-        // Combine entries with the same housing ID by filling the 'units'
-        // property with data from all units for that housing ID.
-        let housingById = {};
-        for (idx in housingList) {
-          let housingId = housingList[idx].id;
-          housingById[housingId] = housingById[housingId] || housingList[idx];
-          housingById[housingId].units.push(housingList[idx].unit);
-          // The 'unit' property was temporary and used only to hold
-          // the unit-level data for each fetched record.  The same data
-          // (plus data for other units with the same housing ID)
-          // now resides in the 'units' property.
-          delete housingById[housingId].unit;
-        }
-        // Each housing ID key is also stored in the value as the 'id' property
-        // so the object can be converted to an array without information loss.
-        return Object.values(housingById);
+    if (query.unitType) {
+      const rooms = query.unitType.split(", ");
+      housingListCopy = housingListCopy.map(apt => {
+        apt.units = (
+          apt.units.filter(u => rooms.includes(u.unitType)));
+        return apt;
       });
-  }
+    }
+
+    if (query.city) {
+      const cities = query.city.split(", ");
+      housingListCopy = housingListCopy.filter(a => cities.includes(a.city));
+    }
+
+    if (query.availability) {
+      const availabilities = query.availability.split(", ");
+      housingListCopy = housingListCopy.map(apt => {
+        apt.units = (
+          apt.units.filter(u => availabilities.includes(u.openStatus)));
+        return apt;
+      });
+    }
+
+    if (query.populationsServed) {
+      const populations = query.populationsServed.split(", ");
+      housingListCopy = housingListCopy.filter(apt => {
+        if (!apt.populationsServed.length &&
+            populations.includes("General Population")) {
+          // Entries with an empty _POPULATIONS_SERVED field are interpreted as
+          // being open to the general public, so allow those entries as well if
+          // the user wants General Population entries.
+          return true;
+        }
+        for (const population of populations) {
+          if (apt.populationsServed.includes(population)) {
+            return true;
+          }
+        }
+      });
+    }
+
+    if (query.wheelchairAccessibleOnly) {
+      housingListCopy = (
+        housingListCopy.filter(a => a.hasWheelchairAccessibleUnits));
+    }
+
+    if (query.rentMax) {
+      const rentMax = Number(query.rentMax);
+      housingListCopy = housingListCopy.map(apt => {
+        apt.units = apt.units.filter(unit => {
+          return ((query.includeUnknownRent && !unit.rent) || 
+            Number(unit.rent) <= rentMax);
+        });
+        return apt;
+      });
+    }
+
+    if (query.income) {
+      const income = Number(query.income);
+      housingListCopy = housingListCopy.map(apt => {
+        apt.units = apt.units.filter(unit => {
+          const minIncomeMatch = (
+            (query.includeUnknownIncome && !unit.minIncome) ||
+            Number(unit.minIncome) <= income);
+          const maxIncomeMatch = (
+            (query.includeUnknownIncome && !unit.maxIncome.high) ||
+            Number(unit.maxIncome.high) >= income);
+          return minIncomeMatch && maxIncomeMatch;
+        });
+        return apt;
+      });
+    }
+
+    if (query.propertyName) {
+      const aptName = query.propertyName.toLowerCase();
+      housingListCopy = housingListCopy.filter(
+        a => a.aptName.toLowerCase().includes(aptName));
+    }
+
+    // Some properties may have had all their associated units filtered out,
+    // so remove those before returning the final list of filtered properties.
+    return housingListCopy.filter(a => a.units.length);
+  });
+
 
   // Sass pipeline
   eleventyConfig.addTemplateFormats("scss");
