@@ -66,6 +66,7 @@ permalink: "/housing/affordable-housing/{{apartment.id}}/index.html"
 {% endif %}
 
 <div class="rent_tables">
+  {% assign defaultNoDataStr = "Call for info" %}
   {% assign unitsByType = apartment.units | groupBy: "unitType" %}
   {% for hashItem in unitsByType %}
     {% assign unitType = hashItem[0] %}
@@ -88,7 +89,7 @@ permalink: "/housing/affordable-housing/{{apartment.id}}/index.html"
       {%- endif -%}
     {%- endcapture -%}
     <h2>{{unitType | default: ""}}<span class="badge {{badgeMod}}">{{openStatus}}</span></h2>
-    Maximum occupancy: {{maxOccupancy | default: "call for info"}}
+    Maximum occupancy: {{maxOccupancy | default: defaultNoDataStr}}
     <table aria-label="Rent and Income Limits Table">
       <thead>
         <tr>
@@ -102,10 +103,37 @@ permalink: "/housing/affordable-housing/{{apartment.id}}/index.html"
         {% for unit in units %}
           {% assign defaultBracketStr = "Bracket " | concat: forloop.index %}
           <tr>
-            <td>{{unit.incomeBracket | default: defaultBracketStr}}</td>
-            <td>{{unit.minIncome | money}}</td>
-            <td>{{unit.maxIncome.low | money}} - {{unit.maxIncome.high | money}}</td>
-            <td>{{unit.rent | money}}</td>
+            <td>
+              {% if unit.incomeBracket and unit.incomeBracket != "" %}
+                {{unit.incomeBracket}}% <abbr role="definition" aria-label="Area Median Income">AMI</abbr>
+              {% else %}
+                {{defaultBracketStr}}
+              {% endif %}
+            </td>
+            <td>
+              {{unit.minIncome | money | default: defaultNoDataStr}}
+            </td>
+            <td>
+              {% if unit.maxIncome.low and unit.maxIncome.low != "" and
+                    unit.maxIncome.high and unit.maxIncome.high != "" %}
+                {% if unit.maxIncome.low == unit.maxIncome.high %}
+                  {{unit.maxIncome.low | money}}
+                {% else %}
+                  {{unit.maxIncome.low | money}} - {{unit.maxIncome.high | money}}
+                {% endif %}
+              {% else %}
+                {{defaultNoDataStr}}
+              {% endif %}
+            </td>
+            <td>
+              {% if unit.rent and unit.rent != ""%}
+                {{unit.rent | money}}
+              {% elsif unit.altRentDesc and unit.altRentDesc != "" %}
+                Varies
+              {% else %}
+                Call for rent
+              {% endif %}
+            </td>
           </tr>
         {% endfor %}
       </tbody>

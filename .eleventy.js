@@ -256,13 +256,18 @@ module.exports = function(eleventyConfig) {
 
   // Formats a value as USD with no decimals.
   const formatCurrency = function(value) {
-    return Number(value).toLocaleString("en-US",
-    {
-      style: "currency", 
-      maximumFractionDigits: 0, 
-      minimumFractionDigits: 0, 
-      currency: "USD"
-    });
+    const num = Number(value)
+    if (isNaN(num)) {
+      return "";
+    } else {
+      return num.toLocaleString("en-US",
+      {
+        style: "currency", 
+        maximumFractionDigits: 0, 
+        minimumFractionDigits: 0, 
+        currency: "USD"
+      });
+    }
   }
 
   // Generates a label tag for the given 'fieldName'. 
