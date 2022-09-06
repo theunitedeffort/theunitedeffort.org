@@ -1,0 +1,68 @@
+---
+title: "property details page"
+layout: "layouts/base.liquid"
+pagination: 
+  data: housing.housingList
+  size: 1
+  alias: apartment
+permalink: "/housing/affordable-housing/{{apartment.id}}/index.html"
+---
+
+<h1>{{apartment.aptName | default: "Apartment Listing"}}</h1>
+<table class="deflist">
+  {% render "apartment-meta-item" label: "Address", item: apartment.address, apartment: apartment %}
+  {% render "apartment-meta-item" label: "City", item: apartment.city %}
+  {% render "apartment-meta-item" label: "Units", item: apartment.numTotalUnits %}
+  {% render "apartment-meta-item" label: "Email", item: apartment.email %}
+  {% render "apartment-meta-item" label: "Phone", item: apartment.phone %}
+  {% render "apartment-meta-item" label: "Website", item: apartment.website %}
+</table>
+
+{% assign genPop = "General Population" %}
+{% assign specialPopulations = apartment.populationsServed | except: genPop %}
+{% assign numSpecialPopulations = specialPopulations | size %}
+{% if numSpecialPopulations > 0 %}
+  {%- capture ageRangeStr -%}
+    {%- if apartment.minAge != "" and apartment.maxAge != "" %}
+      ({{apartment.minAge}} - {{apartment.maxAge}} years)
+    {%- elsif apartment.minAge != "" and apartment.maxAge == "" %}
+      ({{apartment.minAge}}+ years)
+    {%- elsif apartment.minAge == "" and apartment.maxAge != "" %}
+      ({{apartment.maxAge}} years and under)
+    {%- endif -%}
+  {%- endcapture -%}
+  <p>
+    {% if apartment.populationsServed | includes: genPop %}
+      In addition to the general population, this property also specifically serves people who are
+    {% else %}
+      This property only serves people who are
+    {% endif %}
+    {%- for population in specialPopulations -%}
+      {%- if forloop.first == false -%}
+        {%- if forloop.last %}
+          or
+        {% else -%}
+          ,
+        {% endif -%}
+      {%- endif -%}
+      {{- population | downcase -}}
+      {%- if population == "Seniors" or population == "Youth" -%}
+        {{- ageRangeStr -}}
+      {%- endif -%}
+    {%- endfor -%}.
+  </p>
+{% endif %}
+
+{% if apartment.prefersLocalApplicants %}
+  <p>
+    When selecting residents, this property gives preference to those who work or live in {{apartment.city | default: "the local city"}}.
+  </p>
+{% endif %}
+
+{% if apartment.disallowsPublicApps %}
+  <p>
+    A referral from a housing agency is required to apply for this property. Contact the property for details on the referral process.
+  </p>
+{% endif %}
+
+

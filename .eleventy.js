@@ -532,6 +532,14 @@ module.exports = function(eleventyConfig) {
     return housingListCopy.filter(a => a.units.length);
   });
 
+  eleventyConfig.addFilter("except", function(collection, value) {
+    return collection.filter(x => x != value);
+  });
+
+  eleventyConfig.addFilter("includes", function(collection, value) {
+    return collection.includes(value);
+  })
+
 
   // Sass pipeline
   eleventyConfig.addTemplateFormats("scss");

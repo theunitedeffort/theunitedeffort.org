@@ -131,11 +131,23 @@ const fetchHousingList = async() => {
             unit: {
               unitType: record.get("TYPE"),
               openStatus: record.get("STATUS"),
+              maxOccupancy: record.get("MAX_OCCUPANCY"),
               incomeBracket: record.get("PERCENT_AMI"),
               rent: record.get("RENT_PER_MONTH_USD"),
+              altRentDesc: record.get("ALTERNATE_RENT_DESCRIPTION"),
               minIncome: record.get("MIN_YEARLY_INCOME_USD"),
+              minIncomeOverride: record.get("OVERRIDE_MIN_YEARLY_INCOME_USD"),
+              minIncomeRentFactor: record.get("MIN_INCOME_RENT_FACTOR"),
               maxIncome: {low: record.get("MAX_YEARLY_INCOME_LOW_USD"),
                           high: record.get("MAX_YEARLY_INCOME_HIGH_USD")},
+              ...Object.fromEntries(
+                [...Array(12).keys()].map(
+                  n => [
+                    `maxIncomeHh${n + 1}`,
+                    record.get(`MAX_YEARLY_INCOME_HH_${n + 1}_USD`)
+                  ]
+                )
+              ),
             },
             units: [], // To be filled later, after grouping by housing ID.
             locCoords: record.get("_LOC_COORDS")?.[0] || "",
@@ -143,12 +155,17 @@ const fetchHousingList = async() => {
             phone: record.get("_PHONE")?.[0] || "",
             website: record.get("_PROPERTY_URL")?.[0] || "",
             email: record.get("_EMAIL")?.[0] || "",
+            numTotalUnits: record.get("_NUM_TOTAL_UNITS")?.[0] || "",
             populationsServed: record.get("_POPULATIONS_SERVED"),
-            minAge: record.get("_MIN_RESIDENT_AGE"),
+            minAge: record.get("_MIN_RESIDENT_AGE")?.[0] || "",
+            maxAge: record.get("_MAX_RESIDENT_AGE")?.[0] || "",
             disallowsPublicApps: record.get(
               "_DISALLOWS_PUBLIC_APPLICATIONS")?.[0] || false,
             hasWheelchairAccessibleUnits: record.get(
               "_HAS_WHEELCHAIR_ACCESSIBLE_UNITS")?.[0] || false,
+            prefersLocalApplicants: record.get(
+              "_PREFERS_LOCAL_APPLICANTS")?.[0] || false,
+
           });
         }
       });
