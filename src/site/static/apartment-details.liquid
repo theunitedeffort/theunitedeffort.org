@@ -65,4 +65,52 @@ permalink: "/housing/affordable-housing/{{apartment.id}}/index.html"
   </p>
 {% endif %}
 
+<div class="rent_tables">
+  {% assign unitsByType = apartment.units | groupBy: "unitType" %}
+  {% for hashItem in unitsByType %}
+    {% assign unitType = hashItem[0] %}
+    {% assign units = hashItem[1] %}
+    {% comment %}
+    'units' is guaranteed to have at least one item since it is generated
+    via grouping. Max occupancy and status should always be the same in every
+    entry for a given rental property & unit type, so just take the first one
+    here.
+    {% endcomment %}
+    {% assign maxOccupancy = units[0].maxOccupancy %}
+    {% assign openStatus = units[0].openStatus %}
+    {%- capture badgeMod -%}
+      {%- if openStatus == "Call for Status" -%}
+        badge__warn
+      {%- elsif openStatus == "Waitlist Closed" -%}
+        badge__bad
+      {%- elsif openStatus == "Waitlist Open" -%}
+        badge__ok
+      {%- endif -%}
+    {%- endcapture -%}
+    <h2>{{unitType | default: ""}}<span class="badge {{badgeMod}}">{{openStatus}}</span></h2>
+    Maximum occupancy: {{maxOccupancy | default: "call for info"}}
+    <table aria-label="Rent and Income Limits Table">
+      <thead>
+        <tr>
+          <th>Income bracket</th>
+          <th>Min income (per year)</th>
+          <th>Max income (per year)</th>
+          <th>Rent (per month)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for unit in units %}
+          {% assign defaultBracketStr = "Bracket " | concat: forloop.index %}
+          <tr>
+            <td>{{unit.incomeBracket | default: defaultBracketStr}}</td>
+            <td>{{unit.minIncome | money}}</td>
+            <td>{{unit.maxIncome.low | money}} - {{unit.maxIncome.high | money}}</td>
+            <td>{{unit.rent | money}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+</div>
+
 

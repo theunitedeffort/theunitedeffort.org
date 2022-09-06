@@ -87,6 +87,16 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
+  eleventyConfig.addFilter("groupBy", function(collection, key) {
+    const grouped = {};
+    for (const item of collection) {
+      const keyValue = item[key];
+      grouped[keyValue] = grouped[keyValue] || [];
+      grouped[keyValue].push(item);
+    }
+    return grouped;
+  });
+
   // Generates a URL query string from Eleventy serverless query parameters.
   eleventyConfig.addFilter("queryString", function(queryParams) {
     const searchParams = new URLSearchParams(queryParams);
