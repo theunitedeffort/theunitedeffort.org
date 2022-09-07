@@ -1,10 +1,11 @@
 (function() {
   // https://inclusive-components.design/tooltips-toggletips/
-  function openToggletip(liveRegion, message) {
+  function openToggletip(liveRegion, message, timeout) {
+    const timeoutMs = timeout || 0;
     liveRegion.innerHTML = '';
     window.setTimeout(function() {
       liveRegion.innerHTML = '<span class="toggletip_content">'+ message +'</span>';
-    }, 100);
+    }, timeoutMs);
   }
 
   function closeToggletip(liveRegion) {
@@ -54,7 +55,7 @@
 
       // Show the message on click
       toggletip.addEventListener('click', function() {
-        openToggletip(liveRegion, message);
+        openToggletip(liveRegion, message, 100);
       });
 
       // Show the message on hover
