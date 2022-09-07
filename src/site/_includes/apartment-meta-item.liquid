@@ -2,18 +2,18 @@
 <tr>
   <td class="definition_term">{{ label }}</td>
   <td class="definition">
-  {% if label == "Email" %}
+  {%- if label == "Email" -%}
     <a href="mailto:{{ item }}">{{ item }}</a>
-  {% elsif label == "Phone" %}
+  {%- elsif label == "Phone" -%}
     <a href="tel:{{ item }}" >{{ item }}</a>
-  {% elsif label == "Website" %}
+  {%- elsif label == "Website" -%}
     <a href="{{ item }}" target="_blank" rel="noopener">{{ item }}</a>
-  {% else %}
-  {% elsif label == "Address" %}
+  {%- else -%}
+  {%- elsif label == "Address" -%}
      {{ item }} (<a href="https://maps.google.com/maps?q={{item | url_encode}}+{{apartment.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)
-  {% else %}
+  {%- else -%}
     {{ item }}
-  {% endif %}
+  {%- endif -%}
   </td>
 </tr>
 {% endif %}

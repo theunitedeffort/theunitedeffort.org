@@ -1,14 +1,17 @@
 ---
-title: "property details page"
 layout: "layouts/base.liquid"
 pagination: 
   data: housing.housingList
   size: 1
   alias: apartment
 permalink: "/housing/affordable-housing/{{apartment.id}}/index.html"
+pageClass: "page-housing"
+pageHead: '<script src="/js/accessibility.js" defer></script>'
+eleventyComputed:
+  title: '{{apartment.aptName | default: "Apartment Listing"}}'
 ---
 
-<h1>{{apartment.aptName | default: "Apartment Listing"}}</h1>
+<h1>{{title}}</h1>
 <table class="deflist">
   {% render "apartment-meta-item" label: "Address", item: apartment.address, apartment: apartment %}
   {% render "apartment-meta-item" label: "City", item: apartment.city %}
@@ -104,35 +107,62 @@ permalink: "/housing/affordable-housing/{{apartment.id}}/index.html"
           {% assign defaultBracketStr = "Bracket " | concat: forloop.index %}
           <tr>
             <td>
-              {% if unit.incomeBracket and unit.incomeBracket != "" %}
+              {%- if unit.incomeBracket and unit.incomeBracket != "" -%}
                 {{unit.incomeBracket}}% <abbr role="definition" aria-label="Area Median Income">AMI</abbr>
-              {% else %}
+              {%- else -%}
                 {{defaultBracketStr}}
-              {% endif %}
+              {%- endif -%}
             </td>
             <td>
-              {{unit.minIncome | money | default: defaultNoDataStr}}
-            </td>
-            <td>
-              {% if unit.maxIncome.low and unit.maxIncome.low != "" and
-                    unit.maxIncome.high and unit.maxIncome.high != "" %}
-                {% if unit.maxIncome.low == unit.maxIncome.high %}
-                  {{unit.maxIncome.low | money}}
-                {% else %}
-                  {{unit.maxIncome.low | money}} - {{unit.maxIncome.high | money}}
-                {% endif %}
-              {% else %}
+              {%- if unit.minIncome and unit.minIncome != "" -%}
+                {{unit.minIncome | money}}
+                {%- if unit.minIncomeRentFactor and unit.minIncomeRentFactor != "" -%}
+                  {%- unless unit.minIncomeOverride and unit.minIncomeOverride != "" %}
+                    <p data-toggletip data-toggletip-class="icon_info">Calculated as {{unit.minIncomeRentFactor}} times yearly rent</p>
+                  {%- endunless -%}
+                {%- endif -%}
+              {%- else -%}
                 {{defaultNoDataStr}}
-              {% endif %}
+              {%- endif -%}
             </td>
             <td>
-              {% if unit.rent and unit.rent != ""%}
+              {%- if unit.maxIncome.low and unit.maxIncome.low != "" and
+                    unit.maxIncome.high and unit.maxIncome.high != "" -%}
+                {%- if unit.maxIncome.low == unit.maxIncome.high -%}
+                  {{unit.maxIncome.low | money}}
+                {%- else -%}
+                  {{unit.maxIncome.low | money}} to {{unit.maxIncome.high | money}}
+                {%- endif -%}
+                {%- capture maxIncomeDetails -%}
+                  {%- for hhSize in (1..12) -%}
+                    {%- assign fieldName = "maxIncomeHh" | append: hhSize -%}
+                    {%- unless unit[fieldName] and unit[fieldName] != "" -%}
+                      {%- continue -%}
+                    {%- endunless -%}
+                    {%- if unit.maxOccupancy and unit.maxOccupancy != "" and
+                          hhSize > unit.maxOccupancy -%}
+                      {%- continue -%}
+                    {%- endif -%}
+                    Household of {{hhSize}}: {{unit[fieldName] | money}}<br/>
+                  {%- endfor -%}
+                {%- endcapture -%}
+                {%- assign maxIncomeDetails = maxIncomeDetails | strip -%}
+                {%- if maxIncomeDetails != "" %}
+                  <p data-toggletip data-toggletip-class="icon_info">{{maxIncomeDetails}}</p>
+                {%- endif -%}
+              {%- else -%}
+                {{defaultNoDataStr}}
+              {%- endif -%}
+            </td>
+            <td>
+              {%- if unit.rent and unit.rent != "" -%}
                 {{unit.rent | money}}
-              {% elsif unit.altRentDesc and unit.altRentDesc != "" %}
+              {%- elsif unit.altRentDesc and unit.altRentDesc != "" -%}
                 Varies
-              {% else %}
+                <p data-toggletip data-toggletip-class="icon_info">${unit.altRentDesc}</p>
+              {%- else -%}
                 Call for rent
-              {% endif %}
+              {%- endif -%}
             </td>
           </tr>
         {% endfor %}
