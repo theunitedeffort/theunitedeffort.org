@@ -1,0 +1,174 @@
+---
+layout: "layouts/base.liquid"
+pagination: 
+  data: housing.housingList
+  size: 1
+  alias: apartment
+permalink: "/housing/affordable-housing/{{apartment.id}}/index.html"
+pageClass: "page-housing"
+pageHead: '<script src="/js/accessibility.js" defer></script>'
+eleventyComputed:
+  title: '{{apartment.aptName | default: "Apartment Listing"}}'
+---
+
+<h1>{{title}}</h1>
+<table class="deflist">
+  {% render "apartment-meta-item" label: "Address", item: apartment.address, apartment: apartment %}
+  {% render "apartment-meta-item" label: "City", item: apartment.city %}
+  {% render "apartment-meta-item" label: "Units", item: apartment.numTotalUnits %}
+  {% render "apartment-meta-item" label: "Email", item: apartment.email %}
+  {% render "apartment-meta-item" label: "Phone", item: apartment.phone %}
+  {% render "apartment-meta-item" label: "Website", item: apartment.website %}
+</table>
+
+{% assign genPop = "General Population" %}
+{% assign specialPopulations = apartment.populationsServed | except: genPop %}
+{% assign numSpecialPopulations = specialPopulations | size %}
+{% if numSpecialPopulations > 0 %}
+  {%- capture ageRangeStr -%}
+    {%- if apartment.minAge != "" and apartment.maxAge != "" %}
+      ({{apartment.minAge}} - {{apartment.maxAge}} years)
+    {%- elsif apartment.minAge != "" and apartment.maxAge == "" %}
+      ({{apartment.minAge}}+ years)
+    {%- elsif apartment.minAge == "" and apartment.maxAge != "" %}
+      ({{apartment.maxAge}} years and under)
+    {%- endif -%}
+  {%- endcapture -%}
+  <p>
+    {% if apartment.populationsServed | includes: genPop %}
+      In addition to the general population, this property also specifically serves people who are
+    {% else %}
+      This property only serves people who are
+    {% endif %}
+    {%- for population in specialPopulations -%}
+      {%- if forloop.first == false -%}
+        {%- if forloop.last %}
+          or
+        {% else -%}
+          ,
+        {% endif -%}
+      {%- endif -%}
+      {{- population | downcase -}}
+      {%- if population == "Seniors" or population == "Youth" -%}
+        {{- ageRangeStr -}}
+      {%- endif -%}
+    {%- endfor -%}.
+  </p>
+{% endif %}
+
+{% if apartment.prefersLocalApplicants %}
+  <p>
+    When selecting residents, this property gives preference to those who work or live in {{apartment.city | default: "the local city"}}.
+  </p>
+{% endif %}
+
+{% if apartment.disallowsPublicApps %}
+  <p>
+    A referral from a housing agency is required to apply for this property. Contact the property for details on the referral process.
+  </p>
+{% endif %}
+
+<div class="rent_tables">
+  {% assign defaultNoDataStr = "Call for info" %}
+  {% assign unitsByType = apartment.units | groupBy: "unitType" | rankSort: "key" %}
+  {% for unitGroup in unitsByType %}
+    {% assign unitType = unitGroup.key %}
+    {% assign units = unitGroup.values | sortUnitOfferings %}
+    {% comment %}
+    'units' is guaranteed to have at least one item since it is generated
+    via grouping. Max occupancy and status should always be the same in every
+    entry for a given rental property & unit type, so just take the first one
+    here.
+    {% endcomment %}
+    {% assign maxOccupancy = units[0].maxOccupancy %}
+    {% assign openStatus = units[0].openStatus %}
+    {%- capture badgeMod -%}
+      {%- if openStatus == "Call for Status" -%}
+        badge__warn
+      {%- elsif openStatus == "Waitlist Closed" -%}
+        badge__bad
+      {%- elsif openStatus == "Waitlist Open" -%}
+        badge__ok
+      {%- endif -%}
+    {%- endcapture -%}
+    <h2>{{unitType | default: ""}}<span class="badge {{badgeMod}}">{{openStatus}}</span></h2>
+    Maximum occupancy: {{maxOccupancy | default: defaultNoDataStr}}
+    <table aria-label="Rent and Income Limits Table">
+      <thead>
+        <tr>
+          <th>Income bracket</th>
+          <th>Min income (per year)</th>
+          <th>Max income (per year)</th>
+          <th>Rent (per month)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for unit in units %}
+          {% assign defaultBracketStr = "Bracket " | concat: forloop.index %}
+          <tr>
+            <td>
+              {%- if unit.incomeBracket and unit.incomeBracket != "" -%}
+                {{unit.incomeBracket}}% <abbr role="definition" aria-label="Area Median Income">AMI</abbr>
+              {%- else -%}
+                {{defaultBracketStr}}
+              {%- endif -%}
+            </td>
+            <td>
+              {%- if unit.minIncome and unit.minIncome != "" -%}
+                {{unit.minIncome | money}}
+                {%- if unit.minIncomeRentFactor and unit.minIncomeRentFactor != "" -%}
+                  {%- unless unit.minIncomeOverride and unit.minIncomeOverride != "" %}
+                    <p data-toggletip data-toggletip-class="icon_info">Calculated as {{unit.minIncomeRentFactor}} times yearly rent</p>
+                  {%- endunless -%}
+                {%- endif -%}
+              {%- else -%}
+                {{defaultNoDataStr}}
+              {%- endif -%}
+            </td>
+            <td>
+              {%- if unit.maxIncome.low and unit.maxIncome.low != "" and
+                    unit.maxIncome.high and unit.maxIncome.high != "" -%}
+                {%- if unit.maxIncome.low == unit.maxIncome.high -%}
+                  {{unit.maxIncome.low | money}}
+                {%- else -%}
+                  {{unit.maxIncome.low | money}} to {{unit.maxIncome.high | money}}
+                {%- endif -%}
+                {%- capture maxIncomeDetails -%}
+                  {%- for hhSize in (1..12) -%}
+                    {%- assign fieldName = "maxIncomeHh" | append: hhSize -%}
+                    {%- unless unit[fieldName] and unit[fieldName] != "" -%}
+                      {%- continue -%}
+                    {%- endunless -%}
+                    {%- if unit.maxOccupancy and unit.maxOccupancy != "" and
+                          hhSize > unit.maxOccupancy -%}
+                      {%- continue -%}
+                    {%- endif -%}
+                    Household of {{hhSize}}: {{unit[fieldName] | money}}<br/>
+                  {%- endfor -%}
+                {%- endcapture -%}
+                {%- assign maxIncomeDetails = maxIncomeDetails | strip -%}
+                {%- if maxIncomeDetails != "" %}
+                  <p data-toggletip data-toggletip-class="icon_info">{{maxIncomeDetails}}</p>
+                {%- endif -%}
+              {%- else -%}
+                {{defaultNoDataStr}}
+              {%- endif -%}
+            </td>
+            <td>
+              {%- if unit.rent and unit.rent != "" -%}
+                {{unit.rent | money}}
+              {%- elsif unit.altRentDesc and unit.altRentDesc != "" -%}
+                Varies
+                <p data-toggletip data-toggletip-class="icon_info">${unit.altRentDesc}</p>
+              {%- else -%}
+                Call for rent
+              {%- endif -%}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+</div>
+
+

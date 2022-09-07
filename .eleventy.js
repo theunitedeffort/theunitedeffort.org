@@ -87,6 +87,20 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
+  eleventyConfig.addFilter("groupBy", function(collection, key) {
+    const groupMap = {};
+    for (const item of collection) {
+      const keyValue = item[key];
+      groupMap[keyValue] = groupMap[keyValue] || [];
+      groupMap[keyValue].push(item);
+    }
+    const grouped = []
+    for (const groupKey in groupMap) {
+      grouped.push({"key": groupKey, "values": groupMap[groupKey]});
+    }
+    return grouped;
+  });
+
   // Generates a URL query string from Eleventy serverless query parameters.
   eleventyConfig.addFilter("queryString", function(queryParams) {
     const searchParams = new URLSearchParams(queryParams);
@@ -114,6 +128,43 @@ module.exports = function(eleventyConfig) {
       }
     }
     return;
+  });
+
+  const compareRents = function(a, b) {
+    // Compare rent table rows.
+    // If both units have differing rent, sort according to those.  
+    // Otherwise, use min income if available.
+    // Otherwise, use max income (the low end of the range) if available.
+    // Otherwise, use AMI percentage if available.
+    // If the units have none of those three values, don't sort at all, as 
+    // there is nothing to compare against.
+    let compA = 0;
+    let compB = 0;
+    if (a.rent && b.rent && a.rent != b.rent) {
+      compA = a.rent;
+      compB = b.rent;
+    } else if (a.minIncome && b.minIncome && a.minIncome != b.minIncome) {
+      compA = a.minIncome;
+      compB = b.minIncome;
+    } else if (a.maxIncome.low && b.maxIncome.low && a.maxIncome.low != b.maxIncome.low) {
+      compA = a.maxIncome.low;
+      compB = b.maxIncome.low;
+    }
+    else if (a.incomeBracket && b.incomeBracket && a.incomeBracket != b.incomeBracket) {
+      compA = a.incomeBracket;
+      compB = b.incomeBracket;
+    }
+    if (compA < compB) {
+      return -1;
+    }
+    if (compA > compB) {
+      return 1;
+    }
+    return 0;
+  }
+
+  eleventyConfig.addFilter("sortUnitOfferings", function(units) {
+    return units.sort(compareRents);
   });
 
   // Sorts items according to the ranking defined in SORT_RANKING.
@@ -246,13 +297,18 @@ module.exports = function(eleventyConfig) {
 
   // Formats a value as USD with no decimals.
   const formatCurrency = function(value) {
-    return Number(value).toLocaleString("en-US",
-    {
-      style: "currency", 
-      maximumFractionDigits: 0, 
-      minimumFractionDigits: 0, 
-      currency: "USD"
-    });
+    const num = Number(value)
+    if (isNaN(num)) {
+      return "";
+    } else {
+      return num.toLocaleString("en-US",
+      {
+        style: "currency", 
+        maximumFractionDigits: 0, 
+        minimumFractionDigits: 0, 
+        currency: "USD"
+      });
+    }
   }
 
   // Generates a label tag for the given 'fieldName'. 
@@ -531,6 +587,14 @@ module.exports = function(eleventyConfig) {
     // so remove those before returning the final list of filtered properties.
     return housingListCopy.filter(a => a.units.length);
   });
+
+  eleventyConfig.addFilter("except", function(collection, value) {
+    return collection.filter(x => x != value);
+  });
+
+  eleventyConfig.addFilter("includes", function(collection, value) {
+    return collection.includes(value);
+  })
 
 
   // Sass pipeline
