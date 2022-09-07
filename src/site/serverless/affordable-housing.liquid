@@ -70,12 +70,14 @@ function ToggleIncomeOption() {
 // after the page loads.  Also ensure the rent and income checkboxes
 // are shown if those fields are filled. 
 {% if num_filters_applied > 0 %} 
-function OnWindowLoad() {
+function OnDomLoad() {
   ToggleRentOption();
   ToggleIncomeOption();
   location.hash = "#results";
 }
-window.onload = function() {OnWindowLoad()};
+document.addEventListener("DOMContentLoaded", function() {
+  OnDomLoad();
+});
 {% endif %}
 
 function OnPageShow() {
