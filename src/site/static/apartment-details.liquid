@@ -70,10 +70,10 @@ eleventyComputed:
 
 <div class="rent_tables">
   {% assign defaultNoDataStr = "Call for info" %}
-  {% assign unitsByType = apartment.units | groupBy: "unitType" %}
-  {% for hashItem in unitsByType %}
-    {% assign unitType = hashItem[0] %}
-    {% assign units = hashItem[1] %}
+  {% assign unitsByType = apartment.units | groupBy: "unitType" | rankSort: "key" %}
+  {% for unitGroup in unitsByType %}
+    {% assign unitType = unitGroup.key %}
+    {% assign units = unitGroup.values | sortUnitOfferings %}
     {% comment %}
     'units' is guaranteed to have at least one item since it is generated
     via grouping. Max occupancy and status should always be the same in every

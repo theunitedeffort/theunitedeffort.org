@@ -88,11 +88,15 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addFilter("groupBy", function(collection, key) {
-    const grouped = {};
+    const groupMap = {};
     for (const item of collection) {
       const keyValue = item[key];
-      grouped[keyValue] = grouped[keyValue] || [];
-      grouped[keyValue].push(item);
+      groupMap[keyValue] = groupMap[keyValue] || [];
+      groupMap[keyValue].push(item);
+    }
+    const grouped = []
+    for (const groupKey in groupMap) {
+      grouped.push({"key": groupKey, "values": groupMap[groupKey]});
     }
     return grouped;
   });
@@ -124,6 +128,43 @@ module.exports = function(eleventyConfig) {
       }
     }
     return;
+  });
+
+  const compareRents = function(a, b) {
+    // Compare rent table rows.
+    // If both units have differing rent, sort according to those.  
+    // Otherwise, use min income if available.
+    // Otherwise, use max income (the low end of the range) if available.
+    // Otherwise, use AMI percentage if available.
+    // If the units have none of those three values, don't sort at all, as 
+    // there is nothing to compare against.
+    let compA = 0;
+    let compB = 0;
+    if (a.rent && b.rent && a.rent != b.rent) {
+      compA = a.rent;
+      compB = b.rent;
+    } else if (a.minIncome && b.minIncome && a.minIncome != b.minIncome) {
+      compA = a.minIncome;
+      compB = b.minIncome;
+    } else if (a.maxIncome.low && b.maxIncome.low && a.maxIncome.low != b.maxIncome.low) {
+      compA = a.maxIncome.low;
+      compB = b.maxIncome.low;
+    }
+    else if (a.incomeBracket && b.incomeBracket && a.incomeBracket != b.incomeBracket) {
+      compA = a.incomeBracket;
+      compB = b.incomeBracket;
+    }
+    if (compA < compB) {
+      return -1;
+    }
+    if (compA > compB) {
+      return 1;
+    }
+    return 0;
+  }
+
+  eleventyConfig.addFilter("sortUnitOfferings", function(units) {
+    return units.sort(compareRents);
   });
 
   // Sorts items according to the ranking defined in SORT_RANKING.
