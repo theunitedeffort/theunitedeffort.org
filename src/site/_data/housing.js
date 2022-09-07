@@ -203,7 +203,7 @@ module.exports = async function() {
   
   const asset = new AssetCache("affordable_housing_data");
   // This cache duration will only be used at build time.
-  let cacheDuration = "1d";
+  let cacheDuration = "1m";
   if(process.env.ELEVENTY_SERVERLESS) {
     // Use the serverless cache location specified in .eleventy.js
     asset.cacheDirectory = "cache"; 
