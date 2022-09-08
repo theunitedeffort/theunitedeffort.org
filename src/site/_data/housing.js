@@ -203,21 +203,21 @@ module.exports = async function() {
   
   const asset = new AssetCache("affordable_housing_data");
   // This cache duration will only be used at build time.
-  let cacheDuration = "1m";
+  let cacheDuration = "1h";
   if(process.env.ELEVENTY_SERVERLESS) {
     // Use the serverless cache location specified in .eleventy.js
     asset.cacheDirectory = "cache"; 
     cacheDuration = "*";  // Infinite duration (data refreshes at each build)
   }
   if (asset.isCacheValid(cacheDuration)) {
-    console.log("Returning cached housing data.");
+    console.log("Returning cached housing and filter data.");
     const data = await asset.getCachedValue();
     return data;
   }
 
   const filterVals = await filterOptions();
   const housing = await housingData();
-
+  
   let data = {filterValues: filterVals, housingList: housing};
 
   await asset.save(data, "json");

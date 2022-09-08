@@ -14,7 +14,7 @@ const fetchTransitData = async(operator_id) => {
   // For some reason the response includes a zero width space at
   // the beginning, so the built-in eleventy-fetch json parsing
   // (type: "json") will not work.
-  let options = {type: "text", duration: "1m"};
+  let options = {type: "text", duration: "1h"};
   if (process.env.ELEVENTY_SERVERLESS) {
     options.duration = "*"; // Infinite duration (data refreshes at each build)
     // Use the serverless cache location specified in .eleventy.js
