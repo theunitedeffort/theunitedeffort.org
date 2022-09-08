@@ -120,34 +120,43 @@ const fetchHousingList = async() => {
     .all()
     .then(records => {
       records.forEach(function(record) {
-        let housing_id = record.get("_DISPLAY_ID")?.[0] || "";
+        let displayId = record.get("_DISPLAY_ID")?.[0] || "";
         // Ignore any entries that do not have a parent property.
-        if (housing_id) {
+        if (displayId) {
           housingList.push({
-            id: housing_id,
+            id: displayId,
             aptName: record.get("_APT_NAME")?.[0] || "",
             address: record.get("_ADDRESS")?.[0] || "",
             city: record.get("_CITY")?.[0] || "",
             unit: {
-              unitType: record.get("TYPE"),
+              type: record.get("TYPE"),
               openStatus: record.get("STATUS"),
-              maxOccupancy: record.get("MAX_OCCUPANCY"),
+              occupancyLimit: {
+                min: record.get("MIN_OCCUPANCY"),
+                max: record.get("MAX_OCCUPANCY"),
+              },
               incomeBracket: record.get("PERCENT_AMI"),
-              rent: record.get("RENT_PER_MONTH_USD"),
-              altRentDesc: record.get("ALTERNATE_RENT_DESCRIPTION"),
-              minIncome: record.get("MIN_YEARLY_INCOME_USD"),
-              minIncomeOverride: record.get("OVERRIDE_MIN_YEARLY_INCOME_USD"),
-              minIncomeRentFactor: record.get("MIN_INCOME_RENT_FACTOR"),
-              maxIncome: {low: record.get("MAX_YEARLY_INCOME_LOW_USD"),
-                          high: record.get("MAX_YEARLY_INCOME_HIGH_USD")},
-              ...Object.fromEntries(
-                [...Array(12).keys()].map(
-                  n => [
-                    `maxIncomeHh${n + 1}`,
-                    record.get(`MAX_YEARLY_INCOME_HH_${n + 1}_USD`)
-                  ]
-                )
-              ),
+              rent: {
+                amount: record.get("RENT_PER_MONTH_USD"),
+                alternateDesc: record.get("ALTERNATE_RENT_DESCRIPTION"),
+              },
+              minIncome: {
+                amount: record.get("MIN_YEARLY_INCOME_USD"),
+                isCalculated: !record.get("OVERRIDE_MIN_YEARLY_INCOME_USD"),
+                rentFactor: record.get("MIN_INCOME_RENT_FACTOR"),
+              },
+              maxIncome: {
+                low: record.get("MAX_YEARLY_INCOME_LOW_USD"),
+                high: record.get("MAX_YEARLY_INCOME_HIGH_USD"),
+                byHouseholdSize: {
+                  ...Object.fromEntries(
+                    [...Array(12).keys()].map(
+                      n => [`size${n + 1}`,
+                            record.get(`MAX_YEARLY_INCOME_HH_${n + 1}_USD`)]
+                    )
+                  ),
+                },
+              },
             },
             units: [], // To be filled later, after grouping by housing ID.
             locCoords: record.get("_LOC_COORDS")?.[0] || "",
@@ -165,7 +174,6 @@ const fetchHousingList = async() => {
               "_HAS_WHEELCHAIR_ACCESSIBLE_UNITS")?.[0] || false,
             prefersLocalApplicants: record.get(
               "_PREFERS_LOCAL_APPLICANTS")?.[0] || false,
-
           });
         }
       });
@@ -203,21 +211,21 @@ module.exports = async function() {
   
   const asset = new AssetCache("affordable_housing_data");
   // This cache duration will only be used at build time.
-  let cacheDuration = "1m";
+  let cacheDuration = "1h";
   if(process.env.ELEVENTY_SERVERLESS) {
     // Use the serverless cache location specified in .eleventy.js
     asset.cacheDirectory = "cache"; 
     cacheDuration = "*";  // Infinite duration (data refreshes at each build)
   }
   if (asset.isCacheValid(cacheDuration)) {
-    console.log("Returning cached housing data.");
+    console.log("Returning cached housing and filter data.");
     const data = await asset.getCachedValue();
     return data;
   }
 
   const filterVals = await filterOptions();
   const housing = await housingData();
-
+  
   let data = {filterValues: filterVals, housingList: housing};
 
   await asset.save(data, "json");

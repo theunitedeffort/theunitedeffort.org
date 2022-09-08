@@ -13,7 +13,7 @@ pageHead: '<script src="/js/accessibility.js" defer></script>
 
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
-{% assign summaryProps = "unitType,openStatus" | split: "," %}
+{% assign summaryProps = "type,openStatus" | split: "," %}
 {% assign housingdb = housing.housingList | filterByQuery: query | summarizeUnits: summaryProps %}
 {% assign num_results = housingdb | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
@@ -196,10 +196,10 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </p>
     <div>
       {% if num_results > 0 %}
-        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/housing/affordable-housing/table?{{eleventy.serverless.query | queryString}}">
+        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/housing/affordable-housing/table?{{query | queryString}}">
           Show printable summary
         </a>
-        <a class="btn btn_secondary noprint" title="Get printable application checklist" href="/housing/affordable-housing/tracker?{{eleventy.serverless.query | queryString}}">
+        <a class="btn btn_secondary noprint" title="Get printable application checklist" href="/housing/affordable-housing/tracker?{{query | queryString}}">
           Show printable checklist
         </a>
         {% comment %} 
@@ -224,9 +224,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </div>
     <div id="list-container">
       <ul class="results_list" aria-label="Results List">
-        {%- for address in sortedHousingdb -%}
-          <li id="property-{{address.id}}">
-            {%- render "affordable-housing-item", address: address -%}
+        {%- for apartment in sortedHousingdb -%}
+          <li id="property-{{apartment.id}}">
+            {%- render "affordable-housing-item", apartment: apartment -%}
           </li>
         {%- endfor -%}
         {% if num_results == 0 %}
@@ -254,10 +254,10 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
 <script>
   const aptLocations = [
-  {%- for address in sortedHousingdb -%}
-    {%- assign coords = address | getValidatedLocCoords -%}
+  {%- for apartment in sortedHousingdb -%}
+    {%- assign coords = apartment | getValidatedLocCoords -%}
     {%- if coords -%}
-      {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{address.id}}"},
+      {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{apartment.id}}"},
     {%- endif -%}
   {%- endfor -%}
   ];

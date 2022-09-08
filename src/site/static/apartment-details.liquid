@@ -70,7 +70,7 @@ eleventyComputed:
 
 <div class="rent_tables">
   {% assign defaultNoDataStr = "Call for info" %}
-  {% assign unitsByType = apartment.units | groupBy: "unitType" | rankSort: "key" %}
+  {% assign unitsByType = apartment.units | groupBy: "type" | rankSort: "key" %}
   {% for unitGroup in unitsByType %}
     {% assign unitType = unitGroup.key %}
     {% assign units = unitGroup.values | sortUnitOfferings %}
@@ -80,7 +80,7 @@ eleventyComputed:
     entry for a given rental property & unit type, so just take the first one
     here.
     {% endcomment %}
-    {% assign maxOccupancy = units[0].maxOccupancy %}
+    {% assign maxOccupancy = units[0].occupancyLimit.max %}
     {% assign openStatus = units[0].openStatus %}
     {%- capture badgeMod -%}
       {%- if openStatus == "Call for Status" -%}
@@ -114,12 +114,10 @@ eleventyComputed:
               {%- endif -%}
             </td>
             <td>
-              {%- if unit.minIncome and unit.minIncome != "" -%}
-                {{unit.minIncome | money}}
-                {%- if unit.minIncomeRentFactor and unit.minIncomeRentFactor != "" -%}
-                  {%- unless unit.minIncomeOverride and unit.minIncomeOverride != "" %}
-                    <p data-toggletip data-toggletip-class="icon_info">Calculated as {{unit.minIncomeRentFactor}} times yearly rent</p>
-                  {%- endunless -%}
+              {%- if unit.minIncome.amount and unit.minIncome.amount != "" -%}
+                {{unit.minIncome.amount | money}}
+                {%- if unit.minIncome.rentFactor and unit.minIncome.rentFactor != "" and unit.minIncome.isCalculated %}
+                  <p data-toggletip data-toggletip-class="icon_info">Calculated as {{unit.minIncome.rentFactor}} times yearly rent</p>
                 {%- endif -%}
               {%- else -%}
                 {{defaultNoDataStr}}
@@ -135,15 +133,15 @@ eleventyComputed:
                 {%- endif -%}
                 {%- capture maxIncomeDetails -%}
                   {%- for hhSize in (1..12) -%}
-                    {%- assign fieldName = "maxIncomeHh" | append: hhSize -%}
-                    {%- unless unit[fieldName] and unit[fieldName] != "" -%}
+                    {%- assign sizeName = "size" | append: hhSize -%}
+                    {%- unless unit.maxIncome.byHouseholdSize[sizeName] and unit.maxIncome.byHouseholdSize[sizeName] != "" -%}
                       {%- continue -%}
                     {%- endunless -%}
-                    {%- if unit.maxOccupancy and unit.maxOccupancy != "" and
-                          hhSize > unit.maxOccupancy -%}
+                    {%- if unit.occupancyLimit.max and unit.occupancyLimit.max != "" and
+                          hhSize > unit.occupancyLimit.max -%}
                       {%- continue -%}
                     {%- endif -%}
-                    Household of {{hhSize}}: {{unit[fieldName] | money}}<br/>
+                    Household of {{hhSize}}: {{unit.maxIncome.byHouseholdSize[sizeName] | money}}<br/>
                   {%- endfor -%}
                 {%- endcapture -%}
                 {%- assign maxIncomeDetails = maxIncomeDetails | strip -%}
@@ -155,11 +153,11 @@ eleventyComputed:
               {%- endif -%}
             </td>
             <td>
-              {%- if unit.rent and unit.rent != "" -%}
-                {{unit.rent | money}}
-              {%- elsif unit.altRentDesc and unit.altRentDesc != "" -%}
+              {%- if unit.rent.amount and unit.rent.amount != "" -%}
+                {{unit.rent.amount | money}}
+              {%- elsif unit.rent.alternateDesc and unit.rent.alternateDesc != "" -%}
                 Varies
-                <p data-toggletip data-toggletip-class="icon_info">${unit.altRentDesc}</p>
+                <p data-toggletip data-toggletip-class="icon_info">{{unit.rent.alternateDesc}}</p>
               {%- else -%}
                 Call for rent
               {%- endif -%}

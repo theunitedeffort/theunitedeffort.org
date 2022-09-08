@@ -13,7 +13,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
 {% assign numFiltersApplied = query | numFiltersApplied %}
 {% assign numResults = housingdb | size %}
 
-<a href="/housing/affordable-housing/filter?{{eleventy.serverless.query | queryString}}" class="noprint">&#8592; Back to results list</a>
+<a href="/housing/affordable-housing/filter?{{query | queryString}}" class="noprint">&#8592; Back to results list</a>
 
 {% if numFiltersApplied > 0 %}
   <p>Filters Applied:<br/> {% querySummary query %}</p>
@@ -46,16 +46,16 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   </thead>
   <tbody>
     {% assign sortedHousingdb = housingdb | sort: "aptName" %}
-    {% for address in sortedHousingdb %}
+    {% for apartment in sortedHousingdb %}
       <tr>
         <td>
-          <a class="noprint" href="/housing/affordable-housing/{{address.id}}" target="_blank" rel="noopener">{{ address.aptName }}</a>
-          <span class="only_print">{{address.aptName}}</span>
+          <a class="noprint" href="/housing/affordable-housing/{{apartment.id}}" target="_blank" rel="noopener">{{ apartment.aptName }}</a>
+          <span class="only_print">{{apartment.aptName}}</span>
         </td>
-        <td>{{ address.address }}</td>
-        <td>{{ address.city }}</td>
+        <td>{{ apartment.address }}</td>
+        <td>{{ apartment.city }}</td>
         <td>
-          {% assign waitlistStatuses = address.units | map: "openStatus" | compact | uniq %}
+          {% assign waitlistStatuses = apartment.units | map: "openStatus" | compact | uniq %}
           {% if waitlistStatuses.size > 1 %}
             {% if waitlistStatuses contains "Waitlist Open" %}
               Partially Open
@@ -66,9 +66,9 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
             {{ waitlistStatuses | first }}
           {% endif %}
         </td>
-        <td>{{ address.units | map: "unitType" | uniq | rankSort | join: '<br style="mso-data-placement:same-cell;"/>' | replace: "Bedroom", "BR" }}</td>
+        <td>{{ apartment.units | map: "type" | uniq | rankSort | join: '<br style="mso-data-placement:same-cell;"/>' | replace: "Bedroom", "BR" }}</td>
         <td>
-          {% assign rents = address.units | map: "rent" | compact | uniq | sort %}
+          {% assign rents = apartment.units | map: "rent" | compact | uniq | sort %}
           {% if rents.size == 1 %}
             {{ rents | first | money }}
           {% elsif rents.size >= 2 %}
@@ -76,7 +76,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
           {% endif %}
         </td>
         <td>
-          {% assign minIncomes = address.units | map: "minIncome" | compact | uniq | sort %}
+          {% assign minIncomes = apartment.units | map: "minIncome" | compact | uniq | sort %}
           {% if minIncomes.size == 1 %}
             {{ minIncomes | first | money }}
           {% elsif minIncomes.size >= 2 %}
@@ -84,10 +84,10 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
           {% endif %}
         </td>
         <td>
-          {% assign maxIncomes = address.units | map: "maxIncome" %}
+          {% assign maxIncomes = apartment.units | map: "maxIncome" %}
           {% assign maxIncomeLows = maxIncomes | map: "low" | compact | uniq | sort %}
           {% assign maxIncomeHighs = maxIncomes | map: "high" | compact | uniq | sort %}
-          {% assign percentAmis = address.units | map: "incomeBracket" | compact | uniq | sort %}
+          {% assign percentAmis = apartment.units | map: "incomeBracket" | compact | uniq | sort %}
           {% if maxIncomeLows.size > 0 and maxIncomeHighs.size > 0 %}
             {% assign maxIncomeLow = maxIncomeLows | first %}
             {% assign maxIncomeHigh = maxIncomeHighs | last %}
@@ -104,10 +104,10 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
             {% endif %}
           {% endif %}
         </td>
-        <td class="nowrap">{{ address.phone }}</td>
+        <td class="nowrap">{{ apartment.phone }}</td>
         <td>
-          {% if address.populationsServed contains "Seniors" %}
-            Yes{% if address.minAge > 0 %}, {{ address.minAge }}+{% endif %}
+          {% if apartment.populationsServed contains "Seniors" %}
+            Yes{% if apartment.minAge > 0 %}, {{ apartment.minAge }}+{% endif %}
           {% else %}
             No
           {% endif %}

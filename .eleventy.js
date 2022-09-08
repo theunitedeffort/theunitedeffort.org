@@ -140,12 +140,12 @@ module.exports = function(eleventyConfig) {
     // there is nothing to compare against.
     let compA = 0;
     let compB = 0;
-    if (a.rent && b.rent && a.rent != b.rent) {
-      compA = a.rent;
-      compB = b.rent;
-    } else if (a.minIncome && b.minIncome && a.minIncome != b.minIncome) {
-      compA = a.minIncome;
-      compB = b.minIncome;
+    if (a.rent.amount && b.rent.amount && a.rent.amount != b.rent.amount) {
+      compA = a.rent.amount;
+      compB = b.rent.amount;
+    } else if (a.minIncome.amount && b.minIncome.amount && a.minIncome.amount != b.minIncome.amount) {
+      compA = a.minIncome.amount;
+      compB = b.minIncome.amount;
     } else if (a.maxIncome.low && b.maxIncome.low && a.maxIncome.low != b.maxIncome.low) {
       compA = a.maxIncome.low;
       compB = b.maxIncome.low;
@@ -508,7 +508,7 @@ module.exports = function(eleventyConfig) {
       const rooms = query.unitType.split(", ");
       housingListCopy = housingListCopy.map(apt => {
         apt.units = (
-          apt.units.filter(u => rooms.includes(u.unitType)));
+          apt.units.filter(u => rooms.includes(u.type)));
         return apt;
       });
     }
@@ -554,8 +554,8 @@ module.exports = function(eleventyConfig) {
       const rentMax = Number(query.rentMax);
       housingListCopy = housingListCopy.map(apt => {
         apt.units = apt.units.filter(unit => {
-          return ((query.includeUnknownRent && !unit.rent) || 
-            Number(unit.rent) <= rentMax);
+          return ((query.includeUnknownRent && !unit.rent.amount) || 
+            Number(unit.rent.amount) <= rentMax);
         });
         return apt;
       });
@@ -566,8 +566,8 @@ module.exports = function(eleventyConfig) {
       housingListCopy = housingListCopy.map(apt => {
         apt.units = apt.units.filter(unit => {
           const minIncomeMatch = (
-            (query.includeUnknownIncome && !unit.minIncome) ||
-            Number(unit.minIncome) <= income);
+            (query.includeUnknownIncome && !unit.minIncome.amount) ||
+            Number(unit.minIncome.amount) <= income);
           const maxIncomeMatch = (
             (query.includeUnknownIncome && !unit.maxIncome.high) ||
             Number(unit.maxIncome.high) >= income);

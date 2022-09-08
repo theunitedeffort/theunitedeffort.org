@@ -66,7 +66,7 @@ const fetchPages = async() => {
 
 module.exports = async function() {
   let asset = new AssetCache("airtable_pages");
-  if (asset.isCacheValid("1m")) {
+  if (asset.isCacheValid("1h")) {
     console.log("Returning cached pages data.")
     return await asset.getCachedValue();
   }
