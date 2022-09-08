@@ -1,15 +1,16 @@
 ---
 layout: layouts/base.liquid
 title: Affordable Housing Results Summary
-permalink: 
-  serverless: "/housing/affordable-housing/table"
+permalink: "/housing/affordable-housing/table/index.html"
 pageClass: "page-housing page_housing_table"
 pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   <script src="/js/sorttable.js" defer></script>'
 ---
 
-{% assign query = eleventy.serverless.query %}
-{% assign housingdb = housing.housingList | filterByQuery: query %}
+{% edge "liquid" housing %}
+
+{% assign query = searchParams %}
+{% assign housingdb = housingList | filterByQuery: query %}
 {% assign numFiltersApplied = query | numFiltersApplied %}
 {% assign numResults = housingdb | size %}
 
@@ -116,3 +117,5 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
     {% endfor %}
   </tbody>
 </table>
+
+{% endedge %}

@@ -1,5 +1,6 @@
 const markdown = require("marked");
 const sass = require("sass");
+const { EleventyEdgePlugin } = require("@11ty/eleventy");
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 // This requirement is somehow not propagated from affordable-housing.11tydata.js
 // so include it here to be sure it makes it into the serverless bundle.
@@ -7,8 +8,6 @@ const EleventyFetch = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.AIRTABLE_BASE_ID);
-
-const UNITS_TABLE = "tblRtXBod9CC0mivK";
 
 // This is a global sort ranking for all filter options.  
 // It assumes no name collisions.
@@ -37,7 +36,8 @@ module.exports = function(eleventyConfig) {
   // Pass through static assets and client-side js files.
   eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
   eleventyConfig.addPassthroughCopy({ "src/site/_includes/js": "/js" });
-
+  eleventyConfig.addPlugin(EleventyEdgePlugin);
+  
   // Eleventy Serverless plugin
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
     name: "serverless",

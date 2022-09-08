@@ -1,14 +1,14 @@
 ---
 layout: layouts/base.liquid
 title: Affordable Housing Application Tracker
-permalink: 
-  serverless: "/housing/affordable-housing/tracker"
+permalink: "/housing/affordable-housing/tracker/index.html"
 pageClass: "page-housing page_housing_table"
 pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>'
 ---
 
-{% assign query = eleventy.serverless.query %}
-{% assign housingdb = housing.housingList | filterByQuery: query %}
+{% edge "liquid" housing %}
+{% assign query = searchParams %}
+{% assign housingdb = housingList | filterByQuery: query %}
 {% assign numFiltersApplied = query | numFiltersApplied %}
 {% assign numResults = housingdb | size %}
 
@@ -50,7 +50,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
 
 {% comment %} TODO: actually check results for closed waitlists {% endcomment %}
 {% if query.availability == nil or query.availability == "" or query.availability contains "Waitlist Closed" %}
-  {% assign availabilities = housing.filterValues | where: "name", "availability" %}
+  {% assign availabilities = filterValues | where: "name", "availability" %}
   {% assign availabilities = availabilities[0].options | map: "name" %}
   {% assign newQuery = query | removeWaitlistClosed: availabilities %}
   <p class="note">
@@ -159,3 +159,5 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
     {% endfor %}
   </tbody>
 </table>
+
+{% endedge %}

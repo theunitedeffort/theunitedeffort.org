@@ -1,9 +1,7 @@
 ---
 layout: layouts/base.liquid
 title: Find Affordable Housing
-permalink: 
-  build: "/housing/affordable-housing/index.html"
-  serverless: "/housing/affordable-housing/filter"
+permalink: "/housing/affordable-housing/index.html"
 pageClass: "page-housing"
 pageHead: '<script src="/js/accessibility.js" defer></script>
   <script src="/js/transit.js" defer></script>
@@ -11,10 +9,17 @@ pageHead: '<script src="/js/accessibility.js" defer></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA17udd4ePocbxKrOkHiMhSUHlvf3daZMs&callback=initMap&v=weekly" defer></script>'
 ---
 
+{% edge "liquid" housing %}
+
 {% assign updateButtonStr = "Update results" %}
-{% assign query = eleventy.serverless.query %}
+{% comment %} 
+  eleventy.edge.query currently only returns singelton params, so we'll use our
+  own searchParams object created in the edge function to include all 
+  querystring params.
+{% endcomment %}
+{% assign query = searchParams %}
 {% assign summaryProps = "unitType,openStatus" | split: "," %}
-{% assign housingdb = housing.housingList | filterByQuery: query | summarizeUnits: summaryProps %}
+{% assign housingdb = housingList | filterByQuery: query | summarizeUnits: summaryProps %}
 {% assign num_results = housingdb | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}
@@ -111,7 +116,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 <section aria-label="Housing Filter Options">
 <form action="/housing/affordable-housing/filter" action="get" id="housing-search" class="housing_search" onsubmit="ShowLoading();">
   
-  {% assign filterValues = housing.filterValues | updateFilterState: query %}
+  {% assign filterValues = filterValues | updateFilterState: query %}
 
   {% for section in filterValues %}
   <fieldset>
@@ -196,10 +201,10 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </p>
     <div>
       {% if num_results > 0 %}
-        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/housing/affordable-housing/table?{{eleventy.serverless.query | queryString}}">
+        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/housing/affordable-housing/table?{{query | queryString}}">
           Show printable summary
         </a>
-        <a class="btn btn_secondary noprint" title="Get printable application checklist" href="/housing/affordable-housing/tracker?{{eleventy.serverless.query | queryString}}">
+        <a class="btn btn_secondary noprint" title="Get printable application checklist" href="/housing/affordable-housing/tracker?{{query | queryString}}">
           Show printable checklist
         </a>
         {% comment %} 
@@ -226,7 +231,57 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       <ul class="results_list" aria-label="Results List">
         {%- for address in sortedHousingdb -%}
           <li id="property-{{address.id}}">
-            {%- render "affordable-housing-item", address: address -%}
+            {%- capture mapUrl -%}
+https://maps.google.com/maps?q={{ address.address | url_encode}}+{{ address.city | url_encode}},+CA
+{%- endcapture -%}
+<h2>
+  <a href="/housing/affordable-housing/{{address.id}}">{{ address.aptName }}</a> 
+</h2>
+{%- assign allStatuses = address.units | map: "openStatus" | uniq | sort | reverse -%}
+{%- for status in allStatuses -%}
+  <p>
+    {%- capture badgeMod -%}
+      {%- if status == "Call for Status" -%}
+        badge__warn
+      {%- elsif status == "Waitlist Closed" -%}
+        badge__bad
+      {%- elsif status == "Waitlist Open" -%}
+        badge__ok
+      {%- endif -%}
+    {%- endcapture -%}
+    <span class="badge {{ badgeMod }}">{{ status }}</span>
+    {%- assign sortedUnits = address.units | where: "openStatus",  status | rankSort: "unitType" -%}
+    {%- for unit in sortedUnits -%}
+      {%- if unit.unitType -%}
+        <span class="badge">{{ unit.unitType }}</span>
+      {%- endif -%}
+    {%- endfor -%} 
+  </p>
+{%- endfor -%}
+  {%- if address.address and address.address != '' -%}
+    <p class="contact">
+    {{ address.address }}{%- if address.city and address.city != '' -%}, {{ address.city }}{%- endif -%}
+      <span class="map_link_container noprint nowrap">
+        (<button type="button" class="map_link link hidden" aria-label="Highlight {{ address.aptName }} on map">Show on map</button><span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ address.aptName }} on Google Maps">map</a><sup>&#8599;</sup></span>)
+      </span>
+    </p>
+  {%- endif -%}
+  {%- if address.email and address.email != '' -%}
+    <p class="contact"> 
+      <a href="mailto:{{ address.email }}" target="_blank" rel="noopener">{{ address.email }}</a>
+    </p>
+  {%- endif -%}
+  {%- if address.phone and address.phone != '' -%}
+    <p class="contact">
+      {%- assign formattedPhone = address.phone | replace: '(', '' | replace: ') ', '-' -%}
+      <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
+    </p>
+  {%- endif -%}
+  {%- if address.website and address.website != '' -%}
+    <p class="contact">
+      <a href="{{ address.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ address.aptName }}">View property website</a><sup>&#8599;</sup>
+    </p>
+  {%- endif -%}
           </li>
         {%- endfor -%}
         {% if num_results == 0 %}
@@ -262,3 +317,5 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {%- endfor -%}
   ];
 </script>
+
+{% endedge %}

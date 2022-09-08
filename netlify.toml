@@ -1,40 +1,18 @@
 [build]
 commad = "npm run build"
 publish = "dist"
-fucntions = "netlify/functions"
 
 [dev]
 commad = "npm run dev"
 publish = "dist"
-fucntions = "netlify/functions"
 
-[[redirects]]
-from = "/housing/affordable-housing/tracker"
-to = "/.netlify/functions/serverless"
-status = 200
-force = true
-_generated_by_eleventy_serverless = "serverless"
+[[edge_functions]]
+function = "eleventy-edge"
+path = "/housing/affordable-housing/*"
 
-[[redirects]]
-from = "/housing/affordable-housing/table"
-to = "/.netlify/functions/serverless"
-status = 200
-force = true
-_generated_by_eleventy_serverless = "serverless"
-
-[[redirects]]
-from = "/housing/affordable-housing/filter"
-to = "/.netlify/functions/serverless"
-status = 200
-force = true
-_generated_by_eleventy_serverless = "serverless"
-
-[[redirects]]
-from = "/data/housing/affordable-housing/filter"
-to = "/.netlify/functions/serverless"
-status = 200
-force = true
-_generated_by_eleventy_serverless = "serverless"
+[[edge_functions]]
+function = "eleventy-edge"
+path = "/data/housing/affordable-housing/*"
 
 [[redirects]]
 from = "/contrib/affordable-housing/campaigns/*"
@@ -56,3 +34,15 @@ status = 200
 from = "/housing"
 to = "/housing/affordable-housing"
 status = 301
+
+[[redirects]]
+from = "/housing/affordable-housing/filter"
+to = "/housing/affordable-housing"
+status = 200
+force = true
+
+[[redirects]]
+from = "/data/housing/affordable-housing/filter"
+to = "/data/housing/affordable-housing"
+status = 200
+force = true
