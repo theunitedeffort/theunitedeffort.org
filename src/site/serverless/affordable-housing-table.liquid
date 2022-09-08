@@ -14,7 +14,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
 {% assign numFiltersApplied = query | numFiltersApplied %}
 {% assign numResults = housingdb | size %}
 
-<a href="/housing/affordable-housing/filter?{{eleventy.serverless.query | queryString}}" class="noprint">&#8592; Back to results list</a>
+<a href="/housing/affordable-housing/filter?{{query | queryString}}" class="noprint">&#8592; Back to results list</a>
 
 {% if numFiltersApplied > 0 %}
   <p>Filters Applied:<br/> {% querySummary query %}</p>
