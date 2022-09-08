@@ -150,7 +150,6 @@ const housingData = async() => {
 }
 
 const filterOptions = (housing) => {
-  //const housingCopy = JSON.parse(JSON.stringify(housing));
   const cities = [...new Set(housing.map(h => h.city).filter(c => c))];
   const openStatuses = [...new Set(
     housing.map(h => h.units.map(u => u.openStatus)).flat().filter(s => s))];

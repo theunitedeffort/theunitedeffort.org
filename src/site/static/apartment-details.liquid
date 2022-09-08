@@ -26,11 +26,12 @@ eleventyComputed:
 {% assign numSpecialPopulations = specialPopulations | size %}
 {% if numSpecialPopulations > 0 %}
   {%- capture ageRangeStr -%}
-    {%- if apartment.minAge != "" and apartment.maxAge != "" %}
+    {%- if apartment.minAge and apartment.minAge != "" and
+           apartment.maxAge and apartment.maxAge != "" %}
       ({{apartment.minAge}} - {{apartment.maxAge}} years)
-    {%- elsif apartment.minAge != "" and apartment.maxAge == "" %}
+    {%- elsif apartment.minAge and apartment.minAge != "" %}
       ({{apartment.minAge}}+ years)
-    {%- elsif apartment.minAge == "" and apartment.maxAge != "" %}
+    {%- elsif apartment.maxAge and apartment.maxAge != "" %}
       ({{apartment.maxAge}} years and under)
     {%- endif -%}
   {%- endcapture -%}
