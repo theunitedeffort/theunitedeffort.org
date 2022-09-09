@@ -226,7 +226,11 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       <ul class="results_list" aria-label="Results List">
         {%- for apartment in sortedHousingdb -%}
           <li id="property-{{apartment.id}}">
-            {%- render "affordable-housing-item", apartment: apartment -%}
+            {% if eleventy.serverless %}
+              {{collections.housingListItems[apartment.id]}}
+            {% else %}
+              {%- render "affordable-housing-item", apartment: apartment -%}
+            {% endif %}
           </li>
         {%- endfor -%}
         {% if num_results == 0 %}

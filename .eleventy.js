@@ -52,10 +52,11 @@ module.exports = function(eleventyConfig) {
     name: "serverless",
     functionsDir: "./netlify/functions/",
     copy: [
+      "_generated-serverless-collections.json",
       // Files/directories that start with a dot
       // are not bundled by default.
-      { from: ".cache", to: "cache" }
-    ]
+      { from: ".cache", to: "cache" },
+    ],
   });
 
   // Markdown filter
