@@ -3,6 +3,7 @@ var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const UNITS_TABLE = "tblRtXBod9CC0mivK";
+const HOUSING_DATABASE_TABLE = "tbl8LUgXQoTYEw2Yh";
 const HIGH_CAPACITY_UNIT = 4;  // Bedrooms
 
 // A group of checkboxes for filtering housing results.
@@ -19,46 +20,143 @@ function FilterCheckbox(name, label, selected) {
   this.selected = selected || false;
 }
 
-// Gets values from all housing units that are relevant to future filtering of 
-// results.
-const fetchFilterOptions = async() => {
-  let options = [];
+const fetchApartmentRecords = async() => {
+  let apartments = [];
+  const table = base(HOUSING_DATABASE_TABLE);
+
+  return table.select({
+    fields: [
+      "DISPLAY_ID",
+      "UNITS",
+      "APT_NAME",
+      "ADDRESS",
+      "CITY",
+      "PHONE",
+      "EMAIL",
+      "PROPERTY_URL",
+      "LOC_COORDS",
+      "VERIFIED_LOC_COORDS",
+      "NUM_TOTAL_UNITS",
+      "POPULATIONS_SERVED",
+      "MIN_RESIDENT_AGE",
+      "MAX_RESIDENT_AGE",
+      "DISALLOWS_PUBLIC_APPLICATIONS",
+      "HAS_WHEELCHAIR_ACCESSIBLE_UNITS",
+      "PREFERS_LOCAL_APPLICANTS",
+    ],
+  })
+  .all()
+  .then(records => {
+    records.forEach(function(record) {
+      // Only take apartments that have units associated with them.
+      if (record.get("UNITS")) {
+        apartments.push({
+          id: record.get("DISPLAY_ID"),
+          aptName: record.get("APT_NAME"),
+          address: record.get("ADDRESS"),
+          city: record.get("CITY"),
+          locCoords: record.get("LOC_COORDS"),
+          verifiedLocCoords: record.get("VERIFIED_LOC_COORDS"),
+          phone: record.get("PHONE"),
+          website: record.get("PROPERTY_URL"),
+          email: record.get("EMAIL"),
+          numTotalUnits: record.get("NUM_TOTAL_UNITS"),
+          populationsServed: record.get("POPULATIONS_SERVED"),
+          minAge: record.get("MIN_RESIDENT_AGE"),
+          maxAge: record.get("MAX_RESIDENT_AGE"),
+          disallowsPublicApps: record.get(
+            "DISALLOWS_PUBLIC_APPLICATIONS"),
+          hasWheelchairAccessibleUnits: record.get(
+            "HAS_WHEELCHAIR_ACCESSIBLE_UNITS"),
+          prefersLocalApplicants: record.get(
+            "PREFERS_LOCAL_APPLICANTS"),
+        });
+      }
+    });
+    return apartments;
+  });
+}
+
+// Get housing units from Airtable
+const fetchUnitRecords = async() => {
+  let units = [];
   const table = base(UNITS_TABLE);
 
   return table.select({
-      view: "API all units",
+      fields: [
+        "_DISPLAY_ID",
+        "TYPE",
+        "STATUS",
+        "MIN_OCCUPANCY",
+        "MAX_OCCUPANCY",
+        "PERCENT_AMI",
+        "RENT_PER_MONTH_USD",
+        "ALTERNATE_RENT_DESCRIPTION",
+        "MIN_YEARLY_INCOME_USD",
+        "OVERRIDE_MIN_YEARLY_INCOME_USD",
+        "MIN_INCOME_RENT_FACTOR",
+        "MAX_YEARLY_INCOME_LOW_USD",
+        "MAX_YEARLY_INCOME_HIGH_USD",
+        ...[...Array(12).keys()].map(n => `MAX_YEARLY_INCOME_HH_${n + 1}_USD`),
+      ],
     })
     .all()
     .then(records => {
       records.forEach(function(record) {
-        // TODO(trevorshannon): Figure out how to deal with empty data properly.
-        let cityStr = "";
-        if (record.get("_CITY") !== undefined) {
-          cityStr = record.get("_CITY")[0];
-        }
-        options.push({
-          city: cityStr,
+        units.push({
+          parent_id: record.get("_DISPLAY_ID")?.[0],
+          type: record.get("TYPE"),
           openStatus: record.get("STATUS"),
-          unitType: record.get("TYPE"),
-          populationsServed: record.get("_POPULATIONS_SERVED"),
-        })
+          occupancyLimit: {
+            min: record.get("MIN_OCCUPANCY"),
+            max: record.get("MAX_OCCUPANCY"),
+          },
+          incomeBracket: record.get("PERCENT_AMI"),
+          rent: {
+            amount: record.get("RENT_PER_MONTH_USD"),
+            alternateDesc: record.get("ALTERNATE_RENT_DESCRIPTION"),
+          },
+          minIncome: {
+            amount: record.get("MIN_YEARLY_INCOME_USD"),
+            isCalculated: !record.get("OVERRIDE_MIN_YEARLY_INCOME_USD"),
+            rentFactor: record.get("MIN_INCOME_RENT_FACTOR"),
+          },
+          maxIncome: {
+            low: record.get("MAX_YEARLY_INCOME_LOW_USD"),
+            high: record.get("MAX_YEARLY_INCOME_HIGH_USD"),
+            byHouseholdSize: {
+              ...Object.fromEntries([...Array(12).keys()].map(
+                  n => [`size${n + 1}`,
+                        record.get(`MAX_YEARLY_INCOME_HH_${n + 1}_USD`)]))
+            },
+          },
+        });
       });
-      return options;
+      return units;
     });
-};
+}
 
-const filterOptions = async() => {
-  console.log("Fetching filter options.");
-  let filterOptions = await fetchFilterOptions();
-  let cities = [...new Set(filterOptions.map(o => o.city))];
-  cities = cities.filter(x => x);
-  let openStatuses = [...new Set(filterOptions.map(o => o.openStatus))];
-  openStatuses = openStatuses.filter(x => x);
-  let unitTypes = [...new Set(filterOptions.map(o => o.unitType))];
-  unitTypes = unitTypes.filter(x => x);
-  let allPopulationsServed = filterOptions.map(o => o.populationsServed);
-  allPopulationsServed = [...new Set(allPopulationsServed.flat())];
-  allPopulationsServed = allPopulationsServed.filter(x => x);
+const housingData = async() => {
+  console.log("Fetching apartment and units data.");
+  const [apartments, units] = await Promise.all(
+    [fetchApartmentRecords(), fetchUnitRecords()]);
+  console.log(`got ${apartments.length} apartments and ${units.length} units.`);
+  
+  // Add the associated units to each apartment
+  for (const apartment of apartments) {
+    apartment.units = units.filter(u => u.parent_id === apartment.id);
+  }
+  return apartments;
+}
+
+const filterOptions = (housing) => {
+  const cities = [...new Set(housing.map(h => h.city).filter(c => c))];
+  const openStatuses = [...new Set(
+    housing.map(h => h.units.map(u => u.openStatus)).flat().filter(s => s))];
+  const unitTypes = [...new Set(
+    housing.map(h => h.units.map(u => u.type)).flat().filter(t => t))];
+  const allPopulationsServed = [...new Set(
+    housing.map(h => h.populationsServed).flat().filter(p => p))];
 
   let filterVals = [];
   filterVals.push(new FilterSection("City", "city",
@@ -102,107 +200,8 @@ const filterOptions = async() => {
   filterVals.push(new FilterSection("Populations Served", "populationsServed",
       allPopulationsServed.map(x => new FilterCheckbox(x))));
 
-  console.log("Got filter options.");
   return filterVals;
 }
-
-
-// Get housing units from Airtable, filtered by the Airtable formula string
-// 'queryStr'.
-const fetchHousingList = async() => {
-  let housingList = [];
-  const table = base(UNITS_TABLE);
-
-  return table.select({
-      view: "API all units",
-      //filterByFormula: queryStr
-    })
-    .all()
-    .then(records => {
-      records.forEach(function(record) {
-        let displayId = record.get("_DISPLAY_ID")?.[0] || "";
-        // Ignore any entries that do not have a parent property.
-        if (displayId) {
-          housingList.push({
-            id: displayId,
-            aptName: record.get("_APT_NAME")?.[0] || "",
-            address: record.get("_ADDRESS")?.[0] || "",
-            city: record.get("_CITY")?.[0] || "",
-            unit: {
-              type: record.get("TYPE"),
-              openStatus: record.get("STATUS"),
-              occupancyLimit: {
-                min: record.get("MIN_OCCUPANCY"),
-                max: record.get("MAX_OCCUPANCY"),
-              },
-              incomeBracket: record.get("PERCENT_AMI"),
-              rent: {
-                amount: record.get("RENT_PER_MONTH_USD"),
-                alternateDesc: record.get("ALTERNATE_RENT_DESCRIPTION"),
-              },
-              minIncome: {
-                amount: record.get("MIN_YEARLY_INCOME_USD"),
-                isCalculated: !record.get("OVERRIDE_MIN_YEARLY_INCOME_USD"),
-                rentFactor: record.get("MIN_INCOME_RENT_FACTOR"),
-              },
-              maxIncome: {
-                low: record.get("MAX_YEARLY_INCOME_LOW_USD"),
-                high: record.get("MAX_YEARLY_INCOME_HIGH_USD"),
-                byHouseholdSize: {
-                  ...Object.fromEntries(
-                    [...Array(12).keys()].map(
-                      n => [`size${n + 1}`,
-                            record.get(`MAX_YEARLY_INCOME_HH_${n + 1}_USD`)]
-                    )
-                  ),
-                },
-              },
-            },
-            units: [], // To be filled later, after grouping by housing ID.
-            locCoords: record.get("_LOC_COORDS")?.[0] || "",
-            verifiedLocCoords: record.get("_VERIFIED_LOC_COORDS")?.[0] || false,
-            phone: record.get("_PHONE")?.[0] || "",
-            website: record.get("_PROPERTY_URL")?.[0] || "",
-            email: record.get("_EMAIL")?.[0] || "",
-            numTotalUnits: record.get("_NUM_TOTAL_UNITS")?.[0] || "",
-            populationsServed: record.get("_POPULATIONS_SERVED"),
-            minAge: record.get("_MIN_RESIDENT_AGE")?.[0] || "",
-            maxAge: record.get("_MAX_RESIDENT_AGE")?.[0] || "",
-            disallowsPublicApps: record.get(
-              "_DISALLOWS_PUBLIC_APPLICATIONS")?.[0] || false,
-            hasWheelchairAccessibleUnits: record.get(
-              "_HAS_WHEELCHAIR_ACCESSIBLE_UNITS")?.[0] || false,
-            prefersLocalApplicants: record.get(
-              "_PREFERS_LOCAL_APPLICANTS")?.[0] || false,
-          });
-        }
-      });
-
-      let housingById = {};
-      // TODO: change loop to "for of"
-      for (const idx in housingList) {
-        let housingId = housingList[idx].id;
-        housingById[housingId] = housingById[housingId] || housingList[idx];
-        housingById[housingId].units.push(housingList[idx].unit);
-        // The 'unit' property was temporary and used only to hold
-        // the unit-level data for each fetched record.  The same data
-        // (plus data for other units with the same housing ID)
-        // now resides in the 'units' property.
-        delete housingById[housingId].unit;
-      }
-      // Each housing ID key is also stored in the value as the 'id' property
-      // so the object can be converted to an array without information loss.
-      return Object.values(housingById);
-    });
-}
-
-const housingData = async() => {
-  console.log("Fetching housing list.");
-  const housing = await fetchHousingList();
-  console.log("got " + housing.length + " properties.");
-  return housing;
-}
-
 
 // Returns an object containing a list of FilterSections with each FilterSection
 // having a unique list of FilterCheckboxes encompassing all the values
@@ -223,10 +222,10 @@ module.exports = async function() {
     return data;
   }
 
-  const filterVals = await filterOptions();
   const housing = await housingData();
+  const filterVals = filterOptions(housing);
   
-  let data = {filterValues: filterVals, housingList: housing};
+  const data = {filterValues: filterVals, housingList: housing};
 
   await asset.save(data, "json");
   return data;
