@@ -216,7 +216,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% if num_filters_applied > 0 %}
     <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
-  {% assign sortedHousingdb = housingdb | sort: "aptName" %}
 
   <div class="flex results_container">
     <div id="map-toggle" class="noprint hidden">
@@ -224,9 +223,13 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </div>
     <div id="list-container">
       <ul class="results_list" aria-label="Results List">
-        {%- for apartment in sortedHousingdb -%}
+        {%- for apartment in housingdb -%}
           <li id="property-{{apartment.id}}">
+            <h2>
+              <a href="/housing/affordable-housing/{{apartment.id}}">{{ apartment.aptName }}</a>
+            </h2>
             {% if eleventy.serverless %}
+              {% render "affordable-housing-badge", apartment: apartment -%}
               {{collections.housingListItems[apartment.id]}}
             {% else %}
               {%- render "affordable-housing-item", apartment: apartment -%}
@@ -258,7 +261,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
 <script>
   const aptLocations = [
-  {%- for apartment in sortedHousingdb -%}
+  {%- for apartment in housingdb -%}
     {%- assign coords = apartment | getValidatedLocCoords -%}
     {%- if coords -%}
       {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{apartment.id}}"},

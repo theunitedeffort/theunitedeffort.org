@@ -1,22 +1,2 @@
-{%- assign allStatuses = apartment.units | map: "openStatus" | uniq | sort | reverse -%}
-{%- for status in allStatuses -%}
-  <p>
-    {%- capture badgeMod -%}
-      {%- if status == "Call for Status" -%}
-        badge__warn
-      {%- elsif status == "Waitlist Closed" -%}
-        badge__bad
-      {%- elsif status == "Waitlist Open" -%}
-        badge__ok
-      {%- endif -%}
-    {%- endcapture -%}
-    <span class="badge {{ badgeMod }}">{{ status }}</span>
-    {%- assign sortedUnits = apartment.units | where: "openStatus",  status | rankSort: "type" -%}
-    {%- for unit in sortedUnits -%}
-      {%- if unit.type -%}
-        <span class="badge">{{ unit.type }}</span>
-      {%- endif -%}
-    {%- endfor -%} 
-  </p>
-{%- endfor -%}
-{% prerenderedHousingItem apartment.id %}
+{% render "affordable-housing-badge", apartment: apartment -%}
+{% render "affordable-housing-contacts", apartment: apartment %}

@@ -146,7 +146,18 @@ const housingData = async() => {
   for (const apartment of apartments) {
     apartment.units = units.filter(u => u.parent_id === apartment.id);
   }
-  return apartments;
+  // Pre-sort the list so that templates don't need to later.
+  return apartments.sort((a, b) => {
+    const nameA = a.aptName.toLowerCase();
+    const nameB = b.aptName.toLowerCase(); 
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
 }
 
 const filterOptions = (housing) => {

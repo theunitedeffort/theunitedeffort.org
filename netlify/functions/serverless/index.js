@@ -5,14 +5,12 @@ const { EleventyServerless } = require("@11ty/eleventy");
 require("./eleventy-bundler-modules.js");
 
 const precompiledCollections = require("./_generated-serverless-collections.json");
-console.log(Object.keys(precompiledCollections));
 
 async function handler(event) {
   let elev = new EleventyServerless("serverless", {
     path: new URL(event.rawUrl).pathname,
     query: event.queryStringParameters,
     functionsDir: "./netlify/functions/",
-    precompiledCollections,
     config: function(eleventyConfig) {
       eleventyConfig.addCollection("housingListItems", function(collection) {
         return precompiledCollections.housingListItems;

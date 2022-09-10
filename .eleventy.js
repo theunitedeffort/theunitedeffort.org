@@ -10,15 +10,6 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
 
 const UNITS_TABLE = "tblRtXBod9CC0mivK";
 
-const PRERENDER_MAP = Object.fromEntries([...Array(450).keys()].map(n => [`${n}`, `<h2>
-  <a href="/housing/affordable-housing/859">107 and 220-224 Los Gatos Apartments</a> 
-</h2><p class="contact"> 
-      <a href="mailto:lperez@charitieshousing.org" target="_blank" rel="noopener">lperez@charitieshousing.org</a>
-    </p><p class="contact"><a href="tel:+14083748741">408-374-8741</a>
-    </p><p class="contact">
-      <a href="https://www.charitieshousing.org/107-and-220-224-los-gatos-apartments/" target="_blank" rel="noopener" aria-label="Property website for 107 and 220-224 Los Gatos Apartments">View property website</a><sup>↗</sup>
-    </p>`]));
-
 // This is a global sort ranking for all filter options.  
 // It assumes no name collisions.
 // Highest rank = 1.
@@ -431,10 +422,6 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode("indexedFormField", 
       function(index, fields, fieldName, className="") {
     return formField(fields, fieldName, className, index);
-  });
-
-  eleventyConfig.addShortcode("prerenderedHousingItem", function(id) {
-    return PRERENDER_MAP[`123`];
   });
   
 
