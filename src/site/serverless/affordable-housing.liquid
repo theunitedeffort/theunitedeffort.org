@@ -228,28 +228,28 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
             <h2>
               <a href="/housing/affordable-housing/{{apartment.id}}">{{ apartment.aptName }}</a>
             </h2>
+            {%- assign allStatuses = apartment.units | map: "openStatus" | uniq | rankSort -%}
+            {%- for status in allStatuses -%}
+              <p>
+                {%- capture badgeMod -%}
+                  {%- if status == "Call for Status" -%}
+                    badge__warn
+                  {%- elsif status == "Waitlist Closed" -%}
+                    badge__bad
+                  {%- elsif status == "Waitlist Open" -%}
+                    badge__ok
+                  {%- endif -%}
+                {%- endcapture -%}
+                <span class="badge {{ badgeMod }}">{{ status }}</span>
+                {%- assign sortedUnits = apartment.units | where: "openStatus",  status | rankSort: "type" -%}
+                {%- for unit in sortedUnits -%}
+                  {%- if unit.type -%}
+                    <span class="badge">{{ unit.type }}</span>
+                  {%- endif -%}
+                {%- endfor -%} 
+              </p>
+            {%- endfor -%}
             {% if eleventy.serverless %}
-              {%- assign allStatuses = apartment.units | map: "openStatus" | uniq | rankSort -%}
-              {%- for status in allStatuses -%}
-                <p>
-                  {%- capture badgeMod -%}
-                    {%- if status == "Call for Status" -%}
-                      badge__warn
-                    {%- elsif status == "Waitlist Closed" -%}
-                      badge__bad
-                    {%- elsif status == "Waitlist Open" -%}
-                      badge__ok
-                    {%- endif -%}
-                  {%- endcapture -%}
-                  <span class="badge {{ badgeMod }}">{{ status }}</span>
-                  {%- assign sortedUnits = apartment.units | where: "openStatus",  status | rankSort: "type" -%}
-                  {%- for unit in sortedUnits -%}
-                    {%- if unit.type -%}
-                      <span class="badge">{{ unit.type }}</span>
-                    {%- endif -%}
-                  {%- endfor -%} 
-                </p>
-              {%- endfor -%}
               {{collections.housingListItems[apartment.id]}}
             {% else %}
               {%- render "affordable-housing-item", apartment: apartment -%}
