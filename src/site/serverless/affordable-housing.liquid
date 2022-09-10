@@ -224,10 +224,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     <div id="list-container">
       <ul class="results_list" aria-label="Results List">
         {%- for apartment in housingdb -%}
-          <li id="property-{{apartment.id}}">
-            <h2>
-              <a href="/housing/affordable-housing/{{apartment.id}}">{{ apartment.aptName }}</a>
-            </h2>
+          {%- capture badges -%}
             {%- assign allStatuses = apartment.units | map: "openStatus" | uniq | rankSort -%}
             {%- for status in allStatuses -%}
               <p>
@@ -249,12 +246,27 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
                 {%- endfor -%} 
               </p>
             {%- endfor -%}
-            {% if eleventy.serverless %}
-              {{collections.housingListItems[apartment.id]}}
-            {% else %}
-              {%- render "affordable-housing-item", apartment: apartment -%}
-            {% endif %}
-          </li>
+          {%- endcapture -%}
+          {% comment %}
+          The list of apartments can be quite long, and the time it takes to 
+          render all of them with eleventy serverless can lead to longer page
+          load times.  Since only the badges change within each apartment
+          list item, everything else is pre-rendered in the build and used here
+          for serverless requests.
+          {% endcomment %}
+          {%- if eleventy.serverless -%}
+            {%- assign prerenderedItem = collections.housingListItems[apartment.id] -%}
+            {{- prerenderedItem.heading -}}
+            {{badges}}
+            {{- prerenderedItem.contacts -}}
+          {%- else -%}
+            {% comment %}
+            The housingListItems collection is not
+            available at build time (only after the build), and thus can't be used
+            for the static page render.
+            {% endcomment %}
+            {%- render "affordable-housing-item", apartment: apartment, badges: badges -%}
+          {%- endif -%}
         {%- endfor -%}
         {% if num_results == 0 %}
           <li class="no_results">
