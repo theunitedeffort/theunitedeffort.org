@@ -226,7 +226,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% if num_filters_applied > 0 %}
     <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
-  {% assign sortedHousingdb = housingdb | sort: "aptName" %}
 
   <div class="flex results_container">
     <div id="map-toggle" class="noprint hidden">
@@ -234,10 +233,50 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </div>
     <div id="list-container">
       <ul class="results_list" aria-label="Results List">
-        {%- for apartment in sortedHousingdb -%}
-          <li id="property-{{apartment.id}}">
-            {%- render "affordable-housing-item", apartment: apartment -%}
-          </li>
+        {%- for apartment in housingdb -%}
+          {%- capture badges -%}
+            {%- assign allStatuses = apartment.units | map: "openStatus" | uniq | rankSort -%}
+            {%- for status in allStatuses -%}
+              <p>
+                {%- capture badgeMod -%}
+                  {%- if status == "Call for Status" -%}
+                    badge__warn
+                  {%- elsif status == "Waitlist Closed" -%}
+                    badge__bad
+                  {%- elsif status == "Waitlist Open" -%}
+                    badge__ok
+                  {%- endif -%}
+                {%- endcapture -%}
+                <span class="badge {{ badgeMod }}">{{ status }}</span>
+                {%- assign sortedUnits = apartment.units | where: "openStatus",  status | rankSort: "type" -%}
+                {%- for unit in sortedUnits -%}
+                  {%- if unit.type -%}
+                    <span class="badge">{{ unit.type }}</span>
+                  {%- endif -%}
+                {%- endfor -%} 
+              </p>
+            {%- endfor -%}
+          {%- endcapture -%}
+          {% comment %}
+          The list of apartments can be quite long, and the time it takes to 
+          render all of them with eleventy serverless can lead to longer page
+          load times.  Since only the badges change within each apartment
+          list item, everything else is pre-rendered in the build and used here
+          for serverless requests.
+          {% endcomment %}
+          {%- if eleventy.serverless -%}
+            {%- assign prerenderedItem = collections.housingListItems[apartment.id] -%}
+            {{- prerenderedItem.heading -}}
+            {{badges}}
+            {{- prerenderedItem.contacts -}}
+          {%- else -%}
+            {% comment %}
+            The housingListItems collection is not
+            available at build time (only after the build), and thus can't be used
+            for the static page render.
+            {% endcomment %}
+            {%- render "affordable-housing-item", apartment: apartment, badges: badges -%}
+          {%- endif -%}
         {%- endfor -%}
         {% if num_results == 0 %}
           <li class="no_results">
@@ -264,7 +303,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
 <script>
   const aptLocations = [
-  {%- for apartment in sortedHousingdb -%}
+  {%- for apartment in housingdb -%}
     {%- assign coords = apartment | getValidatedLocCoords -%}
     {%- if coords -%}
       {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{apartment.id}}"},

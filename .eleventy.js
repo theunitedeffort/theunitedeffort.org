@@ -43,10 +43,11 @@ module.exports = function(eleventyConfig) {
     name: "serverless",
     functionsDir: "./netlify/functions/",
     copy: [
+      "_generated-serverless-collections.json",
       // Files/directories that start with a dot
       // are not bundled by default.
-      { from: ".cache", to: "cache" }
-    ]
+      { from: ".cache", to: "cache" },
+    ],
   });
 
   // Markdown filter
@@ -422,6 +423,7 @@ module.exports = function(eleventyConfig) {
       function(index, fields, fieldName, className="") {
     return formField(fields, fieldName, className, index);
   });
+  
 
   // Generates a rendered summary of affordable housing filter options.
   eleventyConfig.addShortcode("querySummary", function(query) {
