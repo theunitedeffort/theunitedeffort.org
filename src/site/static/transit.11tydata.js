@@ -14,14 +14,9 @@ const fetchTransitData = async(operator_id) => {
   // For some reason the response includes a zero width space at
   // the beginning, so the built-in eleventy-fetch json parsing
   // (type: "json") will not work.
-  let options = {type: "text", duration: "1h"};
-  if (process.env.ELEVENTY_SERVERLESS) {
-    options.duration = "*"; // Infinite duration (data refreshes at each build)
-    // Use the serverless cache location specified in .eleventy.js
-    options.directory = "cache";
-  }
-  let response = await EleventyFetch(endpoint, options);
-  let data = JSON.parse(response.trim());
+  const options = {type: "text", duration: "1h"};
+  const response = await EleventyFetch(endpoint, options);
+  const data = JSON.parse(response.trim());
   return data.Contents.dataObjects.ScheduledStopPoint.map(x => ({
     name: x.Name,
     lat: x.Location.Latitude,
@@ -31,8 +26,8 @@ const fetchTransitData = async(operator_id) => {
 }
 
 module.exports = async function() {
-  let vta_transit = await fetchTransitData("SC");
-  let mvgo_transit = await fetchTransitData("MV");
+  const [vta_transit, mvgo_transit] = await Promise.all(
+    [fetchTransitData("SC"), fetchTransitData("MV")]);
   
   return {transitData: [].concat(vta_transit, mvgo_transit)};
 }
