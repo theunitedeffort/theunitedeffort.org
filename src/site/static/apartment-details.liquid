@@ -77,11 +77,11 @@ eleventyComputed:
     {% assign units = unitGroup.values | sortUnitOfferings %}
     {% comment %}
     'units' is guaranteed to have at least one item since it is generated
-    via grouping. Max occupancy and status should always be the same in every
+    via grouping. Occupancy limits and status should always be the same in every
     entry for a given rental property & unit type, so just take the first one
     here.
     {% endcomment %}
-    {% assign maxOccupancy = units[0].occupancyLimit.max %}
+    {% assign occupancyLimit = units[0].occupancyLimit %}
     {% assign openStatus = units[0].openStatus %}
     {%- capture badgeMod -%}
       {%- if openStatus == "Call for Status" -%}
@@ -93,7 +93,24 @@ eleventyComputed:
       {%- endif -%}
     {%- endcapture -%}
     <h2>{{unitType | default: ""}}<span class="badge {{badgeMod}}">{{openStatus}}</span></h2>
-    Maximum occupancy: {{maxOccupancy | default: defaultNoDataStr}}
+    Occupancy:
+    {% if occupancyLimit.max and occupancyLimit.max != "" and
+          occupancyLimit.min and occupancyLimit.min != "" %}
+      {% if occupancyLimit.max != occupancyLimit.min %}
+        {{occupancyLimit.min}} to {{occupancyLimit.max}} people
+      {% else %}
+        {{occupancyLimit.min}} {{occupancyLimit.min | pluralize: "person", "people"}}
+      {% endif %}
+    {% elsif occupancyLimit.min and occupancyLimit.min != "" %}
+      {{occupancyLimit.min}}+ people
+    {% elsif occupancyLimit.max and occupancyLimit.max != "" %}
+      {% if occupancyLimit.max > 1 %}
+        up to 
+      {% endif %}
+      {{occupancyLimit.max}} {{occupancyLimit.max | pluralize: "person", "people"}}
+    {% else %}
+      {{defaultNoDataStr}}
+    {% endif %}
     <table aria-label="Rent and Income Limits Table">
       <thead>
         <tr>
@@ -139,7 +156,11 @@ eleventyComputed:
                       {%- continue -%}
                     {%- endunless -%}
                     {%- if unit.occupancyLimit.max and unit.occupancyLimit.max != "" and
-                          hhSize > unit.occupancyLimit.max -%}
+                          hhSize > unit.occupancyLimit.max-%}
+                      {%- continue -%}
+                    {%- endif -%}
+                    {%- if unit.occupancyLimit.min and unit.occupancyLimit.min != "" and
+                          hhSize < unit.occupancyLimit.min-%}
                       {%- continue -%}
                     {%- endif -%}
                     Household of {{hhSize}}: {{unit.maxIncome.byHouseholdSize[sizeName] | money}}<br/>

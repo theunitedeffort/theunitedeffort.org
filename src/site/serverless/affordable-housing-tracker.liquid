@@ -64,7 +64,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   </p>
 {% endif %}
 
-<h3>{{numResults}} {% if numResults == 1 %}property{% else %}properties{% endif %} total</h3>
+<h3>{{numResults}} {{numResults | pluralize: "property", "properties"}} total</h3>
 <div class="flex">
   <p class="noprint collapse_top">
     Print this table to track your progress applying to these apartments.

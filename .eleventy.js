@@ -97,6 +97,15 @@ module.exports = function(eleventyConfig) {
     return grouped;
   });
 
+  // Returns either the 'singular' string or 'plural' string depending on 'num'.
+  eleventyConfig.addFilter("pluralize", function(num, singular, plural) {
+    const parsedNum = Number(num);
+    if (Math.abs(parsedNum) == 1) {
+      return singular;
+    }
+    return plural;
+  });
+
   // Generates a URL query string from Eleventy serverless query parameters.
   eleventyConfig.addFilter("queryString", function(queryParams) {
     const searchParams = new URLSearchParams(queryParams);
