@@ -18,7 +18,7 @@ pageHead: '<script src="/js/accessibility.js" defer></script>
 {% assign num_results = housingdb | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}
-  Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {% if num_results == 1 %}property{% else %}properties{% endif %}
+  Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {{num_results | pluralize: "property", "properties"}}
 {% endcapture %}
 
 {% comment %}
@@ -113,7 +113,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 </p>
 {% else %}
 <p class="noprint">
-{{num_filters_applied}} {% if num_filters_applied == 1 %}filter is {% else %}filters are {% endif %}applied. <a href="/housing/affordable-housing">Clear filters</a>
+{{num_filters_applied}} {{num_filters_applied | pluralize: "filter is", "filters are"}} applied. <a href="/housing/affordable-housing">Clear filters</a>
 </p>
 {% endif %}
 
