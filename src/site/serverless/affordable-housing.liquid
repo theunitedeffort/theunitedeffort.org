@@ -51,7 +51,11 @@ function HideLoading() {
   submitButton.removeAttribute("disabled");
 }
 
-// Show a hidden checkbox with id optionId depending on the value ofinputId.
+function ResetForm() {
+  document.getElementById("housing-search").reset();
+}
+
+// Show a hidden checkbox with id optionId depending on the value of inputId.
 function ToggleHiddenOption(optionId, inputId) {
   let option = document.getElementById(optionId);
   let input = document.getElementById(inputId);
@@ -94,8 +98,12 @@ function OnPageShow() {
   // When the user departs the page by applying filters, the submit
   // button text changes to a loading message.  Ensure that loading
   // message is gone if the user returns to the page via the back
-  // navigation arrow.
+  // navigation arrow.  Also ensure any filter options that were selected
+  // prior to navigating away are cleared when navigating back.
   HideLoading();
+  ResetForm();
+  ToggleRentOption();
+  ToggleIncomeOption();
 }
 
 window.onpageshow = function() {OnPageShow()};
