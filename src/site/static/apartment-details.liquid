@@ -72,6 +72,22 @@ eleventyComputed:
 <div class="rent_tables">
   {% assign defaultNoDataStr = "Call for info" %}
   {% assign unitsByType = apartment.units | groupBy: "type" | rankSort: "key" %}
+  {% comment %}
+  Only show the income bracket column in the rent table if there is more than
+  one rent offering for that unit type OR there is at least one filled-in
+  income bracket value (i.e. % AMI).  If at least one of the unit types for this 
+  apartment shows the income bracket column, then it will be showed for all
+  of the unit types for consistency.
+  {% endcomment %}
+  {% assign showIncomeBrackets = false %}
+  {% for unitGroup in unitsByType %}
+    {% assign numRentOfferings = unitGroup.values | size %}
+    {% assign numIncomeBrackets = unitGroup.values | where: "incomeBracket" | size %}
+    {% if numRentOfferings > 1 or numIncomeBrackets > 0 %}
+      {% assign showIncomeBrackets = true %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
   {% for unitGroup in unitsByType %}
     {% assign unitType = unitGroup.key %}
     {% assign units = unitGroup.values | sortUnitOfferings %}
@@ -114,7 +130,9 @@ eleventyComputed:
     <table aria-label="Rent and Income Limits Table">
       <thead>
         <tr>
-          <th>Income bracket</th>
+          {% if showIncomeBrackets %}
+            <th>Income bracket</th>
+          {% endif %}
           <th>Min income (per year)</th>
           <th>Max income (per year)</th>
           <th>Rent (per month)</th>
@@ -122,15 +140,17 @@ eleventyComputed:
       </thead>
       <tbody>
         {% for unit in units %}
-          {% assign defaultBracketStr = "Bracket " | concat: forloop.index %}
           <tr>
-            <td>
-              {%- if unit.incomeBracket and unit.incomeBracket != "" -%}
-                {{unit.incomeBracket}}% <abbr role="definition" aria-label="Area Median Income">AMI</abbr>
-              {%- else -%}
-                {{defaultBracketStr}}
-              {%- endif -%}
-            </td>
+            {% if showIncomeBrackets %}
+              {% assign defaultBracketStr = "Bracket " | concat: forloop.index %}
+              <td>
+                {%- if unit.incomeBracket and unit.incomeBracket != "" -%}
+                  {{unit.incomeBracket}}% <abbr role="definition" aria-label="Area Median Income">AMI</abbr>
+                {%- else -%}
+                  {{defaultBracketStr}}
+                {%- endif -%}
+              </td>
+            {% endif %}
             <td>
               {%- if unit.minIncome.amount and unit.minIncome.amount != "" -%}
                 {{unit.minIncome.amount | money}}
