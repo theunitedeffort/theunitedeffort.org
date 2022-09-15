@@ -98,8 +98,12 @@ module.exports = function(eleventyConfig) {
   });
 
   // Returns either the 'singular' string or 'plural' string depending on 'num'.
+  // If 'num' is not a number, will return null.
   eleventyConfig.addFilter("pluralize", function(num, singular, plural) {
     const parsedNum = Number(num);
+    if (Number.isNaN(parsedNum)) {
+      return null;
+    }
     if (Math.abs(parsedNum) == 1) {
       return singular;
     }
