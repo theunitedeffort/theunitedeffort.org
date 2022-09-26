@@ -1,0 +1,10 @@
+---
+pagination: 
+  data: housing.housingList
+  size: 1
+  alias: apartment
+  addAllPagesToCollections: true
+permalink: false
+tags: prerender
+---
+{% render "affordable-housing-item", apartment: apartment, badges: "${BADGES}" %}

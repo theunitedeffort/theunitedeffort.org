@@ -5,5 +5,5 @@ permalink:
   serverless: "/data/housing/affordable-housing/filter"
 ---
 {% assign query = eleventy.serverless.query %}
-{% assign housingdb = query | housingResults %}
+{% assign housingdb = housing.housingList | filterByQuery: query %}
 {{ housingdb | json }}

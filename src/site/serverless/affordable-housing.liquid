@@ -10,15 +10,26 @@ pageHead: '<script src="/js/accessibility.js" defer></script>
   <script src="/js/affordable-housing-map.js" defer></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA17udd4ePocbxKrOkHiMhSUHlvf3daZMs&callback=initMap&v=weekly" defer></script>'
 ---
+
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
-{% assign summaryProps = "unitType,openStatus" | split: "," %}
-{% assign housingdb = query | housingResults | summarizeUnits: summaryProps %}
+{% assign summaryProps = "type,openStatus" | split: "," %}
+{% assign housingdb = housing.housingList | filterByQuery: query | summarizeUnits: summaryProps %}
 {% assign num_results = housingdb | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}
-  Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {% if num_results == 1 %}property{% else %}properties{% endif %}
+  Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {{num_results | pluralize: "property", "properties"}}
 {% endcapture %}
+
+{% comment %}
+There is some startup time associated with a Netlify serverless function,
+so go ahead and fire it up now in preparation for a user's housing search.
+The function should still be 'warm' if the user executes a search in a
+reasonable timeframe.
+{% endcomment %}
+{% unless eleventy.serverless %}
+  <link rel="prefetch" href="/.netlify/functions/serverless">
+{% endunless %}
 
 <script>
 function CopyUrl() {
@@ -40,7 +51,11 @@ function HideLoading() {
   submitButton.removeAttribute("disabled");
 }
 
-// Show a hidden checkbox with id optionId depending on the value ofinputId.
+function ResetForm() {
+  document.getElementById("housing-search").reset();
+}
+
+// Show a hidden checkbox with id optionId depending on the value of inputId.
 function ToggleHiddenOption(optionId, inputId) {
   let option = document.getElementById(optionId);
   let input = document.getElementById(inputId);
@@ -69,20 +84,26 @@ function ToggleIncomeOption() {
 // after the page loads.  Also ensure the rent and income checkboxes
 // are shown if those fields are filled. 
 {% if num_filters_applied > 0 %} 
-function OnWindowLoad() {
+function OnDomLoad() {
   ToggleRentOption();
   ToggleIncomeOption();
   location.hash = "#results";
 }
-window.onload = function() {OnWindowLoad()};
+document.addEventListener("DOMContentLoaded", function() {
+  OnDomLoad();
+});
 {% endif %}
 
 function OnPageShow() {
   // When the user departs the page by applying filters, the submit
   // button text changes to a loading message.  Ensure that loading
   // message is gone if the user returns to the page via the back
-  // navigation arrow.
+  // navigation arrow.  Also ensure any filter options that were selected
+  // prior to navigating away are cleared when navigating back.
   HideLoading();
+  ResetForm();
+  ToggleRentOption();
+  ToggleIncomeOption();
 }
 
 window.onpageshow = function() {OnPageShow()};
@@ -100,7 +121,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 </p>
 {% else %}
 <p class="noprint">
-{{num_filters_applied}} {% if num_filters_applied == 1 %}filter is {% else %}filters are {% endif %}applied. <a href="/housing/affordable-housing">Clear filters</a>
+{{num_filters_applied}} {{num_filters_applied | pluralize: "filter is", "filters are"}} applied. <a href="/housing/affordable-housing">Clear filters</a>
 </p>
 {% endif %}
 
@@ -108,7 +129,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 <section aria-label="Housing Filter Options">
 <form action="/housing/affordable-housing/filter" action="get" id="housing-search" class="housing_search" onsubmit="ShowLoading();">
   
-  {% assign filterValues = filterValues | updateFilterState: query %}
+  {% assign filterValues = housing.filterValues | updateFilterState: query %}
 
   {% for section in filterValues %}
   <fieldset>
@@ -193,10 +214,10 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </p>
     <div>
       {% if num_results > 0 %}
-        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/housing/affordable-housing/table?{{eleventy.serverless.query | queryString}}">
+        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/housing/affordable-housing/table?{{query | queryString}}">
           Show printable summary
         </a>
-        <a class="btn btn_secondary noprint" title="Get printable application checklist" href="/housing/affordable-housing/tracker?{{eleventy.serverless.query | queryString}}">
+        <a class="btn btn_secondary noprint" title="Get printable application checklist" href="/housing/affordable-housing/tracker?{{query | queryString}}">
           Show printable checklist
         </a>
         {% comment %} 
@@ -213,7 +234,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% if num_filters_applied > 0 %}
     <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
-  {% assign sortedHousingdb = housingdb | sort: "aptName" %}
 
   <div class="flex results_container">
     <div id="map-toggle" class="noprint hidden">
@@ -221,10 +241,50 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </div>
     <div id="list-container">
       <ul class="results_list" aria-label="Results List">
-        {%- for address in sortedHousingdb -%}
-          <li id="property-{{address.id}}">
-            {%- render "affordable-housing-item.liquid", address: address -%}
-          </li>
+        {%- for apartment in housingdb -%}
+          {%- capture badges -%}
+            {%- assign allStatuses = apartment.units | map: "openStatus" | uniq | rankSort -%}
+            {%- for status in allStatuses -%}
+              <p>
+                {%- capture badgeMod -%}
+                  {%- if status == "Call for Status" -%}
+                    badge__warn
+                  {%- elsif status == "Waitlist Closed" -%}
+                    badge__bad
+                  {%- elsif status == "Waitlist Open" -%}
+                    badge__ok
+                  {%- endif -%}
+                {%- endcapture -%}
+                <span class="badge {{ badgeMod }}">{{ status }}</span>
+                {%- assign sortedUnits = apartment.units | where: "openStatus",  status | rankSort: "type" -%}
+                {%- for unit in sortedUnits -%}
+                  {%- if unit.type -%}
+                    <span class="badge">{{ unit.type }}</span>
+                  {%- endif -%}
+                {%- endfor -%} 
+              </p>
+            {%- endfor -%}
+          {%- endcapture -%}
+          {% comment %}
+          The list of apartments can be quite long, and the time it takes to 
+          render all of them with eleventy serverless can lead to longer page
+          load times.  Since only the badges change within each apartment
+          list item, everything else is pre-rendered in the build and used here
+          for serverless requests.
+          {% endcomment %}
+          {%- if eleventy.serverless -%}
+            {%- assign prerenderedItem = collections.housingListItems[apartment.id] -%}
+            {{- prerenderedItem.heading -}}
+            {{badges}}
+            {{- prerenderedItem.contacts -}}
+          {%- else -%}
+            {% comment %}
+            The housingListItems collection is not
+            available at build time (only after the build), and thus can't be used
+            for the static page render.
+            {% endcomment %}
+            {%- render "affordable-housing-item", apartment: apartment, badges: badges -%}
+          {%- endif -%}
         {%- endfor -%}
         {% if num_results == 0 %}
           <li class="no_results">
@@ -251,10 +311,10 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
 <script>
   const aptLocations = [
-  {%- for address in sortedHousingdb -%}
-    {%- assign coords = address | getValidatedLocCoords -%}
+  {%- for apartment in housingdb -%}
+    {%- assign coords = apartment | getValidatedLocCoords -%}
     {%- if coords -%}
-      {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{address.id}}"},
+      {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{apartment.id}}"},
     {%- endif -%}
   {%- endfor -%}
   ];
