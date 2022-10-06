@@ -68,7 +68,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
         </td>
         <td>{{ apartment.units | map: "type" | uniq | rankSort | join: '<br style="mso-data-placement:same-cell;"/>' | replace: "Bedroom", "BR" }}</td>
         <td>
-          {% assign rents = apartment.units | map: "rent" | compact | uniq | sort %}
+          {% assign rents = apartment.units | map: "rent" | map: "amount" | compact | uniq | sort %}
           {% if rents.size == 1 %}
             {{ rents | first | money }}
           {% elsif rents.size >= 2 %}
@@ -76,7 +76,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
           {% endif %}
         </td>
         <td>
-          {% assign minIncomes = apartment.units | map: "minIncome" | compact | uniq | sort %}
+          {% assign minIncomes = apartment.units | map: "minIncome" | map: "amount" | compact | uniq | sort %}
           {% if minIncomes.size == 1 %}
             {{ minIncomes | first | money }}
           {% elsif minIncomes.size >= 2 %}
