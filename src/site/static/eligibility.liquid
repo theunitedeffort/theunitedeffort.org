@@ -1,0 +1,183 @@
+---
+layout: layouts/base.liquid
+title: Find Assistance Programs For You
+permalink: 
+  build: "/public-assistance/eligibility/index.html"
+pageClass: "page-public-assistance"
+---
+
+<h1>{{title}}</h1>
+<div class="queue_status">
+  <div class="progress_bar flex"><div id="done-bar" class="progress_bar done"></div><div id="to-do-bar" class="progress_bar remaining"></div></div>
+  <div class="flex">
+    <span class="badge badge__done"><span id="done-val" class="bold">0</span><span class="bold">%</span> done</span>
+    <span class="badge badge__remaining"><span id="to-do-val" class="bold">100</span><span class="bold">%</span> remaining</span>
+  </div>
+</div>
+
+<form id="eligibility">
+  <div id="page-0">
+    <p>
+      Use this tool to find assistance programs for which you qualify.  Fill in each field to the best of your knowledge.  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
+    </p>
+    <p>
+      After entering your information, you will be provided with a list of assistance programs you can apply for.
+    </p>
+  </div>
+  <div id="page-1" class="hidden">
+    <p>
+      This is some introductory text giving context and information about the fields to be filled below.
+    </p>
+    <div id="example-wrapper">
+      <label for="example">Example field</label>
+      <input id="example" type="text">
+    </div>
+
+    <div id="another-example-wrapper">
+      <label for="another-example">Another example field</label>
+      <input id="another-example" type="number">
+    </div>
+  </div>
+
+  <div id="page-2" class="hidden">
+    <div id="next-page-example-wrapper">
+      This shows on the next page.  Select all that apply:
+      <ul>
+        <li>
+          <input id="option-a" type="checkbox" name="next-page-example">
+          <label for="option-a">Option A</label>
+        </li>
+        <li>
+          <input id="option-b" type="checkbox" name="next-page-example">
+          <label for="option-b">Option B</label>
+        </li>
+        <li>
+          <input id="option-c" type="checkbox" name="next-page-example">
+          <label for="option-c">Option C</label>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div>
+    <button type="button" class="btn btn_secondary hidden" id="back-button">Back</button>
+    <button type="button" class="btn btn_primary" id="next-button">Next</button>
+    <button type="button" class="btn btn_primary hidden" id="submit-button">Submit</button>
+  </div>
+</form>
+
+<script>
+  let currentPageNumber = 0;
+  let finalPageNumber = 0;
+
+  function setElementVisibility(elem, makeVisible) {
+    if (elem) {
+      if (makeVisible) {
+        elem.classList.remove("hidden");
+      } else {
+        elem.classList.add("hidden");
+      }
+    }
+  }
+
+  function setPageVisibility(pageNumber, makeVisible) {
+    const page = document.getElementById("page-" + pageNumber);
+    setElementVisibility(page, makeVisible);
+  }
+
+  function setSubmitVisibility(makeVisible) {
+    const submitButton = document.getElementById("submit-button");
+    setElementVisibility(submitButton, makeVisible);
+  }
+
+  function setNextVisibility(makeVisible) {
+    const nextButton = document.getElementById("next-button");
+    setElementVisibility(nextButton, makeVisible);
+  }
+
+  function setBackVisibility(makeVisible) {
+    const backButton = document.getElementById("back-button");
+    setElementVisibility(backButton, makeVisible);
+  }
+
+  function updateProgress(pageNumber) {
+    const doneVal = document.getElementById("done-val");
+    const todoVal = document.getElementById("to-do-val");
+    const doneBar = document.getElementById("done-bar");
+    const todoBar = document.getElementById("to-do-bar");
+    if (finalPageNumber > 0) {
+      const donePercent = 100 * Math.max(0, pageNumber - 1) / finalPageNumber;
+      const todoPercent = 100 - donePercent;
+      doneBar.style.width = donePercent + "%";
+      todoBar.style.width = todoPercent + "%";
+      doneVal.textContent = donePercent;
+      todoVal.textContent = todoPercent;
+    }
+  }
+
+  function configureButtons(pageNumber) {
+    if (pageNumber == 0) {
+      setBackVisibility(false);
+      setNextVisibility(true);
+      setSubmitVisibility(false);
+    } else if (pageNumber == finalPageNumber) {
+      setBackVisibility(true);
+      setNextVisibility(false);
+      setSubmitVisibility(true);
+    } else {
+      setBackVisibility(true);
+      setNextVisibility(true);
+      setSubmitVisibility(false);
+    }
+  }
+
+  function countPages() {
+    const pages = document.querySelectorAll("form#eligibility div[id^=page-]");
+    for (const page of pages) {
+      const pageNumber = page.id.split("-")[1];
+      finalPageNumber = Math.max(finalPageNumber, pageNumber);
+    }
+    console.log(finalPageNumber);
+  }
+
+  function nextPage() {
+    if (currentPageNumber < finalPageNumber) {
+      setPageVisibility(currentPageNumber, false);
+      currentPageNumber++;
+      setPageVisibility(currentPageNumber, true);
+      configureButtons(currentPageNumber);
+      updateProgress(currentPageNumber);
+    }
+    console.log(currentPageNumber);
+  }
+
+  function prevPage() {
+    if (currentPageNumber > 0) {
+      setPageVisibility(currentPageNumber, false);
+      currentPageNumber--;
+      setPageVisibility(currentPageNumber, true);
+      configureButtons(currentPageNumber);
+      updateProgress(currentPageNumber);
+    }
+    console.log(currentPageNumber);
+  }
+
+  function submitForm() {
+    console.log("Determining program eligibility");
+    // TODO
+  }
+
+  function addListeners() {
+    document.getElementById("next-button").addEventListener("click", nextPage);
+    document.getElementById("back-button").addEventListener("click", prevPage);
+    document.getElementById("submit-button").addEventListener("click", submitForm);
+  }
+
+  // Script entry point.
+  function run() {
+    countPages();
+    addListeners();
+  }
+
+  run();
+</script>

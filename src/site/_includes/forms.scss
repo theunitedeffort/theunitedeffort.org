@@ -72,6 +72,29 @@
         height: 10em;
       }
     }
+
+    form#eligibility {
+      display: block;
+
+      div {
+        margin-top: 1em;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        margin-top: 0.5em;
+        margin-left: 1em;
+      }
+
+      label {
+        font-weight: 700;
+      }
+    }
     
     .option_columns {
       columns: 8em 3;
