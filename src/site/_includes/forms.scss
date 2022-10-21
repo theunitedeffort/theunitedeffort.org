@@ -80,15 +80,15 @@
         margin-top: 1em;
       }
 
-      ul {
+      ul.multiselect {
         list-style: none;
         padding: 0;
         margin: 0;
-      }
 
-      li {
-        margin-top: 0.5em;
-        margin-left: 1em;
+        li {
+          margin-top: 0.5em;
+          margin-left: 1em;
+        }
       }
 
       label {

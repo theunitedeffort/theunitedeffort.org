@@ -22,8 +22,8 @@ pageClass: "page-public-assistance"
 </div>
 
 <form id="eligibility">
-  <div class="elig_section" id="section-intro">
-    <div class="elig_page" id="page-intro">
+  <div id="section-intro" class="elig_section" >
+    <div id="page-intro" class="elig_page">
       <p>
         Use this tool to find assistance programs for which you qualify.  Fill in each field to the best of your knowledge.  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
       </p>
@@ -33,15 +33,15 @@ pageClass: "page-public-assistance"
     </div>
   </div>
 
-  <div class="elig_section hidden" id="section-things-you-like">
+  <div id="section-things-you-like" class="elig_section hidden">
     <h2>Things You Like</h2>
     <p>
       This section-level text will be shown for every page in this section.
     </p>
-    <div class="elig_page hidden" id="page-select-likes">
+    <div id="page-select-likes" class="elig_page hidden">
       <div id="likes-wrapper">
         If "I like days of the week" is selected, a secondary follow-up page will be shown.  Otherwise, the form will move on to the next section.  Select all that apply:
-        <ul>
+        <ul class="multiselect">
           <li>
             <input id="likes-animals" type="checkbox" name="option">
             <label for="likes-animals">I like animals.</label>
@@ -57,7 +57,7 @@ pageClass: "page-public-assistance"
         </ul>
       </div>
     </div>
-    <div class="elig_page hidden" id="page-today">
+    <div id="page-today" class="elig_page hidden">
       <p>
         This page is only shown if the user selected "I like days of the week" on the previous page.
       </p>
@@ -73,9 +73,9 @@ pageClass: "page-public-assistance"
     </div>
   </div>
   
-  <div class="elig_section hidden" id="section-color">
+  <div id="section-color" class="elig_section hidden">
     <h2>All About Colors</h2>
-    <div class="elig_page hidden" id="page-color">
+    <div id="page-color" class="elig_page hidden">
       <p>
         Here we are in a new section.
       </p>
@@ -86,7 +86,22 @@ pageClass: "page-public-assistance"
     </div>
   </div>
 
-  <div>
+  <div id="section-results" class="hidden">
+    <h2>Form Results</h2>
+    <div id="page-results" class="elig_page hidden">
+      <p>
+        This is an example results page that would show content based on form input values.
+        <ul>
+          <li>Result 1</li>
+          <li>Result 2</li>
+          <li>Result 3</li>
+          <li>Result 4</li>
+        </ul>
+      </p>
+    </div>
+  </div>
+
+  <div id="controls">
     <button type="button" class="btn btn_secondary hidden" id="back-button">Back</button>
     <button type="button" class="btn btn_primary" id="next-button">Next</button>
     <button type="button" class="btn btn_primary hidden" id="submit-button">Finish</button>
@@ -140,26 +155,33 @@ pageClass: "page-public-assistance"
     const doneBar = document.getElementById("done-bar");
     const todoBar = document.getElementById("to-do-bar");
     const numPages = pageArray.length;
-    if (numPages > 0) {
-      const donePercent = 100 * Math.max(0, page.idx) / numPages;
+    if (numPages > 2) {
+      // Ignore intro page and results page.
+      const donePercent = 100 * Math.max(0, page.idx - 1) / (numPages - 2);
       const todoPercent = 100 - donePercent;
       doneBar.style.width = donePercent + "%";
       todoBar.style.width = todoPercent + "%";
-      doneVal.textContent = donePercent;
-      todoVal.textContent = todoPercent;
+      doneVal.textContent = donePercent.toFixed(0);
+      todoVal.textContent = todoPercent.toFixed(0);
     }
   }
 
   function configureButtons(page) {
-    let finalPage = !page.next()
-    let firstPage = !page.previous
-    if (finalPage) {
+    let resultsPage = !page.next();
+    // TODO: is there a better way than 'results'?
+    let finalInputPage = page.next()?.id == 'page-results'
+    let firstPage = !page.previous;
+    if (finalInputPage) {
       setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(true);
     } else if (firstPage) {
       setBackVisibility(false);
       setNextVisibility(true);
+      setSubmitVisibility(false);
+    } else if (resultsPage) {
+      setBackVisibility(true);
+      setNextVisibility(false);
       setSubmitVisibility(false);
     } else {
       setBackVisibility(true);
@@ -194,10 +216,10 @@ pageClass: "page-public-assistance"
     };
   }
 
-  function nextPage() {
+  function showNextPage() {
     console.dir(currentPage);
     console.log(currentPage.idx);
-    nextPage = currentPage.next();
+    let nextPage = currentPage.next();
     console.dir(nextPage);
     if (nextPage) {
       setElementVisibility(currentPage, false);
@@ -211,10 +233,9 @@ pageClass: "page-public-assistance"
     }
     configureButtons(currentPage);
     updateProgress(currentPage);
-    
   }
 
-  function prevPage() {
+  function showPrevPage() {
     let previousPage = currentPage.previous;
     if (previousPage) {
       setElementVisibility(currentPage, false);
@@ -229,14 +250,18 @@ pageClass: "page-public-assistance"
     updateProgress(currentPage);
   }
 
+  function computeEligibility() {
+    console.log("TODO: Determine program eligibility");
+  }
+
   function submitForm() {
-    console.log("Determining program eligibility");
-    // TODO
+    computeEligibility();
+    showNextPage();
   }
 
   function addListeners() {
-    document.getElementById("next-button").addEventListener("click", nextPage);
-    document.getElementById("back-button").addEventListener("click", prevPage);
+    document.getElementById("next-button").addEventListener("click", showNextPage);
+    document.getElementById("back-button").addEventListener("click", showPrevPage);
     document.getElementById("submit-button").addEventListener("click", submitForm);
   }
 
