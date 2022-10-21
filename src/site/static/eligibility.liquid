@@ -7,7 +7,7 @@ pageClass: "page-public-assistance"
 ---
 
 <h1>{{title}}</h1>
-<div class="queue_status">
+<div>
   <div class="progress_bar flex"><div id="done-bar" class="progress_bar done"></div><div id="to-do-bar" class="progress_bar remaining"></div></div>
   <div class="flex">
     <span class="badge badge__done"><span id="done-val" class="bold">0</span><span class="bold">%</span> done</span>
@@ -15,60 +15,94 @@ pageClass: "page-public-assistance"
   </div>
 </div>
 
+<div class="section_map flex">
+  <div class="section_marker badge">Section Name</div>
+  <div class="section_marker badge">Next Section</div>
+  <div class="section_marker badge">Another Section</div>
+</div>
+
 <form id="eligibility">
-  <div id="page-0">
-    <p>
-      Use this tool to find assistance programs for which you qualify.  Fill in each field to the best of your knowledge.  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
-    </p>
-    <p>
-      After entering your information, you will be provided with a list of assistance programs you can apply for.
-    </p>
-  </div>
-  <div id="page-1" class="hidden">
-    <p>
-      This is some introductory text giving context and information about the fields to be filled below.
-    </p>
-    <div id="example-wrapper">
-      <label for="example">Example field</label>
-      <input id="example" type="text">
-    </div>
-
-    <div id="another-example-wrapper">
-      <label for="another-example">Another example field</label>
-      <input id="another-example" type="number">
+  <div class="elig_section" id="section-intro">
+    <div class="elig_page" id="page-intro">
+      <p>
+        Use this tool to find assistance programs for which you qualify.  Fill in each field to the best of your knowledge.  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
+      </p>
+      <p>
+        After entering your information, you will be provided with a list of assistance programs you can apply for.
+      </p>
     </div>
   </div>
 
-  <div id="page-2" class="hidden">
-    <div id="next-page-example-wrapper">
-      This shows on the next page.  Select all that apply:
-      <ul>
-        <li>
-          <input id="option-a" type="checkbox" name="next-page-example">
-          <label for="option-a">Option A</label>
-        </li>
-        <li>
-          <input id="option-b" type="checkbox" name="next-page-example">
-          <label for="option-b">Option B</label>
-        </li>
-        <li>
-          <input id="option-c" type="checkbox" name="next-page-example">
-          <label for="option-c">Option C</label>
-        </li>
-      </ul>
+  <div class="elig_section hidden" id="section-things-you-like">
+    <h2>Things You Like</h2>
+    <p>
+      This section-level text will be shown for every page in this section.
+    </p>
+    <div class="elig_page hidden" id="page-select-likes">
+      <div id="likes-wrapper">
+        If "I like days of the week" is selected, a secondary follow-up page will be shown.  Otherwise, the form will move on to the next section.  Select all that apply:
+        <ul>
+          <li>
+            <input id="likes-animals" type="checkbox" name="option">
+            <label for="likes-animals">I like animals.</label>
+          </li>
+          <li>
+            <input id="likes-vehicles" type="checkbox" name="option">
+            <label for="likes-vehicles">I like vehicles.</label>
+          </li>
+          <li>
+            <input id="likes-days" type="checkbox" name="option">
+            <label for="likes-days">I like days of the week.</label>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="elig_page hidden" id="page-today">
+      <p>
+        This page is only shown if the user selected "I like days of the week" on the previous page.
+      </p>
+      <div id="weekday-wrapper">
+        <label for="weekday">What day of the week is it?</label>
+        <input id="weekday" type="text">
+      </div>
+
+      <div id="date-wrapper">
+        <label for="date">What is the date?</label>
+        <input id="date" type="number">
+      </div>
+    </div>
+  </div>
+  
+  <div class="elig_section hidden" id="section-color">
+    <h2>All About Colors</h2>
+    <div class="elig_page hidden" id="page-color">
+      <p>
+        Here we are in a new section.
+      </p>
+      <div id="favorite-color-wrapper">
+        <label for="favorite-color">What is your favorite color?</label>
+        <input id="favorite-color" type="text">
+      </div>
     </div>
   </div>
 
   <div>
     <button type="button" class="btn btn_secondary hidden" id="back-button">Back</button>
     <button type="button" class="btn btn_primary" id="next-button">Next</button>
-    <button type="button" class="btn btn_primary hidden" id="submit-button">Submit</button>
+    <button type="button" class="btn btn_primary hidden" id="submit-button">Finish</button>
   </div>
 </form>
 
 <script>
   let currentPageNumber = 0;
   let finalPageNumber = 0;
+  // TODO: is it necessary to group pages by section in the array?
+  let pageArray = [];
+  let sectionMap = {};
+  let pageMap = {};
+  
+  let currentPage;
+  let currentSection;
 
   function setElementVisibility(elem, makeVisible) {
     if (elem) {
@@ -131,24 +165,63 @@ pageClass: "page-public-assistance"
     }
   }
 
-  function countPages() {
-    const pages = document.querySelectorAll("form#eligibility div[id^=page-]");
-    for (const page of pages) {
-      const pageNumber = page.id.split("-")[1];
-      finalPageNumber = Math.max(finalPageNumber, pageNumber);
-    }
-    console.log(finalPageNumber);
+  function gatherPages() {
+    //const sections = document.querySelectorAll("div.elig_section");
+    //for (let i = 0; i < sections.length; i++) {
+      //let sectionObj = {"section": sections[i], "pages": []};
+      //sections[i].idx = i;
+      //sections[i].pages = [];
+      //sectionMap[sections[i].id] = sections[i];
+      const pages = document.querySelectorAll("div.elig_page");
+      for (let j = 0; j < pages.length; j++) {
+        pageMap[pages[j].id] = pages[j];
+        pages[j].idx = j;
+        pages[j].section = pages[j].parentElement;
+        //sections[i].pages.push(pages[j]);
+        pageArray.push(pages[j]);
+      }
+      //pageArray.push(sections[i]);
+    //}
+    console.log(pageArray);
+    //console.log(sectionMap);
+    console.log(pageMap);
+    //currentSection = pageArray[0];
+    currentPage = pageArray[0];
+  }
+
+  function connectPages() {
+    pageMap["page-select-likes"].next = function() {
+      const optCSelected = document.getElementById("likes-days").checked;
+      if (optCSelected) {
+        return pageMap["page-today"];
+      } else {
+        return pageMap["page-color"];
+      }
+    };
   }
 
   function nextPage() {
-    if (currentPageNumber < finalPageNumber) {
-      setPageVisibility(currentPageNumber, false);
-      currentPageNumber++;
-      setPageVisibility(currentPageNumber, true);
-      configureButtons(currentPageNumber);
-      updateProgress(currentPageNumber);
+    //console.log(currentSection);
+    console.dir(currentPage);
+    console.log(currentPage.idx);
+    //console.log(currentSection.pages);
+    //console.log(currentPage.parentElement.pages);
+    setElementVisibility(currentPage, false);
+    let nextPage = pageArray[currentPage.idx + 1];
+    if (currentPage?.next) {
+      nextPage = currentPage.next();
     }
-    console.log(currentPageNumber);
+    console.dir(nextPage);
+    if (nextPage) {
+      setElementVisibility(nextPage, true);
+      if (nextPage.section.id != currentPage.section.id) {
+        setElementVisibility(currentPage.section, false);
+        setElementVisibility(nextPage.section, true);
+      }
+      currentPage = nextPage;
+      //currentSection = nextSection;
+    }
+    
   }
 
   function prevPage() {
@@ -175,7 +248,9 @@ pageClass: "page-public-assistance"
 
   // Script entry point.
   function run() {
-    countPages();
+    // countPages();
+    gatherPages();
+    connectPages();
     addListeners();
   }
 
