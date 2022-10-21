@@ -152,27 +152,31 @@ pageClass: "page-public-assistance"
 
   function configureButtons(page) {
     let finalPage = !page.next()
+    let firstPage = !page.previous
     if (finalPage) {
-      //setBackVisibility(true);
+      setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(true);
+    } else if (firstPage) {
+      setBackVisibility(false);
+      setNextVisibility(true);
+      setSubmitVisibility(false);
     } else {
-      //setBackVisibility(true);
+      setBackVisibility(true);
       setNextVisibility(true);
       setSubmitVisibility(false);
     }
   }
 
   function gatherPages() {
-    const pages = document.querySelectorAll("div.elig_page");
-    for (let j = 0; j < pages.length; j++) {
-      pageMap[pages[j].id] = pages[j];
-      pages[j].idx = j;
-      pages[j].section = pages[j].parentElement;
-      pages[j].next = function() {
-        return pages[j + 1];
+    pageArray = document.querySelectorAll("div.elig_page");
+    for (let j = 0; j < pageArray.length; j++) {
+      pageArray[j].idx = j;
+      pageArray[j].section = pageArray[j].parentElement;
+      pageArray[j].next = function() {
+        return pageArray[j + 1];
       };
-      pageArray.push(pages[j]);
+      pageMap[pageArray[j].id] = pageArray[j];
     }
     console.log(pageArray);
     console.log(pageMap);
@@ -202,6 +206,7 @@ pageClass: "page-public-assistance"
         setElementVisibility(currentPage.section, false);
         setElementVisibility(nextPage.section, true);
       }
+      nextPage.previous = currentPage;
       currentPage = nextPage;
     }
     configureButtons(currentPage);
@@ -210,14 +215,18 @@ pageClass: "page-public-assistance"
   }
 
   function prevPage() {
-    if (currentPageNumber > 0) {
-      setPageVisibility(currentPageNumber, false);
-      currentPageNumber--;
-      setPageVisibility(currentPageNumber, true);
-      configureButtons(currentPageNumber);
-      updateProgress(currentPageNumber);
+    let previousPage = currentPage.previous;
+    if (previousPage) {
+      setElementVisibility(currentPage, false);
+      setElementVisibility(previousPage, true);
+      if (previousPage.section.id != currentPage.section.id) {
+        setElementVisibility(currentPage.section, false);
+        setElementVisibility(previousPage.section, true);
+      }
+      currentPage = previousPage;
     }
-    console.log(currentPageNumber);
+    configureButtons(currentPage);
+    updateProgress(currentPage);
   }
 
   function submitForm() {
