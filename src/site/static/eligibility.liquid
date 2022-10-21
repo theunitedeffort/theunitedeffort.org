@@ -134,13 +134,14 @@ pageClass: "page-public-assistance"
     setElementVisibility(backButton, makeVisible);
   }
 
-  function updateProgress(pageNumber) {
+  function updateProgress(page) {
     const doneVal = document.getElementById("done-val");
     const todoVal = document.getElementById("to-do-val");
     const doneBar = document.getElementById("done-bar");
     const todoBar = document.getElementById("to-do-bar");
-    if (finalPageNumber > 0) {
-      const donePercent = 100 * Math.max(0, pageNumber - 1) / finalPageNumber;
+    const numPages = pageArray.length;
+    if (numPages > 0) {
+      const donePercent = 100 * Math.max(0, page.idx) / numPages;
       const todoPercent = 100 - donePercent;
       doneBar.style.width = donePercent + "%";
       todoBar.style.width = todoPercent + "%";
@@ -149,50 +150,39 @@ pageClass: "page-public-assistance"
     }
   }
 
-  function configureButtons(pageNumber) {
-    if (pageNumber == 0) {
-      setBackVisibility(false);
-      setNextVisibility(true);
-      setSubmitVisibility(false);
-    } else if (pageNumber == finalPageNumber) {
-      setBackVisibility(true);
+  function configureButtons(page) {
+    let finalPage = !page.next()
+    if (finalPage) {
+      //setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(true);
     } else {
-      setBackVisibility(true);
+      //setBackVisibility(true);
       setNextVisibility(true);
       setSubmitVisibility(false);
     }
   }
 
   function gatherPages() {
-    //const sections = document.querySelectorAll("div.elig_section");
-    //for (let i = 0; i < sections.length; i++) {
-      //let sectionObj = {"section": sections[i], "pages": []};
-      //sections[i].idx = i;
-      //sections[i].pages = [];
-      //sectionMap[sections[i].id] = sections[i];
-      const pages = document.querySelectorAll("div.elig_page");
-      for (let j = 0; j < pages.length; j++) {
-        pageMap[pages[j].id] = pages[j];
-        pages[j].idx = j;
-        pages[j].section = pages[j].parentElement;
-        //sections[i].pages.push(pages[j]);
-        pageArray.push(pages[j]);
-      }
-      //pageArray.push(sections[i]);
-    //}
+    const pages = document.querySelectorAll("div.elig_page");
+    for (let j = 0; j < pages.length; j++) {
+      pageMap[pages[j].id] = pages[j];
+      pages[j].idx = j;
+      pages[j].section = pages[j].parentElement;
+      pages[j].next = function() {
+        return pages[j + 1];
+      };
+      pageArray.push(pages[j]);
+    }
     console.log(pageArray);
-    //console.log(sectionMap);
     console.log(pageMap);
-    //currentSection = pageArray[0];
     currentPage = pageArray[0];
   }
 
   function connectPages() {
     pageMap["page-select-likes"].next = function() {
-      const optCSelected = document.getElementById("likes-days").checked;
-      if (optCSelected) {
+      const likesDays = document.getElementById("likes-days").checked;
+      if (likesDays) {
         return pageMap["page-today"];
       } else {
         return pageMap["page-color"];
@@ -201,26 +191,21 @@ pageClass: "page-public-assistance"
   }
 
   function nextPage() {
-    //console.log(currentSection);
     console.dir(currentPage);
     console.log(currentPage.idx);
-    //console.log(currentSection.pages);
-    //console.log(currentPage.parentElement.pages);
-    setElementVisibility(currentPage, false);
-    let nextPage = pageArray[currentPage.idx + 1];
-    if (currentPage?.next) {
-      nextPage = currentPage.next();
-    }
+    nextPage = currentPage.next();
     console.dir(nextPage);
     if (nextPage) {
+      setElementVisibility(currentPage, false);
       setElementVisibility(nextPage, true);
       if (nextPage.section.id != currentPage.section.id) {
         setElementVisibility(currentPage.section, false);
         setElementVisibility(nextPage.section, true);
       }
       currentPage = nextPage;
-      //currentSection = nextSection;
     }
+    configureButtons(currentPage);
+    updateProgress(currentPage);
     
   }
 
