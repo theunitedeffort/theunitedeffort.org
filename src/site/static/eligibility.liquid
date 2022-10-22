@@ -7,6 +7,14 @@ pageClass: "page-public-assistance"
 ---
 
 <h1>{{title}}</h1>
+
+<p>
+  Use this tool to find assistance programs for which you qualify.  Fill in each field to the best of your knowledge.  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
+</p>
+<p>
+  After entering your information, you will be provided with a list of assistance programs you can apply for.
+</p>
+
 <div>
   <div class="progress_bar flex"><div id="done-bar" class="progress_bar done"></div><div id="to-do-bar" class="progress_bar remaining"></div></div>
   <div class="flex">
@@ -20,20 +28,21 @@ pageClass: "page-public-assistance"
   </ul>
 </div>
 
+
 <form id="eligibility">
   <div id="section-intro" class="elig_section" >
     <div id="page-intro" class="elig_page">
       <p>
-        Use this tool to find assistance programs for which you qualify.  Fill in each field to the best of your knowledge.  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
+        Introductory text.
       </p>
       <p>
-        After entering your information, you will be provided with a list of assistance programs you can apply for.
+        This form will ask you about a variety of things.
       </p>
     </div>
   </div>
 
   <div id="section-things-you-like" class="elig_section hidden">
-    <h2>Things You Like</h2>
+    <h2>Yourself</h2>
     <p>
       This section-level text will be shown for every page in this section.
     </p>
@@ -73,7 +82,7 @@ pageClass: "page-public-assistance"
   </div>
   
   <div id="section-color" class="elig_section hidden">
-    <h2>All About Colors</h2>
+    <h2>Your Household</h2>
     <div id="page-color" class="elig_page hidden">
       <p>
         Here we are in a new section.
@@ -85,8 +94,18 @@ pageClass: "page-public-assistance"
     </div>
   </div>
 
+  <div id="section-income" class="elig_section hidden">
+    <h2>Income</h2>
+    <div id="page-income" class="elig_page hidden"></div>
+  </div>
+
+  <div id="section-existing-assistance" class="elig_section hidden">
+    <h2>Existing Assistance</h2>
+    <div id="page-assistance" class="elig_page hidden"></div>
+  </div>
+
   <div id="section-results" class="hidden">
-    <h2>Form Results</h2>
+    <h2>Results</h2>
     <div id="page-results" class="elig_page hidden">
       <p>
         This is an example results page that would show content based on form input values.
@@ -199,7 +218,7 @@ pageClass: "page-public-assistance"
         continue;
       }
       const button = document.createElement("button");
-      button.className = "btn btn_secondary";
+      //button.className = "btn btn_secondary";
       button.textContent = heading.textContent;
       const listItem = document.createElement("li");
       console.log(button);
