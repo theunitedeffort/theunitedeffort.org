@@ -15,10 +15,9 @@ pageClass: "page-public-assistance"
   </div>
 </div>
 
-<div class="section_map flex">
-  <div class="section_marker badge">Section Name</div>
-  <div class="section_marker badge">Next Section</div>
-  <div class="section_marker badge">Another Section</div>
+<div class="section_map">
+  <ul>
+  </ul>
 </div>
 
 <form id="eligibility">
@@ -113,7 +112,6 @@ pageClass: "page-public-assistance"
   let finalPageNumber = 0;
   // TODO: is it necessary to group pages by section in the array?
   let pageArray = [];
-  let sectionMap = {};
   let pageMap = {};
   
   let currentPage;
@@ -190,15 +188,36 @@ pageClass: "page-public-assistance"
     }
   }
 
+  function buildSectionMap() {
+    sectionSet = new Set(pageArray.map(p => p.section.id));
+    console.log(sectionSet);
+    const sectionMapList = document.querySelector("div.section_map ul");
+    for (const sectionId of sectionSet) {
+      const section = document.getElementById(sectionId);
+      const heading = section.querySelector("h2");
+      if (!heading) {
+        continue;
+      }
+      const button = document.createElement("button");
+      button.className = "btn btn_secondary";
+      button.textContent = heading.textContent;
+      const listItem = document.createElement("li");
+      console.log(button);
+      listItem.appendChild(button);
+      sectionMapList.appendChild(listItem);
+    }
+  }
+
   function gatherPages() {
-    pageArray = document.querySelectorAll("div.elig_page");
-    for (let j = 0; j < pageArray.length; j++) {
-      pageArray[j].idx = j;
-      pageArray[j].section = pageArray[j].parentElement;
-      pageArray[j].next = function() {
-        return pageArray[j + 1];
+    pages = document.querySelectorAll("div.elig_page");
+    for (let j = 0; j < pages.length; j++) {
+      pages[j].idx = j;
+      pages[j].section = pages[j].parentElement;
+      pages[j].next = function() {
+        return pages[j + 1];
       };
-      pageMap[pageArray[j].id] = pageArray[j];
+      pageMap[pages[j].id] = pages[j];
+      pageArray.push(pages[j]);
     }
     console.log(pageArray);
     console.log(pageMap);
@@ -267,9 +286,9 @@ pageClass: "page-public-assistance"
 
   // Script entry point.
   function run() {
-    // countPages();
     gatherPages();
     connectPages();
+    buildSectionMap();
     addListeners();
   }
 
