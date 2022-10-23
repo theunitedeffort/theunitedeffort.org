@@ -15,19 +15,10 @@ pageClass: "page-public-assistance"
   After entering your information, you will be provided with a list of assistance programs you can apply for.
 </p>
 
-<div class="hidden">
-  <div class="progress_bar flex"><div id="done-bar" class="progress_bar done"></div><div id="to-do-bar" class="progress_bar remaining"></div></div>
-  <div class="flex">
-    <span class="badge badge__done"><span id="done-val" class="bold">0</span><span class="bold">%</span> done</span>
-    <span class="badge badge__remaining"><span id="to-do-val" class="bold">100</span><span class="bold">%</span> remaining</span>
-  </div>
-</div>
-
 <div id="form-top" class="section_map">
   <ul>
   </ul>
 </div>
-
 
 <form id="eligibility">
   <div id="section-intro" class="elig_section" >
@@ -108,7 +99,7 @@ pageClass: "page-public-assistance"
     </div>
   </div>
 
-  <div id="section-results" class="hidden">
+  <div id="section-results" class="elig_section hidden">
     <h2>Results</h2>
     <div id="page-results" class="elig_page hidden">
       <p>
@@ -131,14 +122,7 @@ pageClass: "page-public-assistance"
 </form>
 
 <script>
-  let currentPageNumber = 0;
-  let finalPageNumber = 0;
-  // TODO: is it necessary to group pages by section in the array?
-  let pageArray = [];
-  let pageMap = {};
-  
   let currentPage;
-  let currentSection;
 
   function setElementVisibility(elem, makeVisible) {
     if (elem) {
@@ -148,11 +132,6 @@ pageClass: "page-public-assistance"
         elem.classList.add("hidden");
       }
     }
-  }
-
-  function setPageVisibility(pageNumber, makeVisible) {
-    const page = document.getElementById("page-" + pageNumber);
-    setElementVisibility(page, makeVisible);
   }
 
   function setSubmitVisibility(makeVisible) {
@@ -174,20 +153,11 @@ pageClass: "page-public-assistance"
     document.getElementById("form-top").scrollIntoView();
   }
 
-  function updateProgress(page) {
-    const doneVal = document.getElementById("done-val");
-    const todoVal = document.getElementById("to-do-val");
-    const doneBar = document.getElementById("done-bar");
-    const todoBar = document.getElementById("to-do-bar");
-    const numPages = pageArray.length;
-    if (numPages > 2) {
-      // Ignore intro page and results page.
-      const donePercent = 100 * Math.max(0, page.idx - 1) / (numPages - 2);
-      const todoPercent = 100 - donePercent;
-      doneBar.style.width = donePercent + "%";
-      todoBar.style.width = todoPercent + "%";
-      doneVal.textContent = donePercent.toFixed(0);
-      todoVal.textContent = todoPercent.toFixed(0);
+  function markSectionDone(section) {
+    if (section.stepButton) {
+      section.stepButton.classList.remove("todo");
+      section.stepButton.disabled = false;
+      section.stepButton.classList.add("done");
     }
   }
 
@@ -215,147 +185,105 @@ pageClass: "page-public-assistance"
     }
   }
 
-  function buildSectionMap() {
-    sectionSet = new Set(pageArray.map(p => p.section.id));
-    console.log(sectionSet);
-    const sectionMapList = document.querySelector("div.section_map ul");
-    for (const sectionId of sectionSet) {
-      const section = document.getElementById(sectionId);
+  function buildStepIndicator() {
+    const allSections = document.querySelectorAll("div.elig_section");
+    console.log(allSections);
+    const stepIndicatorList = document.querySelector("div.section_map ul");
+    for (const section of allSections) {
       const heading = section.querySelector("h2");
       if (!heading) {
         continue;
       }
       const button = document.createElement("button");
-      button.id = "nav-" + sectionId;
+      button.id = "nav-" + section.id;
+      button.dataset.sectionId = section.id;
       button.className = "todo";
       button.textContent = heading.textContent;
       button.disabled = true;
-      button.addEventListener("click", handleNavigateEvent);
+      button.addEventListener("click", toSection);
+      section.stepButton = button;
       const listItem = document.createElement("li");
       console.log(button);
       listItem.appendChild(button);
-      sectionMapList.appendChild(listItem);
+      stepIndicatorList.appendChild(listItem);
     }
   }
 
-  function gatherPages() {
-    pages = document.querySelectorAll("div.elig_page");
-    for (let j = 0; j < pages.length; j++) {
-      pages[j].idx = j;
-      pages[j].section = pages[j].parentElement;
-      pages[j].next = function() {
-        return pages[j + 1];
+  function setUpUi() {
+    buildStepIndicator();
+  }
+
+  function makePages() {
+    pageArray = Array.from(document.querySelectorAll("div.elig_page"));
+    pageById = {};
+    for (let j = 0; j < pageArray.length; j++) {
+      pageArray[j].section = pageArray[j].parentElement;
+      pageArray[j].next = function() {
+        return pageArray[j + 1];
       };
-      pageMap[pages[j].id] = pages[j];
-      pageArray.push(pages[j]);
+      pageById[pageArray[j].id] = pageArray[j];
     }
     console.log(pageArray);
-    console.log(pageMap);
+    console.log(pageById);
     currentPage = pageArray[0];
+    connectPages();
   }
 
-  function connectPages() {
-    pageMap["page-select-likes"].next = function() {
+  function connectPages(pageById) {
+    pageById["page-select-likes"].next = function() {
       const likesDays = document.getElementById("likes-days").checked;
       if (likesDays) {
-        return pageMap["page-today"];
+        return pageById["page-today"];
       } else {
-        return pageMap["page-color"];
+        return pageById["page-color"];
       }
     };
   }
 
-  function navigateToSection(sectionId) {
-    const toPage = pageArray.filter(p => p.section.id == sectionId)[0];
-    console.log(toPage);
-    if (toPage) {
-      //for (const page of pageArray) {
-      setElementVisibility(currentPage, false);
+  function switchToPage(toPage) {
+    setElementVisibility(currentPage, false);
+    setElementVisibility(toPage, true);
+    if (toPage.section.id != currentPage.section.id) {
       setElementVisibility(currentPage.section, false);
-      //}
-      setElementVisibility(toPage, true);
       setElementVisibility(toPage.section, true);
-
-      const currentSectionNav = document.getElementById("nav-" + currentPage.section.id);
-      const toSectionNav = document.getElementById("nav-" + toPage.section.id);
-      console.log(currentSectionNav);
-      console.log(toSectionNav);
-      if (currentSectionNav) {
-        currentSectionNav.classList.remove("in_progress");
+      if (currentPage.section.stepButton) {
+        currentPage.section.stepButton.classList.remove("in_progress");
       }
-      if (toSectionNav) {
-        toSectionNav.classList.add("in_progress");
+      if (toPage.section.stepButton) {
+        toPage.section.stepButton.classList.add("in_progress");
       }
+    }
+    configureButtons(toPage);
+    resetScroll();
+    currentPage = toPage;
+  }
 
-      currentPage = toPage;
-      configureButtons(currentPage);
-      resetScroll();
+  function toSection() {
+    const section = document.getElementById(this.dataset.sectionId);
+    const toPage = section.querySelector("div.elig_page");
+    // pageArray.filter(
+    //   p => p.section.id == this.dataset.sectionId)[0];
+    if (toPage) {
+      switchToPage(toPage);
     }
   }
 
-  function handleNavigateEvent() {
-    const sectionId = this.id.split("nav-")[1];
-    console.log(sectionId);
-    navigateToSection(sectionId);
-  }
-
-  function showNextPage() {
-    console.dir(currentPage);
-    console.log(currentPage.idx);
-    let nextPage = currentPage.next();
-    console.dir(nextPage);
+  function toNextPage() {
+    const nextPage = currentPage.next();
     if (nextPage) {
-      setElementVisibility(currentPage, false);
-      setElementVisibility(nextPage, true);
       if (nextPage.section.id != currentPage.section.id) {
-        setElementVisibility(currentPage.section, false);
-        setElementVisibility(nextPage.section, true);
-        const currentSectionNav = document.getElementById("nav-" + currentPage.section.id);
-        const nextSectionNav = document.getElementById("nav-" + nextPage.section.id);
-        console.log(currentSectionNav);
-        console.log(nextSectionNav);
-        if (currentSectionNav) {
-          currentSectionNav.classList.remove("todo");
-          currentSectionNav.disabled = false;
-          currentSectionNav.classList.add("done");
-          currentSectionNav.classList.remove("in_progress");
-        }
-        if (nextSectionNav) {
-          nextSectionNav.classList.add("in_progress");
-        }
+        markSectionDone(currentPage.section);
       }
       nextPage.previous = currentPage;
-      currentPage = nextPage;
+      switchToPage(nextPage);
     }
-    configureButtons(currentPage);
-    updateProgress(currentPage);
-    resetScroll();
   }
 
-  function showPrevPage() {
-    let previousPage = currentPage.previous;
+  function toPrevPage() {
+    const previousPage = currentPage.previous;
     if (previousPage) {
-      setElementVisibility(currentPage, false);
-      setElementVisibility(previousPage, true);
-      if (previousPage.section.id != currentPage.section.id) {
-        setElementVisibility(currentPage.section, false);
-        setElementVisibility(previousPage.section, true);
-        const currentSectionNav = document.getElementById("nav-" + currentPage.section.id);
-        const prevSectionNav = document.getElementById("nav-" + previousPage.section.id);
-        console.log(currentSectionNav);
-        console.log(prevSectionNav);
-        if (currentSectionNav) {
-          currentSectionNav.classList.remove("in_progress");
-        }
-        if (prevSectionNav) {
-          prevSectionNav.classList.add("in_progress");
-        }
-      }
-      currentPage = previousPage;
+      switchToPage(previousPage);      
     }
-    configureButtons(currentPage);
-    updateProgress(currentPage);
-    resetScroll();
   }
 
   function computeEligibility() {
@@ -373,16 +301,18 @@ pageClass: "page-public-assistance"
   }
 
   function addListeners() {
-    document.getElementById("next-button").addEventListener("click", showNextPage);
-    document.getElementById("back-button").addEventListener("click", showPrevPage);
+    document.getElementById("next-button").addEventListener("click", toNextPage);
+    document.getElementById("back-button").addEventListener("click", toPrevPage);
     document.getElementById("submit-button").addEventListener("click", submitForm);
   }
 
   // Script entry point.
   function run() {
-    gatherPages();
-    connectPages();
-    buildSectionMap();
+    makePages();
+    setUpUi();
+    // gatherPages();
+    // connectPages();
+    // buildStepIndicator();
     addListeners();
   }
 
