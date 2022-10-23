@@ -187,7 +187,6 @@ pageClass: "page-public-assistance"
 
   function buildStepIndicator() {
     const allSections = document.querySelectorAll("div.elig_section");
-    console.log(allSections);
     const stepIndicatorList = document.querySelector("div.section_map ul");
     for (const section of allSections) {
       const heading = section.querySelector("h2");
@@ -203,7 +202,6 @@ pageClass: "page-public-assistance"
       button.addEventListener("click", toSection);
       section.stepButton = button;
       const listItem = document.createElement("li");
-      console.log(button);
       listItem.appendChild(button);
       stepIndicatorList.appendChild(listItem);
     }
@@ -214,19 +212,17 @@ pageClass: "page-public-assistance"
   }
 
   function makePages() {
-    pageArray = Array.from(document.querySelectorAll("div.elig_page"));
+    pages = document.querySelectorAll("div.elig_page");
     pageById = {};
-    for (let j = 0; j < pageArray.length; j++) {
-      pageArray[j].section = pageArray[j].parentElement;
-      pageArray[j].next = function() {
-        return pageArray[j + 1];
+    for (let j = 0; j < pages.length; j++) {
+      pages[j].section = pages[j].parentElement;
+      pages[j].next = function() {
+        return pages[j + 1];
       };
-      pageById[pageArray[j].id] = pageArray[j];
+      pageById[pages[j].id] = pages[j];
     }
-    console.log(pageArray);
-    console.log(pageById);
-    currentPage = pageArray[0];
-    connectPages();
+    currentPage = pages[0];
+    connectPages(pageById);
   }
 
   function connectPages(pageById) {
@@ -258,11 +254,10 @@ pageClass: "page-public-assistance"
     currentPage = toPage;
   }
 
+  // TODO: Navigating to results this way should recompute the results.
   function toSection() {
     const section = document.getElementById(this.dataset.sectionId);
     const toPage = section.querySelector("div.elig_page");
-    // pageArray.filter(
-    //   p => p.section.id == this.dataset.sectionId)[0];
     if (toPage) {
       switchToPage(toPage);
     }
@@ -292,12 +287,8 @@ pageClass: "page-public-assistance"
 
   function submitForm() {
     computeEligibility();
-    showNextPage();
-    const resultsSectionNav = document.getElementById("nav-section-results");
-    if (resultsSectionNav) {
-      resultsSectionNav.classList.remove("todo");
-      resultsSectionNav.classList.add("done");
-    }
+    toNextPage();
+    markSectionDone(currentPage.section);
   }
 
   function addListeners() {
@@ -310,9 +301,6 @@ pageClass: "page-public-assistance"
   function run() {
     makePages();
     setUpUi();
-    // gatherPages();
-    // connectPages();
-    // buildStepIndicator();
     addListeners();
   }
 
