@@ -75,9 +75,14 @@
 
     form#eligibility {
       display: block;
+      margin-top: 1em;
 
-      div {
-        margin-top: 1em;
+      h2 {
+        margin-top: 0;
+      }
+
+      .elig_page div {
+        margin: 1em 0;
       }
 
       ul.multiselect {
@@ -98,6 +103,7 @@
 
     .section_map {
       padding-top: 1em;
+      margin-top: 2em;
       ul {
         list-style: none;
         padding: 0;
