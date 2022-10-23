@@ -8,7 +8,7 @@ pageClass: "page-public-assistance"
 
 <h1>{{title}}</h1>
 
-<p id="form-top">
+<p>
   Use this tool to find assistance programs for which you qualify.  Fill in each field to the best of your knowledge.  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
 </p>
 <p>
@@ -23,7 +23,7 @@ pageClass: "page-public-assistance"
   </div>
 </div>
 
-<div class="section_map">
+<div id="form-top" class="section_map">
   <ul>
   </ul>
 </div>
@@ -229,6 +229,8 @@ pageClass: "page-public-assistance"
       button.id = "nav-" + sectionId;
       button.className = "todo";
       button.textContent = heading.textContent;
+      button.disabled = true;
+      button.addEventListener("click", handleNavigateEvent);
       const listItem = document.createElement("li");
       console.log(button);
       listItem.appendChild(button);
@@ -263,6 +265,40 @@ pageClass: "page-public-assistance"
     };
   }
 
+  function navigateToSection(sectionId) {
+    const toPage = pageArray.filter(p => p.section.id == sectionId)[0];
+    console.log(toPage);
+    if (toPage) {
+      //for (const page of pageArray) {
+      setElementVisibility(currentPage, false);
+      setElementVisibility(currentPage.section, false);
+      //}
+      setElementVisibility(toPage, true);
+      setElementVisibility(toPage.section, true);
+
+      const currentSectionNav = document.getElementById("nav-" + currentPage.section.id);
+      const toSectionNav = document.getElementById("nav-" + toPage.section.id);
+      console.log(currentSectionNav);
+      console.log(toSectionNav);
+      if (currentSectionNav) {
+        currentSectionNav.classList.remove("in_progress");
+      }
+      if (toSectionNav) {
+        toSectionNav.classList.add("in_progress");
+      }
+
+      currentPage = toPage;
+      configureButtons(currentPage);
+      resetScroll();
+    }
+  }
+
+  function handleNavigateEvent() {
+    const sectionId = this.id.split("nav-")[1];
+    console.log(sectionId);
+    navigateToSection(sectionId);
+  }
+
   function showNextPage() {
     console.dir(currentPage);
     console.log(currentPage.idx);
@@ -280,6 +316,7 @@ pageClass: "page-public-assistance"
         console.log(nextSectionNav);
         if (currentSectionNav) {
           currentSectionNav.classList.remove("todo");
+          currentSectionNav.disabled = false;
           currentSectionNav.classList.add("done");
           currentSectionNav.classList.remove("in_progress");
         }
