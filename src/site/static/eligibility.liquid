@@ -8,14 +8,14 @@ pageClass: "page-public-assistance"
 
 <h1>{{title}}</h1>
 
-<p>
+<p id="form-top">
   Use this tool to find assistance programs for which you qualify.  Fill in each field to the best of your knowledge.  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
 </p>
 <p>
   After entering your information, you will be provided with a list of assistance programs you can apply for.
 </p>
 
-<div>
+<div class="hidden">
   <div class="progress_bar flex"><div id="done-bar" class="progress_bar done"></div><div id="to-do-bar" class="progress_bar remaining"></div></div>
   <div class="flex">
     <span class="badge badge__done"><span id="done-val" class="bold">0</span><span class="bold">%</span> done</span>
@@ -96,12 +96,16 @@ pageClass: "page-public-assistance"
 
   <div id="section-income" class="elig_section hidden">
     <h2>Income</h2>
-    <div id="page-income" class="elig_page hidden"></div>
+    <div id="page-income" class="elig_page hidden">
+      Example text
+    </div>
   </div>
 
   <div id="section-existing-assistance" class="elig_section hidden">
     <h2>Existing Assistance</h2>
-    <div id="page-assistance" class="elig_page hidden"></div>
+    <div id="page-assistance" class="elig_page hidden">
+      More form fields to do.
+    </div>
   </div>
 
   <div id="section-results" class="hidden">
@@ -166,6 +170,10 @@ pageClass: "page-public-assistance"
     setElementVisibility(backButton, makeVisible);
   }
 
+  function resetScroll() {
+    document.getElementById("form-top").scrollIntoView();
+  }
+
   function updateProgress(page) {
     const doneVal = document.getElementById("done-val");
     const todoVal = document.getElementById("to-do-val");
@@ -218,7 +226,8 @@ pageClass: "page-public-assistance"
         continue;
       }
       const button = document.createElement("button");
-      //button.className = "btn btn_secondary";
+      button.id = "nav-" + sectionId;
+      button.className = "todo";
       button.textContent = heading.textContent;
       const listItem = document.createElement("li");
       console.log(button);
@@ -265,12 +274,25 @@ pageClass: "page-public-assistance"
       if (nextPage.section.id != currentPage.section.id) {
         setElementVisibility(currentPage.section, false);
         setElementVisibility(nextPage.section, true);
+        const currentSectionNav = document.getElementById("nav-" + currentPage.section.id);
+        const nextSectionNav = document.getElementById("nav-" + nextPage.section.id);
+        console.log(currentSectionNav);
+        console.log(nextSectionNav);
+        if (currentSectionNav) {
+          currentSectionNav.classList.remove("todo");
+          currentSectionNav.classList.add("done");
+          currentSectionNav.classList.remove("in_progress");
+        }
+        if (nextSectionNav) {
+          nextSectionNav.classList.add("in_progress");
+        }
       }
       nextPage.previous = currentPage;
       currentPage = nextPage;
     }
     configureButtons(currentPage);
     updateProgress(currentPage);
+    resetScroll();
   }
 
   function showPrevPage() {
@@ -281,11 +303,22 @@ pageClass: "page-public-assistance"
       if (previousPage.section.id != currentPage.section.id) {
         setElementVisibility(currentPage.section, false);
         setElementVisibility(previousPage.section, true);
+        const currentSectionNav = document.getElementById("nav-" + currentPage.section.id);
+        const prevSectionNav = document.getElementById("nav-" + previousPage.section.id);
+        console.log(currentSectionNav);
+        console.log(prevSectionNav);
+        if (currentSectionNav) {
+          currentSectionNav.classList.remove("in_progress");
+        }
+        if (prevSectionNav) {
+          prevSectionNav.classList.add("in_progress");
+        }
       }
       currentPage = previousPage;
     }
     configureButtons(currentPage);
     updateProgress(currentPage);
+    resetScroll();
   }
 
   function computeEligibility() {
@@ -295,6 +328,11 @@ pageClass: "page-public-assistance"
   function submitForm() {
     computeEligibility();
     showNextPage();
+    const resultsSectionNav = document.getElementById("nav-section-results");
+    if (resultsSectionNav) {
+      resultsSectionNav.classList.remove("todo");
+      resultsSectionNav.classList.add("done");
+    }
   }
 
   function addListeners() {

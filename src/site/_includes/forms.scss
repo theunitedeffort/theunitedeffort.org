@@ -118,11 +118,11 @@
       button {
         font-family: var(--font-primary);
         font-size: 0.8em;
+        text-align: left;
         width: 100%;
         padding: 0.3em;
         border-style: solid;
         border-width: 0 0 0 5px;
-        border-color: var(--color-blue-dark);
         white-space: nowrap;
         border-radius: 0px;
         background-color: transparent;
@@ -132,6 +132,22 @@
         @include bp(narrow) {
           border-width: 5px 0 0 0;
         }
+      }
+
+      button.done {
+        border-color: var(--color-blue-dark);
+        color: var(--color-blue-dark);
+      }
+
+      button.todo {
+        border-color: var(--color-gray-700);
+        color: var(--color-gray-500);
+      }
+
+      button.in_progress {
+        border-color: var(--color-blue);
+        color: var(--color-blue);
+        font-weight: 700;
       }
     }
     
