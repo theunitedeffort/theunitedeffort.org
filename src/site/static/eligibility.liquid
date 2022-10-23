@@ -21,23 +21,23 @@ pageClass: "page-public-assistance"
 </div>
 
 <form id="eligibility">
-  <div id="section-intro" class="elig_section" >
-    <div id="page-intro" class="elig_page">
+  {% eligSection "intro" %}
+    {% eligPage "intro" %}
       <p>
         Introductory text.
       </p>
       <p>
         This form will ask you about a variety of things.
       </p>
-    </div>
-  </div>
+    {% endeligPage %}
+  {% endeligSection %}
 
-  <div id="section-things-you-like" class="elig_section hidden">
+  {% eligSection "yourself" %}
     <h2>Yourself</h2>
     <p>
       This section-level text will be shown for every page in this section.
     </p>
-    <div id="page-select-likes" class="elig_page hidden">
+    {% eligPage "select-likes" %}
       <div id="likes-wrapper">
         If "I like days of the week" is selected, a secondary follow-up page will be shown.  Otherwise, the form will move on to the next section.  Select all that apply:
         <ul class="multiselect">
@@ -55,8 +55,8 @@ pageClass: "page-public-assistance"
           </li>
         </ul>
       </div>
-    </div>
-    <div id="page-today" class="elig_page hidden">
+    {% endeligPage %}
+    {% eligPage "today" %}
       <p>
         This page is only shown if the user selected "I like days of the week" on the previous page.
       </p>
@@ -69,12 +69,12 @@ pageClass: "page-public-assistance"
         <label for="date">What is the date?</label>
         <input id="date" type="number">
       </div>
-    </div>
-  </div>
+    {% endeligPage %}
+  {% endeligSection %}
   
-  <div id="section-color" class="elig_section hidden">
+  {% eligSection "your-household" %}
     <h2>Your Household</h2>
-    <div id="page-color" class="elig_page hidden">
+    {% eligPage "color" %}
       <p>
         Here we are in a new section.
       </p>
@@ -82,26 +82,26 @@ pageClass: "page-public-assistance"
         <label for="favorite-color">What is your favorite color?</label>
         <input id="favorite-color" type="text">
       </div>
-    </div>
-  </div>
+    {% endeligPage %}
+  {% endeligSection %}
 
-  <div id="section-income" class="elig_section hidden">
+  {% eligSection "income" %}
     <h2>Income</h2>
-    <div id="page-income" class="elig_page hidden">
+    {% eligPage "income" %}
       Example text
-    </div>
-  </div>
+    {% endeligPage %}
+  {% endeligSection %}
 
-  <div id="section-existing-assistance" class="elig_section hidden">
+  {% eligSection "existing-assistance" %}
     <h2>Existing Assistance</h2>
-    <div id="page-assistance" class="elig_page hidden">
+    {% eligPage "assistance" %}
       More form fields to do.
-    </div>
-  </div>
+    {% endeligPage %}
+  {% endeligSection %}
 
-  <div id="section-results" class="elig_section hidden">
+  {% eligSection "results" %}
     <h2>Results</h2>
-    <div id="page-results" class="elig_page hidden">
+    {% eligPage "results" %}
       <p>
         This is an example results page that would show content based on form input values.
         <ul>
@@ -111,8 +111,8 @@ pageClass: "page-public-assistance"
           <li>Result 4</li>
         </ul>
       </p>
-    </div>
-  </div>
+    {% endeligPage %}
+  {% endeligSection %}
 
   <div id="controls">
     <button type="button" class="btn btn_secondary hidden" id="back-button">Back</button>
@@ -207,13 +207,19 @@ pageClass: "page-public-assistance"
     }
   }
 
-  function setUpUi() {
-    buildStepIndicator();
+  function showFirstPage() {
+    switchToPage(document.querySelector("div.elig_page"));
   }
 
-  function makePages() {
-    pages = document.querySelectorAll("div.elig_page");
-    pageById = {};
+  function setUpUi() {
+    buildStepIndicator();
+    addListeners();
+    showFirstPage();
+  }
+
+  function linkPages() {
+    const pages = document.querySelectorAll("div.elig_page");
+    const pageById = {};
     for (let j = 0; j < pages.length; j++) {
       pages[j].section = pages[j].parentElement;
       pages[j].next = function() {
@@ -221,11 +227,10 @@ pageClass: "page-public-assistance"
       };
       pageById[pages[j].id] = pages[j];
     }
-    currentPage = pages[0];
-    connectPages(pageById);
+    customPageLinking(pageById);
   }
 
-  function connectPages(pageById) {
+  function customPageLinking(pageById) {
     pageById["page-select-likes"].next = function() {
       const likesDays = document.getElementById("likes-days").checked;
       if (likesDays) {
@@ -239,13 +244,13 @@ pageClass: "page-public-assistance"
   function switchToPage(toPage) {
     setElementVisibility(currentPage, false);
     setElementVisibility(toPage, true);
-    if (toPage.section.id != currentPage.section.id) {
-      setElementVisibility(currentPage.section, false);
-      setElementVisibility(toPage.section, true);
-      if (currentPage.section.stepButton) {
+    if (toPage?.section.id != currentPage?.section.id) {
+      setElementVisibility(currentPage?.section, false);
+      setElementVisibility(toPage?.section, true);
+      if (currentPage?.section?.stepButton) {
         currentPage.section.stepButton.classList.remove("in_progress");
       }
-      if (toPage.section.stepButton) {
+      if (toPage?.section?.stepButton) {
         toPage.section.stepButton.classList.add("in_progress");
       }
     }
@@ -299,9 +304,8 @@ pageClass: "page-public-assistance"
 
   // Script entry point.
   function run() {
-    makePages();
+    linkPages();
     setUpUi();
-    addListeners();
   }
 
   run();
