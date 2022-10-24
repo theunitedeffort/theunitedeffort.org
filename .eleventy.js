@@ -320,6 +320,14 @@ module.exports = function(eleventyConfig) {
     }
   }
 
+  eleventyConfig.addPairedShortcode("eligPage", function(content, id) {
+    return `<div id="page-${id}" class="elig_page hidden">${content}</div>`
+  });
+
+  eleventyConfig.addPairedShortcode("eligSection", function(content, id) {
+    return `<div id="section-${id}" class="elig_section hidden">${content}</div>`
+  });
+
   // Generates a label tag for the given 'fieldName'. 
   // 
   // The parameter 'fields' is
