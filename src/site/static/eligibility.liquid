@@ -270,12 +270,18 @@ pageClass: "page-public-assistance"
   // represents the context of the event, i.e. the button that was clicked.
   function toSection() {
     const section = document.getElementById(this.dataset.sectionId);
+    if (section.id == "section-results") {
+      // Ensure results are always up-to-date prior to showing them.
+      // TODO: Determine if it would be better to invalidate results on
+      // form data change and require the user to click the submit button
+      // again before viewing results again.
+      computeEligibility();
+    }
     // Find the first page in the section.
     const toPage = section.querySelector("div.elig_page");
     if (toPage) {
       switchToPage(toPage);
     }
-    // TODO: Navigating to results with this function should recompute results.
   }
 
   // Moves to the next form page in the sequence.
