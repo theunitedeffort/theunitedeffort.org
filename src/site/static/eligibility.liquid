@@ -159,6 +159,20 @@ pageClass: "page-public-assistance"
     document.getElementById("form-top").scrollIntoView();
   }
 
+  // Asks the user to confirm they want to leave.
+  function confirmExit(event) {
+    event.preventDefault();
+    return event.returnValue = "Are you sure you want to exit?";
+  }
+
+  // Called when the user inputs data into a form element.
+  function onInput(event) {
+    // As soon as the user enters any data at all, register the beforeonload
+    // event listener so that they can confirm they want to exit the form
+    // when an unload is about to happen.
+    addEventListener("beforeunload", confirmExit);
+  }
+
   // Marks the section as complete in the step indicator.
   function markSectionDone(section) {
     if (section.stepButton) {
@@ -328,8 +342,15 @@ pageClass: "page-public-assistance"
     markSectionDone(currentPage.section);
   }
 
-  // Sets up listeners for the form control buttons.
-  function addButtonListeners() {
+  // Sets up listeners for the document.
+  function addListeners() {
+    // Form inputs
+    const inputs = document.querySelectorAll("input, textarea, select");
+    for (const input of inputs) {
+      input.addEventListener("input", onInput);
+    }
+
+    // Form control buttons
     document.getElementById("next-button").addEventListener("click", toNextPage);
     document.getElementById("back-button").addEventListener("click", toPrevPage);
     document.getElementById("submit-button").addEventListener("click", submitForm);
@@ -343,7 +364,6 @@ pageClass: "page-public-assistance"
   // Initializes the user interface.
   function initUi() {
     buildStepIndicator();
-    addButtonListeners();
     // All pages and sections are initially hidden by default.
     showFirstPage();
   }
@@ -402,6 +422,7 @@ pageClass: "page-public-assistance"
   function init() {
     linkPages();
     initUi();
+    addListeners();
   }
 
   init();

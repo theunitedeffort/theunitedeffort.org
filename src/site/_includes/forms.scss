@@ -130,7 +130,7 @@
         width: 100%;
         padding: 0.3em;
         border-style: solid;
-        border-width: 0 0 0 5px;
+        border-width: 0 0 0 6px;
         white-space: nowrap;
         border-radius: 0px;
         background-color: transparent;
@@ -138,7 +138,7 @@
         cursor: pointer;
 
         @include bp(narrow) {
-          border-width: 5px 0 0 0;
+          border-width: 6px 0 0 0;
         }
       }
 
