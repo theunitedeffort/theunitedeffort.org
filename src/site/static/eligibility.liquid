@@ -15,7 +15,7 @@ pageClass: "page-public-assistance"
   After entering your information, you will be provided with a list of assistance programs you can apply for.
 </p>
 
-<div id="form-top" class="section_map">
+<div id="form-top" class="step_indicator">
   <ul>
   </ul>
 </div>
@@ -38,7 +38,7 @@ pageClass: "page-public-assistance"
       This section-level text will be shown for every page in this section.
     </p>
     {% eligPage "select-likes" %}
-      <div id="likes-wrapper">
+      <div>
         If "I like days of the week" is selected, a secondary follow-up page will be shown.  Otherwise, the form will move on to the next section.  Select all that apply:
         <ul class="multiselect">
           <li>
@@ -60,12 +60,12 @@ pageClass: "page-public-assistance"
       <p>
         This page is only shown if the user selected "I like days of the week" on the previous page.
       </p>
-      <div id="weekday-wrapper">
+      <div>
         <label for="weekday">What day of the week is it?</label>
         <input id="weekday" type="text">
       </div>
 
-      <div id="date-wrapper">
+      <div>
         <label for="date">What is the date?</label>
         <input id="date" type="number">
       </div>
@@ -78,7 +78,7 @@ pageClass: "page-public-assistance"
       <p>
         Here we are in a new section.
       </p>
-      <div id="favorite-color-wrapper">
+      <div>
         <label for="favorite-color">What is your favorite color?</label>
         <input id="favorite-color" type="text">
       </div>
@@ -122,8 +122,10 @@ pageClass: "page-public-assistance"
 </form>
 
 <script>
+  // This global variable holds the current state of the form navigation.
   let currentPage;
 
+  // Shows or hides the element 'elem' via a class name.
   function setElementVisibility(elem, makeVisible) {
     if (elem) {
       if (makeVisible) {
@@ -134,25 +136,30 @@ pageClass: "page-public-assistance"
     }
   }
 
+  // Makes the submit button visible or hidden.
   function setSubmitVisibility(makeVisible) {
     const submitButton = document.getElementById("submit-button");
     setElementVisibility(submitButton, makeVisible);
   }
 
+  // Makes the next button visible or hidden.
   function setNextVisibility(makeVisible) {
     const nextButton = document.getElementById("next-button");
     setElementVisibility(nextButton, makeVisible);
   }
 
+  // Makes the back button visible or hidden.
   function setBackVisibility(makeVisible) {
     const backButton = document.getElementById("back-button");
     setElementVisibility(backButton, makeVisible);
   }
 
+  // Resets the viewport scroll so that the top of the form is visible.
   function resetScroll() {
     document.getElementById("form-top").scrollIntoView();
   }
 
+  // Marks the section as complete in the step indicator.
   function markSectionDone(section) {
     if (section.stepButton) {
       section.stepButton.classList.remove("todo");
@@ -161,92 +168,91 @@ pageClass: "page-public-assistance"
     }
   }
 
+  // Shows the appropriate buttons for the given 'page'.
   function configureButtons(page) {
     let resultsPage = !page.next();
-    // TODO: is there a better way than 'results'?
+    // TODO: Is there a better way than hard-coding this ID here?
     let finalInputPage = page.next()?.id == 'page-results'
     let firstPage = !page.previous;
     if (finalInputPage) {
+      // This is the last page with user input, so show a submit button rather
+      // than a generic next button.
       setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(true);
     } else if (firstPage) {
+      // This is the first page, so only show the next button.
       setBackVisibility(false);
       setNextVisibility(true);
       setSubmitVisibility(false);
     } else if (resultsPage) {
+      // This is the very last page, so only show the back button.
       setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(false);
     } else {
+      // This is a regular page, so show back an next buttons.
       setBackVisibility(true);
       setNextVisibility(true);
       setSubmitVisibility(false);
     }
   }
 
+  // Inserts a step indicator in the DOM based on the sections defined.
+  // The step indicator serves two purposes:
+  //   1. Show progress through the form
+  //   2. Enable navigation back to already-completed sections
+  // Note the text shown for each step in the progress indicator will be
+  // the same as the <h2> text under each section element.  If a section does
+  // not have a level 2 heading, no step indicator for that section will be 
+  // added.
   function buildStepIndicator() {
     const allSections = document.querySelectorAll("div.elig_section");
-    const stepIndicatorList = document.querySelector("div.section_map ul");
+    const stepIndicatorList = document.querySelector("div.step_indicator ul");
     for (const section of allSections) {
+      // TODO: Support different text for the h2 and the step indicator.
       const heading = section.querySelector("h2");
       if (!heading) {
+        // The section does not have a heading (e.g. intro) so don't put this
+        // section in the step indicator.
         continue;
       }
+      // Make the button that will be used for navigation to already-completed
+      // sections.
       const button = document.createElement("button");
       button.id = "nav-" + section.id;
       button.dataset.sectionId = section.id;
-      button.className = "todo";
       button.textContent = heading.textContent;
+      // Sections are to-do and un-clickable by default.  They will become
+      // clickable when the corresponding section is completed by the user.
+      button.className = "todo";
       button.disabled = true;
       button.addEventListener("click", toSection);
+      // Store a reference to the step indicator button in the section element
+      // for easier access later.
       section.stepButton = button;
+      // Make a container for the button.
       const listItem = document.createElement("li");
+      // Put the button in the container and add it to the step indicator.
       listItem.appendChild(button);
       stepIndicatorList.appendChild(listItem);
     }
   }
 
-  function showFirstPage() {
-    switchToPage(document.querySelector("div.elig_page"));
-  }
-
-  function setUpUi() {
-    buildStepIndicator();
-    addListeners();
-    showFirstPage();
-  }
-
-  function linkPages() {
-    const pages = document.querySelectorAll("div.elig_page");
-    const pageById = {};
-    for (let j = 0; j < pages.length; j++) {
-      pages[j].section = pages[j].parentElement;
-      pages[j].next = function() {
-        return pages[j + 1];
-      };
-      pageById[pages[j].id] = pages[j];
-    }
-    customPageLinking(pageById);
-  }
-
-  function customPageLinking(pageById) {
-    pageById["page-select-likes"].next = function() {
-      const likesDays = document.getElementById("likes-days").checked;
-      if (likesDays) {
-        return pageById["page-today"];
-      } else {
-        return pageById["page-color"];
-      }
-    };
-  }
-
+  // Switches the form to the page 'toPage'.
+  // The old page will be hidden and 'toPage' will be shown.  If the two pages
+  // are in different sections, the old section will be hidden and the new
+  // section containing 'toPage' will be shown.
   function switchToPage(toPage) {
+    // Show the new page and hide the old.
     setElementVisibility(currentPage, false);
     setElementVisibility(toPage, true);
+    // Check if the section is changing while also allowing toPage or
+    // currentPage to be undefined.
     if (toPage?.section.id != currentPage?.section.id) {
       setElementVisibility(currentPage?.section, false);
       setElementVisibility(toPage?.section, true);
+      // Update the step indicator to highlight the active section.
       if (currentPage?.section?.stepButton) {
         currentPage.section.stepButton.classList.remove("in_progress");
       }
@@ -259,54 +265,138 @@ pageClass: "page-public-assistance"
     currentPage = toPage;
   }
 
-  // TODO: Navigating to results this way should recompute the results.
+  // Brings the user to the first page of a section.
+  // This function is used as a step indicator click handler, and 'this' 
+  // represents the context of the event, i.e. the button that was clicked.
   function toSection() {
     const section = document.getElementById(this.dataset.sectionId);
+    // Find the first page in the section.
     const toPage = section.querySelector("div.elig_page");
     if (toPage) {
       switchToPage(toPage);
     }
+    // TODO: Navigating to results with this function should recompute results.
   }
 
+  // Moves to the next form page in the sequence.
+  // The sequence used is the one defined in linkPages.  
   function toNextPage() {
     const nextPage = currentPage.next();
     if (nextPage) {
       if (nextPage.section.id != currentPage.section.id) {
+        // We are moving into a new section, so the old section should be
+        // marked as completed.
         markSectionDone(currentPage.section);
       }
+      // Take note of the page we are coming from to allow backwards travel with 
+      // the Back form control button.
       nextPage.previous = currentPage;
       switchToPage(nextPage);
     }
   }
 
+  // Moves to the previous form page in the sequence.  
+  // This is not necessarily the form page the user was just on (for example, if 
+  // they used the step progress indicator to revisit a completed section).  
+  // Rather it can be thought of as the previous page as defined by the page
+  // sequence from linkPages().
   function toPrevPage() {
+    // Note currentPage.previous is set by toNextPage().
     const previousPage = currentPage.previous;
     if (previousPage) {
       switchToPage(previousPage);      
     }
   }
 
-  function computeEligibility() {
-    console.log("TODO: Determine program eligibility");
-  }
-
+  // "Submits" the form.
+  // Note no data is actually submitted anywhere, and instead the form inputs
+  // are read and processed by computeEligibility().
   function submitForm() {
     computeEligibility();
+    // Make the results page visible upon submit.
+    // The submit button acts a lot like a next button preceding the results 
+    // section.
     toNextPage();
+    // The results section should immediately be marked done, since there are
+    // no form fields to fill out in that section.
     markSectionDone(currentPage.section);
   }
 
-  function addListeners() {
+  // Sets up listeners for the form control buttons.
+  function addButtonListeners() {
     document.getElementById("next-button").addEventListener("click", toNextPage);
     document.getElementById("back-button").addEventListener("click", toPrevPage);
     document.getElementById("submit-button").addEventListener("click", submitForm);
   }
 
-  // Script entry point.
-  function run() {
-    linkPages();
-    setUpUi();
+  // Switches to the first form page in the document.
+  function showFirstPage() {
+    switchToPage(document.querySelector("div.elig_page"));
+  }
+  
+  // Initializes the user interface.
+  function initUi() {
+    buildStepIndicator();
+    addButtonListeners();
+    // All pages and sections are initially hidden by default.
+    showFirstPage();
   }
 
-  run();
+  // Gets all page elements and links them together in sequence.
+  // The link is made via a new method on each page element called next().
+  // This also adds the 'section' property to page elements for convenient
+  // access to the containing section element.
+  function linkPages() {
+    const pages = document.querySelectorAll("div.elig_page");
+    const pageById = {};
+    for (let j = 0; j < pages.length; j++) {
+      // Alias the parent element as 'section' for convenience.
+      pages[j].section = pages[j].parentElement;
+      // By default, each page will advance to the next page in the sequence,
+      // regardless of form input.  For conditional next-page selection, 
+      // add the logic to customPageLinking().
+      pages[j].next = function() {
+        return pages[j + 1];
+      };
+      // Store a hash map of page id to the page itself for faster page
+      // retrieval when defining custom page linking.
+      pageById[pages[j].id] = pages[j];
+    }
+    customPageLinking(pageById);
+  }
+
+  // Holder for all page advancing logic that is more complex than simply
+  // "the next page in the sequence".
+  function customPageLinking(pageById) {
+    // In this example, the page 'page-select-likes' advances to
+    // the page 'page-today' only if a certain form checkbox is selected.
+    // Otherwise, the page 'page-select-likes' advances to the page
+    // 'page-color'.
+    pageById["page-select-likes"].next = function() {
+      const likesDays = document.getElementById("likes-days").checked;
+      if (likesDays) {
+        return pageById["page-today"];
+      } else {
+        return pageById["page-color"];
+      }
+    };
+
+    // TODO: Use custom logic as needed for other pages to conditionally choose 
+    // the next page based on user input.
+  }
+
+  // Determines eligibility for programs based on user form input values.
+  function computeEligibility() {
+    console.log("TODO: Determine program eligibility");
+    // TODO: Use all form inputs to generate a list of programs the user
+    // is likely eligible for.
+  }
+
+  // Script entry point.
+  function init() {
+    linkPages();
+    initUi();
+  }
+
+  init();
 </script>

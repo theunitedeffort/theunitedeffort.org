@@ -101,7 +101,7 @@
       }
     }
 
-    .section_map {
+    .step_indicator {
       padding-top: 1em;
       margin-top: 2em;
       ul {
@@ -162,15 +162,6 @@
         font-weight: 700;
       }
     }
-
-    // .section_map::before {
-    //   display: block; 
-    //   content: " "; 
-    //   margin-top: -1em; 
-    //   height: 1em; 
-    //   visibility: hidden; 
-    //   pointer-events: none;
-    // }
     
     .option_columns {
       columns: 8em 3;
