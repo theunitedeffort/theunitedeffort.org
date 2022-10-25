@@ -120,7 +120,9 @@
 
       li {
         flex-basis: 100%;
-        padding: 0 0.2em;
+        padding: 0;
+        margin: 0;
+        line-height: 100%;
       }
 
       button {
@@ -128,38 +130,91 @@
         font-size: 0.8em;
         text-align: left;
         width: 100%;
-        padding: 0.3em;
+        padding: 0.1em 0.3em 1em 0.5em;
+        margin: 0.1em 0 0.1em 2.2em;
         border-style: solid;
-        border-width: 0 0 0 6px;
-        white-space: nowrap;
-        border-radius: 0px;
+        border-width: 0 0 0 0.5em;
+        border-radius: 0;
         background-color: transparent;
         color: var(--color-black);
         cursor: pointer;
+        position: relative;
+
+        &:enabled:hover {
+          border-width: 0 0 0 0.64em;
+          margin-left: 2.06em;
+        }
+
+        &:disabled {
+          cursor: default;
+        }
 
         @include bp(narrow) {
-          border-width: 6px 0 0 0;
+          border-width: 0.5em 0 0 0;
+          padding: 0.8em 0.3em 0.3em 0.3em;
+          margin: 0;
+          
+          &:enabled:hover {
+            // TODO: use variables and/or calc.
+            border-width: 0.64em 0 0 0;
+            margin-left: 0;
+            margin-top: -0.14em;
+            // padding-top: 0.73em;
+          }
         }
+
       }
 
-      button:disabled {
-        cursor: default;
+      button::before {
+        counter-increment: step-indicator; 
+        content: counter(step-indicator) ". "; 
+        position: absolute;
+        font-weight: 800;
+        border-radius: 99em;
+        border: solid 0.15em var(--color-white);
+        width: 2em;
+        height: 2em;
+        color: var(--color-white);
+        text-align: center;
+        content: counter(step-indicator);
+        top: -0.2em;
+        left: -2.8em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        @include bp(narrow) {
+          top: -1.2em;
+          left: -0.55em;
+        }
       }
 
       button.done {
         border-color: var(--color-blue-dark);
         color: var(--color-blue-dark);
+
+        &:before {
+          background-color: var(--color-blue-dark);
+        }
       }
 
       button.todo {
         border-color: var(--color-gray-700);
         color: var(--color-gray-500);
+
+        &:before {
+          background-color: var(--color-gray-700);
+        }
       }
 
       button.in_progress {
         border-color: var(--color-blue);
         color: var(--color-blue);
         font-weight: 700;
+
+        &:before {
+          background-color: var(--color-blue);
+        }
       }
     }
     

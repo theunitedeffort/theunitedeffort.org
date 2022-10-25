@@ -12,6 +12,7 @@
 }
 
 body {
+  counter-reset: step-indicator;
   min-height: 100vh;
   padding: 0;
   display: flex;
