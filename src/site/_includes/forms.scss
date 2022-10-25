@@ -104,7 +104,8 @@
 
     .step_indicator {
       padding-top: 1em;
-      margin-top: 2em;
+      margin-top: 1em;
+      
       ul {
         list-style: none;
         padding: 0;
@@ -116,6 +117,7 @@
 
         @include bp(narrow) {
           flex-direction: row;
+          margin-top: 2em;
         }
       }
 
@@ -132,9 +134,9 @@
         text-align: left;
         width: 100%;
         padding: 0.1em 0.3em 1em 0.5em;
-        margin: 0.1em 0 0.1em 2em;
+        margin: 0.1em 0 0.1em var(--vert-indicator-left-margin);
         border-style: solid;
-        border-width: 0 0 0 0.296em;
+        border-width: 0 0 0 var(--bar-left-width);
         border-radius: 0;
         background-color: transparent;
         color: var(--color-black);
@@ -142,8 +144,8 @@
         position: relative;
 
         &:enabled:hover {
-          border-width: 0 0 0 0.37em;
-          margin-left: 1.923em;
+          border-width: 0 0 0 calc(var(--bar-left-width) + var(--bar-left-width-hover-delta));
+          margin-left: calc(var(--vert-indicator-left-margin) - var(--bar-left-width-hover-delta));
         }
 
         &:disabled {
@@ -151,16 +153,14 @@
         }
 
         @include bp(narrow) {
-          border-width: 0.5em 0 0 0;
+          border-width: var(--bar-top-width) 0 0 0;
           padding: 0.8em 0.3em 0.3em 0.3em;
           margin: 0;
           
           &:enabled:hover {
-            // TODO: use variables and/or calc.
-            border-width: 0.64em 0 0 0;
+            border-width: calc(var(--bar-top-width) + var(--bar-top-width-hover-delta)) 0 0 0;
             margin-left: 0;
-            margin-top: -0.14em;
-            // padding-top: 0.73em;
+            margin-top: calc(-1 * var(--bar-top-width-hover-delta));
           }
         }
 
