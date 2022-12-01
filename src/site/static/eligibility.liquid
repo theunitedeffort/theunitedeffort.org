@@ -23,12 +23,8 @@ pageClass: "page-public-assistance"
 <form id="eligibility">
   {% eligSection "intro" %}
     {% eligPage "intro" %}
-      <p>
-        <!-- Introductory text. -->
-      </p>
-      <p>
-        <!-- This form will ask you about a variety of things. -->
-      </p>
+      <p></p>
+      <p></p>
     {% endeligPage %}
   {% endeligSection %}
 
@@ -38,52 +34,161 @@ pageClass: "page-public-assistance"
       This section-level text will be shown for every page in this section.
     </p>
 
+    {% eligPage "yourself-start" %}
+      <p>
+        Here we are in yourself-start page.
+      </p>
 
-    {% eligPage "select-likes" %}
       <div>
-        If "I like days of the week" is selected, a secondary follow-up page will be shown.  Otherwise, the form will move on to the next section.  Select all that apply:
         <div>
-          <label for="weekday">What day of the week is it?</label>
-          <input id="weekday" type="text">
+          <label for="age">How old are you?</label>
+          <input id="age" type="number" name="age" value="21" maxlength="3" min="1" max="130"/> years
         </div>
+
+        Select any of the following that describe you:
         <ul class="multiselect">
           <li>
-            <input id="likes-animals" type="checkbox" name="option">
-            <label for="likes-animals">I like animals.</label>
+            <input id="disabled" type="checkbox" name="option">
+            <label for="disabled">I am disabled.</label>
+          </li>
+          <li></li>
+          <li>
+            <input id="blind" type="checkbox" name="option">
+            <label for="blind">I am blind.</label>
           </li>
           <li>
-            <input id="likes-vehicles" type="checkbox" name="option">
-            <label for="likes-vehicles">I like vehicles.</label>
+            <input id="deaf" type="checkbox" name="option">
+            <label for="deaf">I am deaf or hard of hearing.</label>
           </li>
           <li>
-            <input id="likes-days" type="checkbox" name="option">
-            <label for="likes-days">I like days of the week.</label>
+            <input id="veteran" type="checkbox" name="option">
+            <label for="veteran">I am a U.S. veteren.</label>
+          </li>
+          <li>
+            <input id="pregnant" type="checkbox" name="option">
+            <label for="pregnant">I am pergnant or was pregnant within the last 6 months.</label>
+          </li>
+          <li>
+            <input id="feeding" type="checkbox" name="option">
+            <label for="feeding">I am breastfeeding a child younger than 1 year old.</label>
+          </li>
+          <li>
+            <input id="citizen" type="checkbox" name="option">
+            <label for="citizen">I am a U.S. citizen.</label>
           </li>
         </ul>
       </div>
     {% endeligPage %}
 
 
-
-    {% eligPage "today" %}
+    {% eligPage "head-of-household" %}
       <p>
-        This page is only shown if the user selected "I like days of the week" on the previous page.
+        Here we are in head-of-household page.
       </p>
       <div>
-        <label for="weekday">What day of the week is it?</label>
-        <input id="weekday" type="text">
+        Are you the head of your household?<br>
+        <input type="radio" id="headhh_yes" name="head_household" value="Yes">
+        <label for="yes">Yes</label><br>
+        <input type="radio" id="headhh_no" name="head_household" value="No">
+        <label for="no">No</label>
+      </div>
+    {% endeligPage %}
+
+
+    {% eligPage "disability-details" %}
+      <h3>About Your Disability</h3>
+      <p>
+        Here we are in disability-details page.
+      </p>
+      <div>
+        Does your disability prevent you from working?<br>
+        <input type="radio" id="working_yes" name="disability_details" value="Yes">
+        <label for="yes">Yes</label><br>
+        <input type="radio" id="working_no" name="disability_details" value="No">
+        <label for="no">No</label>
+      </div>
+      <div>
+        Do you use a guide, signal or training dog?<br>
+        <input type="radio" id="working_yes" name="disability_details" value="Yes">
+        <label for="yes">Yes</label><br>
+        <input type="radio" id="working_no" name="disability_details" value="No">
+        <label for="no">No</label>
+      </div>
+      <div>
+        Is your disability related to your military service?<br>
+        <input type="radio" id="working_yes" name="disability_details" value="Yes">
+        <label for="yes">Yes</label><br>
+        <input type="radio" id="working_no" name="disability_details" value="No">
+        <label for="no">No</label>
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "veteran-details" %}
+      <p>
+        Here we are in veteran-details1 page.
+      </p>
+    {% endeligPage %}
+
+    {% eligPage "veteran-details2" %}
+      <p>
+        Here we are in disability-details2 page.
+      </p>
+    {% endeligPage %}
+
+    {% eligPage "immigration-status" %}
+      <p>
+        Here we are in immigration-status page.
+      </p>
+    {% endeligPage %}
+
+    {%- comment -%}
+      {% eligPage "select-likes" %}
+      <div>
+      If "I like days of the week" is selected, a secondary follow-up page will be shown.  Otherwise, the form will move on to the next section.  Select all that apply:
+      <div>
+      <label for="weekday">What day of the week is it?</label>
+      <input id="weekday" type="text">
+      </div>
+      <ul class="multiselect">
+      <li>
+      <input id="likes-animals" type="checkbox" name="option">
+      <label for="likes-animals">I like animals.</label>
+      </li>
+      <li>
+      <input id="likes-vehicles" type="checkbox" name="option">
+      <label for="likes-vehicles">I like vehicles.</label>
+      </li>
+      <li>
+      <input id="likes-days" type="checkbox" name="option">
+      <label for="likes-days">I like days of the week.</label>
+      </li>
+      </ul>
+      </div>
+      {% endeligPage %}
+
+
+
+      {% eligPage "today" %}
+      <p>
+      This page is only shown if the user selected "I like days of the week" on the previous page.
+      </p>
+      <div>
+      <label for="weekday">What day of the week is it?</label>
+      <input id="weekday" type="text">
       </div>
 
       <div>
-        <label for="date">What is the date?</label>
-        <input id="date" type="number">
+      <label for="date">What is the date?</label>
+      <input id="date" type="number">
       </div>
-    {% endeligPage %}
+      {% endeligPage %}
+    {%- endcomment -%}
+
   {% endeligSection %}
 
   {% eligSection "household" %}
     <h2>Household</h2>
-    {% eligPage "color" %}
+    {% eligPage "household-start" %}
       <p>
         Here we are in a new section.
       </p>
@@ -437,12 +542,58 @@ pageClass: "page-public-assistance"
 // the page 'page-today' only if a certain form checkbox is selected.
 // Otherwise, the page 'page-select-likes' advances to the page
 // 'page-color'.
-    pageById["page-select-likes"].next = function() {
-      const likesDays = document.getElementById("likes-days").checked;
-      if (likesDays) {
-        return pageById["page-today"];
+    pageById["page-yourself-start"].next = function() {
+
+      const isUnderEighteen = document.getElementById("age").value < 18 && document.getElementById("age").value > 0
+      const isDisabled = document.getElementById("disabled").checked;
+      const isBlind = document.getElementById("blind").checked;
+      const isDeaf = document.getElementById("deaf").checked;
+      const isVeteran = document.getElementById("veteran").checked;
+      const isPregnant = document.getElementById("pregnant").checked;
+      const isFeeding = document.getElementById("feeding").checked;
+      const isCitizen = document.getElementById("citizen").checked;
+
+      if (isUnderEighteen) {
+        return pageById["page-head-of-household"];
+      }
+      if (isDisabled || isBlind || isDeaf) {
+        return pageById["page-disability-details"];
+      }
+      if (isVeteran) {
+        return pageById["page-veteran-details"];
+      }
+      if (isPregnant || isFeeding) {
+        return pageById["page-household-start"];
+      }
+      if (! isCitizen) {
+        return pageById["page-immigration-status"];
       } else {
-        return pageById["page-color"];
+        return pageById["page-household-start"];
+      }
+    };
+
+    pageById["page-head-of-household"].next = function() {
+      const isDisabled = document.getElementById("disabled").checked;
+      const isBlind = document.getElementById("blind").checked;
+      const isDeaf = document.getElementById("deaf").checked;
+      const isVeteran = document.getElementById("veteran").checked;
+      const isPregnant = document.getElementById("pregnant").checked;
+      const isFeeding = document.getElementById("feeding").checked;
+      const isCitizen = document.getElementById("citizen").checked;
+
+      if (isDisabled || isBlind || isDeaf) {
+        return pageById["page-disability-details"];
+      }
+      if (isVeteran) {
+        return pageById["page-veteran-details"];
+      }
+      if (isPregnant || isFeeding) {
+        return pageById["page-household-start"];
+      }
+      if (! isCitizen) {
+        return pageById["page-immigration-status"];
+      } else {
+        return pageById["page-household-start"];
       }
     };
 
