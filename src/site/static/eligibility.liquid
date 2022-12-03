@@ -36,7 +36,9 @@ pageClass: "page-public-assistance"
 
     {% eligPage "yourself-start" %}
       <p>
-        Here we are in yourself-start page.
+        {%- comment -%}
+          Here we are in yourself-start page.
+        {%- endcomment -%}
       </p>
 
       <div>
@@ -83,7 +85,9 @@ pageClass: "page-public-assistance"
 
     {% eligPage "head-of-household" %}
       <p>
-        Here we are in head-of-household page.
+        {%- comment -%}
+          Here we are in head-of-household page.
+        {%- endcomment -%}
       </p>
       <div>
         Are you the head of your household?<br>
@@ -98,91 +102,128 @@ pageClass: "page-public-assistance"
     {% eligPage "disability-details" %}
       <h3>About Your Disability</h3>
       <p>
-        Here we are in disability-details page.
+        {%- comment -%}
+          Here we are in disability-details page.
+        {%- endcomment -%}
       </p>
       <div>
         Does your disability prevent you from working?<br>
-        <input type="radio" id="working_yes" name="disability_details" value="Yes">
+        <input type="radio" id="dis_prev_work_yes" name="disability_details" value="Yes">
         <label for="yes">Yes</label><br>
-        <input type="radio" id="working_no" name="disability_details" value="No">
+        <input type="radio" id="dis_prev_work_no" name="disability_details" value="No">
         <label for="no">No</label>
       </div>
       <div>
         Do you use a guide, signal or training dog?<br>
-        <input type="radio" id="working_yes" name="disability_details" value="Yes">
+        <input type="radio" id="dis_guide_yes" name="disability_details" value="Yes">
         <label for="yes">Yes</label><br>
-        <input type="radio" id="working_no" name="disability_details" value="No">
+        <input type="radio" id="dis_guide_no" name="disability_details" value="No">
         <label for="no">No</label>
       </div>
       <div>
         Is your disability related to your military service?<br>
-        <input type="radio" id="working_yes" name="disability_details" value="Yes">
+        <input type="radio" id="dis_military_yes" name="disability_details" value="Yes">
         <label for="yes">Yes</label><br>
-        <input type="radio" id="working_no" name="disability_details" value="No">
+        <input type="radio" id="dis_military_no" name="disability_details" value="No">
         <label for="no">No</label>
       </div>
     {% endeligPage %}
 
     {% eligPage "veteran-details" %}
-      <p>
+      <h3>About Your Military Service</h3>
+      {%- comment -%}
+        <p>
         Here we are in veteran-details1 page.
-      </p>
+        </p>
+      {%- endcomment -%}
+
+      <div>
+        <label for="discharge">What is your discharge status?
+          <input type="text" id="your-discharge-status" list="discharge-status">
+          <datalist id="discharge-status">
+            <option value="Honorable"/>
+            <option value="General under honorable conditions"/>
+            <option value="Other than honorable (OTH)"/>
+            <option value="Bad conduct"/>
+            <option value="Dishonorable"/>
+          </datalist>
+        </label>
+      </div>
+
+      <div>
+        Select any of the following that describe you:
+        <ul class="multiselect">
+          <li>
+            <input id="enlisted" type="checkbox" name="option">
+            <label for="enlisted">I served as an enlisted person.</label>
+          </li>
+          <li></li>
+          <li>
+            <input id="officer" type="checkbox" name="option">
+            <label for="officer">I served as an officer.</label>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <label for="duty-periods">Enter details for you duty periods below:
+          <input type="text" id="your-duty-type" list="duty-type">
+          <datalist id="duty-type">
+            <option value="Active duty"/>
+            <option value="Active duty for training"/>
+            <option value="Inactive duty training"/>
+          </datalist>
+        </label>
+      </div>
+      <div>
+        <h5>
+          Served From:
+          <input type="datetime-local" id="served-from"> &nbsp; &nbsp; &nbsp;
+          Until:
+          <input type="datetime-local" id="served-from">
+        </h5>
+      </div>
+
     {% endeligPage %}
+
+
 
     {% eligPage "veteran-details2" %}
+      <h3>About Your Military Service</h3>
       <p>
-        Here we are in disability-details2 page.
+        Here we are in veteran-details2 page.
       </p>
     {% endeligPage %}
+
 
     {% eligPage "immigration-status" %}
-      <p>
+      <h3>About Your Immigration Status</h3>
+      {%- comment -%}
+        <p>
         Here we are in immigration-status page.
-      </p>
+        </p>
+      {%- endcomment -%}
+      <div>
+        Select<b>one</b>of the following that most accurately describes you:
+        <br>
+        <input type="radio" id="permanent_resident" name="immig_status" value="Yes">
+        <label for="yes">I have a Permanent Resident Card</label><br>
+
+        <input type="radio" id="qualified_noncitizen_gt5y" name="immig_status" value="Yes">
+        <label for="yes">I have been a qualified non-citizen for 5 years or more</label><br>
+
+        <input type="radio" id="qualified_noncitizen_le5y" name="immig_status" value="Yes">
+        <label for="yes">I have been a qualified non-citizen for less than 5 years</label><br>
+
+        <input type="radio" id="live_temporarily" name="immig_status" value="Yes">
+        <label for="yes">I am living in the U.S. temporarily</label><br>
+
+        <input type="radio" id="none_describe" name="immig_status" value="Yes">
+        <label for="yes">None of these describe my situation</label><br>
+      </div>
     {% endeligPage %}
 
-    {%- comment -%}
-      {% eligPage "select-likes" %}
-      <div>
-      If "I like days of the week" is selected, a secondary follow-up page will be shown.  Otherwise, the form will move on to the next section.  Select all that apply:
-      <div>
-      <label for="weekday">What day of the week is it?</label>
-      <input id="weekday" type="text">
-      </div>
-      <ul class="multiselect">
-      <li>
-      <input id="likes-animals" type="checkbox" name="option">
-      <label for="likes-animals">I like animals.</label>
-      </li>
-      <li>
-      <input id="likes-vehicles" type="checkbox" name="option">
-      <label for="likes-vehicles">I like vehicles.</label>
-      </li>
-      <li>
-      <input id="likes-days" type="checkbox" name="option">
-      <label for="likes-days">I like days of the week.</label>
-      </li>
-      </ul>
-      </div>
-      {% endeligPage %}
 
-
-
-      {% eligPage "today" %}
-      <p>
-      This page is only shown if the user selected "I like days of the week" on the previous page.
-      </p>
-      <div>
-      <label for="weekday">What day of the week is it?</label>
-      <input id="weekday" type="text">
-      </div>
-
-      <div>
-      <label for="date">What is the date?</label>
-      <input id="date" type="number">
-      </div>
-      {% endeligPage %}
-    {%- endcomment -%}
 
   {% endeligSection %}
 
