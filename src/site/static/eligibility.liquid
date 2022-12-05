@@ -220,16 +220,20 @@ pageClass: "page-public-assistance"
   }
 
   function onChangeNoIncome(event) {
-    let allIncomeTypes = document.querySelectorAll("ul#income-types input[type=checkbox]");
+    let wrapper = document.getElementById("income-types");
+    let allIncomeTypes = wrapper.querySelectorAll("input[type=checkbox]");
     for (const incomeType of allIncomeTypes) {
       if (incomeType == this) {
         continue;
       }
+      let label = wrapper.querySelector("label[for=" + incomeType.id + "]");
       if (this.checked) {
         incomeType.checked = false;
         incomeType.setAttribute("disabled", "disabled");
+        label.classList.add("disabled");
       } else {
         incomeType.removeAttribute("disabled");
+        label.classList.remove("disabled");
       }
     }
   }
