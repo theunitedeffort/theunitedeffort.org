@@ -88,7 +88,53 @@ pageClass: "page-public-assistance"
   {% eligSection "income" %}
     <h2>Income</h2>
     {% eligPage "income" %}
-      Example text
+      <p>
+        Select all sources of income for you and your household. Include income from all members of your household, including yourself.
+      </p>
+      <div>
+        <ul id="income-types" class="multiselect">      
+          <li>
+            <input id="income-has-wages" type="checkbox">
+            <label for="income-has-wages">Job wages, tips, or commission</label>
+          </li>
+          <li>
+            <input id="income-has-self-employed" type="checkbox">
+            <label for="income-has-self-employed">Income from self-employment</label>
+          </li>
+          <li>
+            <input id="income-has-ss" type="checkbox">
+            <label for="income-has-ss">Social Security benefits</label>
+          </li>
+          <li>
+            <input id="income-has-unemployment" type="checkbox">
+            <label for="income-has-unemployment">Unemployment benefits</label>
+          </li>
+          <li>
+            <input id="income-has-veterans" type="checkbox">
+            <label for="income-has-veterans">Veterans’ benefits</label>
+          </li>
+          <li>
+            <input id="income-has-workers-comp" type="checkbox">
+            <label for="income-has-workers-comp">Worker’s compensation</label>
+          </li>
+          <li>
+            <input id="income-has-child-support" type="checkbox">
+            <label for="income-has-child-support">Child support and alimony</label>
+          </li>
+          <li>
+            <input id="income-has-retirement" type="checkbox">
+            <label for="income-has-retirement">Retirement benefits</label>
+          </li>
+          <li>
+            <input id="income-has-other" type="checkbox">
+            <label for="income-has-other">Other source of income not listed here</label>
+          </li>
+          <li>
+            <input id="income-has-none" type="checkbox">
+            <label for="income-has-none">My household has no income of any kind</label>   
+          </li>     
+        </ul>
+      </div>
     {% endeligPage %}
   {% endeligSection %}
 
@@ -171,6 +217,21 @@ pageClass: "page-public-assistance"
     // event listener so that they can confirm they want to exit the form
     // when an unload is about to happen.
     addEventListener("beforeunload", confirmExit);
+  }
+
+  function onChangeNoIncome(event) {
+    let allIncomeTypes = document.querySelectorAll("ul#income-types input[type=checkbox]");
+    for (const incomeType of allIncomeTypes) {
+      if (incomeType == this) {
+        continue;
+      }
+      if (this.checked) {
+        incomeType.checked = false;
+        incomeType.setAttribute("disabled", "disabled");
+      } else {
+        incomeType.removeAttribute("disabled");
+      }
+    }
   }
 
   // Marks the section as complete in the step indicator.
@@ -351,16 +412,19 @@ pageClass: "page-public-assistance"
     for (const input of inputs) {
       input.addEventListener("input", onInput);
     }
+    document.getElementById("income-has-none").addEventListener("change", onChangeNoIncome);
 
     // Form control buttons
     document.getElementById("next-button").addEventListener("click", toNextPage);
     document.getElementById("back-button").addEventListener("click", toPrevPage);
     document.getElementById("submit-button").addEventListener("click", submitForm);
+
   }
 
   // Switches to the first form page in the document.
   function showFirstPage() {
-    switchToPage(document.querySelector("div.elig_page"));
+    //switchToPage(document.querySelector("div.elig_page"));
+    switchToPage(document.getElementById("page-income"));
   }
   
   // Initializes the user interface.
