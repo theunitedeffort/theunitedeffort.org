@@ -136,6 +136,87 @@ pageClass: "page-public-assistance"
         </ul>
       </div>
     {% endeligPage %}
+    {% eligPage "income-details-wages" %}
+      {% incomeDetails "Job wages, tips, or commission" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-wages-0">Income</label>
+          $ <input id="income-wages-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-self-employed" %}
+      {% incomeDetails "Self-employment" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-self-employment-0">Income</label>
+          $ <input id="income-self-employment-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-self-employed" %}
+      {% incomeDetails "Social Security benefits" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-self-employment-0">Income</label>
+          $ <input id="income-self-employment-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-unemployment" %}
+      {% incomeDetails "Unemployment benefits" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-unemployment-0">Income</label>
+          $ <input id="income-unemployment-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-veterans" %}
+      {% incomeDetails "Veterans’ benefits" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-veterans-0">Income</label>
+          $ <input id="income-veterans-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-workers-comp" %}
+      {% incomeDetails "Worker’s compensation" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-workers-comp-0">Income</label>
+          $ <input id="income-workers-comp-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-child-support" %}
+      {% incomeDetails "Child support and alimony" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-child-support-0">Income</label>
+          $ <input id="income-child-support-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-retirement" %}
+      {% incomeDetails "Retirement benefits" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-retirement-0">Income</label>
+          $ <input id="income-retirement-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-other" %}
+      {% incomeDetails "Other sources" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-other-0">Income</label>
+          $ <input id="income-sother-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
   {% endeligSection %}
 
   {% eligSection "existing-assistance" %}
@@ -220,16 +301,20 @@ pageClass: "page-public-assistance"
   }
 
   function onChangeNoIncome(event) {
-    let allIncomeTypes = document.querySelectorAll("ul#income-types input[type=checkbox]");
+    let wrapper = document.getElementById("income-types");
+    let allIncomeTypes = wrapper.querySelectorAll("input[type=checkbox]");
     for (const incomeType of allIncomeTypes) {
       if (incomeType == this) {
         continue;
       }
+      let label = wrapper.querySelector("label[for=" + incomeType.id + "]");
       if (this.checked) {
         incomeType.checked = false;
         incomeType.setAttribute("disabled", "disabled");
+        label.classList.add("disabled");
       } else {
         incomeType.removeAttribute("disabled");
+        label.classList.remove("disabled");
       }
     }
   }
