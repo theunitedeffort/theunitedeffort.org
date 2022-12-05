@@ -156,7 +156,7 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
     {% eligPage "income-details-self-employed" %}
       {% incomeDetails "Social Security benefits" %}
-        <h4>Job 1</h4>
+        <h4>Person 1</h4>
         <div>
           <label for="income-self-employment-0">Income</label>
           $ <input id="income-self-employment-0" type="number"> per month
@@ -165,7 +165,7 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
     {% eligPage "income-details-unemployment" %}
       {% incomeDetails "Unemployment benefits" %}
-        <h4>Job 1</h4>
+        <h4>Person 1</h4>
         <div>
           <label for="income-unemployment-0">Income</label>
           $ <input id="income-unemployment-0" type="number"> per month
@@ -174,7 +174,7 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
     {% eligPage "income-details-veterans" %}
       {% incomeDetails "Veterans’ benefits" %}
-        <h4>Job 1</h4>
+        <h4>Person 1</h4>
         <div>
           <label for="income-veterans-0">Income</label>
           $ <input id="income-veterans-0" type="number"> per month
@@ -183,7 +183,7 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
     {% eligPage "income-details-workers-comp" %}
       {% incomeDetails "Worker’s compensation" %}
-        <h4>Job 1</h4>
+        <h4>Person 1</h4>
         <div>
           <label for="income-workers-comp-0">Income</label>
           $ <input id="income-workers-comp-0" type="number"> per month
@@ -192,7 +192,7 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
     {% eligPage "income-details-child-support" %}
       {% incomeDetails "Child support and alimony" %}
-        <h4>Job 1</h4>
+        <h4>Person 1</h4>
         <div>
           <label for="income-child-support-0">Income</label>
           $ <input id="income-child-support-0" type="number"> per month
@@ -201,7 +201,7 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
     {% eligPage "income-details-retirement" %}
       {% incomeDetails "Retirement benefits" %}
-        <h4>Job 1</h4>
+        <h4>Person 1</h4>
         <div>
           <label for="income-retirement-0">Income</label>
           $ <input id="income-retirement-0" type="number"> per month
@@ -210,7 +210,7 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
     {% eligPage "income-details-other" %}
       {% incomeDetails "Other sources" %}
-        <h4>Job 1</h4>
+        <h4>Source 1</h4>
         <div>
           <label for="income-other-0">Income</label>
           $ <input id="income-sother-0" type="number"> per month
@@ -300,7 +300,7 @@ pageClass: "page-public-assistance"
     addEventListener("beforeunload", confirmExit);
   }
 
-  function onChangeNoIncome(event) {
+  function onChangeNoIncome() {
     let wrapper = document.getElementById("income-types");
     let allIncomeTypes = wrapper.querySelectorAll("input[type=checkbox]");
     for (const incomeType of allIncomeTypes) {
@@ -317,6 +317,14 @@ pageClass: "page-public-assistance"
         label.classList.remove("disabled");
       }
     }
+  }
+
+  function addIncomeEntry() {
+    let entryList = this.parentElement.parentElement.querySelector("ul.income_entry_list");
+    console.log(entryList);
+    let entryTemplate = entryList.querySelector("li");
+    let newEntry = entryTemplate.cloneNode(true);
+    entryList.appendChild(newEntry);
   }
 
   // Marks the section as complete in the step indicator.
@@ -498,6 +506,10 @@ pageClass: "page-public-assistance"
       input.addEventListener("input", onInput);
     }
     document.getElementById("income-has-none").addEventListener("change", onChangeNoIncome);
+    const incomeAddButtons = document.querySelectorAll('button[id^="income"][id$="add"]');
+    for (const button of incomeAddButtons) {
+      button.addEventListener("click", addIncomeEntry);
+    }
 
     // Form control buttons
     document.getElementById("next-button").addEventListener("click", toNextPage);
