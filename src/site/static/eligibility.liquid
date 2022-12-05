@@ -136,6 +136,87 @@ pageClass: "page-public-assistance"
         </ul>
       </div>
     {% endeligPage %}
+    {% eligPage "income-details-wages" %}
+      {% incomeDetails "Job wages, tips, or commission" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-wages-0">Income</label>
+          $ <input id="income-wages-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-self-employed" %}
+      {% incomeDetails "Self-employment" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-self-employment-0">Income</label>
+          $ <input id="income-self-employment-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-self-employed" %}
+      {% incomeDetails "Social Security benefits" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-self-employment-0">Income</label>
+          $ <input id="income-self-employment-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-unemployment" %}
+      {% incomeDetails "Unemployment benefits" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-unemployment-0">Income</label>
+          $ <input id="income-unemployment-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-veterans" %}
+      {% incomeDetails "Veterans’ benefits" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-veterans-0">Income</label>
+          $ <input id="income-veterans-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-workers-comp" %}
+      {% incomeDetails "Worker’s compensation" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-workers-comp-0">Income</label>
+          $ <input id="income-workers-comp-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-child-support" %}
+      {% incomeDetails "Child support and alimony" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-child-support-0">Income</label>
+          $ <input id="income-child-support-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-retirement" %}
+      {% incomeDetails "Retirement benefits" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-retirement-0">Income</label>
+          $ <input id="income-retirement-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
+    {% eligPage "income-details-other" %}
+      {% incomeDetails "Other sources" %}
+        <h4>Job 1</h4>
+        <div>
+          <label for="income-other-0">Income</label>
+          $ <input id="income-sother-0" type="number"> per month
+        </div>
+      {% endincomeDetails %}
+    {% endeligPage %}
   {% endeligSection %}
 
   {% eligSection "existing-assistance" %}

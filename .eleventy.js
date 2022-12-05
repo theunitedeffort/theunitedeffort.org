@@ -321,11 +321,25 @@ module.exports = function(eleventyConfig) {
   }
 
   eleventyConfig.addPairedShortcode("eligPage", function(content, id) {
-    return `<div id="page-${id}" class="elig_page hidden">${content}</div>`
+    return `<div id="page-${id}" class="elig_page hidden">${content}</div>`;
   });
 
   eleventyConfig.addPairedShortcode("eligSection", function(content, id) {
-    return `<div id="section-${id}" class="elig_section hidden">${content}</div>`
+    return `<div id="section-${id}" class="elig_section hidden">${content}</div>`;
+  });
+
+  eleventyConfig.addPairedShortcode("incomeDetails", function(content, typeStr) {
+    return `
+      <h3>${typeStr}</h3>
+      <p>
+        Enter all income coming from <span class="bold">${typeStr.toLowerCase()}</span> for everyone in your household.  Amounts should be before tax and other deductions.
+      </p>
+      <div class="income_entry">
+        ${content}
+      </div>
+      <div>
+        <button type="button" class="btn btn_secondary" id="income-wages-add">Add another entry</button>
+      </div>`;
   });
 
   // Generates a label tag for the given 'fieldName'. 
