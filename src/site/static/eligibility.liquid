@@ -89,20 +89,88 @@ pageClass: "page-public-assistance"
     <h2>Income</h2>
     {% eligPage "income" %}
       <p>
-        This page demonstrates a dynamic field list, allowing users to add more fields to a list on demand.
+        Select all sources of income for you and your household. Include income from all members of your household, including yourself.
       </p>
-      <h3>Shopping List</h3>
-      {% dynamicFieldList, "Add a new item" %}
-        <h4>Item 1</h4>
-        <div>
-          <label for="dynamic-list-name">Name</label>
-          <input id="dynamic-list-name" type="text">
-        </div>
-        <div>
-          <label for="dynamic-list-qty">Quantity</label>
-          <input id="dynamic-list-qty" type="number" class="short">
-        </div>
-      {% enddynamicFieldList %}
+      <div>
+        <ul id="income-types" class="multiselect">      
+          <li>
+            <input id="income-has-wages" type="checkbox">
+            <label for="income-has-wages">Job wages, tips, or commission</label>
+          </li>
+          <li>
+            <input id="income-has-self-employed" type="checkbox">
+            <label for="income-has-self-employed">Income from self-employment</label>
+          </li>
+          <li>
+            <input id="income-has-ss" type="checkbox">
+            <label for="income-has-ss">Social Security benefits</label>
+          </li>
+          <li>
+            <input id="income-has-unemployment" type="checkbox">
+            <label for="income-has-unemployment">Unemployment benefits</label>
+          </li>
+          <li>
+            <input id="income-has-veterans" type="checkbox">
+            <label for="income-has-veterans">Veteran’s benefits</label>
+          </li>
+          <li>
+            <input id="income-has-workers-comp" type="checkbox">
+            <label for="income-has-workers-comp">Worker’s compensation</label>
+          </li>
+          <li>
+            <input id="income-has-child-support" type="checkbox">
+            <label for="income-has-child-support">Child support and alimony</label>
+          </li>
+          <li>
+            <input id="income-has-retirement" type="checkbox">
+            <label for="income-has-retirement">Retirement benefits</label>
+          </li>
+          <li>
+            <input id="income-has-other" type="checkbox">
+            <label for="income-has-other">Other source of income not listed here</label>
+          </li>
+          <li>
+            <input id="income-has-none" type="checkbox">
+            <label for="income-has-none">My household has no income of any kind</label>   
+          </li>     
+        </ul>
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "income-details-wages" %}
+      {% render "eligibility-income-details" desc: "job wages, tips, or commission", heading: "Job", id: "wages"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-self-employed" %}
+      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employment"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-social-security" %}
+      {% render "eligibility-income-details" desc: "Social Security benefits", heading: "Person", id: "social-security"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-unemployment" %}
+      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Person", id: "unemployment"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-veterans" %}
+      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Person", id: "veterans"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-workers-comp" %}
+      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Person", id: "workers-comp"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-child-support" %}
+      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Person", id: "child-support"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-retirement" %}
+      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Person", id: "retirement"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-other" %}
+      {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other"  %}
     {% endeligPage %}
   {% endeligSection %}
 
@@ -187,6 +255,25 @@ pageClass: "page-public-assistance"
     addEventListener("beforeunload", confirmExit);
   }
 
+  function onChangeNoIncome() {
+    let wrapper = document.getElementById("income-types");
+    let allIncomeTypes = wrapper.querySelectorAll("input[type=checkbox]");
+    for (const incomeType of allIncomeTypes) {
+      if (incomeType == this) {
+        continue;
+      }
+      let label = wrapper.querySelector("label[for=" + incomeType.id + "]");
+      if (this.checked) {
+        incomeType.checked = false;
+        incomeType.setAttribute("disabled", "disabled");
+        label.classList.add("disabled");
+      } else {
+        incomeType.removeAttribute("disabled");
+        label.classList.remove("disabled");
+      }
+    }
+  }
+
   // Adds an item to a dynamic list of fields.
   function addDynamicFieldListItem() {
     const list = this.parentElement.parentElement.querySelector(
@@ -246,6 +333,17 @@ pageClass: "page-public-assistance"
     const list = this.closest("ul.dynamic_field_list");
     item.remove();
     list.dispatchEvent(new Event("input"));
+  }
+
+  function updateIncomeTotal() {
+    const page = this.closest(".elig_page");
+    const totalDisplay = page.querySelector(".income_total");
+    const inputs = page.querySelectorAll("input[type=number]");
+    let sum = 0;
+    for (input of inputs) {
+      sum += Number(input.value);
+    }
+    totalDisplay.textContent = sum;
   }
 
   // Marks the section as complete in the step indicator.
@@ -431,6 +529,11 @@ pageClass: "page-public-assistance"
     for (const button of fieldListAddButtons) {
       button.addEventListener("click", addDynamicFieldListItem);
     }
+    const incomeLists = document.querySelectorAll("#section-income ul.dynamic_field_list");
+    for (const incomeList of incomeLists) {
+      incomeList.addEventListener("input", updateIncomeTotal);
+    }
+    document.getElementById("income-has-none").addEventListener("change", onChangeNoIncome);
 
     // Form control buttons
     document.getElementById("next-button").addEventListener("click", toNextPage);

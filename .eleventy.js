@@ -328,6 +328,18 @@ module.exports = function(eleventyConfig) {
     return `<div id="section-${id}" class="elig_section hidden">${content}</div>`;
   });
 
+  eleventyConfig.addPairedShortcode("incomeDetails", function(content, typeStr) {
+    return `
+      <h3>${typeStr[0].toUpperCase() + typeStr.slice(1)}</h3>
+      <p>
+        Enter all income coming from <span class="bold">${typeStr}</span> for everyone in your household.  Amounts should be before tax and other deductions.
+      </p>
+      ${content}
+      <p>
+        Combined household income from ${typeStr}:  <span class="bold">$<span class="income_total">0</span> per month</span>
+      </p>`;
+  });
+
   // Generates a list that can have items added and removed dynamically.
   eleventyConfig.addPairedShortcode("dynamicFieldList", function(
     listItemContent, addText) {
@@ -339,7 +351,7 @@ module.exports = function(eleventyConfig) {
       </ul>
       <div>
         <button type="button" class="btn btn_secondary field_list_add">${addText}</button>
-      </div>`
+      </div>`;
   });
 
   // Generates a label tag for the given 'fieldName'. 
