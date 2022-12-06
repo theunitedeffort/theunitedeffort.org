@@ -29,22 +29,19 @@ pageClass: "page-public-assistance"
   {% endeligSection %}
 
   {% eligSection "yourself" %}
+
     <h2>Yourself</h2>
     <p>
       This section-level text will be shown for every page in this section.
     </p>
 
     {% eligPage "yourself-start" %}
-      <p>
-        {%- comment -%}
-          Here we are in yourself-start page.
-        {%- endcomment -%}
-      </p>
+      <p></p>
 
       <div>
         <div>
           <label for="age">How old are you?</label>
-          <input id="age" type="number" name="age" value="21" maxlength="3" min="1" max="130"/> years
+          <input id="age" type="number" name="age" value="" maxlength="3" min="1" max="130"/> years
         </div>
 
         Select any of the following that describe you:
@@ -53,7 +50,6 @@ pageClass: "page-public-assistance"
             <input id="disabled" type="checkbox" name="option">
             <label for="disabled">I am disabled.</label>
           </li>
-          <li></li>
           <li>
             <input id="blind" type="checkbox" name="option">
             <label for="blind">I am blind.</label>
@@ -84,61 +80,49 @@ pageClass: "page-public-assistance"
 
 
     {% eligPage "head-of-household" %}
-      <p>
-        {%- comment -%}
-          Here we are in head-of-household page.
-        {%- endcomment -%}
-      </p>
+      <p></p>
       <div>
         Are you the head of your household?<br>
         <input type="radio" id="headhh_yes" name="head_household" value="Yes">
-        <label for="yes">Yes</label><br>
+        <label for="headhh_yes">Yes</label><br>
         <input type="radio" id="headhh_no" name="head_household" value="No">
-        <label for="no">No</label>
+        <label for="headhh_no">No</label>
       </div>
     {% endeligPage %}
 
 
     {% eligPage "disability-details" %}
       <h3>About Your Disability</h3>
-      <p>
-        {%- comment -%}
-          Here we are in disability-details page.
-        {%- endcomment -%}
-      </p>
+
       <div>
         Does your disability prevent you from working?<br>
-        <input type="radio" id="dis_prev_work_yes" name="disability_details" value="Yes">
-        <label for="yes">Yes</label><br>
-        <input type="radio" id="dis_prev_work_no" name="disability_details" value="No">
-        <label for="no">No</label>
+        <input type="radio" id="dis_prev_work_yes" name="disability_details1" value="Yes">
+        <label for="dis_prev_work_yes">Yes</label><br>
+        <input type="radio" id="dis_prev_work_no" name="disability_details1" value="No">
+        <label for="dis_prev_work_no">No</label>
       </div>
       <div>
         Do you use a guide, signal or training dog?<br>
-        <input type="radio" id="dis_guide_yes" name="disability_details" value="Yes">
-        <label for="yes">Yes</label><br>
-        <input type="radio" id="dis_guide_no" name="disability_details" value="No">
-        <label for="no">No</label>
+        <input type="radio" id="dis_guide_yes" name="disability_details2" value="Yes">
+        <label for="dis_guide_yes">Yes</label><br>
+        <input type="radio" id="dis_guide_no" name="disability_details2" value="No">
+        <label for="dis_guide_no">No</label>
       </div>
       <div>
         Is your disability related to your military service?<br>
-        <input type="radio" id="dis_military_yes" name="disability_details" value="Yes">
-        <label for="yes">Yes</label><br>
-        <input type="radio" id="dis_military_no" name="disability_details" value="No">
-        <label for="no">No</label>
+        <input type="radio" id="dis_military_yes" name="disability_details3" value="Yes">
+        <label for="dis_military_yes">Yes</label><br>
+        <input type="radio" id="dis_military_no" name="disability_details3" value="No">
+        <label for="dis_military_no">No</label>
       </div>
+
     {% endeligPage %}
 
     {% eligPage "veteran-details" %}
       <h3>About Your Military Service</h3>
-      {%- comment -%}
-        <p>
-        Here we are in veteran-details1 page.
-        </p>
-      {%- endcomment -%}
 
       <div>
-        <label for="discharge">What is your discharge status?
+        <label for="your-discharge-status">What is your discharge status?
           <input type="text" id="your-discharge-status" list="discharge-status">
           <datalist id="discharge-status">
             <option value="Honorable"/>
@@ -166,7 +150,7 @@ pageClass: "page-public-assistance"
       </div>
 
       <div>
-        <label for="duty-periods">Enter details for you duty periods below:
+        <label for="your-duty-type">Enter details for you duty periods below:
           <input type="text" id="your-duty-type" list="duty-type">
           <datalist id="duty-type">
             <option value="Active duty"/>
@@ -176,12 +160,13 @@ pageClass: "page-public-assistance"
         </label>
       </div>
       <div>
-        <h5>
-          Served From:
-          <input type="datetime-local" id="served-from"> &nbsp; &nbsp; &nbsp;
-          Until:
-          <input type="datetime-local" id="served-from">
-        </h5>
+        <h4>
+          <label for="served-from">Served From:</label>
+          <input type="datetime-local" id="served-from" name="serviing-time"> &nbsp; &nbsp; &nbsp;
+
+          <label for="served-untl">Until:</label>
+          <input type="datetime-local" id="served-untl">
+        </h4>
       </div>
 
     {% endeligPage %}
@@ -198,30 +183,26 @@ pageClass: "page-public-assistance"
 
     {% eligPage "immigration-status" %}
       <h3>About Your Immigration Status</h3>
-      {%- comment -%}
-        <p>
-        Here we are in immigration-status page.
-        </p>
-      {%- endcomment -%}
+
       <div>
         Select
         <b>one</b>
         of the following that most accurately describes you:
         <br>
         <input type="radio" id="permanent_resident" name="immig_status" value="Yes">
-        <label for="yes">I have a Permanent Resident Card</label><br>
+        <label for="permanent_resident">I have a Permanent Resident Card</label><br>
 
         <input type="radio" id="qualified_noncitizen_gt5y" name="immig_status" value="Yes">
-        <label for="yes">I have been a qualified non-citizen for 5 years or more</label><br>
+        <label for="qualified_noncitizen_gt5y">I have been a qualified non-citizen for 5 years or more</label><br>
 
         <input type="radio" id="qualified_noncitizen_le5y" name="immig_status" value="Yes">
-        <label for="yes">I have been a qualified non-citizen for less than 5 years</label><br>
+        <label for="qualified_noncitizen_le5y">I have been a qualified non-citizen for less than 5 years</label><br>
 
         <input type="radio" id="live_temporarily" name="immig_status" value="Yes">
-        <label for="yes">I am living in the U.S. temporarily</label><br>
+        <label for="live_temporarily">I am living in the U.S. temporarily</label><br>
 
         <input type="radio" id="none_describe" name="immig_status" value="Yes">
-        <label for="yes">None of these describe my situation</label><br>
+        <label for="none_describe">None of these describe my situation</label><br>
       </div>
     {% endeligPage %}
 
