@@ -88,7 +88,21 @@ pageClass: "page-public-assistance"
   {% eligSection "income" %}
     <h2>Income</h2>
     {% eligPage "income" %}
-      Example text
+      <p>
+        This page demonstrates a dynamic field list, allowing users to add more fields to a list on demand.
+      </p>
+      <h3>Shopping List</h3>
+      {% dynamicFieldList, "Add a new item" %}
+        <h4>Item 1</h4>
+        <div>
+          <label for="dynamic-list-name">Name</label>
+          <input id="dynamic-list-name" type="text">
+        </div>
+        <div>
+          <label for="dynamic-list-qty">Quantity</label>
+          <input id="dynamic-list-qty" type="number" class="short">
+        </div>
+      {% enddynamicFieldList %}
     {% endeligPage %}
   {% endeligSection %}
 
@@ -171,6 +185,67 @@ pageClass: "page-public-assistance"
     // event listener so that they can confirm they want to exit the form
     // when an unload is about to happen.
     addEventListener("beforeunload", confirmExit);
+  }
+
+  // Adds an item to a dynamic list of fields.
+  function addDynamicFieldListItem() {
+    const list = this.parentElement.parentElement.querySelector(
+      "ul.dynamic_field_list");
+    const items = list.querySelectorAll("li");
+    // Figure out the largest id index used so far.
+    const lastInput = items[items.length - 1].querySelector("input");
+    let lastIdNumber;
+    if (lastInput) {
+      lastIdNumber = lastInput.id.match(/-\d+$/g);
+    }
+    // Create a new item using the first item in the list as a template.
+    const newItem = items[0].cloneNode(true);
+    const newInputs = newItem.querySelectorAll("input");
+    const newLabels = newItem.querySelectorAll("label");
+    let newIdNumber = 1;
+    if (lastIdNumber) {
+      newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
+    }
+    // Ensure element ids are unique and clear out any inputs that a user may 
+    // have entered on the template list item.
+    for (const input of newInputs) {
+      input.value = ""
+      input.id = input.id + "-" + newIdNumber;
+    }
+    // Ensure labels match the new input id values.
+    for (const label of newLabels) {
+      label.setAttribute("for", label.getAttribute("for") + "-" + newIdNumber);
+    }
+    // Update the item heading if there is one.
+    const itemHeading = newItem.querySelector("h3,h4,h5,h6");
+    if (itemHeading) {
+      itemHeading.textContent = itemHeading.textContent.replace(
+        /\d+$/, newIdNumber + 1);
+    }
+    // Add a remove button for the new item.
+    const removeButton = document.createElement("button");
+    removeButton.classList.add("link");
+    removeButton.textContent = "remove";
+    removeButton.setAttribute("type", "button");
+    removeButton.addEventListener("click", removeDynamicFieldListItem);
+    const fragment = new DocumentFragment();
+    fragment.append(" (", removeButton, ")");
+    // If there is a heading, put the remove button after it.  Otherwise,
+    // make it the first element in the list item.
+    if (itemHeading) {
+      itemHeading.after(fragment);
+    } else {
+      newItem.prepend(fragment);
+    }
+    // Add our new item to the list.
+    list.appendChild(newItem);
+  }
+
+  function removeDynamicFieldListItem() {
+    const item = this.parentElement;
+    const list = this.closest("ul.dynamic_field_list");
+    item.remove();
+    list.dispatchEvent(new Event("input"));
   }
 
   // Marks the section as complete in the step indicator.
@@ -351,11 +426,17 @@ pageClass: "page-public-assistance"
     for (const input of inputs) {
       input.addEventListener("input", onInput);
     }
+    const fieldListAddButtons = document.querySelectorAll(
+      'button.field_list_add');
+    for (const button of fieldListAddButtons) {
+      button.addEventListener("click", addDynamicFieldListItem);
+    }
 
     // Form control buttons
     document.getElementById("next-button").addEventListener("click", toNextPage);
     document.getElementById("back-button").addEventListener("click", toPrevPage);
     document.getElementById("submit-button").addEventListener("click", submitForm);
+
   }
 
   // Switches to the first form page in the document.
