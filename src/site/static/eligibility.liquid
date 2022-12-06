@@ -407,7 +407,6 @@ pageClass: "page-public-assistance"
       sum += Number(input.value);
     }
     totalDisplay.textContent = sum;
-    console.log("value updated!");
   }
 
   // Marks the section as complete in the step indicator.
@@ -608,8 +607,7 @@ pageClass: "page-public-assistance"
 
   // Switches to the first form page in the document.
   function showFirstPage() {
-    //switchToPage(document.querySelector("div.elig_page"));
-    switchToPage(document.getElementById("page-income"));
+    switchToPage(document.querySelector("div.elig_page"));
   }
   
   // Initializes the user interface.

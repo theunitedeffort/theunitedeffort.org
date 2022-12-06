@@ -351,7 +351,7 @@ module.exports = function(eleventyConfig) {
       </ul>
       <div>
         <button type="button" class="btn btn_secondary field_list_add">${addText}</button>
-      </div>`
+      </div>`;
   });
 
   // Generates a label tag for the given 'fieldName'. 
