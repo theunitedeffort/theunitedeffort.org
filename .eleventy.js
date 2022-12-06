@@ -347,6 +347,20 @@ module.exports = function(eleventyConfig) {
       </p>`;
   });
 
+  // Generates a list that can have items added and removed dynamically.
+  eleventyConfig.addPairedShortcode("dynamicFieldList", function(
+    listItemContent, addText) {
+    return `
+      <ul class="dynamic_field_list">
+        <li>
+          ${listItemContent}
+        </li>
+      </ul>
+      <div>
+        <button type="button" class="btn btn_secondary field_list_add">${addText}</button>
+      </div>`
+  });
+
   // Generates a label tag for the given 'fieldName'. 
   // 
   // The parameter 'fields' is

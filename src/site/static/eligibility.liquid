@@ -319,36 +319,65 @@ pageClass: "page-public-assistance"
     }
   }
 
-  function addIncomeEntry() {
-    const entryList = this.parentElement.parentElement.querySelector("ul.income_entry_list");
-    const entries = entryList.querySelectorAll("li");
-    const newEntry = entries[0].cloneNode(true);
-    const newInputs = newEntry.querySelectorAll("input");
-    const newLabels = newEntry.querySelectorAll("label");
-    const newIdNumber = entries.length;
+  // Adds an item to a dynamic list of fields.
+  function addDynamicFieldListItem() {
+    const list = this.parentElement.parentElement.querySelector(
+      "ul.dynamic_field_list");
+    const items = list.querySelectorAll("li");
+    // Figure out the largest id index used so far.
+    const lastInput = items[items.length - 1].querySelector("input");
+    let lastIdNumber;
+    if (lastInput) {
+      lastIdNumber = lastInput.id.match(/-\d+$/g);
+    }
+    // Create a new item using the first item in the list as a template.
+    const newItem = items[0].cloneNode(true);
+    const newInputs = newItem.querySelectorAll("input");
+    const newLabels = newItem.querySelectorAll("label");
+    let newIdNumber = 1;
+    if (lastIdNumber) {
+      newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
+    }
+    // Ensure element ids are unique and clear out any inputs that a user may 
+    // have entered on the template list item.
     for (const input of newInputs) {
       input.value = ""
       input.id = input.id + "-" + newIdNumber;
     }
+    // Ensure labels match the new input id values.
     for (const label of newLabels) {
       label.setAttribute("for", label.getAttribute("for") + "-" + newIdNumber);
     }
+    // Update the item heading if there is one.
+    const itemHeading = newItem.querySelector("h3,h4,h5,h6");
+    if (itemHeading) {
+      itemHeading.textContent = itemHeading.textContent.replace(
+        /\d+$/, newIdNumber + 1);
+    }
+    // Add a remove button for the new item.
     const removeButton = document.createElement("button");
     removeButton.classList.add("link");
     removeButton.textContent = "remove";
     removeButton.setAttribute("type", "button");
-    removeButton.addEventListener("click", removeIncomeEntry);
+    removeButton.addEventListener("click", removeDynamicFieldListItem);
     const fragment = new DocumentFragment();
     fragment.append(" (", removeButton, ")");
-    newEntry.querySelector("h4").after(fragment);
-    entryList.appendChild(newEntry);
+    // If there is a heading, put the remove button after it.  Otherwise,
+    // make it the first element in the list item.
+    if (itemHeading) {
+      itemHeading.after(fragment);
+    } else {
+      newItem.prepend(fragment);
+    }
+    // Add our new item to the list.
+    list.appendChild(newItem);
   }
 
-  function removeIncomeEntry() {
-    const entry = this.parentElement;
-    const entryList = this.closest(".income_entry_list");
-    entry.remove();
-    entryList.dispatchEvent(new Event("input"));
+  function removeDynamicFieldListItem() {
+    const item = this.parentElement;
+    const list = this.closest("ul.dynamic_field_list");
+    item.remove();
+    list.dispatchEvent(new Event("input"));
   }
 
   function updateIncomeTotal() {
@@ -361,7 +390,6 @@ pageClass: "page-public-assistance"
     }
     totalDisplay.textContent = sum;
     console.log("value updated!");
-  }
 
   // Marks the section as complete in the step indicator.
   function markSectionDone(section) {
@@ -541,16 +569,15 @@ pageClass: "page-public-assistance"
     for (const input of inputs) {
       input.addEventListener("input", onInput);
     }
-    document.getElementById("income-has-none").addEventListener("change", onChangeNoIncome);
-    const incomeAddButtons = document.querySelectorAll('button[id^="income"][id$="add"]');
-    for (const button of incomeAddButtons) {
-      button.addEventListener("click", addIncomeEntry);
+    const fieldListAddButtons = document.querySelectorAll(
+      'button.field_list_add');
+    for (const button of fieldListAddButtons) {
+      button.addEventListener("click", addDynamicFieldListItem);
     }
-
     const entryLists = document.querySelectorAll(".income_entry_list");
     for (const entryList of entryLists) {
       entryList.addEventListener("input", updateIncomeTotal);
-    }
+    document.getElementById("income-has-none").addEventListener("change", onChangeNoIncome);
 
     // Form control buttons
     document.getElementById("next-button").addEventListener("click", toNextPage);
