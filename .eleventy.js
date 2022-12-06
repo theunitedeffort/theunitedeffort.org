@@ -321,7 +321,7 @@ module.exports = function(eleventyConfig) {
   }
 
   eleventyConfig.addPairedShortcode("eligPage", function(content, id) {
-    return `<div id="page-${id}" class="elig_page hidden">${content}</div>`
+    return `<div id="page-${id}" class="elig_page hidden">${content}</div>`;
   });
 
   eleventyConfig.addPairedShortcode("eligSection", function(content, id) {
