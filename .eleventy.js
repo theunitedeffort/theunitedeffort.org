@@ -325,7 +325,22 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addPairedShortcode("eligSection", function(content, id) {
-    return `<div id="section-${id}" class="elig_section hidden">${content}</div>`
+    return `<div id="section-${id}" class="elig_section hidden">${content}</div>`;
+  });
+
+
+  // Generates a list that can have items added and removed dynamically.
+  eleventyConfig.addPairedShortcode("dynamicFieldList", function(
+    listItemContent, addText) {
+    return `
+      <ul class="dynamic_field_list">
+        <li>
+          ${listItemContent}
+        </li>
+      </ul>
+      <div>
+        <button type="button" class="btn btn_secondary field_list_add">${addText}</button>
+      </div>`
   });
 
   // Generates a label tag for the given 'fieldName'. 
