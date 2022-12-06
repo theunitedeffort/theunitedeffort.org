@@ -102,8 +102,8 @@ pageClass: "page-public-assistance"
             <label for="income-has-self-employed">Income from self-employment</label>
           </li>
           <li>
-            <input id="income-has-ss" type="checkbox">
-            <label for="income-has-ss">Social Security benefits</label>
+            <input id="income-has-social-security" type="checkbox">
+            <label for="income-has-social-security">Social Security benefits</label>
           </li>
           <li>
             <input id="income-has-unemployment" type="checkbox">
@@ -593,8 +593,69 @@ pageClass: "page-public-assistance"
       }
     };
 
-    // TODO: Use custom logic as needed for other pages to conditionally choose 
-    // the next page based on user input.
+    pageById["page-income"].next = function() {
+      if (document.getElementById("income-has-wages").checked) {
+        return pageById["page-income-details-wages"];
+      }
+      return pageById["page-income-details-wages"].next();
+    };
+
+    pageById["page-income-details-wages"].next = function() {
+      if (document.getElementById("income-has-self-employed").checked) {
+        return pageById["page-income-details-self-employed"];
+      }
+      return pageById["page-income-details-self-employed"].next();
+    };
+
+    pageById["page-income-details-self-employed"].next = function() {
+      if (document.getElementById("income-has-social-security").checked) {
+        return pageById["page-income-details-social-security"];
+      }
+      return pageById["page-income-details-social-security"].next();
+    };
+
+    pageById["page-income-details-social-security"].next = function() {
+      if (document.getElementById("income-has-unemployment").checked) {
+        return pageById["page-income-details-unemployment"];
+      }
+      return pageById["page-income-details-unemployment"].next();
+    };
+
+    pageById["page-income-details-unemployment"].next = function() {
+      if (document.getElementById("income-has-veterans").checked) {
+        return pageById["page-income-details-veterans"];
+      }
+      return pageById["page-income-details-veterans"].next();
+    };
+
+    pageById["page-income-details-veterans"].next = function() {
+      if (document.getElementById("income-has-workers-comp").checked) {
+        return pageById["page-income-details-workers-comp"];
+      }
+      return pageById["page-income-details-workers-comp"].next();
+    };
+
+    pageById["page-income-details-workers-comp"].next = function() {
+      if (document.getElementById("income-has-child-support").checked) {
+        return pageById["page-income-details-child-support"];
+      }
+      return pageById["page-income-details-child-support"].next();
+    };
+
+    pageById["page-income-details-child-support"].next = function() {
+      if (document.getElementById("income-has-retirement").checked) {
+        return pageById["page-income-details-retirement"];
+      }
+      return pageById["page-income-details-retirement"].next();
+    };
+
+    pageById["page-income-details-retirement"].next = function() {
+      if (document.getElementById("income-has-other").checked) {
+        return pageById["page-income-details-other"];
+      }
+      return pageById["page-income-details-other"].next();
+    };
+
   }
 
   // Determines eligibility for programs based on user form input values.
