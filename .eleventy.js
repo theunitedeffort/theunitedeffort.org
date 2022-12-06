@@ -330,9 +330,9 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addPairedShortcode("incomeDetails", function(content, typeStr) {
     return `
-      <h3>${typeStr}</h3>
+      <h3>${typeStr[0].toUpperCase() + typeStr.slice(1)}</h3>
       <p>
-        Enter all income coming from <span class="bold">${typeStr.toLowerCase()}</span> for everyone in your household.  Amounts should be before tax and other deductions.
+        Enter all income coming from <span class="bold">${typeStr}</span> for everyone in your household.  Amounts should be before tax and other deductions.
       </p>
       <ul class="income_entry_list">
         <li class="income_entry">
@@ -340,8 +340,11 @@ module.exports = function(eleventyConfig) {
         </li>
       </ul>
       <div>
-        <button type="button" class="btn btn_secondary" id="income-wages-add">Add another entry</button>
-      </div>`;
+        <button type="button" class="btn btn_secondary income_control" id="income-wages-add">Add another entry</button>
+      </div>
+      <p>
+        Combined household income from ${typeStr}:  <span class="bold">$0000 per month</span>
+      </p>`;
   });
 
   // Generates a label tag for the given 'fieldName'. 

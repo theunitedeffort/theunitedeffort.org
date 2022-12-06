@@ -137,83 +137,83 @@ pageClass: "page-public-assistance"
       </div>
     {% endeligPage %}
     {% eligPage "income-details-wages" %}
-      {% incomeDetails "Job wages, tips, or commission" %}
+      {% incomeDetails "job wages, tips, or commission" %}
         <h4>Job 1</h4>
         <div>
-          <label for="income-wages-0">Income</label>
-          $ <input id="income-wages-0" type="number"> per month
+          <label for="income-wages">Income</label>
+          $ <input id="income-wages" type="number"> per month
         </div>
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-self-employed" %}
-      {% incomeDetails "Self-employment" %}
+      {% incomeDetails "self-employment" %}
         <h4>Job 1</h4>
         <div>
-          <label for="income-self-employment-0">Income</label>
-          $ <input id="income-self-employment-0" type="number"> per month
+          <label for="income-self-employment">Income</label>
+          $ <input id="income-self-employment" type="number"> per month
         </div>
       {% endincomeDetails %}
     {% endeligPage %}
-    {% eligPage "income-details-self-employed" %}
+    {% eligPage "income-details-social-security" %}
       {% incomeDetails "Social Security benefits" %}
         <h4>Person 1</h4>
         <div>
-          <label for="income-self-employment-0">Income</label>
-          $ <input id="income-self-employment-0" type="number"> per month
+          <label for="income-social-security">Income</label>
+          $ <input id="income-social-security" type="number"> per month
         </div>
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-unemployment" %}
-      {% incomeDetails "Unemployment benefits" %}
+      {% incomeDetails "unemployment benefits" %}
         <h4>Person 1</h4>
         <div>
-          <label for="income-unemployment-0">Income</label>
-          $ <input id="income-unemployment-0" type="number"> per month
+          <label for="income-unemployment">Income</label>
+          $ <input id="income-unemployment" type="number"> per month
         </div>
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-veterans" %}
-      {% incomeDetails "Veterans’ benefits" %}
+      {% incomeDetails "veterans’ benefits" %}
         <h4>Person 1</h4>
         <div>
-          <label for="income-veterans-0">Income</label>
-          $ <input id="income-veterans-0" type="number"> per month
+          <label for="income-veterans">Income</label>
+          $ <input id="income-veterans" type="number"> per month
         </div>
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-workers-comp" %}
-      {% incomeDetails "Worker’s compensation" %}
+      {% incomeDetails "worker’s compensation" %}
         <h4>Person 1</h4>
         <div>
-          <label for="income-workers-comp-0">Income</label>
-          $ <input id="income-workers-comp-0" type="number"> per month
+          <label for="income-workers-comp">Income</label>
+          $ <input id="income-workers-comp" type="number"> per month
         </div>
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-child-support" %}
-      {% incomeDetails "Child support and alimony" %}
+      {% incomeDetails "child support and alimony" %}
         <h4>Person 1</h4>
         <div>
-          <label for="income-child-support-0">Income</label>
-          $ <input id="income-child-support-0" type="number"> per month
+          <label for="income-child-support">Income</label>
+          $ <input id="income-child-support" type="number"> per month
         </div>
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-retirement" %}
-      {% incomeDetails "Retirement benefits" %}
+      {% incomeDetails "retirement benefits" %}
         <h4>Person 1</h4>
         <div>
-          <label for="income-retirement-0">Income</label>
-          $ <input id="income-retirement-0" type="number"> per month
+          <label for="income-retirement">Income</label>
+          $ <input id="income-retirement" type="number"> per month
         </div>
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-other" %}
-      {% incomeDetails "Other sources" %}
+      {% incomeDetails "other sources" %}
         <h4>Source 1</h4>
         <div>
-          <label for="income-other-0">Income</label>
-          $ <input id="income-sother-0" type="number"> per month
+          <label for="income-other">Income</label>
+          $ <input id="income-sother" type="number"> per month
         </div>
       {% endincomeDetails %}
     {% endeligPage %}
@@ -320,11 +320,33 @@ pageClass: "page-public-assistance"
   }
 
   function addIncomeEntry() {
-    let entryList = this.parentElement.parentElement.querySelector("ul.income_entry_list");
-    console.log(entryList);
-    let entryTemplate = entryList.querySelector("li");
-    let newEntry = entryTemplate.cloneNode(true);
+    const entryList = this.parentElement.parentElement.querySelector("ul.income_entry_list");
+    const entries = entryList.querySelectorAll("li");
+    const newEntry = entries[0].cloneNode(true);
+    const newInputs = newEntry.querySelectorAll("input");
+    const newLabels = newEntry.querySelectorAll("label");
+    const newIdNumber = entries.length;
+    for (const input of newInputs) {
+      input.value = ""
+      input.id = input.id + "-" + newIdNumber;
+    }
+    for (const label of newLabels) {
+      label.setAttribute("for", label.getAttribute("for") + "-" + newIdNumber);
+    }
+    const removeButton = document.createElement("button");
+    removeButton.classList.add("link");
+    removeButton.textContent = "remove";
+    removeButton.setAttribute("type", "button");
+    removeButton.addEventListener("click", removeIncomeEntry);
+    const fragment = new DocumentFragment();
+    fragment.append(" (", removeButton, ")");
+    newEntry.querySelector("h4").after(fragment);
     entryList.appendChild(newEntry);
+  }
+
+  function removeIncomeEntry() {
+    const entry = this.parentElement;
+    entry.remove();
   }
 
   // Marks the section as complete in the step indicator.
