@@ -138,83 +138,101 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
     {% eligPage "income-details-wages" %}
       {% incomeDetails "job wages, tips, or commission" %}
-        <h4>Job 1</h4>
-        <div>
-          <label for="income-wages">Income</label>
-          $ <input id="income-wages" type="number"> per month
-        </div>
+        {% dynamicFieldList "Add another entry" %}
+          <h4>Job 1</h4>
+          <div>
+            <label for="income-wages">Income</label>
+            $ <input id="income-wages" type="number"> per month
+          </div>
+        {% enddynamicFieldList %}
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-self-employed" %}
       {% incomeDetails "self-employment" %}
-        <h4>Job 1</h4>
-        <div>
-          <label for="income-self-employment">Income</label>
-          $ <input id="income-self-employment" type="number"> per month
-        </div>
+        {% dynamicFieldList "Add another entry" %}
+          <h4>Job 1</h4>
+          <div>
+            <label for="income-self-employment">Income</label>
+            $ <input id="income-self-employment" type="number"> per month
+          </div>
+        {% enddynamicFieldList %}
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-social-security" %}
       {% incomeDetails "Social Security benefits" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-social-security">Income</label>
-          $ <input id="income-social-security" type="number"> per month
-        </div>
+        {% dynamicFieldList "Add another entry" %}
+          <h4>Person 1</h4>
+          <div>
+            <label for="income-social-security">Income</label>
+            $ <input id="income-social-security" type="number"> per month
+          </div>
+        {% enddynamicFieldList %}
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-unemployment" %}
       {% incomeDetails "unemployment benefits" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-unemployment">Income</label>
-          $ <input id="income-unemployment" type="number"> per month
-        </div>
+        {% dynamicFieldList "Add another entry" %}
+          <h4>Person 1</h4>
+          <div>
+            <label for="income-unemployment">Income</label>
+            $ <input id="income-unemployment" type="number"> per month
+          </div>
+        {% enddynamicFieldList %}
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-veterans" %}
       {% incomeDetails "veterans’ benefits" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-veterans">Income</label>
-          $ <input id="income-veterans" type="number"> per month
-        </div>
+        {% dynamicFieldList "Add another entry" %}
+          <h4>Person 1</h4>
+          <div>
+            <label for="income-veterans">Income</label>
+            $ <input id="income-veterans" type="number"> per month
+          </div>
+        {% enddynamicFieldList %}
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-workers-comp" %}
       {% incomeDetails "worker’s compensation" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-workers-comp">Income</label>
-          $ <input id="income-workers-comp" type="number"> per month
-        </div>
+        {% dynamicFieldList "Add another entry" %}
+          <h4>Person 1</h4>
+          <div>
+            <label for="income-workers-comp">Income</label>
+            $ <input id="income-workers-comp" type="number"> per month
+          </div>
+        {% enddynamicFieldList %}
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-child-support" %}
       {% incomeDetails "child support and alimony" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-child-support">Income</label>
-          $ <input id="income-child-support" type="number"> per month
-        </div>
+        {% dynamicFieldList "Add another entry" %}
+          <h4>Person 1</h4>
+          <div>
+            <label for="income-child-support">Income</label>
+            $ <input id="income-child-support" type="number"> per month
+          </div>
+        {% enddynamicFieldList %}
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-retirement" %}
       {% incomeDetails "retirement benefits" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-retirement">Income</label>
-          $ <input id="income-retirement" type="number"> per month
-        </div>
+        {% dynamicFieldList "Add another entry" %}
+          <h4>Person 1</h4>
+          <div>
+            <label for="income-retirement">Income</label>
+            $ <input id="income-retirement" type="number"> per month
+          </div>
+        {% enddynamicFieldList %}
       {% endincomeDetails %}
     {% endeligPage %}
     {% eligPage "income-details-other" %}
       {% incomeDetails "other sources" %}
-        <h4>Source 1</h4>
-        <div>
-          <label for="income-other">Income</label>
-          $ <input id="income-sother" type="number"> per month
-        </div>
+        {% dynamicFieldList "Add another entry" %}
+          <h4>Source 1</h4>
+          <div>
+            <label for="income-other">Income</label>
+            $ <input id="income-sother" type="number"> per month
+          </div>
+        {% enddynamicFieldList %}
       {% endincomeDetails %}
     {% endeligPage %}
   {% endeligSection %}
@@ -390,6 +408,7 @@ pageClass: "page-public-assistance"
     }
     totalDisplay.textContent = sum;
     console.log("value updated!");
+  }
 
   // Marks the section as complete in the step indicator.
   function markSectionDone(section) {
@@ -574,9 +593,10 @@ pageClass: "page-public-assistance"
     for (const button of fieldListAddButtons) {
       button.addEventListener("click", addDynamicFieldListItem);
     }
-    const entryLists = document.querySelectorAll(".income_entry_list");
-    for (const entryList of entryLists) {
-      entryList.addEventListener("input", updateIncomeTotal);
+    const incomeLists = document.querySelectorAll("#section-income ul.dynamic_field_list");
+    for (const incomeList of incomeLists) {
+      incomeList.addEventListener("input", updateIncomeTotal);
+    }
     document.getElementById("income-has-none").addEventListener("change", onChangeNoIncome);
 
     // Form control buttons

@@ -334,14 +334,7 @@ module.exports = function(eleventyConfig) {
       <p>
         Enter all income coming from <span class="bold">${typeStr}</span> for everyone in your household.  Amounts should be before tax and other deductions.
       </p>
-      <ul class="income_entry_list">
-        <li class="income_entry">
-          ${content}
-        </li>
-      </ul>
-      <div>
-        <button type="button" class="btn btn_secondary income_control" id="income-wages-add">Add another entry</button>
-      </div>
+      ${content}
       <p>
         Combined household income from ${typeStr}:  <span class="bold">$<span class="income_total">0</span> per month</span>
       </p>`;
