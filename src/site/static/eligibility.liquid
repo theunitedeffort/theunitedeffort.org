@@ -111,7 +111,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-veterans" type="checkbox">
-            <label for="income-has-veterans">Veterans’ benefits</label>
+            <label for="income-has-veterans">Veteran’s benefits</label>
           </li>
           <li>
             <input id="income-has-workers-comp" type="checkbox">
@@ -136,104 +136,41 @@ pageClass: "page-public-assistance"
         </ul>
       </div>
     {% endeligPage %}
+
     {% eligPage "income-details-wages" %}
-      {% incomeDetails "job wages, tips, or commission" %}
-        {% dynamicFieldList "Add another entry" %}
-          <h4>Job 1</h4>
-          <div>
-            <label for="income-wages">Income</label>
-            $ <input id="income-wages" type="number"> per month
-          </div>
-        {% enddynamicFieldList %}
-      {% endincomeDetails %}
+      {% render "eligibility-income-details" desc: "job wages, tips, or commission", heading: "Job", id: "wages"  %}
     {% endeligPage %}
+
     {% eligPage "income-details-self-employed" %}
-      {% incomeDetails "self-employment" %}
-        {% dynamicFieldList "Add another entry" %}
-          <h4>Job 1</h4>
-          <div>
-            <label for="income-self-employment">Income</label>
-            $ <input id="income-self-employment" type="number"> per month
-          </div>
-        {% enddynamicFieldList %}
-      {% endincomeDetails %}
+      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employment"  %}
     {% endeligPage %}
+
     {% eligPage "income-details-social-security" %}
-      {% incomeDetails "Social Security benefits" %}
-        {% dynamicFieldList "Add another entry" %}
-          <h4>Person 1</h4>
-          <div>
-            <label for="income-social-security">Income</label>
-            $ <input id="income-social-security" type="number"> per month
-          </div>
-        {% enddynamicFieldList %}
-      {% endincomeDetails %}
+      {% render "eligibility-income-details" desc: "Social Security benefits", heading: "Person", id: "social-security"  %}
     {% endeligPage %}
+
     {% eligPage "income-details-unemployment" %}
-      {% incomeDetails "unemployment benefits" %}
-        {% dynamicFieldList "Add another entry" %}
-          <h4>Person 1</h4>
-          <div>
-            <label for="income-unemployment">Income</label>
-            $ <input id="income-unemployment" type="number"> per month
-          </div>
-        {% enddynamicFieldList %}
-      {% endincomeDetails %}
+      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Person", id: "unemployment"  %}
     {% endeligPage %}
+
     {% eligPage "income-details-veterans" %}
-      {% incomeDetails "veterans’ benefits" %}
-        {% dynamicFieldList "Add another entry" %}
-          <h4>Person 1</h4>
-          <div>
-            <label for="income-veterans">Income</label>
-            $ <input id="income-veterans" type="number"> per month
-          </div>
-        {% enddynamicFieldList %}
-      {% endincomeDetails %}
+      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Person", id: "veterans"  %}
     {% endeligPage %}
+
     {% eligPage "income-details-workers-comp" %}
-      {% incomeDetails "worker’s compensation" %}
-        {% dynamicFieldList "Add another entry" %}
-          <h4>Person 1</h4>
-          <div>
-            <label for="income-workers-comp">Income</label>
-            $ <input id="income-workers-comp" type="number"> per month
-          </div>
-        {% enddynamicFieldList %}
-      {% endincomeDetails %}
+      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Person", id: "workers-comp"  %}
     {% endeligPage %}
+
     {% eligPage "income-details-child-support" %}
-      {% incomeDetails "child support and alimony" %}
-        {% dynamicFieldList "Add another entry" %}
-          <h4>Person 1</h4>
-          <div>
-            <label for="income-child-support">Income</label>
-            $ <input id="income-child-support" type="number"> per month
-          </div>
-        {% enddynamicFieldList %}
-      {% endincomeDetails %}
+      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Person", id: "child-support"  %}
     {% endeligPage %}
+
     {% eligPage "income-details-retirement" %}
-      {% incomeDetails "retirement benefits" %}
-        {% dynamicFieldList "Add another entry" %}
-          <h4>Person 1</h4>
-          <div>
-            <label for="income-retirement">Income</label>
-            $ <input id="income-retirement" type="number"> per month
-          </div>
-        {% enddynamicFieldList %}
-      {% endincomeDetails %}
+      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Person", id: "retirement"  %}
     {% endeligPage %}
+
     {% eligPage "income-details-other" %}
-      {% incomeDetails "other sources" %}
-        {% dynamicFieldList "Add another entry" %}
-          <h4>Source 1</h4>
-          <div>
-            <label for="income-other">Income</label>
-            $ <input id="income-sother" type="number"> per month
-          </div>
-        {% enddynamicFieldList %}
-      {% endincomeDetails %}
+      {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other"  %}
     {% endeligPage %}
   {% endeligSection %}
 
