@@ -89,133 +89,20 @@ pageClass: "page-public-assistance"
     <h2>Income</h2>
     {% eligPage "income" %}
       <p>
-        Select all sources of income for you and your household. Include income from all members of your household, including yourself.
+        This page demonstrates a dynamic field list, allowing users to add more fields to a list on demand.
       </p>
-      <div>
-        <ul id="income-types" class="multiselect">      
-          <li>
-            <input id="income-has-wages" type="checkbox">
-            <label for="income-has-wages">Job wages, tips, or commission</label>
-          </li>
-          <li>
-            <input id="income-has-self-employed" type="checkbox">
-            <label for="income-has-self-employed">Income from self-employment</label>
-          </li>
-          <li>
-            <input id="income-has-ss" type="checkbox">
-            <label for="income-has-ss">Social Security benefits</label>
-          </li>
-          <li>
-            <input id="income-has-unemployment" type="checkbox">
-            <label for="income-has-unemployment">Unemployment benefits</label>
-          </li>
-          <li>
-            <input id="income-has-veterans" type="checkbox">
-            <label for="income-has-veterans">Veterans’ benefits</label>
-          </li>
-          <li>
-            <input id="income-has-workers-comp" type="checkbox">
-            <label for="income-has-workers-comp">Worker’s compensation</label>
-          </li>
-          <li>
-            <input id="income-has-child-support" type="checkbox">
-            <label for="income-has-child-support">Child support and alimony</label>
-          </li>
-          <li>
-            <input id="income-has-retirement" type="checkbox">
-            <label for="income-has-retirement">Retirement benefits</label>
-          </li>
-          <li>
-            <input id="income-has-other" type="checkbox">
-            <label for="income-has-other">Other source of income not listed here</label>
-          </li>
-          <li>
-            <input id="income-has-none" type="checkbox">
-            <label for="income-has-none">My household has no income of any kind</label>   
-          </li>     
-        </ul>
-      </div>
-    {% endeligPage %}
-    {% eligPage "income-details-wages" %}
-      {% incomeDetails "job wages, tips, or commission" %}
-        <h4>Job 1</h4>
+      <h3>Shopping List</h3>
+      {% dynamicFieldList, "Add a new item" %}
+        <h4>Item 1</h4>
         <div>
-          <label for="income-wages">Income</label>
-          $ <input id="income-wages" type="number"> per month
+          <label for="dynamic-list-name">Name</label>
+          <input id="dynamic-list-name" type="text">
         </div>
-      {% endincomeDetails %}
-    {% endeligPage %}
-    {% eligPage "income-details-self-employed" %}
-      {% incomeDetails "self-employment" %}
-        <h4>Job 1</h4>
         <div>
-          <label for="income-self-employment">Income</label>
-          $ <input id="income-self-employment" type="number"> per month
+          <label for="dynamic-list-qty">Quantity</label>
+          <input id="dynamic-list-qty" type="number" class="short">
         </div>
-      {% endincomeDetails %}
-    {% endeligPage %}
-    {% eligPage "income-details-social-security" %}
-      {% incomeDetails "Social Security benefits" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-social-security">Income</label>
-          $ <input id="income-social-security" type="number"> per month
-        </div>
-      {% endincomeDetails %}
-    {% endeligPage %}
-    {% eligPage "income-details-unemployment" %}
-      {% incomeDetails "unemployment benefits" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-unemployment">Income</label>
-          $ <input id="income-unemployment" type="number"> per month
-        </div>
-      {% endincomeDetails %}
-    {% endeligPage %}
-    {% eligPage "income-details-veterans" %}
-      {% incomeDetails "veterans’ benefits" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-veterans">Income</label>
-          $ <input id="income-veterans" type="number"> per month
-        </div>
-      {% endincomeDetails %}
-    {% endeligPage %}
-    {% eligPage "income-details-workers-comp" %}
-      {% incomeDetails "worker’s compensation" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-workers-comp">Income</label>
-          $ <input id="income-workers-comp" type="number"> per month
-        </div>
-      {% endincomeDetails %}
-    {% endeligPage %}
-    {% eligPage "income-details-child-support" %}
-      {% incomeDetails "child support and alimony" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-child-support">Income</label>
-          $ <input id="income-child-support" type="number"> per month
-        </div>
-      {% endincomeDetails %}
-    {% endeligPage %}
-    {% eligPage "income-details-retirement" %}
-      {% incomeDetails "retirement benefits" %}
-        <h4>Person 1</h4>
-        <div>
-          <label for="income-retirement">Income</label>
-          $ <input id="income-retirement" type="number"> per month
-        </div>
-      {% endincomeDetails %}
-    {% endeligPage %}
-    {% eligPage "income-details-other" %}
-      {% incomeDetails "other sources" %}
-        <h4>Source 1</h4>
-        <div>
-          <label for="income-other">Income</label>
-          $ <input id="income-sother" type="number"> per month
-        </div>
-      {% endincomeDetails %}
+      {% enddynamicFieldList %}
     {% endeligPage %}
   {% endeligSection %}
 
@@ -300,67 +187,62 @@ pageClass: "page-public-assistance"
     addEventListener("beforeunload", confirmExit);
   }
 
-  function onChangeNoIncome() {
-    let wrapper = document.getElementById("income-types");
-    let allIncomeTypes = wrapper.querySelectorAll("input[type=checkbox]");
-    for (const incomeType of allIncomeTypes) {
-      if (incomeType == this) {
-        continue;
-      }
-      let label = wrapper.querySelector("label[for=" + incomeType.id + "]");
-      if (this.checked) {
-        incomeType.checked = false;
-        incomeType.setAttribute("disabled", "disabled");
-        label.classList.add("disabled");
-      } else {
-        incomeType.removeAttribute("disabled");
-        label.classList.remove("disabled");
-      }
+  // Adds an item to a dynamic list of fields.
+  function addDynamicFieldListItem() {
+    const list = this.parentElement.parentElement.querySelector("ul.dynamic_field_list");
+    const items = list.querySelectorAll("li");
+    // Figure out the largest id index used so far.
+    const lastInput = items[items.length - 1].querySelector("input");
+    let lastIdNumber;
+    if (lastInput) {
+      lastIdNumber = lastInput.id.match(/-\d+$/g);
     }
-  }
-
-  function addIncomeEntry() {
-    const entryList = this.parentElement.parentElement.querySelector("ul.income_entry_list");
-    const entries = entryList.querySelectorAll("li");
-    const newEntry = entries[0].cloneNode(true);
-    const newInputs = newEntry.querySelectorAll("input");
-    const newLabels = newEntry.querySelectorAll("label");
-    const newIdNumber = entries.length;
+    // Create a new item using the first item in the list as a template.
+    const newItem = items[0].cloneNode(true);
+    const newInputs = newItem.querySelectorAll("input");
+    const newLabels = newItem.querySelectorAll("label");
+    let newIdNumber = 1;
+    if (lastIdNumber) {
+      newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
+    }
+    // Ensure element id values are unique.
     for (const input of newInputs) {
       input.value = ""
       input.id = input.id + "-" + newIdNumber;
     }
+    // Ensure labels match the new input id values.
     for (const label of newLabels) {
       label.setAttribute("for", label.getAttribute("for") + "-" + newIdNumber);
     }
+    // Update the item heading if there is one.
+    const itemHeading = newItem.querySelector("h3,h4,h5,h6");
+    if (itemHeading) {
+      itemHeading.textContent = itemHeading.textContent.replace(/\d+$/, newIdNumber + 1);
+    }
+    // Add a remove button for the new item.
     const removeButton = document.createElement("button");
     removeButton.classList.add("link");
     removeButton.textContent = "remove";
     removeButton.setAttribute("type", "button");
-    removeButton.addEventListener("click", removeIncomeEntry);
+    removeButton.addEventListener("click", removeDynamicFieldListItem);
     const fragment = new DocumentFragment();
     fragment.append(" (", removeButton, ")");
-    newEntry.querySelector("h4").after(fragment);
-    entryList.appendChild(newEntry);
-  }
-
-  function removeIncomeEntry() {
-    const entry = this.parentElement;
-    const entryList = this.closest(".income_entry_list");
-    entry.remove();
-    entryList.dispatchEvent(new Event("input"));
-  }
-
-  function updateIncomeTotal() {
-    const page = this.closest(".elig_page");
-    const totalDisplay = page.querySelector(".income_total");
-    const inputs = page.querySelectorAll("input[type=number]");
-    let sum = 0;
-    for (input of inputs) {
-      sum += Number(input.value);
+    // If there is a heading, put the remove button after it.  Otherwise,
+    // make it the first element in the list item.
+    if (itemHeading) {
+      itemHeading.after(fragment);
+    } else {
+      newItem.prepend(fragment);
     }
-    totalDisplay.textContent = sum;
-    console.log("value updated!");
+    // Add our new item to the list.
+    list.appendChild(newItem);
+  }
+
+  function removeDynamicFieldListItem() {
+    const item = this.parentElement;
+    const list = this.closest(".dynamic_field_list");
+    item.remove();
+    list.dispatchEvent(new Event("input"));
   }
 
   // Marks the section as complete in the step indicator.
@@ -541,15 +423,10 @@ pageClass: "page-public-assistance"
     for (const input of inputs) {
       input.addEventListener("input", onInput);
     }
-    document.getElementById("income-has-none").addEventListener("change", onChangeNoIncome);
-    const incomeAddButtons = document.querySelectorAll('button[id^="income"][id$="add"]');
-    for (const button of incomeAddButtons) {
-      button.addEventListener("click", addIncomeEntry);
-    }
-
-    const entryLists = document.querySelectorAll(".income_entry_list");
-    for (const entryList of entryLists) {
-      entryList.addEventListener("input", updateIncomeTotal);
+    const fieldListAddButtons = document.querySelectorAll(
+      'button.field_list_add');
+    for (const button of fieldListAddButtons) {
+      button.addEventListener("click", addDynamicFieldListItem);
     }
 
     // Form control buttons
@@ -561,8 +438,7 @@ pageClass: "page-public-assistance"
 
   // Switches to the first form page in the document.
   function showFirstPage() {
-    //switchToPage(document.querySelector("div.elig_page"));
-    switchToPage(document.getElementById("page-income"));
+    switchToPage(document.querySelector("div.elig_page"));
   }
   
   // Initializes the user interface.
