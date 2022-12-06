@@ -189,7 +189,8 @@ pageClass: "page-public-assistance"
 
   // Adds an item to a dynamic list of fields.
   function addDynamicFieldListItem() {
-    const list = this.parentElement.parentElement.querySelector("ul.dynamic_field_list");
+    const list = this.parentElement.parentElement.querySelector(
+      "ul.dynamic_field_list");
     const items = list.querySelectorAll("li");
     // Figure out the largest id index used so far.
     const lastInput = items[items.length - 1].querySelector("input");
@@ -205,7 +206,8 @@ pageClass: "page-public-assistance"
     if (lastIdNumber) {
       newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
     }
-    // Ensure element id values are unique.
+    // Ensure element ids are unique and clear out any inputs that a user may 
+    // have entered on the template list item.
     for (const input of newInputs) {
       input.value = ""
       input.id = input.id + "-" + newIdNumber;
@@ -217,7 +219,8 @@ pageClass: "page-public-assistance"
     // Update the item heading if there is one.
     const itemHeading = newItem.querySelector("h3,h4,h5,h6");
     if (itemHeading) {
-      itemHeading.textContent = itemHeading.textContent.replace(/\d+$/, newIdNumber + 1);
+      itemHeading.textContent = itemHeading.textContent.replace(
+        /\d+$/, newIdNumber + 1);
     }
     // Add a remove button for the new item.
     const removeButton = document.createElement("button");
@@ -240,7 +243,7 @@ pageClass: "page-public-assistance"
 
   function removeDynamicFieldListItem() {
     const item = this.parentElement;
-    const list = this.closest(".dynamic_field_list");
+    const list = this.closest("ul.dynamic_field_list");
     item.remove();
     list.dispatchEvent(new Event("input"));
   }

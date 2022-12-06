@@ -328,7 +328,6 @@ module.exports = function(eleventyConfig) {
     return `<div id="section-${id}" class="elig_section hidden">${content}</div>`;
   });
 
-
   // Generates a list that can have items added and removed dynamically.
   eleventyConfig.addPairedShortcode("dynamicFieldList", function(
     listItemContent, addText) {
