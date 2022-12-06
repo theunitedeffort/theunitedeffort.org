@@ -346,7 +346,21 @@ pageClass: "page-public-assistance"
 
   function removeIncomeEntry() {
     const entry = this.parentElement;
+    const entryList = this.closest(".income_entry_list");
     entry.remove();
+    entryList.dispatchEvent(new Event("input"));
+  }
+
+  function updateIncomeTotal() {
+    const page = this.closest(".elig_page");
+    const totalDisplay = page.querySelector(".income_total");
+    const inputs = page.querySelectorAll("input[type=number]");
+    let sum = 0;
+    for (input of inputs) {
+      sum += Number(input.value);
+    }
+    totalDisplay.textContent = sum;
+    console.log("value updated!");
   }
 
   // Marks the section as complete in the step indicator.
@@ -531,6 +545,11 @@ pageClass: "page-public-assistance"
     const incomeAddButtons = document.querySelectorAll('button[id^="income"][id$="add"]');
     for (const button of incomeAddButtons) {
       button.addEventListener("click", addIncomeEntry);
+    }
+
+    const entryLists = document.querySelectorAll(".income_entry_list");
+    for (const entryList of entryLists) {
+      entryList.addEventListener("input", updateIncomeTotal);
     }
 
     // Form control buttons

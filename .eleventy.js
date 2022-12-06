@@ -343,7 +343,7 @@ module.exports = function(eleventyConfig) {
         <button type="button" class="btn btn_secondary income_control" id="income-wages-add">Add another entry</button>
       </div>
       <p>
-        Combined household income from ${typeStr}:  <span class="bold">$0000 per month</span>
+        Combined household income from ${typeStr}:  <span class="bold">$<span class="income_total">0</span> per month</span>
       </p>`;
   });
 
