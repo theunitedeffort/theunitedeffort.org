@@ -172,6 +172,23 @@ pageClass: "page-public-assistance"
     {% eligPage "income-details-other" %}
       {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other"  %}
     {% endeligPage %}
+
+    {% eligPage "income-assets" %}
+      <h3>Assets</h3>
+      <p>
+        What is the value of all assets or resources you and your household have?  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
+      </p>
+      {% dynamicFieldList "Add another asset" %}
+        <h4>Asset 1</h4>
+        <div>
+          <label for="income-asset">Value</label>
+          $ <input id="income-asset" type="number" class="long">
+        </div>
+      {% enddynamicFieldList %}
+      <p>
+        Combined household assets: <span class="bold">$<span class="income_total">0</span></span>
+      </p>
+    {% endeligPage %}
   {% endeligSection %}
 
   {% eligSection "existing-assistance" %}
