@@ -193,8 +193,60 @@ pageClass: "page-public-assistance"
 
   {% eligSection "existing-assistance" %}
     <h2>Existing Assistance</h2>
-    {% eligPage "assistance" %}
-      More form fields to do.
+    {% eligPage "existing-assistance" %}
+      <p>
+        Mark any public assistance you or your household already receive.
+      </p>
+      <fieldset>
+        <div class="row">
+          <div><legend>Supplemental Security Income (SSI)</legend></div>
+          <div><input type="checkbox" id="existing-ssi-me"></div>
+          <div><input type="checkbox" id="existing-ssi-household"></div>
+        </div>
+      </fieldset>
+      
+      <fieldset>
+        <div class="row">
+          <div><legend>Social Security Disability Insurance (SSDI)</legend></div>
+          <div><input type="checkbox" id="existing-ssdi-me"></div>
+          <div><input type="checkbox" id="existing-ssdi-household"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <div class="row">
+          <div><legend>California Work Opportunity and Responsibility to Kids (CalWORKs)</legend></div>
+          <div><input type="checkbox" id="existing-calworks-me"></div>
+          <div><input type="checkbox" id="existing-calworks-household"></div>
+        </div>
+      </fieldset>
+
+      <table>
+        <thead>
+          <th></th>
+          <th>Me</th>
+          <th>Someone in my household</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Supplemental Security Income (SSI)</td>
+            <td><input type="checkbox" id="existing-ssi-me"></td>
+            <td><input type="checkbox" id="existing-ssi-household"></td>
+          </tr>
+          <tr>
+            <td>Social Security Disability Insurance (SSDI)</td>
+            <td><input type="checkbox" id="existing-ssdi-me"></td>
+            <td><input type="checkbox" id="existing-ssdi-household"></td>
+          </tr>
+          <tr>
+            <td>California Work Opportunity and Responsibility to Kids (CalWORKs)</td>
+            <td><input type="checkbox" id="existing-calworks-me"></td>
+            <td><input type="checkbox" id="existing-calworks-household"></td>
+          </tr>
+        </tbody>
+      </table>
+
+
     {% endeligPage %}
   {% endeligSection %}
 
@@ -561,7 +613,8 @@ pageClass: "page-public-assistance"
 
   // Switches to the first form page in the document.
   function showFirstPage() {
-    switchToPage(document.querySelector("div.elig_page"));
+    //switchToPage(document.querySelector("div.elig_page"));
+    switchToPage(document.getElementById("page-existing-assistance"));
   }
   
   // Initializes the user interface.
