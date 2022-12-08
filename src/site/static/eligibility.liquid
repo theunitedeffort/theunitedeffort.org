@@ -23,17 +23,19 @@ pageClass: "page-public-assistance"
 <form id="eligibility">
   {% eligSection "intro" %}
     {% eligPage "intro" %}
-      <p></p>
-      <p></p>
+      <p>
+        Introductory text.
+      </p>
+      <p>
+        This form will ask you about a variety of things.
+      </p>
     {% endeligPage %}
   {% endeligSection %}
 
   {% eligSection "yourself" %}
 
     <h2>Yourself</h2>
-    <p>
-      This section-level text will be shown for every page in this section.
-    </p>
+    <p></p>
 
     {% eligPage "yourself-start" %}
       <p></p>
@@ -45,7 +47,7 @@ pageClass: "page-public-assistance"
         </div>
 
         Select any of the following that describe you:
-        <ul class="multiselect">
+        <ul id="yourself-details" class="multiselect">
           <li>
             <input id="disabled" type="checkbox" name="option">
             <label for="disabled">I am disabled.</label>
@@ -212,24 +214,11 @@ pageClass: "page-public-assistance"
 
   {% eligSection "household" %}
     <h2>Household</h2>
-    {% eligPage "household-start" %}
-      <p>
-        Here we are in a new section.
-      </p>
-      <div>
-        <label for="favorite-color">What is your favorite color?</label>
-        <input id="favorite-color" type="text">
-      </div>
-    {% endeligPage %}
 
     {% eligPage "household-situation" %}
-      <p>
-        Here we are in a household situation page
-      </p>
 
+      <p>Select the option below that best describes your current housing situation:</p>
       <div>
-        Select the option below that best describes your current housing situation:
-        <br/>
         <input type="radio" id="housing" name="housing-situation" value="Yes">
         <label for="housing">I live in a mobile home, apartment, condo, townhouse, or house</label><br>
 
