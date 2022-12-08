@@ -285,7 +285,7 @@ pageClass: "page-public-assistance"
         Select all sources of income for you and your household. Include income from all members of your household, including yourself.
       </p>
       <div>
-        <ul id="income-types" class="multiselect">      
+        <ul id="income-types" class="multiselect">
           <li>
             <input id="income-has-wages" type="checkbox">
             <label for="income-has-wages">Job wages, tips, or commission</label>
@@ -324,8 +324,8 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-none" type="checkbox">
-            <label for="income-has-none">My household has no income of any kind</label>   
-          </li>     
+            <label for="income-has-none">My household has no income of any kind</label>
+          </li>
         </ul>
       </div>
     {% endeligPage %}
@@ -379,7 +379,9 @@ pageClass: "page-public-assistance"
         </div>
       {% enddynamicFieldList %}
       <p>
-        Combined household assets: <span class="bold">$<span class="income_total">0</span></span>
+        Combined household assets:
+        <span class="bold">$<span class="income_total">0</span>
+        </span>
       </p>
     {% endeligPage %}
   {% endeligSection %}
@@ -485,18 +487,19 @@ pageClass: "page-public-assistance"
     }
   }
 
-  // Adds an item to a dynamic list of fields.
+// Adds an item to a dynamic list of fields.
   function addDynamicFieldListItem() {
-    const list = this.parentElement.parentElement.querySelector(
-      "ul.dynamic_field_list");
+    const list = this.parentElement.parentElement.querySelector("ul.dynamic_field_list");
     const items = list.querySelectorAll("li");
-    // Figure out the largest id index used so far.
+
+// Figure out the largest id index used so far.
     const lastInput = items[items.length - 1].querySelector("input");
     let lastIdNumber;
     if (lastInput) {
       lastIdNumber = lastInput.id.match(/-\d+$/g);
     }
-    // Create a new item using the first item in the list as a template.
+
+// Create a new item using the first item in the list as a template.
     const newItem = items[0].cloneNode(true);
     const newInputs = newItem.querySelectorAll("input");
     const newLabels = newItem.querySelectorAll("label");
@@ -504,23 +507,26 @@ pageClass: "page-public-assistance"
     if (lastIdNumber) {
       newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
     }
-    // Ensure element ids are unique and clear out any inputs that a user may 
-    // have entered on the template list item.
+
+// Ensure element ids are unique and clear out any inputs that a user may 
+// have entered on the template list item.
     for (const input of newInputs) {
       input.value = ""
       input.id = input.id + "-" + newIdNumber;
     }
-    // Ensure labels match the new input id values.
+
+// Ensure labels match the new input id values.
     for (const label of newLabels) {
       label.setAttribute("for", label.getAttribute("for") + "-" + newIdNumber);
     }
-    // Update the item heading if there is one.
+
+// Update the item heading if there is one.
     const itemHeading = newItem.querySelector("h3,h4,h5,h6");
     if (itemHeading) {
-      itemHeading.textContent = itemHeading.textContent.replace(
-        /\d+$/, newIdNumber + 1);
+      itemHeading.textContent = itemHeading.textContent.replace(/\d+$/, newIdNumber + 1);
     }
-    // Add a remove button for the new item.
+
+// Add a remove button for the new item.
     const removeButton = document.createElement("button");
     removeButton.classList.add("link");
     removeButton.textContent = "remove";
@@ -528,14 +534,16 @@ pageClass: "page-public-assistance"
     removeButton.addEventListener("click", removeDynamicFieldListItem);
     const fragment = new DocumentFragment();
     fragment.append(" (", removeButton, ")");
-    // If there is a heading, put the remove button after it.  Otherwise,
-    // make it the first element in the list item.
+
+// If there is a heading, put the remove button after it.  Otherwise,
+// make it the first element in the list item.
     if (itemHeading) {
       itemHeading.after(fragment);
     } else {
       newItem.prepend(fragment);
     }
-    // Add our new item to the list.
+
+// Add our new item to the list.
     list.appendChild(newItem);
   }
 
@@ -759,8 +767,7 @@ pageClass: "page-public-assistance"
     for (const input of inputs) {
       input.addEventListener("input", onInput);
     }
-    const fieldListAddButtons = document.querySelectorAll(
-      'button.field_list_add');
+    const fieldListAddButtons = document.querySelectorAll('button.field_list_add');
     for (const button of fieldListAddButtons) {
       button.addEventListener("click", addDynamicFieldListItem);
     }
@@ -877,8 +884,69 @@ pageClass: "page-public-assistance"
       }
     };
 
-    // TODO: Use custom logic as needed for other pages to conditionally choose 
-    // the next page based on user input.
+    pageById["page-income"].next = function() {
+      if (document.getElementById("income-has-wages").checked) {
+        return pageById["page-income-details-wages"];
+      }
+      return pageById["page-income-details-wages"].next();
+    };
+
+    pageById["page-income-details-wages"].next = function() {
+      if (document.getElementById("income-has-self-employed").checked) {
+        return pageById["page-income-details-self-employed"];
+      }
+      return pageById["page-income-details-self-employed"].next();
+    };
+
+    pageById["page-income-details-self-employed"].next = function() {
+      if (document.getElementById("income-has-social-security").checked) {
+        return pageById["page-income-details-social-security"];
+      }
+      return pageById["page-income-details-social-security"].next();
+    };
+
+    pageById["page-income-details-social-security"].next = function() {
+      if (document.getElementById("income-has-unemployment").checked) {
+        return pageById["page-income-details-unemployment"];
+      }
+      return pageById["page-income-details-unemployment"].next();
+    };
+
+    pageById["page-income-details-unemployment"].next = function() {
+      if (document.getElementById("income-has-veterans").checked) {
+        return pageById["page-income-details-veterans"];
+      }
+      return pageById["page-income-details-veterans"].next();
+    };
+
+    pageById["page-income-details-veterans"].next = function() {
+      if (document.getElementById("income-has-workers-comp").checked) {
+        return pageById["page-income-details-workers-comp"];
+      }
+      return pageById["page-income-details-workers-comp"].next();
+    };
+
+    pageById["page-income-details-workers-comp"].next = function() {
+      if (document.getElementById("income-has-child-support").checked) {
+        return pageById["page-income-details-child-support"];
+      }
+      return pageById["page-income-details-child-support"].next();
+    };
+
+    pageById["page-income-details-child-support"].next = function() {
+      if (document.getElementById("income-has-retirement").checked) {
+        return pageById["page-income-details-retirement"];
+      }
+      return pageById["page-income-details-retirement"].next();
+    };
+
+    pageById["page-income-details-retirement"].next = function() {
+      if (document.getElementById("income-has-other").checked) {
+        return pageById["page-income-details-other"];
+      }
+      return pageById["page-income-details-other"].next();
+    };
+
   }
 
 // Determines eligibility for programs based on user form input values.
