@@ -92,8 +92,6 @@ form#eligibility {
   }
 
   td, th {
-    border-bottom: none;
-    border-left: solid 2px var(--color-gray-900);
     text-align: center;
     padding: 0.5em 0;
     width: 20%;
@@ -109,7 +107,6 @@ form#eligibility {
   tr td:first-child,
   tr th:first-child {
     text-align: left;
-    border: none;
     width: auto;
   }
 }
