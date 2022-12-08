@@ -354,6 +354,53 @@ module.exports = function(eleventyConfig) {
       </div>`;
   });
 
+  eleventyConfig.addShortcode("checkboxTable", function(tableId, columnsStr, rowsStr) {
+    function unpack(str) {
+      const parts = str.split(":");
+      return {id: parts[0].trim(), content: parts[1].trim()};
+    }
+    
+    const columns = columnsStr.split("\n").map(unpack);
+    const rows = rowsStr.split("\n").map(unpack);
+
+    columnsHtml = ['<th></th>'];
+    for (column of columns) {
+      columnsHtml.push(`
+        <th id="col-label-${column.id}">
+          ${column.content}
+        </th>`);
+    }
+    rowsHtml = [];
+    for (row of rows) {
+      cellsHtml = [];
+      for (column of columns) {
+        cellsHtml.push(`
+          <td>
+            <input type="checkbox" id="${tableId}-${row.id}-${column.id}" aria-labelledby="row-label-${row.id} col-label-${column.id}">
+          </td>`);
+      }
+      rowsHtml.push(`
+        <tr>
+          <td class="label" id="row-label-${row.id}">
+            ${row.content}
+          </td>
+          ${cellsHtml.join("")}
+        </tr>`);
+    }
+
+    return `
+      <table>
+        <thead>
+          <tr>
+            ${columnsHtml.join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml.join("")}
+        </tbody>
+      </table>`
+  });
+
   // Generates a label tag for the given 'fieldName'. 
   // 
   // The parameter 'fields' is

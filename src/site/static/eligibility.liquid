@@ -197,7 +197,8 @@ pageClass: "page-public-assistance"
       <p>
         Mark any public assistance you or your household already receive.
       </p>
-      <fieldset>
+
+      <!-- <fieldset>
         <div class="row">
           <div><legend>Supplemental Security Income (SSI)</legend></div>
           <div><input type="checkbox" id="existing-ssi-me"></div>
@@ -212,41 +213,41 @@ pageClass: "page-public-assistance"
           <div><input type="checkbox" id="existing-ssdi-household"></div>
         </div>
       </fieldset>
-
       <fieldset>
         <div class="row">
           <div><legend>California Work Opportunity and Responsibility to Kids (CalWORKs)</legend></div>
           <div><input type="checkbox" id="existing-calworks-me"></div>
           <div><input type="checkbox" id="existing-calworks-household"></div>
         </div>
-      </fieldset>
+      </fieldset> -->
 
-      <table>
-        <thead>
-          <th></th>
-          <th>Me</th>
-          <th>Someone in my household</th>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Supplemental Security Income (SSI)</td>
-            <td><input type="checkbox" id="existing-ssi-me"></td>
-            <td><input type="checkbox" id="existing-ssi-household"></td>
-          </tr>
-          <tr>
-            <td>Social Security Disability Insurance (SSDI)</td>
-            <td><input type="checkbox" id="existing-ssdi-me"></td>
-            <td><input type="checkbox" id="existing-ssdi-household"></td>
-          </tr>
-          <tr>
-            <td>California Work Opportunity and Responsibility to Kids (CalWORKs)</td>
-            <td><input type="checkbox" id="existing-calworks-me"></td>
-            <td><input type="checkbox" id="existing-calworks-household"></td>
-          </tr>
-        </tbody>
-      </table>
+   <!--   <input type="checkbox" aria-labelledby="row-label-ssi col-label-me">
 
+     <input type="checkbox" aria-labelledby="searchbutton">
+     <span id="searchbutton">Search</span> -->
 
+     {% capture columns -%}
+        me: Me
+        household: Someone in my household
+     {%- endcapture %}
+
+     {% capture rows -%}
+        ssi: Supplemental Security Income (SSI)
+        ssdi: Social Security Disability Insurance (SSDI)
+        calworks: California Work Opportunity and Responsibility to Kids (CalWORKs) <span class="subtitle">Also known as Temporary Assistance for Needy Families (TANF)</span>
+        calfresh: CalFresh <span class="subtitle">Also known as Supplemental Nutrition Assistance Program (SNAP) or Food Stamps</span>
+        cfap: California Food Assistance Program (CFAP) <span class="subtitle">Alternative to CalFresh, also known as Food Stamps</span>
+        medical: Medi-Cal <span class="subtitle">Also known as California’s Medicaid program</span>
+        ihss: In-Home Supportive Services (IHSS)
+        capi: Cash Assistance Program for Immigrants (CAPI)
+        liheap: Low Income Home Energy Assistance Program (LIHEAP)
+        wic: Women, Infants & Children (WIC)
+        nslp: National School Lunch Program (NSLP)
+        ga: General Assistance (GA)
+     {%- endcapture %}
+
+     {% checkboxTable "existing", columns, rows %}
+     
     {% endeligPage %}
   {% endeligSection %}
 
