@@ -106,6 +106,8 @@ eleventyComputed:
         badge__bad
       {%- elsif openStatus == "Waitlist Open" -%}
         badge__ok
+      {%- elsif openStatus == "Available" -%}
+        badge__highlight
       {%- endif -%}
     {%- endcapture -%}
     <h2>{{unitType | default: ""}}<span class="badge {{badgeMod}}">{{openStatus}}</span></h2> 
