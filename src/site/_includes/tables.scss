@@ -86,6 +86,33 @@ table.all_borders {
   }
 }
 
+form#eligibility {
+  table {
+    font-size: 1em;
+    max-width: 42em;
+  }
+
+  td, th {
+    text-align: center;
+    padding: 0.5em 0;
+    width: 20%;
+
+    .subtitle {
+      display: block;
+      font-size: 0.8em;
+      color: var(--color-gray-500);
+      font-weight: 400;
+    }
+  }
+
+  tr td:first-child,
+  tr th:first-child {
+    text-align: left;
+    width: auto;
+  }
+}
+
+
 
 @media print {
   table.printed {

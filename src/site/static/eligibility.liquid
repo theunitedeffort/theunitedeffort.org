@@ -193,8 +193,33 @@ pageClass: "page-public-assistance"
 
   {% eligSection "existing-assistance" %}
     <h2>Existing Assistance</h2>
-    {% eligPage "assistance" %}
-      More form fields to do.
+    {% eligPage "existing-assistance" %}
+      <p>
+        Mark any public assistance you or your household already receive.
+      </p>
+
+     {% capture columns -%}
+        me: Me
+        household: Someone in my household
+     {%- endcapture %}
+
+     {% capture rows -%}
+        ssi: Supplemental Security Income (SSI)
+        ssdi: Social Security Disability Insurance (SSDI)
+        calworks: California Work Opportunity and Responsibility to Kids (CalWORKs) <span class="subtitle">Also known as Temporary Assistance for Needy Families (TANF)</span>
+        calfresh: CalFresh <span class="subtitle">Also known as Supplemental Nutrition Assistance Program (SNAP) or Food Stamps</span>
+        cfap: California Food Assistance Program (CFAP) <span class="subtitle">Alternative to CalFresh, also known as Food Stamps</span>
+        medical: Medi-Cal <span class="subtitle">Also known as California’s Medicaid program</span>
+        ihss: In-Home Supportive Services (IHSS)
+        capi: Cash Assistance Program for Immigrants (CAPI)
+        liheap: Low Income Home Energy Assistance Program (LIHEAP)
+        wic: Women, Infants & Children (WIC)
+        nslp: National School Lunch Program (NSLP)
+        ga: General Assistance (GA)
+     {%- endcapture %}
+
+     {% checkboxTable "existing", columns, rows %}
+     
     {% endeligPage %}
   {% endeligSection %}
 
