@@ -226,15 +226,49 @@ pageClass: "page-public-assistance"
   {% eligSection "results" %}
     <h2>Results</h2>
     {% eligPage "results" %}
-      <p>
-        This is an example results page that would show content based on form input values.
+      <div class="programs programs__eligible">
+        <h3>Matching Programs</h3>
+        <p>
+          You may qualify for the following programs.  Please click on the name of a program to get further details and find out how to apply.
+        </p>
+        <ul></ul>
+      </div>
+
+      <div class="programs programs__ineligible">
+        <h3>Non-matching Programs</h3>
+        <p>
+          Based on your responses, you are likely <span class="bold">not</span> eligible for the following programs.  A short explanation as to why you are likely not eligible is listed below each program.
+        </p>
+        <ul></ul>
+      </div>
+
+      <div class="programs programs__unknown">
+        <h3>Other Programs</h3>
+        <p>
+          With the information provided, we are unable to determine if you are eligible for the following programs.  If you would like to provide more information, you can revisit any form sections and then return to this results section.
         <ul>
-          <li>Result 1</li>
-          <li>Result 2</li>
-          <li>Result 3</li>
-          <li>Result 4</li>
+          {% program "Assistance Dog Special Allowance (ADSA)", "https://www.cdss.ca.gov/assistance-dogs", "", "adsa" %}
+            <p>
+              ADSA provides people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
+            </p>
+          {% endprogram %}
+          {% program "Calfresh", "https://www.cdss.ca.gov/calfresh", "", "calfresh" %}
+            <p>
+              Calfresh provides monthly food benefits to low-income individuals and families. This program is also known as the Supplemental Nutrition Assistance Program (SNAP) or "food stamps."
+            </p>
+          {% endprogram %}
+          {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm", "calworks" %}
+            <p>
+              CalWORKs provides cash aid and services to low-income families with children in the home.  This program is also known as Temporary Assistance for Needy Families (TANF) or "welfare."
+            </p>
+          {% endprogram %}
+          {% program "Cash Assistance Program for Immigrants (CAPI)", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm", "capi" %}
+            <p>
+              CAPI provides monthly cash benefits to elderly, blind, or disabled non-citizens.
+            </p>
+          {% endprogram %}
         </ul>
-      </p>
+      </div>
     {% endeligPage %}
   {% endeligSection %}
 
@@ -700,11 +734,42 @@ pageClass: "page-public-assistance"
 
   }
 
+  function adsaEligible() {
+    console.log("adsa ineligible");
+    return false;
+  }
+
+  function calfreshEligible() {
+    console.log("calfresh eligible");
+    return true;
+  }
+
+  function calworksEligible() {
+    console.log("calworks ineligible");
+    return false;
+  }
+
+  function capiEligible() {
+    console.log("capi unknown");
+    return undefined;
+  }
+
   // Determines eligibility for programs based on user form input values.
   function computeEligibility() {
-    console.log("TODO: Determine program eligibility");
-    // TODO: Use all form inputs to generate a list of programs the user
-    // is likely eligible for.
+    const allPrograms = document.querySelectorAll(".programs li");
+    const eligibleList = document.querySelector(".programs__eligible ul");
+    const ineligibleList = document.querySelector(".programs__ineligible ul");
+    const unknownList = document.querySelector(".programs__unknown ul");
+    for (program of allPrograms) {
+      const eligible = window[program.dataset.eligibility]();
+      if (typeof eligible === "undefined") {
+        unknownList.appendChild(program);
+      } else if (eligible) {
+        eligibleList.appendChild(program);
+      } else {
+        ineligibleList.appendChild(program);
+      }
+    }
   }
 
   // Script entry point.
