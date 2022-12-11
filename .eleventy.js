@@ -341,7 +341,7 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addPairedShortcode("program", function(
-    content, title, applyUrl, refUrl, id) {
+    content, title, id, applyUrl, refUrl="") {
     const links = [];
     if (applyUrl) {
       links.push(`<p><a href=${applyUrl} target="_blank" rel="noopener">How to apply</a></p>`);
@@ -352,7 +352,7 @@ module.exports = function(eleventyConfig) {
     return `
       <li id="program-${id}" data-eligibility="${id}Eligible">
         <h4>${title}</h4>
-        ${content}
+        <p>${content}</p>
         ${links.join("")}
       </li>`;
   });
