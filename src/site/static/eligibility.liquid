@@ -226,15 +226,53 @@ pageClass: "page-public-assistance"
   {% eligSection "results" %}
     <h2>Results</h2>
     {% eligPage "results" %}
-      <p>
-        This is an example results page that would show content based on form input values.
+      <div class="programs programs__eligible">
+        <p>
+          You may qualify for the following programs.  Please click on the name of a program to get further details and find out how to apply.
+        </p>
+        <ul></ul>
+        <p>
+          The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
+        </p>
+        <p>
+          If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
+        </p>
+      </div>
+
+      <h3>Other Programs</h3>
+      <div class="programs programs__unknown">
+        <p>
+          With the information provided, we are unable to determine if you are eligible for the following programs.  If you would like to provide more information you can revisit any form sections and then return to this results section.
         <ul>
-          <li>Result 1</li>
-          <li>Result 2</li>
-          <li>Result 3</li>
-          <li>Result 4</li>
+          {% program "Assistance Dog Special Allowance (ADSA)", "adsa", "https://www.cdss.ca.gov/assistance-dogs" %}
+            ADSA provides people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
+          {% endprogram %}
+          
+          {% program "Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
+            Calfresh provides monthly food benefits to low-income individuals and families.
+          {% endprogram %}
+          
+          {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm"%}
+            CalWORKs provides cash aid and services to low-income families with children in the home.
+          {% endprogram %}
+          
+          {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
+            CAPI provides monthly cash benefits to elderly, blind, or disabled non-citizens.
+          {% endprogram %}
+
+          {% comment %}
+          TODO: Add more programs.
+          {% endcomment %}
         </ul>
-      </p>
+      </div>
+
+      <div class="programs programs__ineligible">
+        <p>
+          We also checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  A short explanation as to why you are likely not eligible is listed below each program.
+        </p>
+        <ul></ul>
+      </div>
+
     {% endeligPage %}
   {% endeligSection %}
 
@@ -700,11 +738,51 @@ pageClass: "page-public-assistance"
 
   }
 
+  // The functions below determine eligibility for various programs.
+  // When a program is added using the "program" shortcode, a matching function
+  // should be defined called {id}Eligible where {id} is the id given in
+  // the "program" shortcode for that program.
+  //
+  // An eligibility function should return true if the input values suggest
+  // program eligibility, false if the values suggest ineligibility, and 
+  // undefined if an eligibility determination can't be made.
+  function adsaEligible() {
+    // TODO
+    return false;
+  }
+
+  function calfreshEligible() {
+    // TODO
+    return true;
+  }
+
+  function calworksEligible() {
+    // TODO
+    return false;
+  }
+
+  function capiEligible() {
+    // TODO
+    return undefined;
+  }
+  // TODO: Add more program eligibility functions.
+
   // Determines eligibility for programs based on user form input values.
   function computeEligibility() {
-    console.log("TODO: Determine program eligibility");
-    // TODO: Use all form inputs to generate a list of programs the user
-    // is likely eligible for.
+    const allPrograms = document.querySelectorAll(".programs li");
+    const eligibleList = document.querySelector(".programs__eligible ul");
+    const ineligibleList = document.querySelector(".programs__ineligible ul");
+    const unknownList = document.querySelector(".programs__unknown ul");
+    for (program of allPrograms) {
+      const eligible = window[program.dataset.eligibility]();
+      if (typeof eligible === "undefined") {
+        unknownList.appendChild(program);
+      } else if (eligible) {
+        eligibleList.appendChild(program);
+      } else {
+        ineligibleList.appendChild(program);
+      }
+    }
   }
 
   // Script entry point.

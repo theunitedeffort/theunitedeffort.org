@@ -340,6 +340,25 @@ module.exports = function(eleventyConfig) {
       </p>`;
   });
 
+
+  // Renders a single public assistance program to display in a list.
+  eleventyConfig.addPairedShortcode("program", function(
+    content, title, id, applyUrl, refUrl="") {
+    const links = [];
+    if (applyUrl) {
+      links.push(`<p><a href=${applyUrl} target="_blank" rel="noopener">How to apply</a></p>`);
+    }
+    if (refUrl) {
+      links.push(`<p><a href=${refUrl} target="_blank" rel="noopener">Learn more</a></p>`);
+    }
+    return `
+      <li id="program-${id}" data-eligibility="${id}Eligible">
+        <h4>${title}</h4>
+        <p>${content}</p>
+        ${links.join("")}
+      </li>`;
+  });
+
   // Generates a list that can have items added and removed dynamically.
   eleventyConfig.addPairedShortcode("dynamicFieldList", function(
     listItemContent, addText) {
