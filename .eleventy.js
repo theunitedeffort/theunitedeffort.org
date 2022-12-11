@@ -340,6 +340,8 @@ module.exports = function(eleventyConfig) {
       </p>`;
   });
 
+
+  // Renders a single public assistance program to display in a list.
   eleventyConfig.addPairedShortcode("program", function(
     content, title, id, applyUrl, refUrl="") {
     const links = [];
