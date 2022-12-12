@@ -260,9 +260,41 @@ pageClass: "page-public-assistance"
             CAPI provides monthly cash benefits to elderly, blind, or disabled non-citizens.
           {% endprogram %}
 
-          {% comment %}
-          TODO: Add more programs.
-          {% endcomment %}
+          {% program "California Alternate Rates for Energy (CARE)", "care", "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/california-alternate-rates-for-energy" %}
+            CARE provides a discount on electricity and natural gas bills for low-income individuals and families.
+          {% endprogram %}
+
+          {% program "Family Electric Rate Assistance (FERA)", "fera", "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/family-electric-rate-assistance-program" %}
+            FERA provides a discount on electricity bills for low-income families.
+          {% endprogram %}
+
+          {% program "VA Disability Compensation", "va-disability-comp", "https://www.va.gov/disability/how-to-file-claim/", "https://www.va.gov/disability/" %}
+            VA disability compensation provides a monthly payment to injured or disabled veterans.
+          {% endprogram %}
+
+          {% program "General Assistance (GA)", "ga", "https://socialservices.sccgov.org/financial-assistance/financial-assistance-adults-without-dependent-children-general-assistance" %}
+            GA provides cash assistance and employment services to low-income individuals with no dependent children.
+          {% endprogram %}
+
+          {% program "No-Fee ID Card", "no-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+            Unhoused or elderly individuals can get an identification card from the Department of Motor Vehicles without having to pay the usual fee.
+          {% endprogram %}
+
+          {% program "Reduced Fee ID Card", "reduced-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+            Low-income individuals can get a discount on the fee for an identification card from the Department of Motor Vehicles.
+          {% endprogram %}
+
+          {% program "In-Home Supportive Services (IHSS)", "ihss", "https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients", "https://ca.db101.org/ca/programs/health_coverage/medi_cal/ihss/program.htm" %}
+            IHSS provides in-home personal assistance to low-income individuals who are blind, disabled, or elderly so they can continue to live at home safely.
+          {% endprogram %}
+
+          {% program "California LifeLine", "lifeline", "https://www.californialifeline.com/en/eligibility_requirements", "https://www.californialifeline.com/en" %}
+            Lifeline provides a discount on home phone and cell phone bills for low-income households.
+          {% endprogram %}
+
+          {% program "Low Income Home Energy Assistance Program (LIHEAP)", "liheap", "https://www.csd.ca.gov/Pages/Services.aspx?SCU=Santa%20Clara%20County&PT=CM", "https://www.csd.ca.gov/Pages/Assistance-PayingMyEnergyBills.aspx" %}
+            LIHEAP provides one-time assistance with paying energy bills, home weatherization, and energy-related home repairs to low-income households.
+          {% endprogram %}
         </ul>
       </div>
 
@@ -765,6 +797,52 @@ pageClass: "page-public-assistance"
     // TODO
     return undefined;
   }
+
+  function careEligible() {
+    // TODO
+    return true;
+  }
+
+  function feraEligible() {
+    // TODO
+    return true;
+  }
+
+  function vaDisabilityCompEligible() {
+    // TODO
+    return true;
+  }
+
+  function gaEligible() {
+    // TODO
+    return true;
+  }
+
+  function noFeeIdEligible() {
+    // TODO
+    return true;
+  }
+
+  function reducedFeeIdEligible() {
+    // TODO
+    return false;
+  }
+
+  function ihssEligible() {
+    // TODO
+    return false;
+  }
+
+  function lifelineEligible() {
+    // TODO
+    return false;
+  }
+
+  function liheapEligible() {
+    // TODO
+    return false;
+  }
+
   // TODO: Add more program eligibility functions.
 
   // Determines eligibility for programs based on user form input values.
