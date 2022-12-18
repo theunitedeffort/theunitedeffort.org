@@ -340,6 +340,24 @@ module.exports = function(eleventyConfig) {
       </p>`;
   });
 
+  // Renders a single public assistance program to display in a list.
+  eleventyConfig.addPairedShortcode("program", function(
+    content, title, id, applyUrl, refUrl="") {
+    const links = [];
+    if (applyUrl) {
+      links.push(`<p><a href=${applyUrl} target="_blank" rel="noopener">How to apply</a></p>`);
+    }
+    if (refUrl) {
+      links.push(`<p><a href=${refUrl} target="_blank" rel="noopener">Learn more</a></p>`);
+    }
+    return `
+      <li id="program-${id}" data-eligibility="${id}Eligible">
+        <h4>${title}</h4>
+        <p>${content}</p>
+        ${links.join("")}
+      </li>`;
+  });
+
   // Generates a list that can have items added and removed dynamically.
   eleventyConfig.addPairedShortcode("dynamicFieldList", function(
     listItemContent, addText) {
@@ -352,6 +370,53 @@ module.exports = function(eleventyConfig) {
       <div>
         <button type="button" class="btn btn_secondary field_list_add">${addText}</button>
       </div>`;
+  });
+
+  eleventyConfig.addShortcode("checkboxTable", function(tableId, columnsStr, rowsStr) {
+    function unpack(str) {
+      const parts = str.split(":");
+      return {id: parts[0].trim(), content: parts[1].trim()};
+    }
+    
+    const columns = columnsStr.split("\n").map(unpack);
+    const rows = rowsStr.split("\n").map(unpack);
+
+    columnsHtml = ['<th></th>'];
+    for (column of columns) {
+      columnsHtml.push(`
+        <th id="col-label-${column.id}">
+          ${column.content}
+        </th>`);
+    }
+    rowsHtml = [];
+    for (row of rows) {
+      cellsHtml = [];
+      for (column of columns) {
+        cellsHtml.push(`
+          <td>
+            <input type="checkbox" id="${tableId}-${row.id}-${column.id}" aria-labelledby="row-label-${row.id} col-label-${column.id}">
+          </td>`);
+      }
+      rowsHtml.push(`
+        <tr>
+          <td class="label" id="row-label-${row.id}">
+            ${row.content}
+          </td>
+          ${cellsHtml.join("")}
+        </tr>`);
+    }
+
+    return `
+      <table>
+        <thead>
+          <tr>
+            ${columnsHtml.join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml.join("")}
+        </tbody>
+      </table>`
   });
 
   // Generates a label tag for the given 'fieldName'. 

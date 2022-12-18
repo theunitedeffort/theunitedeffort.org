@@ -9,15 +9,15 @@ pageClass: "page-public-assistance"
 <h1>{{title}}</h1>
 
 <p>
-  Use this tool to find assistance programs for which you qualify. Fill in each field to the best of your knowledge.
-  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in anyway.</span>
+  Use this tool to find assistance programs for which you qualify. Fill in each field to the best of your knowledge.<span class="bold">The information you enter here is completely private and will not be transmitted or stored in anyway.</span>
 </p>
 <p>
   After entering your information, you will be provided with a list of assistance programs you can apply for.
 </p>
 
 <div id="form-top" class="step_indicator">
-  <ul></ul>
+  <ul>
+  </ul>
 </div>
 
 <form id="eligibility">
@@ -36,195 +36,195 @@ pageClass: "page-public-assistance"
     <h2>Yourself</h2>
 
     {% eligPage "yourself-start" %}
-    <div>
       <div>
-        <label for="age">How old are you?</label>
-        <input id="age" type="number" value="" maxlength="3" min="1" max="130" /> years
-      </div>
+        <div>
+          <label for="age">How old are you?</label>
+          <input id="age" type="number" value="" maxlength="3" min="1" max="130" /> years
+        </div>
 
-      <p>Select any of the following that describe you:</p>
-      <div>
-        <ul id="yourself-details" class="multiselect">
-          <li>
-            <input id="disabled" type="checkbox" />
-            <label for="disabled">I am disabled.</label>
-          </li>
-          <li>
-            <input id="blind" type="checkbox" />
-            <label for="blind">I am blind.</label>
-          </li>
-          <li>
-            <input id="deaf" type="checkbox" />
-            <label for="deaf">I am deaf or hard of hearing.</label>
-          </li>
-          <li>
-            <input id="veteran" type="checkbox" />
-            <label for="veteran">I am a U.S. veteran.</label>
-          </li>
-          <li>
-            <input id="pregnant" type="checkbox" />
-            <label for="pregnant">I am pregnant or was pregnant within the last 6 months.</label>
-          </li>
-          <li>
-            <input id="feeding" type="checkbox" />
-            <label for="feeding">I am breastfeeding a child younger than 1 year old.</label>
-          </li>
-          <li>
-            <input id="citizen" type="checkbox" />
-            <label for="citizen">I am a U.S. citizen.</label>
-          </li>
-        </ul>
+        <p>Select any of the following that describe you:</p>
+        <div>
+          <ul id="yourself-details" class="multiselect">
+            <li>
+              <input id="disabled" type="checkbox" />
+              <label for="disabled">I am disabled.</label>
+            </li>
+            <li>
+              <input id="blind" type="checkbox" />
+              <label for="blind">I am blind.</label>
+            </li>
+            <li>
+              <input id="deaf" type="checkbox" />
+              <label for="deaf">I am deaf or hard of hearing.</label>
+            </li>
+            <li>
+              <input id="veteran" type="checkbox" />
+              <label for="veteran">I am a U.S. veteran.</label>
+            </li>
+            <li>
+              <input id="pregnant" type="checkbox" />
+              <label for="pregnant">I am pregnant or was pregnant within the last 6 months.</label>
+            </li>
+            <li>
+              <input id="feeding" type="checkbox" />
+              <label for="feeding">I am breastfeeding a child younger than 1 year old.</label>
+            </li>
+            <li>
+              <input id="citizen" type="checkbox" />
+              <label for="citizen">I am a U.S. citizen.</label>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
     {% endeligPage %}
 
     {% eligPage "head-of-household" %}
-    <p>Are you the head of your household?</p>
-    <div>
-      <ul id="yourself-head-household" class="singleselect-each">
-        <li>
-          <input type="radio" id="headhh_yes" name="head_household" />
-          <label for="headhh_yes">Yes</label>
-        </li>
-        <li>
-          <input type="radio" id="headhh_no" name="head_household" />
-          <label for="headhh_no">No</label>
-        </li>
-      </ul>
-    </div>
+      <p>Are you the head of your household?</p>
+      <div>
+        <ul id="yourself-head-household" class="singleselect-each">
+          <li>
+            <input type="radio" id="headhh_yes" name="head_household" />
+            <label for="headhh_yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="headhh_no" name="head_household" />
+            <label for="headhh_no">No</label>
+          </li>
+        </ul>
+      </div>
     {% endeligPage %}
 
     {% eligPage "disability-details" %}
-    <h3>About Your Disability</h3>
+      <h3>About Your Disability</h3>
 
-    <div>
-      <p>Does your disability prevent you from working?</p>
-      <ul id="prevent-working" class="singleselect-each">
-        <li>
-          <input type="radio" id="dis_prev_work_yes" name="disability_details1" />
-          <label for="dis_prev_work_yes">Yes</label>
-        </li>
-        <li>
-          <input type="radio" id="dis_prev_work_no" name="disability_details1" />
-          <label for="dis_prev_work_no">No</label>
-        </li>
-      </ul>
-      <p>Do you use a guide, signal or training dog?</p>
-      <ul id="use-guide" class="singleselect-each">
-        <LI>
-          <input type="radio" id="dis_guide_yes" name="disability_details2" />
-          <label for="dis_guide_yes">Yes</label>
-        </LI>
-        <li>
-          <input type="radio" id="dis_guide_no" name="disability_details2" />
-          <label for="dis_guide_no">No</label>
-        </li>
-      </ul>
-      <p>Is your disability related to your military service?</p>
-      <ul id="military-related" class="singleselect-each">
-        <li>
-          <input type="radio" id="dis_military_yes" name="disability_details3" />
-          <label for="dis_military_yes">Yes</label>
-        </li>
-        <li>
-          <input type="radio" id="dis_military_no" name="disability_details3"/>
-          <label for="dis_military_no">No</label>
-        </li>
-      </ul>
-    </div>
+      <div>
+        <p>Does your disability prevent you from working?</p>
+        <ul id="prevent-working" class="singleselect-each">
+          <li>
+            <input type="radio" id="dis_prev_work_yes" name="disability_details1" />
+            <label for="dis_prev_work_yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="dis_prev_work_no" name="disability_details1" />
+            <label for="dis_prev_work_no">No</label>
+          </li>
+        </ul>
+        <p>Do you use a guide, signal or training dog?</p>
+        <ul id="use-guide" class="singleselect-each">
+          <LI>
+            <input type="radio" id="dis_guide_yes" name="disability_details2" />
+            <label for="dis_guide_yes">Yes</label>
+          </LI>
+          <li>
+            <input type="radio" id="dis_guide_no" name="disability_details2" />
+            <label for="dis_guide_no">No</label>
+          </li>
+        </ul>
+        <p>Is your disability related to your military service?</p>
+        <ul id="military-related" class="singleselect-each">
+          <li>
+            <input type="radio" id="dis_military_yes" name="disability_details3" />
+            <label for="dis_military_yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="dis_military_no" name="disability_details3"/>
+            <label for="dis_military_no">No</label>
+          </li>
+        </ul>
+      </div>
     {% endeligPage %}
 
     {% eligPage "veteran-details" %}
-    <h3>About Your Military Service</h3>
+      <h3>About Your Military Service</h3>
 
-    <div>
-      <label for="your-discharge-status">What is your discharge status?</label>
-      <select id="your-discharge-status" name="discharge-status" >
-        <option value="">--Please choose an option--</option>
-        <option value="honorable">Honorable</option>
-        <option value="general">General under honorable conditions</option>
-        <option value="oth">Other than honorable (OTH)</option>
-        <option value="badcond">Bad conduct</option>
-        <option value="dishon">Dishonorable</option>
-      </select>
-    </div>
+      <div>
+        <label for="your-discharge-status">What is your discharge status?</label>
+        <select id="your-discharge-status">
+          <option value="">--Please choose an option--</option>
+          <option value="honorable">Honorable</option>
+          <option value="general">General under honorable conditions</option>
+          <option value="oth">Other than honorable (OTH)</option>
+          <option value="badcond">Bad conduct</option>
+          <option value="dishon">Dishonorable</option>
+        </select>
+      </div>
 
-    <div>
-      <p>Select any of the following that describe you:</p>
-      <ul id="service-types" class="multiselect">
-        <li>
-          <input id="enlisted" type="checkbox" />
-          <label for="enlisted">I served as an enlisted person.</label>
-        </li>
-        <li>
-          <input id="officer" type="checkbox" />
-          <label for="officer">I served as an officer.</label>
-        </li>
-      </ul>
-    </div>
+      <div>
+        <p>Select any of the following that describe you:</p>
+        <ul id="service-types" class="multiselect">
+          <li>
+            <input id="enlisted" type="checkbox" />
+            <label for="enlisted">I served as an enlisted person.</label>
+          </li>
+          <li>
+            <input id="officer" type="checkbox" />
+            <label for="officer">I served as an officer.</label>
+          </li>
+        </ul>
+      </div>
 
-    <div>
-      <p>Enter details for your duty periods below:</p>
-      <label for="your-duty-type">Duty type</label>
-      <select id="your-duty-type" name="duty-types" >
-        <option value="">--Please choose an option--</option>
-        <option value="act">Active duty</option>
-        <option value="act-train">Active duty for training</option>
-        <option value="inact-train">Inactive duty training</option>
-      </select>
-    </div>
+      <div>
+        <p>Enter details for your duty periods below:</p>
+        <label for="your-duty-type">Duty type</label>
+        <select id="your-duty-type">
+          <option value="">--Please choose an option--</option>
+          <option value="act">Active duty</option>
+          <option value="act-train">Active duty for training</option>
+          <option value="inact-train">Inactive duty training</option>
+        </select>
+      </div>
 
-    <div>
-      <ul id="duty-dates" class="datesselect">
-        <li>
-          <label for="served-from">Served From</label>
-          <input type="date" id="served-from" />
-          
-          <label for="served-untl">Until</label>
-          <input type="date" id="served-untl" />
-        </li>
-      </ul>
-    </div>
+      <div>
+        <ul id="duty-dates" class="datesselect">
+          <li>
+            <label for="served-from">Served From</label>
+            <input type="date" id="served-from" />
+            
+            <label for="served-untl">Until</label>
+            <input type="date" id="served-untl" />
+          </li>
+        </ul>
+      </div>
     {% endeligPage %}
 
 
     {% eligPage "veteran-details2" %}
-    <h3>About Your Military Service</h3>
-    <p>
-      Here we are in the veteran-details2 page.
-    </p>
+      <h3>About Your Military Service</h3>
+      <p>
+        Here we are in the veteran-details2 page.
+      </p>
     {% endeligPage %}
 
 
     {% eligPage "immigration-status" %}
-    <h3>About Your Immigration Status</h3>
+      <h3>About Your Immigration Status</h3>
 
-    <p>Select <span class="bold">one</span> of the following that most accurately describes you:
-    </p>
-    <div>
-      <ul id="yourself-immigration-status" class="singleselect-each">
-        <li>
-          <input type="radio" id="permanent_resident" name="immig_status" />
-          <label for="permanent_resident">I have a Permanent Resident Card</label>
-        </li>
-        <li>
-          <input type="radio" id="qualified_noncitizen_gt5y" name="immig_status" />
-          <label for="qualified_noncitizen_gt5y">I have been a qualified non-citizen for 5 years or more</label>
-        </li>
-        <li>
-          <input type="radio" id="qualified_noncitizen_le5y" name="immig_status"/>
-          <label for="qualified_noncitizen_le5y">I have been a qualified non-citizen for less than 5 years</label>
-        </li>
-        <li>
-          <input type="radio" id="live_temporarily" name="immig_status" />
-          <label for="live_temporarily">I am living in the U.S. temporarily</label>
-        </li>
-        <li>
-          <input type="radio" id="none_describe" name="immig_status" />
-          <label for="none_describe">None of these describe my situation</label>
-        </li>
-      </ul>
-    </div>
+      <p>Select <span class="bold">one</span> of the following that most accurately describes you:
+      </p>
+      <div>
+        <ul id="yourself-immigration-status" class="singleselect-each">
+          <li>
+            <input type="radio" id="permanent_resident" name="immig_status" />
+            <label for="permanent_resident">I have a Permanent Resident Card</label>
+          </li>
+          <li>
+            <input type="radio" id="qualified_noncitizen_gt5y" name="immig_status" />
+            <label for="qualified_noncitizen_gt5y">I have been a qualified non-citizen for 5 years or more</label>
+          </li>
+          <li>
+            <input type="radio" id="qualified_noncitizen_le5y" name="immig_status"/>
+            <label for="qualified_noncitizen_le5y">I have been a qualified non-citizen for less than 5 years</label>
+          </li>
+          <li>
+            <input type="radio" id="live_temporarily" name="immig_status" />
+            <label for="live_temporarily">I am living in the U.S. temporarily</label>
+          </li>
+          <li>
+            <input type="radio" id="none_describe" name="immig_status" />
+            <label for="none_describe">None of these describe my situation</label>
+          </li>
+        </ul>
+      </div>
     {% endeligPage %}
 
   {% endeligSection %}
@@ -234,209 +234,267 @@ pageClass: "page-public-assistance"
     <h2>Household</h2>
 
     {% eligPage "household-details" %}
-    <p>
-      Here we are in the household details page
-    </p>
+      <p>
+        Here we are in the household details page
+      </p>
     {% endeligPage %}
 
     {% eligPage "household-situation" %}
-    <p>Select the option below that best describes your current housing situation:</p>
-    <div>
-      <ul id="household-situation-details" class="singleselect-each">
-        <li>
-          <input type="radio" id="housing" name="housing-situation" value="Yes" />
-          <label for="housing">I live in a mobile home, apartment, condo, townhouse, or house</label>
-        </li>
-        <li>
-          <input type="radio" id="vehicle" name="housing-situation" value="Yes" />
-          <label for="vehicle">I live in an RV, travel trailer, or other vehicle</label>
-        </li>
-        <li>
-          <input type="radio" id="transitional" name="housing-situation" value="Yes" />
-          <label for="transitional">I live in transitional housing</label>
-        </li>
-        <li>
-          <input type="radio" id="hotel" name="housing-situation" value="Yes" />
-          <label for="hotel">I live in a hotel or motel room</label>
-        </li>
-        <li>
-          <input type="radio" id="shelter" name="housing-situation" value="Yes" />
-          <label for="shelter">I live in a shelter, interim housing, or emergency housing</label>
-        </li>
-        <li>
-          <input type="radio" id="no-stable-place" name="housing-situation" value="Yes" />
-          <label for="no-stable-place">I do not have a stable place to live</label>
-        </li>
-        <li>
-          <input type="radio" id="unlisted-stable-place" name="housing-situation" value="Yes" />
-          <label for="unlisted-stable-place">I have a stable place to live, but it is not listed here</label>
-        </li>
-      </ul>
-    </div>
+      <p>Select the option below that best describes your current housing situation:</p>
+      <div>
+        <ul id="household-situation-details" class="singleselect-each">
+          <li>
+            <input type="radio" id="housing" name="housing-situation" value="Yes" />
+            <label for="housing">I live in a mobile home, apartment, condo, townhouse, or house</label>
+          </li>
+          <li>
+            <input type="radio" id="vehicle" name="housing-situation" value="Yes" />
+            <label for="vehicle">I live in an RV, travel trailer, or other vehicle</label>
+          </li>
+          <li>
+            <input type="radio" id="transitional" name="housing-situation" value="Yes" />
+            <label for="transitional">I live in transitional housing</label>
+          </li>
+          <li>
+            <input type="radio" id="hotel" name="housing-situation" value="Yes" />
+            <label for="hotel">I live in a hotel or motel room</label>
+          </li>
+          <li>
+            <input type="radio" id="shelter" name="housing-situation" value="Yes" />
+            <label for="shelter">I live in a shelter, interim housing, or emergency housing</label>
+          </li>
+          <li>
+            <input type="radio" id="no-stable-place" name="housing-situation" value="Yes" />
+            <label for="no-stable-place">I do not have a stable place to live</label>
+          </li>
+          <li>
+            <input type="radio" id="unlisted-stable-place" name="housing-situation" value="Yes" />
+            <label for="unlisted-stable-place">I have a stable place to live, but it is not listed here</label>
+          </li>
+        </ul>
+      </div>
     {% endeligPage %}
 
     {% eligPage "household-housed" %}
-    <div>
-      <p>Does your household pay a gas or electric bill?</p>
-      <ul id="hh-pay-utilities" class="singleselect-each">
-        <li>
-          <input type="radio" id="pay-utilities-yes" name="housed_details1" value="Yes" />
-          <label for="pay-utilities-yes">Yes</label>
-        </li>
-        <li>
-          <input type="radio" id="pay-utilities-no" name="housed_details1" value="No" />
-          <label for="pay-utilities-no">No</label>
-        </li>
-      </ul>
-      <p>Do you feel you are at risk of becoming homeless?</p>
-      <ul id="hh-risk-homeless" class="singleselect-each">
-        <li>
-          <input type="radio" id="risk_homeless_yes" name="housed_details2" value="Yes" />
-          <label for="risk_homeless_yes">Yes</label>
-        </li>
-        <li>
-          <input type="radio" id="risk_homeless_no" name="housed_details2" value="No" />
-          <label for="risk_homeless_no">No</label>
-        </li>
-      </ul>
-    </div>
+      <div>
+        <p>Does your household pay a gas or electric bill?</p>
+        <ul id="hh-pay-utilities" class="singleselect-each">
+          <li>
+            <input type="radio" id="pay-utilities-yes" name="housed_details1" value="Yes" />
+            <label for="pay-utilities-yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="pay-utilities-no" name="housed_details1" value="No" />
+            <label for="pay-utilities-no">No</label>
+          </li>
+        </ul>
+        <p>Do you feel you are at risk of becoming homeless?</p>
+        <ul id="hh-risk-homeless" class="singleselect-each">
+          <li>
+            <input type="radio" id="risk_homeless_yes" name="housed_details2" value="Yes" />
+            <label for="risk_homeless_yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="risk_homeless_no" name="housed_details2" value="No" />
+            <label for="risk_homeless_no">No</label>
+          </li>
+        </ul>
+      </div>
     {% endeligPage %}
 
   {% endeligSection %}
 
 
   {% eligSection "income" %}
-  <h2>Income</h2>
-  {% eligPage "income" %}
-  <p>
-    Select all sources of income for you and your household. Include income from all members of your household,
-    including yourself.
-  </p>
-  <div>
-    <ul id="income-types" class="multiselect">
-      <li>
-        <input id="income-has-wages" type="checkbox">
-        <label for="income-has-wages">Job wages, tips, or commission</label>
-      </li>
-      <li>
-        <input id="income-has-self-employed" type="checkbox">
-        <label for="income-has-self-employed">Income from self-employment</label>
-      </li>
-      <li>
-        <input id="income-has-social-security" type="checkbox">
-        <label for="income-has-social-security">Social Security benefits</label>
-      </li>
-      <li>
-        <input id="income-has-unemployment" type="checkbox">
-        <label for="income-has-unemployment">Unemployment benefits</label>
-      </li>
-      <li>
-        <input id="income-has-veterans" type="checkbox">
-        <label for="income-has-veterans">Veteran’s benefits</label>
-      </li>
-      <li>
-        <input id="income-has-workers-comp" type="checkbox">
-        <label for="income-has-workers-comp">Worker’s compensation</label>
-      </li>
-      <li>
-        <input id="income-has-child-support" type="checkbox">
-        <label for="income-has-child-support">Child support and alimony</label>
-      </li>
-      <li>
-        <input id="income-has-retirement" type="checkbox">
-        <label for="income-has-retirement">Retirement benefits</label>
-      </li>
-      <li>
-        <input id="income-has-other" type="checkbox">
-        <label for="income-has-other">Other source of income not listed here</label>
-      </li>
-      <li>
-        <input id="income-has-none" type="checkbox">
-        <label for="income-has-none">My household has no income of any kind</label>
-      </li>
-    </ul>
-  </div>
-  {% endeligPage %}
+    <h2>Income</h2>
+    {% eligPage "income" %}
+      <p>
+        Select all sources of income for you and your household. Include income from all members of your household, including yourself.
+      </p>
+      <div>
+        <ul id="income-types" class="multiselect">
+          <li>
+            <input id="income-has-wages" type="checkbox">
+            <label for="income-has-wages">Job wages, tips, or commission</label>
+          </li>
+          <li>
+            <input id="income-has-self-employed" type="checkbox">
+            <label for="income-has-self-employed">Income from self-employment</label>
+          </li>
+          <li>
+            <input id="income-has-social-security" type="checkbox">
+            <label for="income-has-social-security">Social Security benefits</label>
+          </li>
+          <li>
+            <input id="income-has-unemployment" type="checkbox">
+            <label for="income-has-unemployment">Unemployment benefits</label>
+          </li>
+          <li>
+            <input id="income-has-veterans" type="checkbox">
+            <label for="income-has-veterans">Veteran’s benefits</label>
+          </li>
+          <li>
+            <input id="income-has-workers-comp" type="checkbox">
+            <label for="income-has-workers-comp">Worker’s compensation</label>
+          </li>
+          <li>
+            <input id="income-has-child-support" type="checkbox">
+            <label for="income-has-child-support">Child support and alimony</label>
+          </li>
+          <li>
+            <input id="income-has-retirement" type="checkbox">
+            <label for="income-has-retirement">Retirement benefits</label>
+          </li>
+          <li>
+            <input id="income-has-other" type="checkbox">
+            <label for="income-has-other">Other source of income not listed here</label>
+          </li>
+          <li>
+            <input id="income-has-none" type="checkbox">
+            <label for="income-has-none">My household has no income of any kind</label>
+          </li>
+        </ul>
+      </div>
+    {% endeligPage %}
 
-  {% eligPage "income-details-wages" %}
-  {% render "eligibility-income-details" desc: "job wages, tips, or commission", heading: "Job", id: "wages" %}
-  {% endeligPage %}
+    {% eligPage "income-details-wages" %}
+      {% render "eligibility-income-details" desc: "job wages, tips, or commission", heading: "Job", id: "wages" %}
+    {% endeligPage %}
 
-  {% eligPage "income-details-self-employed" %}
-  {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employment" %}
-  {% endeligPage %}
+    {% eligPage "income-details-self-employed" %}
+      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employment" %}
+    {% endeligPage %}
 
-  {% eligPage "income-details-social-security" %}
-  {% render "eligibility-income-details" desc: "Social Security benefits", heading: "Person", id: "social-security" %}
-  {% endeligPage %}
+    {% eligPage "income-details-social-security" %}
+      {% render "eligibility-income-details" desc: "Social Security benefits", heading: "Person", id: "social-security" %}
+    {% endeligPage %}
 
-  {% eligPage "income-details-unemployment" %}
-  {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Person", id: "unemployment" %}
-  {% endeligPage %}
+    {% eligPage "income-details-unemployment" %}
+      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Person", id: "unemployment" %}
+    {% endeligPage %}
 
-  {% eligPage "income-details-veterans" %}
-  {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Person", id: "veterans" %}
-  {% endeligPage %}
+    {% eligPage "income-details-veterans" %}
+      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Person", id: "veterans" %}
+    {% endeligPage %}
 
-  {% eligPage "income-details-workers-comp" %}
-  {% render "eligibility-income-details" desc: "worker's compensation", heading: "Person", id: "workers-comp" %}
-  {% endeligPage %}
+    {% eligPage "income-details-workers-comp" %}
+      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Person", id: "workers-comp" %}
+    {% endeligPage %}
 
-  {% eligPage "income-details-child-support" %}
-  {% render "eligibility-income-details" desc: "child support and alimony", heading: "Person", id: "child-support" %}
-  {% endeligPage %}
+    {% eligPage "income-details-child-support" %}
+      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Person", id: "child-support" %}
+    {% endeligPage %}
 
-  {% eligPage "income-details-retirement" %}
-  {% render "eligibility-income-details" desc: "retirement benefits", heading: "Person", id: "retirement" %}
-  {% endeligPage %}
+    {% eligPage "income-details-retirement" %}
+      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Person", id: "retirement" %}
+    {% endeligPage %}
 
-  {% eligPage "income-details-other" %}
-  {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other" %}
-  {% endeligPage %}
+    {% eligPage "income-details-other" %}
+      {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other" %}
+    {% endeligPage %}
 
-  {% eligPage "income-assets" %}
-  <h3>Assets</h3>
-  <p>
-    What is the value of all assets or resources you and your household have? This includes cash you have on hand, in a
-    checking account, or in a savings account. If you live in a home or drive a car to work, do not include the value of
-    those items.
-  </p>
-  {% dynamicFieldList "Add another asset" %}
-  <h4>Asset 1</h4>
-  <div>
-    <label for="income-asset">Value</label>
-    $ <input id="income-asset" type="number" class="long">
-  </div>
-  {% enddynamicFieldList %}
-  <p>
-    Combined household assets:
-    <span class="bold">$<span class="income_total">0</span>
-    </span>
-  </p>
-  {% endeligPage %}
+    {% eligPage "income-assets" %}
+      <h3>Assets</h3>
+      <p>
+        What is the value of all assets or resources you and your household have? This includes cash you have on hand, in a checking account, or in a savings account. If you live in a home or drive a car to work, do not include the value of those items.
+      </p>
+      {% dynamicFieldList "Add another asset" %}
+        <h4>Asset 1</h4>
+        <div>
+          <label for="income-asset">Value</label>
+          $ <input id="income-asset" type="number" class="long">
+        </div>
+      {% enddynamicFieldList %}
+      <p>
+        Combined household assets: <span class="bold">$<span class="income_total">0</span></span>
+      </p>
+    {% endeligPage %}
   {% endeligSection %}
 
   {% eligSection "existing-assistance" %}
-  <h2>Existing Assistance</h2>
-  {% eligPage "assistance" %}
-  More form fields to do.
-  {% endeligPage %}
+    <h2>Existing Assistance</h2>
+    {% eligPage "existing-assistance" %}
+      <p>
+        Mark any public assistance you or your household already receive.
+      </p>
+
+     {% capture columns -%}
+        me: Me
+        household: Someone in my household
+     {%- endcapture %}
+
+     {% capture rows -%}
+        ssi: Supplemental Security Income (SSI)
+        ssdi: Social Security Disability Insurance (SSDI)
+        calworks: California Work Opportunity and Responsibility to Kids (CalWORKs) <span class="subtitle">Also known as Temporary Assistance for Needy Families (TANF)</span>
+        calfresh: CalFresh <span class="subtitle">Also known as Supplemental Nutrition Assistance Program (SNAP) or Food Stamps</span>
+        cfap: California Food Assistance Program (CFAP) <span class="subtitle">Alternative to CalFresh, also known as Food Stamps</span>
+        medical: Medi-Cal <span class="subtitle">Also known as California’s Medicaid program</span>
+        ihss: In-Home Supportive Services (IHSS)
+        capi: Cash Assistance Program for Immigrants (CAPI)
+        liheap: Low Income Home Energy Assistance Program (LIHEAP)
+        wic: Women, Infants & Children (WIC)
+        nslp: National School Lunch Program (NSLP)
+        ga: General Assistance (GA)
+     {%- endcapture %}
+
+     {% checkboxTable "existing", columns, rows %}
+     
+    {% endeligPage %}
   {% endeligSection %}
 
   {% eligSection "results" %}
   <h2>Results</h2>
   {% eligPage "results" %}
-  <p>
-    This is an example results page that would show content based on form input values.
-  <ul>
-    <li>Result 1</li>
-    <li>Result 2</li>
-    <li>Result 3</li>
-    <li>Result 4</li>
-  </ul>
-  </p>
+    <div class="programs programs__eligible">
+      <p>
+        You may qualify for the following programs.  Please click on the name of a program to get further details and find out how to apply.
+      </p>
+      <ul></ul>
+      <p>
+        The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
+      </p>
+      <p>
+        If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
+      </p>
+    </div>
+
+    <h3>Other Programs</h3>
+    <div class="programs programs__unknown">
+      <p>
+        With the information provided, we are unable to determine if you are eligible for the following programs.  If you would like to provide more information you can revisit any form sections and then return to this results section.
+      <ul>
+        {% program "Assistance Dog Special Allowance (ADSA)", "adsa", "https://www.cdss.ca.gov/assistance-dogs" %}
+          ADSA provides people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
+        {% endprogram %}
+        
+        {% program "Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
+          Calfresh provides monthly food benefits to low-income individuals and families.
+        {% endprogram %}
+        
+        {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm"%}
+          CalWORKs provides cash aid and services to low-income families with children in the home.
+        {% endprogram %}
+        
+        {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
+          CAPI provides monthly cash benefits to elderly, blind, or disabled non-citizens.
+        {% endprogram %}
+
+        {% comment %}
+        TODO: Add more programs.
+        {% endcomment %}
+      </ul>
+    </div>
+
+    <div class="programs programs__ineligible">
+      <p>
+        We also checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  A short explanation as to why you are likely not eligible is listed below each program.
+      </p>
+      <ul></ul>
+    </div>
+
   {% endeligPage %}
-  {% endeligSection %}
+{% endeligSection %}
 
   <div id="controls">
     <button type="button" class="btn btn_secondary hidden" id="back-button">Back</button>
