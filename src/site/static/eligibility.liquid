@@ -213,7 +213,7 @@ pageClass: "page-public-assistance"
         ihss: In-Home Supportive Services (IHSS)
         capi: Cash Assistance Program for Immigrants (CAPI)
         liheap: Low Income Home Energy Assistance Program (LIHEAP)
-        wic: Women, Infants & Children (WIC)
+        wic: Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)
         nslp: National School Lunch Program (NSLP)
         ga: General Assistance (GA)
      {%- endcapture %}
@@ -310,6 +310,14 @@ pageClass: "page-public-assistance"
 
           {% program "Social Security Disability Insurance (SSDI)", "ssdi", "https://www.ssa.gov/applyfordisability/", "https://ca.db101.org/ca/programs/income_support/ssdi2/program.htm" %}
             SSDI is a federal program that provides a monthly cash benefit to certain disabled individuals who have worked and paid Social Security taxes in the past.
+          {% endprogram %}
+
+          {% program "VA Pension", "va-pension", "https://www.va.gov/pension/how-to-apply/", "https://www.va.gov/pension/" %}
+            VA Pension is a program that provides ongoing cash payments for eligible veterans.
+          {% endprogram %}
+
+          {% program "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
+            WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods.
           {% endprogram %}
         </ul>
       </div>
@@ -879,7 +887,15 @@ pageClass: "page-public-assistance"
     return true;
   }
 
-  // TODO: Add more program eligibility functions.
+  function vaPensionEligible() {
+    // TODO
+    return true;
+  }
+
+  function wicEligible() {
+    // TODO
+    return false;
+  }
 
   // Determines eligibility for programs based on user form input values.
   function computeEligibility() {
