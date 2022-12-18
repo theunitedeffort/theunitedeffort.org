@@ -444,57 +444,57 @@ pageClass: "page-public-assistance"
   {% endeligSection %}
 
   {% eligSection "results" %}
-  <h2>Results</h2>
-  {% eligPage "results" %}
-    <div class="programs programs__eligible">
-      <p>
-        You may qualify for the following programs.  Please click on the name of a program to get further details and find out how to apply.
-      </p>
-      <ul></ul>
-      <p>
-        The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
-      </p>
-      <p>
-        If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
-      </p>
-    </div>
+    <h2>Results</h2>
+    {% eligPage "results" %}
+      <div class="programs programs__eligible">
+        <p>
+          You may qualify for the following programs.  Please click on the name of a program to get further details and find out how to apply.
+        </p>
+        <ul></ul>
+        <p>
+          The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
+        </p>
+        <p>
+          If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
+        </p>
+      </div>
 
-    <h3>Other Programs</h3>
-    <div class="programs programs__unknown">
-      <p>
-        With the information provided, we are unable to determine if you are eligible for the following programs.  If you would like to provide more information you can revisit any form sections and then return to this results section.
-      <ul>
-        {% program "Assistance Dog Special Allowance (ADSA)", "adsa", "https://www.cdss.ca.gov/assistance-dogs" %}
-          ADSA provides people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
-        {% endprogram %}
-        
-        {% program "Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
-          Calfresh provides monthly food benefits to low-income individuals and families.
-        {% endprogram %}
-        
-        {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm"%}
-          CalWORKs provides cash aid and services to low-income families with children in the home.
-        {% endprogram %}
-        
-        {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
-          CAPI provides monthly cash benefits to elderly, blind, or disabled non-citizens.
-        {% endprogram %}
+      <h3>Other Programs</h3>
+      <div class="programs programs__unknown">
+        <p>
+          With the information provided, we are unable to determine if you are eligible for the following programs.  If you would like to provide more information you can revisit any form sections and then return to this results section.
+        <ul>
+          {% program "Assistance Dog Special Allowance (ADSA)", "adsa", "https://www.cdss.ca.gov/assistance-dogs" %}
+            ADSA provides people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
+          {% endprogram %}
+          
+          {% program "Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
+            Calfresh provides monthly food benefits to low-income individuals and families.
+          {% endprogram %}
+          
+          {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm"%}
+            CalWORKs provides cash aid and services to low-income families with children in the home.
+          {% endprogram %}
+          
+          {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
+            CAPI provides monthly cash benefits to elderly, blind, or disabled non-citizens.
+          {% endprogram %}
 
-        {% comment %}
-        TODO: Add more programs.
-        {% endcomment %}
-      </ul>
-    </div>
+          {% comment %}
+          TODO: Add more programs.
+          {% endcomment %}
+        </ul>
+      </div>
 
-    <div class="programs programs__ineligible">
-      <p>
-        We also checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  A short explanation as to why you are likely not eligible is listed below each program.
-      </p>
-      <ul></ul>
-    </div>
+      <div class="programs programs__ineligible">
+        <p>
+          We also checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  A short explanation as to why you are likely not eligible is listed below each program.
+        </p>
+        <ul></ul>
+      </div>
 
-  {% endeligPage %}
-{% endeligSection %}
+    {% endeligPage %}
+  {% endeligSection %}
 
   <div id="controls">
     <button type="button" class="btn btn_secondary hidden" id="back-button">Back</button>
@@ -577,16 +577,15 @@ pageClass: "page-public-assistance"
 
   // Adds an item to a dynamic list of fields.
   function addDynamicFieldListItem() {
-    const list = this.parentElement.parentElement.querySelector("ul.dynamic_field_list");
+    const list = this.parentElement.parentElement.querySelector(
+      "ul.dynamic_field_list");
     const items = list.querySelectorAll("li");
-
     // Figure out the largest id index used so far.
     const lastInput = items[items.length - 1].querySelector("input");
     let lastIdNumber;
     if (lastInput) {
       lastIdNumber = lastInput.id.match(/-\d+$/g);
     }
-
     // Create a new item using the first item in the list as a template.
     const newItem = items[0].cloneNode(true);
     const newInputs = newItem.querySelectorAll("input");
@@ -595,25 +594,21 @@ pageClass: "page-public-assistance"
     if (lastIdNumber) {
       newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
     }
-
     // Ensure element ids are unique and clear out any inputs that a user may 
     // have entered on the template list item.
     for (const input of newInputs) {
       input.value = ""
       input.id = input.id + "-" + newIdNumber;
     }
-
     // Ensure labels match the new input id values.
     for (const label of newLabels) {
       label.setAttribute("for", label.getAttribute("for") + "-" + newIdNumber);
     }
-
     // Update the item heading if there is one.
     const itemHeading = newItem.querySelector("h3,h4,h5,h6");
     if (itemHeading) {
       itemHeading.textContent = itemHeading.textContent.replace(/\d+$/, newIdNumber + 1);
     }
-
     // Add a remove button for the new item.
     const removeButton = document.createElement("button");
     removeButton.classList.add("link");
@@ -622,7 +617,6 @@ pageClass: "page-public-assistance"
     removeButton.addEventListener("click", removeDynamicFieldListItem);
     const fragment = new DocumentFragment();
     fragment.append(" (", removeButton, ")");
-
     // If there is a heading, put the remove button after it.  Otherwise,
     // make it the first element in the list item.
     if (itemHeading) {
@@ -630,7 +624,6 @@ pageClass: "page-public-assistance"
     } else {
       newItem.prepend(fragment);
     }
-
     // Add our new item to the list.
     list.appendChild(newItem);
   }
@@ -664,26 +657,27 @@ pageClass: "page-public-assistance"
   // Shows the appropriate buttons for the given 'page'.
   function configureButtons(page) {
     let resultsPage = !page.next();
-
     // TODO: Is there a better way than hard-coding this ID here?
     let finalInputPage = page.next()?.id == 'page-results'
     let firstPage = !page.previous;
     if (finalInputPage) {
-
       // This is the last page with user input, so show a submit button rather
       // than a generic next button.
       setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(true);
-    } else if (firstPage) { // This is the first page, so only show the next button.
+    } else if (firstPage) { 
+      // This is the first page, so only show the next button.
       setBackVisibility(false);
       setNextVisibility(true);
       setSubmitVisibility(false);
-    } else if (resultsPage) { // This is the very last page, so only show the back button.
+    } else if (resultsPage) { 
+      // This is the very last page, so only show the back button.
       setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(false);
-    } else { // This is a regular page, so show back an next buttons.
+    } else { 
+      // This is a regular page, so show back an next buttons.
       setBackVisibility(true);
       setNextVisibility(true);
       setSubmitVisibility(false);
@@ -692,8 +686,8 @@ pageClass: "page-public-assistance"
 
   // Inserts a step indicator in the DOM based on the sections defined.
   // The step indicator serves two purposes:
-  // 1. Show progress through the form
-  // 2. Enable navigation back to already-completed sections
+  //   1. Show progress through the form
+  //   2. Enable navigation back to already-completed sections
   // Note the text shown for each step in the progress indicator will be
   // the same as the <h2> text under each section element.  If a section does
   // not have a level 2 heading, no step indicator for that section will be 
@@ -701,35 +695,30 @@ pageClass: "page-public-assistance"
   function buildStepIndicator() {
     const allSections = document.querySelectorAll("div.elig_section");
     const stepIndicatorList = document.querySelector("div.step_indicator ul");
-    for (const section of allSections) { // TODO: Support different text for the h2 and the step indicator.
+    for (const section of allSections) { 
+      // TODO: Support different text for the h2 and the step indicator.
       const heading = section.querySelector("h2");
       if (!heading) {
-
         // The section does not have a heading (e.g. intro) so don't put this
         // section in the step indicator.
         continue;
       }
-
       // Make the button that will be used for navigation to already-completed
       // sections.
       const button = document.createElement("button");
       button.id = "nav-" + section.id;
       button.dataset.sectionId = section.id;
       button.textContent = heading.textContent;
-
       // Sections are to-do and un-clickable by default.  They will become
       // clickable when the corresponding section is completed by the user.
       button.className = "todo";
       button.disabled = true;
       button.addEventListener("click", toSection);
-
       // Store a reference to the step indicator button in the section element
       // for easier access later.
       section.stepButton = button;
-
       // Make a container for the button.
       const listItem = document.createElement("li");
-
       // Put the button in the container and add it to the step indicator.
       listItem.appendChild(button);
       stepIndicatorList.appendChild(listItem);
@@ -741,32 +730,20 @@ pageClass: "page-public-assistance"
   // are in different sections, the old section will be hidden and the new
   // section containing 'toPage' will be shown.
   function switchToPage(toPage) {
-
     // Show the new page and hide the old.
     setElementVisibility(currentPage, false);
     setElementVisibility(toPage, true);
-
     // Check if the section is changing while also allowing toPage or
     // currentPage to be undefined.
     if (toPage?.section.id != currentPage?.section.id) {
       setElementVisibility(currentPage?.section, false);
       setElementVisibility(toPage?.section, true);
-
       // Update the step indicator to highlight the active section.
       if (currentPage?.section?.stepButton) {
-        currentPage
-          .section
-          .stepButton
-          .classList
-          .remove("in_progress");
+        currentPage.section.stepButton.classList.remove("in_progress");
       }
       if (toPage?.section?.stepButton) {
-        toPage
-          .section
-          .stepButton
-          .classList
-          .add("in_progress");
-
+        toPage.section.stepButton.classList.add("in_progress");
         // Always allow users to navigate directly to sections they have started
         // even if the section is not complete yet.
         toPage.section.stepButton.disabled = false;
@@ -783,14 +760,12 @@ pageClass: "page-public-assistance"
   function toSection() {
     const section = document.getElementById(this.dataset.sectionId);
     if (section.id == "section-results") {
-
       // Ensure results are always up-to-date prior to showing them.
       // TODO: Determine if it would be better to invalidate results on
       // form data change and require the user to click the submit button
       // again before viewing results again.
       computeEligibility();
     }
-
     // Find the first page in the section.
     const toPage = section.querySelector("div.elig_page");
     if (toPage) {
@@ -804,12 +779,10 @@ pageClass: "page-public-assistance"
     const nextPage = currentPage.next();
     if (nextPage) {
       if (nextPage.section.id != currentPage.section.id) {
-
         // We are moving into a new section, so the old section should be
         // marked as completed.
         markSectionDone(currentPage.section);
       }
-
       // Take note of the page we are coming from to allow backwards travel with 
       // the Back form control button.
       nextPage.previous = currentPage;
@@ -823,7 +796,6 @@ pageClass: "page-public-assistance"
   // Rather it can be thought of as the previous page as defined by the page
   // sequence from linkPages().
   function toPrevPage() {
-
     // Note currentPage.previous is set by toNextPage().
     const previousPage = currentPage.previous;
     if (previousPage) {
@@ -836,12 +808,10 @@ pageClass: "page-public-assistance"
   // are read and processed by computeEligibility().
   function submitForm() {
     computeEligibility();
-
     // Make the results page visible upon submit.
     // The submit button acts a lot like a next button preceding the results 
     // section.
     toNextPage();
-
     // The results section should immediately be marked done, since there are
     // no form fields to fill out in that section.
     markSectionDone(currentPage.section);
@@ -849,7 +819,6 @@ pageClass: "page-public-assistance"
 
   // Sets up listeners for the document.
   function addListeners() {
-
     // Form inputs
     const inputs = document.querySelectorAll("input, textarea, select");
     for (const input of inputs) {
@@ -880,7 +849,6 @@ pageClass: "page-public-assistance"
   // Initializes the user interface.
   function initUi() {
     buildStepIndicator();
-
     // All pages and sections are initially hidden by default.
     showFirstPage();
   }
@@ -894,14 +862,12 @@ pageClass: "page-public-assistance"
     const pageById = {};
     for (let j = 0; j < pages.length; j++) { // Alias the parent element as 'section' for convenience.
       pages[j].section = pages[j].parentElement;
-
       // By default, each page will advance to the next page in the sequence,
       // regardless of form input.  For conditional next-page selection, 
       // add the logic to customPageLinking().
       pages[j].next = function () {
         return pages[j + 1];
       };
-
       // Store a hash map of page id to the page itself for faster page
       // retrieval when defining custom page linking.
       pageById[pages[j].id] = pages[j];
@@ -1033,12 +999,51 @@ pageClass: "page-public-assistance"
 
   }
 
+  // The functions below determine eligibility for various programs.
+  // When a program is added using the "program" shortcode, a matching function
+  // should be defined called {id}Eligible where {id} is the id given in
+  // the "program" shortcode for that program.
+  //
+  // An eligibility function should return true if the input values suggest
+  // program eligibility, false if the values suggest ineligibility, and 
+  // undefined if an eligibility determination can't be made.
+  function adsaEligible() {
+    // TODO
+    return false;
+  }
+
+  function calfreshEligible() {
+    // TODO
+    return true;
+  }
+
+  function calworksEligible() {
+    // TODO
+    return false;
+  }
+
+  function capiEligible() {
+    // TODO
+    return undefined;
+  }
+  // TODO: Add more program eligibility functions.
+  
   // Determines eligibility for programs based on user form input values.
   function computeEligibility() {
-    console.log("TODO: Determine program eligibility");
-
-    // TODO: Use all form inputs to generate a list of programs the user
-    // is likely eligible for.
+    const allPrograms = document.querySelectorAll(".programs li");
+    const eligibleList = document.querySelector(".programs__eligible ul");
+    const ineligibleList = document.querySelector(".programs__ineligible ul");
+    const unknownList = document.querySelector(".programs__unknown ul");
+    for (program of allPrograms) {
+      const eligible = window[program.dataset.eligibility]();
+      if (typeof eligible === "undefined") {
+        unknownList.appendChild(program);
+      } else if (eligible) {
+        eligibleList.appendChild(program);
+      } else {
+        ineligibleList.appendChild(program);
+      }
+    }
   }
 
   // Script entry point.
