@@ -9,7 +9,7 @@ pageClass: "page-public-assistance"
 <h1>{{title}}</h1>
 
 <p>
-  Use this tool to find assistance programs for which you qualify. Fill in each field to the best of your knowledge.<span class="bold">The information you enter here is completely private and will not be transmitted or stored in anyway.</span>
+  Use this tool to find assistance programs for which you qualify.  Fill in each field to the best of your knowledge.  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
 </p>
 <p>
   After entering your information, you will be provided with a list of assistance programs you can apply for.
@@ -358,45 +358,45 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
 
     {% eligPage "income-details-wages" %}
-      {% render "eligibility-income-details" desc: "job wages, tips, or commission", heading: "Job", id: "wages" %}
+      {% render "eligibility-income-details" desc: "job wages, tips, or commission", heading: "Job", id: "wages"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-self-employed" %}
-      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employment" %}
+      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employment"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-social-security" %}
-      {% render "eligibility-income-details" desc: "Social Security benefits", heading: "Person", id: "social-security" %}
+      {% render "eligibility-income-details" desc: "Social Security benefits", heading: "Person", id: "social-security"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-unemployment" %}
-      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Person", id: "unemployment" %}
+      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Person", id: "unemployment"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-veterans" %}
-      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Person", id: "veterans" %}
+      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Person", id: "veterans"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-workers-comp" %}
-      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Person", id: "workers-comp" %}
+      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Person", id: "workers-comp"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-child-support" %}
-      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Person", id: "child-support" %}
+      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Person", id: "child-support"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-retirement" %}
-      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Person", id: "retirement" %}
+      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Person", id: "retirement"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-other" %}
-      {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other" %}
+      {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other"  %}
     {% endeligPage %}
 
     {% eligPage "income-assets" %}
       <h3>Assets</h3>
       <p>
-        What is the value of all assets or resources you and your household have? This includes cash you have on hand, in a checking account, or in a savings account. If you live in a home or drive a car to work, do not include the value of those items.
+        What is the value of all assets or resources you and your household have?  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
       </p>
       {% dynamicFieldList "Add another asset" %}
         <h4>Asset 1</h4>
@@ -433,7 +433,7 @@ pageClass: "page-public-assistance"
         ihss: In-Home Supportive Services (IHSS)
         capi: Cash Assistance Program for Immigrants (CAPI)
         liheap: Low Income Home Energy Assistance Program (LIHEAP)
-        wic: Women, Infants & Children (WIC)
+        wic: Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)
         nslp: National School Lunch Program (NSLP)
         ga: General Assistance (GA)
      {%- endcapture %}
@@ -463,26 +463,83 @@ pageClass: "page-public-assistance"
       <div class="programs programs__unknown">
         <p>
           With the information provided, we are unable to determine if you are eligible for the following programs.  If you would like to provide more information you can revisit any form sections and then return to this results section.
+        </p>
         <ul>
           {% program "Assistance Dog Special Allowance (ADSA)", "adsa", "https://www.cdss.ca.gov/assistance-dogs" %}
-            ADSA provides people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
+            ADSA provides certain people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
           {% endprogram %}
           
           {% program "Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
-            Calfresh provides monthly food benefits to low-income individuals and families.
+            Calfresh provides monthly food benefits to certain low-income individuals and families.
           {% endprogram %}
           
           {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm"%}
-            CalWORKs provides cash aid and services to low-income families with children in the home.
+            CalWORKs provides cash aid and services to certain low-income families with children in the home.
           {% endprogram %}
           
           {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
-            CAPI provides monthly cash benefits to elderly, blind, or disabled non-citizens.
+            CAPI provides monthly cash benefits to certain elderly, blind, or disabled non-citizens.
           {% endprogram %}
 
-          {% comment %}
-          TODO: Add more programs.
-          {% endcomment %}
+          {% program "California Alternate Rates for Energy (CARE)", "care", "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/california-alternate-rates-for-energy" %}
+            CARE provides a discount on electricity and natural gas bills for certain low-income individuals and families.
+          {% endprogram %}
+
+          {% program "Family Electric Rate Assistance (FERA)", "fera", "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/family-electric-rate-assistance-program" %}
+            FERA provides a discount on electricity bills for certain low-income families.
+          {% endprogram %}
+
+          {% program "VA Disability Compensation", "va-disability-comp", "https://www.va.gov/disability/how-to-file-claim/", "https://www.va.gov/disability/" %}
+            VA disability compensation provides a monthly payment to certain injured or disabled veterans.
+          {% endprogram %}
+
+          {% program "General Assistance (GA)", "ga", "https://socialservices.sccgov.org/financial-assistance/financial-assistance-adults-without-dependent-children-general-assistance" %}
+            GA provides cash assistance and employment services to certain low-income individuals with no dependent children.
+          {% endprogram %}
+
+          {% program "No-Fee ID Card", "no-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+            Unhoused or elderly individuals may get an identification card from the Department of Motor Vehicles without having to pay the usual fee.
+          {% endprogram %}
+
+          {% program "Reduced Fee ID Card", "reduced-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+            Low-income individuals may get a discount on the fee for an identification card from the Department of Motor Vehicles.
+          {% endprogram %}
+
+          {% program "In-Home Supportive Services (IHSS)", "ihss", "https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients", "https://ca.db101.org/ca/programs/health_coverage/medi_cal/ihss/program.htm" %}
+            IHSS provides in-home personal assistance to certain low-income individuals who are blind, disabled, or elderly so they can continue to live at home safely.
+          {% endprogram %}
+
+          {% program "California LifeLine", "lifeline", "https://www.californialifeline.com/en/eligibility_requirements", "https://www.californialifeline.com/en" %}
+            Lifeline provides a discount on home phone and cell phone bills for certain low-income households.
+          {% endprogram %}
+
+          {% program "Low Income Home Energy Assistance Program (LIHEAP)", "liheap", "https://www.csd.ca.gov/Pages/Services.aspx?SCU=Santa%20Clara%20County&PT=CM", "https://www.csd.ca.gov/Pages/Assistance-PayingMyEnergyBills.aspx" %}
+            LIHEAP provides one-time assistance with paying energy bills, home weatherization, and energy-related home repairs to certain low-income households.
+          {% endprogram %}
+
+          {% program "VTA ACCESS Paratransit", "vta-paratransit", "https://www.vta.org/go/paratransit#accordion-applying-for-vta-access-paratransit-service", "https://www.vta.org/sites/default/files/2022-05/Paratransit-Rider%27s-Guide_LMR2022.pdf" %}
+            VTA ACCESS Paratransit provides door-to-door transportation service for certain individuals unable to independently use local bus or light rail services due to a disability.
+          {% endprogram %}
+
+          {% program "Housing Choice Voucher", "housing-choice", "https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/", "https://www.scchousingauthority.org/section-8/" %}
+            The Housing Choice Voucher program helps certain low-income individuals and families pay for rental housing. This was previously known as the "Section 8 Program."
+          {% endprogram %}
+
+          {% program "Supplemental Security Income (SSI)", "ssi", "https://www.ssa.gov/benefits/ssi/", "https://ca.db101.org/ca/programs/income_support/ssi/program.htm" %}
+            SSI is a federal program that provides a monthly cash benefit to certain low-income individuals who are disabled, blind, or elderly.
+          {% endprogram %}
+
+          {% program "Social Security Disability Insurance (SSDI)", "ssdi", "https://www.ssa.gov/applyfordisability/", "https://ca.db101.org/ca/programs/income_support/ssdi2/program.htm" %}
+            SSDI is a federal program that provides a monthly cash benefit to certain disabled individuals who have worked and paid Social Security taxes in the past.
+          {% endprogram %}
+
+          {% program "VA Pension", "va-pension", "https://www.va.gov/pension/how-to-apply/", "https://www.va.gov/pension/" %}
+            VA Pension is a program that provides ongoing cash payments for eligible veterans.
+          {% endprogram %}
+
+          {% program "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
+            WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods.
+          {% endprogram %}
         </ul>
       </div>
 
@@ -549,7 +606,6 @@ pageClass: "page-public-assistance"
 
   // Called when the user inputs data into a form element.
   function onInput(event) {
-
     // As soon as the user enters any data at all, register the beforeonload
     // event listener so that they can confirm they want to exit the form
     // when an unload is about to happen.
@@ -607,7 +663,8 @@ pageClass: "page-public-assistance"
     // Update the item heading if there is one.
     const itemHeading = newItem.querySelector("h3,h4,h5,h6");
     if (itemHeading) {
-      itemHeading.textContent = itemHeading.textContent.replace(/\d+$/, newIdNumber + 1);
+      itemHeading.textContent = itemHeading.textContent.replace(
+        /\d+$/, newIdNumber + 1);
     }
     // Add a remove button for the new item.
     const removeButton = document.createElement("button");
@@ -824,7 +881,8 @@ pageClass: "page-public-assistance"
     for (const input of inputs) {
       input.addEventListener("input", onInput);
     }
-    const fieldListAddButtons = document.querySelectorAll('button.field_list_add');
+    const fieldListAddButtons = document.querySelectorAll(
+      'button.field_list_add');
     for (const button of fieldListAddButtons) {
       button.addEventListener("click", addDynamicFieldListItem);
     }
@@ -860,12 +918,13 @@ pageClass: "page-public-assistance"
   function linkPages() {
     const pages = document.querySelectorAll("div.elig_page");
     const pageById = {};
-    for (let j = 0; j < pages.length; j++) { // Alias the parent element as 'section' for convenience.
+    for (let j = 0; j < pages.length; j++) {
+      // Alias the parent element as 'section' for convenience.
       pages[j].section = pages[j].parentElement;
       // By default, each page will advance to the next page in the sequence,
       // regardless of form input.  For conditional next-page selection, 
       // add the logic to customPageLinking().
-      pages[j].next = function () {
+      pages[j].next = function() {
         return pages[j + 1];
       };
       // Store a hash map of page id to the page itself for faster page
@@ -934,63 +993,63 @@ pageClass: "page-public-assistance"
       }
     };
 
-    pageById["page-income"].next = function () {
+    pageById["page-income"].next = function() {
       if (document.getElementById("income-has-wages").checked) {
         return pageById["page-income-details-wages"];
       }
       return pageById["page-income-details-wages"].next();
     };
 
-    pageById["page-income-details-wages"].next = function () {
+    pageById["page-income-details-wages"].next = function() {
       if (document.getElementById("income-has-self-employed").checked) {
         return pageById["page-income-details-self-employed"];
       }
       return pageById["page-income-details-self-employed"].next();
     };
 
-    pageById["page-income-details-self-employed"].next = function () {
+    pageById["page-income-details-self-employed"].next = function() {
       if (document.getElementById("income-has-social-security").checked) {
         return pageById["page-income-details-social-security"];
       }
       return pageById["page-income-details-social-security"].next();
     };
 
-    pageById["page-income-details-social-security"].next = function () {
+    pageById["page-income-details-social-security"].next = function() {
       if (document.getElementById("income-has-unemployment").checked) {
         return pageById["page-income-details-unemployment"];
       }
       return pageById["page-income-details-unemployment"].next();
     };
 
-    pageById["page-income-details-unemployment"].next = function () {
+    pageById["page-income-details-unemployment"].next = function() {
       if (document.getElementById("income-has-veterans").checked) {
         return pageById["page-income-details-veterans"];
       }
       return pageById["page-income-details-veterans"].next();
     };
 
-    pageById["page-income-details-veterans"].next = function () {
+    pageById["page-income-details-veterans"].next = function() {
       if (document.getElementById("income-has-workers-comp").checked) {
         return pageById["page-income-details-workers-comp"];
       }
       return pageById["page-income-details-workers-comp"].next();
     };
 
-    pageById["page-income-details-workers-comp"].next = function () {
+    pageById["page-income-details-workers-comp"].next = function() {
       if (document.getElementById("income-has-child-support").checked) {
         return pageById["page-income-details-child-support"];
       }
       return pageById["page-income-details-child-support"].next();
     };
 
-    pageById["page-income-details-child-support"].next = function () {
+    pageById["page-income-details-child-support"].next = function() {
       if (document.getElementById("income-has-retirement").checked) {
         return pageById["page-income-details-retirement"];
       }
       return pageById["page-income-details-retirement"].next();
     };
 
-    pageById["page-income-details-retirement"].next = function () {
+    pageById["page-income-details-retirement"].next = function() {
       if (document.getElementById("income-has-other").checked) {
         return pageById["page-income-details-other"];
       }
@@ -1026,7 +1085,81 @@ pageClass: "page-public-assistance"
     // TODO
     return undefined;
   }
-  // TODO: Add more program eligibility functions.
+
+  function careEligible() {
+    // TODO
+    return true;
+  }
+
+  function feraEligible() {
+    // TODO
+    return true;
+  }
+
+  function vaDisabilityCompEligible() {
+    // TODO
+    return true;
+  }
+
+  function gaEligible() {
+    // TODO
+    return true;
+  }
+
+  function noFeeIdEligible() {
+    // TODO
+    return true;
+  }
+
+  function reducedFeeIdEligible() {
+    // TODO
+    return false;
+  }
+
+  function ihssEligible() {
+    // TODO
+    return false;
+  }
+
+  function lifelineEligible() {
+    // TODO
+    return false;
+  }
+
+  function liheapEligible() {
+    // TODO
+    return false;
+  }
+
+  function vtaParatransitEligible() {
+    // TODO
+    return false;
+  }
+
+  function housingChoiceEligible() {
+    // TODO
+    return undefined;
+  }
+
+  function ssiEligible() {
+    // TODO
+    return false;
+  }
+
+  function ssdiEligible() {
+    // TODO
+    return true;
+  }
+
+  function vaPensionEligible() {
+    // TODO
+    return true;
+  }
+
+  function wicEligible() {
+    // TODO
+    return false;
+  }
   
   // Determines eligibility for programs based on user form input values.
   function computeEligibility() {
