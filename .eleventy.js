@@ -304,6 +304,17 @@ module.exports = function(eleventyConfig) {
     return `${spaced[0].toUpperCase()}${spaced.slice(1)}`
   }
 
+  // Converts "the-test-string", "the_test_string", or "the test string" to "theTestString".
+  const toCamelCase = function(str) {
+    const words = str.trim().toLowerCase().split(/[-_\s]/);
+    const result = [];
+    result.push(words[0]);
+    for (const word of words.slice(1)) {
+      result.push(`${word.slice(0, 1).toUpperCase()}${word.slice(1)}`);
+    }
+    return result.join("");
+  }
+
   // Formats a value as USD with no decimals.
   const formatCurrency = function(value) {
     const num = Number(value)
@@ -330,7 +341,7 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addPairedShortcode("incomeDetails", function(content, typeStr) {
     return `
-      <h3>${typeStr[0].toUpperCase() + typeStr.slice(1)}</h3>
+      <h3>${typeStr.slice(0, 1).toUpperCase() + typeStr.slice(1)}</h3>
       <p>
         Enter all income coming from <span class="bold">${typeStr}</span> for everyone in your household.  Amounts should be before tax and other deductions.
       </p>
@@ -339,6 +350,7 @@ module.exports = function(eleventyConfig) {
         Combined household income from ${typeStr}:  <span class="bold">$<span class="income_total">0</span> per month</span>
       </p>`;
   });
+
 
   // Renders a single public assistance program to display in a list.
   eleventyConfig.addPairedShortcode("program", function(
@@ -351,7 +363,7 @@ module.exports = function(eleventyConfig) {
       links.push(`<p><a href=${refUrl} target="_blank" rel="noopener">Learn more</a></p>`);
     }
     return `
-      <li id="program-${id}" data-eligibility="${id}Eligible">
+      <li id="program-${id}" data-eligibility="${toCamelCase(id)}Eligible">
         <h4>${title}</h4>
         <p>${content}</p>
         ${links.join("")}
