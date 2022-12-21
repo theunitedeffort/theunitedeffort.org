@@ -165,25 +165,30 @@ pageClass: "page-public-assistance"
 
       <div>
         <p>Enter details for your duty periods below:</p>
-        <label for="your-duty-type">Duty type</label>
-        <select id="your-duty-type">
-          <option value="">--Please choose an option--</option>
-          <option value="act">Active duty</option>
-          <option value="act-train">Active duty for training</option>
-          <option value="inact-train">Inactive duty training</option>
-        </select>
-      </div>
+        {% dynamicFieldList "Add another duty period" %}
+          <h4>Duty Period 1</h4>
+          <div>
+            <label for="your-duty-type">Duty type</label>
+            <select id="your-duty-type">
+              <option value="">--Please choose an option--</option>
+              <option value="act">Active duty</option>
+              <option value="act-train">Active duty for training</option>
+              <option value="inact-train">Inactive duty training</option>
+            </select>
+          </div>
 
-      <div>
-        <ul id="duty-dates" class="datesselect">
-          <li>
-            <label for="served-from">Served From</label>
-            <input type="date" id="served-from" />
-            
-            <label for="served-untl">Until</label>
-            <input type="date" id="served-untl" />
-          </li>
-        </ul>
+          <div>
+            <ul id="duty-dates" class="datesselect">
+              <li>
+                <label for="served-from">Served From</label>
+                <input type="date" id="served-from" />
+                
+                <label for="served-untl">Until</label>
+                <input type="date" id="served-untl" />
+              </li>
+            </ul>
+          </div>
+        {% enddynamicFieldList %}
       </div>
     {% endeligPage %}
 
