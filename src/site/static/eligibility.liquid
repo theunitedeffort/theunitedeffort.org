@@ -233,10 +233,31 @@ pageClass: "page-public-assistance"
   {% eligSection "household" %}
     <h2>Household</h2>
 
-    {% eligPage "household-details" %}
+    {% eligPage "household-members" %}
       <p>
-        Here we are in the household details page
+        Enter details for each person living in your household. Do not include yourself.
       </p>
+      {% dynamicFieldList "Add new household member" %}
+        <h4>Household Member 1</h4>
+        <div>
+	        <div>
+            <label for="household-member">Age</label>
+            <input id="household-member" type="number" value="" maxlength="3" min="1" max="130" /> years
+	        </div>
+	        <div>
+        	  <ul id="hh-person-types" class="multiselect">
+          	  <li>
+	              <input id="hh-person-disabled" type="checkbox" />
+       	        <label for="hh-person-disabled">This person is disabled.</label>
+            	</li>
+          	  <li>
+	              <input id="hh-person-dependent" type="checkbox" />
+       	        <label for="hh-person-dependent">This person is my dependent.</label>
+		          </li>
+        	  </ul>
+          </div>
+        </div>
+      {% enddynamicFieldList %}
     {% endeligPage %}
 
     {% eligPage "household-situation" %}
