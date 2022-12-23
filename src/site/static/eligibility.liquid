@@ -165,34 +165,56 @@ pageClass: "page-public-assistance"
 
       <div>
         <p>Enter details for your duty periods below:</p>
-        <label for="your-duty-type">Duty type</label>
-        <select id="your-duty-type">
-          <option value="">--Please choose an option--</option>
-          <option value="act">Active duty</option>
-          <option value="act-train">Active duty for training</option>
-          <option value="inact-train">Inactive duty training</option>
-        </select>
+        {% dynamicFieldList "Add another duty period" %}
+          <h4>Duty Period 1</h4>
+          <div>
+            <label for="your-duty-type">Duty type</label>
+            <select id="your-duty-type">
+              <option value="">--Please choose an option--</option>
+              <option value="act">Active duty</option>
+              <option value="act-train">Active duty for training</option>
+              <option value="inact-train">Inactive duty training</option>
+            </select>
+          </div>
+
+          <div>
+            <ul id="duty-dates" class="datesselect">
+              <li>
+                <label for="served-from">Served From</label>
+                <input type="date" id="served-from" />
+                
+                <label for="served-untl">Until</label>
+                <input type="date" id="served-untl" />
+              </li>
+            </ul>
+          </div>
+        {% enddynamicFieldList %}        
       </div>
 
-      <div>
-        <ul id="duty-dates" class="datesselect">
-          <li>
-            <label for="served-from">Served From</label>
-            <input type="date" id="served-from" />
-            
-            <label for="served-untl">Until</label>
-            <input type="date" id="served-untl" />
-          </li>
-        </ul>
-      </div>
     {% endeligPage %}
 
 
-    {% eligPage "veteran-details2" %}
+    {% eligPage "veteran-duty-period" %}
       <h3>About Your Military Service</h3>
-      <p>
-        Here we are in the veteran-details2 page.
-      </p>
+
+      <p>This question is about your <span class="bold">active duty period</span> from {mm/dd/yyyy} until {mm/dd/yyyy}.</p>
+      <div>
+        <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
+        <ul id="duration-military-service" class="singleselect-each">
+          <li>
+            <input type="radio" id="full-dur-yes" name="mil-svc-duration" />
+            <label for="full-dur-yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="full-dur-no" name="mil-svc-duration" />
+            <label for="full-dur-no">No</label>
+          </li>
+          <li>
+            <input type="radio" id="full-dur-not-called" name="mil-svc-duration" />
+            <label for="full-dur-not-called">I was not called or ordered to this active duty period</label>
+          </li>
+        </ul>
+      </div>
     {% endeligPage %}
 
 
@@ -233,10 +255,31 @@ pageClass: "page-public-assistance"
   {% eligSection "household" %}
     <h2>Household</h2>
 
-    {% eligPage "household-details" %}
+    {% eligPage "household-members" %}
       <p>
-        Here we are in the household details page
+        Enter details for each person living in your household. Do not include yourself.
       </p>
+      {% dynamicFieldList "Add a new household member" %}
+        <h4>Household Member 1</h4>
+        <div>
+          <div>
+            <label for="household-member">Age</label>
+            <input id="household-member" type="number" value="" maxlength="3" min="1" max="130" /> years
+          </div>
+          <div>
+            <ul id="hh-person-types" class="multiselect">
+              <li>
+                <input id="hh-person-disabled" type="checkbox" />
+                <label for="hh-person-disabled">This person is disabled.</label>
+              </li>
+              <li>
+                <input id="hh-person-dependent" type="checkbox" />
+                <label for="hh-person-dependent">This person is my dependent.</label>
+              </li>
+            </ul>
+          </div>
+        </div>
+      {% enddynamicFieldList %}
     {% endeligPage %}
 
     {% eligPage "household-situation" %}
