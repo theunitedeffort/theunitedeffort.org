@@ -1036,6 +1036,15 @@ pageClass: "page-public-assistance"
       }
     };
 
+
+    pageById["page-household-situation"].next = function() {
+      if (document.getElementById("housing").checked) {
+        return pageById["page-household-housed"];
+      }
+      return pageById["page-household-housed"].next();
+    };
+
+
     pageById["page-income"].next = function() {
       if (document.getElementById("income-has-wages").checked) {
         return pageById["page-income-details-wages"];
