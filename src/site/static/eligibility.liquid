@@ -183,8 +183,8 @@ pageClass: "page-public-assistance"
                 <label for="served-from">Served From</label>
                 <input type="date" id="served-from" />
                 
-                <label for="served-untl">Until</label>
-                <input type="date" id="served-untl" />
+                <label for="served-until">Until</label>
+                <input type="date" id="served-until" />
               </li>
             </ul>
           </div>
@@ -981,59 +981,40 @@ pageClass: "page-public-assistance"
   // "the next page in the sequence".
   function customPageLinking(pageById) {
     
-    pageById["page-yourself-start"].next = function () {
 
-      const isUnderEighteen = document.getElementById("age").value < 18 && document.getElementById("age").value > 0
-      const isDisabled = document.getElementById("disabled").checked;
-      const isBlind = document.getElementById("blind").checked;
-      const isDeaf = document.getElementById("deaf").checked;
-      const isVeteran = document.getElementById("veteran").checked;
-      const isPregnant = document.getElementById("pregnant").checked;
-      const isFeeding = document.getElementById("feeding").checked;
-      const isCitizen = document.getElementById("citizen").checked;
-
-      if (isUnderEighteen) {
+    pageById["page-yourself-start"].next = function() {
+      if (document.getElementById("age").value < 18 && document.getElementById("age").value > 0) {
         return pageById["page-head-of-household"];
       }
-      if (isDisabled || isBlind || isDeaf) {
-        return pageById["page-disability-details"];
-      }
-      if (isVeteran) {
-        return pageById["page-veteran-details"];
-      }
-      if (isPregnant || isFeeding) {
-        return pageById["page-household-start"];
-      }
-      if (!isCitizen) {
-        return pageById["page-immigration-status"];
-      } else {
-        return pageById["page-household-start"];
-      }
+      return pageById["page-head-of-household"].next();
     };
 
-    pageById["page-head-of-household"].next = function () {
-      const isDisabled = document.getElementById("disabled").checked;
-      const isBlind = document.getElementById("blind").checked;
-      const isDeaf = document.getElementById("deaf").checked;
-      const isVeteran = document.getElementById("veteran").checked;
-      const isPregnant = document.getElementById("pregnant").checked;
-      const isFeeding = document.getElementById("feeding").checked;
-      const isCitizen = document.getElementById("citizen").checked;
-
-      if (isDisabled || isBlind || isDeaf) {
+    pageById["page-head-of-household"].next = function() {
+      if ( document.getElementById("disabled").checked || document.getElementById("blind").checked || document.getElementById("deaf").checked ) {
         return pageById["page-disability-details"];
       }
-      if (isVeteran) {
+      return pageById["page-disability-details"].next();
+    };
+
+    pageById["page-disability-details"].next = function() {
+      if ( document.getElementById("veteran").checked ) {
         return pageById["page-veteran-details"];
       }
-      if (isPregnant || isFeeding) {
-        return pageById["page-household-start"];
+      return pageById["page-veteran-details"].next();		
+    };
+
+    pageById["page-veteran-details"].next = function() {
+      if ( document.getElementById("veteran").checked ) {
+        return pageById["page-veteran-duty-period"];
       }
-      if (!isCitizen) {
+      return pageById["page-veteran-duty-period"].next();		
+    };
+
+    pageById["page-veteran-duty-period"].next = function() {			
+      if ( !document.getElementById("citizen").checked ) {
         return pageById["page-immigration-status"];
-      } else {
-        return pageById["page-household-start"];
       }
+      return pageById["page-immigration-status"].next();		
     };
 
 
@@ -1108,6 +1089,22 @@ pageClass: "page-public-assistance"
       return pageById["page-income-details-other"].next();
     };
 
+  }
+
+  function getNumberOfDays(start, end) {
+      const date1 = new Date(start);
+      const date2 = new Date(end);
+
+      // Time difference between two dates.
+      let difference = date2.getTime() - date1.getTime();
+
+      // One day in milliseconds.
+      const oneDay = 1000 * 60 * 60 * 24;
+
+      // Number of days between two dates.
+      let TotalDays = Math.ceil(difference / oneDay);
+
+      return TotalDays;
   }
 
   // The functions below determine eligibility for various programs.
