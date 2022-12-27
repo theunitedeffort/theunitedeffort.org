@@ -981,7 +981,6 @@ pageClass: "page-public-assistance"
   // "the next page in the sequence".
   function customPageLinking(pageById) {
     
-
     pageById["page-yourself-start"].next = function() {
       if (document.getElementById("age").value < 18 && document.getElementById("age").value > 0) {
         return pageById["page-head-of-household"];
@@ -1004,7 +1003,7 @@ pageClass: "page-public-assistance"
     };
 
     pageById["page-veteran-details"].next = function() {
-      if ( document.getElementById("veteran").checked ) {
+      if ( getNumberOfDays(document.getElementById("served-from").value, document.getElementById("served-until").value) < 720 ) {
         return pageById["page-veteran-duty-period"];
       }
       return pageById["page-veteran-duty-period"].next();		
@@ -1096,13 +1095,13 @@ pageClass: "page-public-assistance"
       const date2 = new Date(end);
 
       // Time difference between two dates.
-      let difference = date2.getTime() - date1.getTime();
+      const difference = date2.getTime() - date1.getTime();
 
       // One day in milliseconds.
       const oneDay = 1000 * 60 * 60 * 24;
 
       // Number of days between two dates.
-      let TotalDays = Math.ceil(difference / oneDay);
+      const TotalDays = Math.ceil(difference / oneDay);
 
       return TotalDays;
   }
