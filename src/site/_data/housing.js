@@ -61,7 +61,7 @@ const fetchApartmentRecords = async() => {
           website: record.get("PROPERTY_URL"),
           email: record.get("EMAIL"),
           numTotalUnits: record.get("NUM_TOTAL_UNITS"),
-          populationsServed: record.get("POPULATIONS_SERVED"),
+          populationsServed: record.get("POPULATIONS_SERVED") || [],
           minAge: record.get("MIN_RESIDENT_AGE"),
           maxAge: record.get("MAX_RESIDENT_AGE"),
           disallowsPublicApps: record.get(
