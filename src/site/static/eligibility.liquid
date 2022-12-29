@@ -190,7 +190,6 @@ pageClass: "page-public-assistance"
           </div>
         {% enddynamicFieldList %}        
       </div>
-
     {% endeligPage %}
 
 
@@ -989,7 +988,7 @@ pageClass: "page-public-assistance"
     };
 
     pageById["page-head-of-household"].next = function() {
-      if ( document.getElementById("disabled").checked || document.getElementById("blind").checked || document.getElementById("deaf").checked ) {
+      if (document.getElementById("disabled").checked || document.getElementById("blind").checked || document.getElementById("deaf").checked) {
         return pageById["page-disability-details"];
       }
       return pageById["page-disability-details"].next();
@@ -1003,22 +1002,22 @@ pageClass: "page-public-assistance"
     };
 
     pageById["page-veteran-details"].next = function() {
-      if ( getNumberOfDays(document.getElementById("served-from").value, document.getElementById("served-until").value) < 720 ) {
+      if (getNumberOfDays(document.getElementById("served-from").value, document.getElementById("served-until").value) < 720) {
         return pageById["page-veteran-duty-period"];
       }
       return pageById["page-veteran-duty-period"].next();		
     };
 
     pageById["page-veteran-duty-period"].next = function() {			
-      if ( !document.getElementById("citizen").checked ) {
+      if (!document.getElementById("citizen").checked) {
         return pageById["page-immigration-status"];
       }
-      return pageById["page-immigration-status"].next();		
+      return pageById["page-immigration-status"].next();
     };
 
 
     pageById["page-household-situation"].next = function() {
-      if (document.getElementById("housing").checked) {
+      if (document.getElementById("housing").checked || document.getElementById("unlisted-stable-place").checked) {
         return pageById["page-household-housed"];
       }
       return pageById["page-household-housed"].next();
@@ -1101,9 +1100,7 @@ pageClass: "page-public-assistance"
       const oneDay = 1000 * 60 * 60 * 24;
 
       // Number of days between two dates.
-      const TotalDays = Math.ceil(difference / oneDay);
-
-      return TotalDays;
+      return Math.ceil(difference / oneDay);
   }
 
   // The functions below determine eligibility for various programs.
