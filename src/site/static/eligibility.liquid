@@ -1202,10 +1202,46 @@ pageClass: "page-public-assistance"
   //
   // An eligibility function should return true if the input values suggest
   // program eligibility, false if the values suggest ineligibility, and 
-  // undefined if an eligibility determination can't be made.
+  // null if an eligibility determination can't be made.
   function adsaEligible() {
-    // TODO
-    return false;
+    const hasExistingAssistance = (
+      document.getElementById("existing-ssi-me").checked
+      || document.getElementById("existing-ssdi-me").checked
+      || document.getElementById("existing-ihss-me").checked
+      || document.getElementById("existing-capi-me").checked
+    );
+
+    const dependencies = [
+      ssiEligible(), 
+      ssdiEligible(), 
+      ihssEligible(), 
+      capiEligible()
+    ];
+
+    // The list of dependencies are determined if at least one of them
+    // returns true or if all of them are false.  If they are all null or a
+    // mix of null and false then they are undetermined.
+    let dependenciesDetermined = (
+      dependencies.some(d => d) || dependencies.every(d => d === false));
+    if (!hasExistingAssistance && !dependenciesDetermined) {
+      // There is not enough data to make an eligibility suggestion.
+      return null;
+    }
+
+    // There is enough data to make an eligibility suggestion, so figure out
+    // what that suggestion is.
+    return (
+      (
+        document.getElementById("disabled").checked
+        || document.getElementById("blind").checked
+        || document.getElementById("deaf").checked
+      )
+      && document.getElementById("dis_guide_yes").checked
+      && (
+        hasExistingAssistance
+        || dependencies.some(d => d)
+      )
+    );
   }
 
   function calfreshEligible() {
@@ -1220,7 +1256,7 @@ pageClass: "page-public-assistance"
 
   function capiEligible() {
     // TODO
-    return undefined;
+    return null;
   }
 
   function careEligible() {
@@ -1275,7 +1311,7 @@ pageClass: "page-public-assistance"
 
   function housingChoiceEligible() {
     // TODO
-    return undefined;
+    return null;
   }
 
   function ssiEligible() {
@@ -1306,7 +1342,7 @@ pageClass: "page-public-assistance"
     const unknownList = document.querySelector(".programs__unknown ul");
     for (program of allPrograms) {
       const eligible = window[program.dataset.eligibility]();
-      if (typeof eligible === "undefined") {
+      if (eligible === null) {
         unknownList.appendChild(program);
       } else if (eligible) {
         eligibleList.appendChild(program);
