@@ -192,11 +192,12 @@ pageClass: "page-public-assistance"
       </div>
     {% endeligPage %}
 
-
     {% eligPage "veteran-duty-period" %}
       <h3>About Your Military Service</h3>
 
-      <p>This question is about your <span class="bold">active duty period</span> from {mm/dd/yyyy} until {mm/dd/yyyy}.</p>
+      <p>
+        This question is about your <span class="bold">active duty period</span> from <span id="served-from-placeholder" class="bold"></span> until <span id="served-until-placeholder" class="bold"></span>.
+      </p>
       <div>
         <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
         <ul id="duration-military-service" class="singleselect-each">
@@ -215,7 +216,6 @@ pageClass: "page-public-assistance"
         </ul>
       </div>
     {% endeligPage %}
-
 
     {% eligPage "immigration-status" %}
       <h3>About Your Immigration Status</h3>
@@ -247,7 +247,6 @@ pageClass: "page-public-assistance"
         </ul>
       </div>
     {% endeligPage %}
-
   {% endeligSection %}
 
 
@@ -343,7 +342,6 @@ pageClass: "page-public-assistance"
         </ul>
       </div>
     {% endeligPage %}
-
   {% endeligSection %}
 
 
@@ -1003,6 +1001,13 @@ pageClass: "page-public-assistance"
 
     pageById["page-veteran-details"].next = function() {
       if (getNumberOfDays(document.getElementById("served-from").value, document.getElementById("served-until").value) < 720) {
+
+        const fromPlaceHolder = document.getElementById("served-from-placeholder");
+        fromPlaceHolder.textContent = getFormattedDutyDate(document.getElementById("served-from").value);
+
+        const untilPlaceHolder = document.getElementById("served-until-placeholder");
+        untilPlaceHolder.textContent = getFormattedDutyDate(document.getElementById("served-until").value);
+
         return pageById["page-veteran-duty-period"];
       }
       return pageById["page-veteran-duty-period"].next();		
@@ -1090,18 +1095,25 @@ pageClass: "page-public-assistance"
   }
 
   function getNumberOfDays(start, end) {
-      const date1 = new Date(start);
-      const date2 = new Date(end);
+    const date1 = new Date(start + 'T00:00');
+    const date2 = new Date(end + 'T00:00');
 
-      // Time difference between two dates.
-      const difference = date2.getTime() - date1.getTime();
+    // Time difference between two dates.
+    const difference = date2.getTime() - date1.getTime();
 
-      // One day in milliseconds.
-      const oneDay = 1000 * 60 * 60 * 24;
+    // One day in milliseconds.
+    const oneDay = 1000 * 60 * 60 * 24;
 
-      // Number of days between two dates.
-      return Math.ceil(difference / oneDay);
+    // Number of days between two dates.
+    return Math.ceil(difference / oneDay);
   }
+
+  
+  function getFormattedDutyDate(dutyDate)	{
+    const date1 = new Date(dutyDate + 'T00:00');
+    return (date1.getMonth() + 1 + '/' + date1.getDate() + '/' + date1.getFullYear());
+  }
+
 
   // The functions below determine eligibility for various programs.
   // When a program is added using the "program" shortcode, a matching function
