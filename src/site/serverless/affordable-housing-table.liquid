@@ -57,7 +57,9 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
         <td>
           {% assign waitlistStatuses = apartment.units | map: "openStatus" | compact | uniq %}
           {% if waitlistStatuses.size > 1 %}
-            {% if waitlistStatuses contains "Waitlist Open" %}
+            {% if waitlistStatuses contains "Available" %}
+              Partially Available
+            {% elsif waitlistStatuses contains "Waitlist Open" %}
               Partially Open
             {% else %}
               Varies

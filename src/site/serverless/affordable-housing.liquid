@@ -253,6 +253,8 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
                     badge__bad
                   {%- elsif status == "Waitlist Open" -%}
                     badge__ok
+                  {%- elsif status == "Available" -%}
+                    badge__highlight
                   {%- endif -%}
                 {%- endcapture -%}
                 <span class="badge {{ badgeMod }}">{{ status }}</span>
