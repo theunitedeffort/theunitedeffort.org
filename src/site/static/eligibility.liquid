@@ -1001,7 +1001,6 @@ pageClass: "page-public-assistance"
 
     pageById["page-veteran-details"].next = function() {
       if (getNumberOfDays(document.getElementById("served-from").value, document.getElementById("served-until").value) < 720) {
-
         const fromPlaceHolder = document.getElementById("served-from-placeholder");
         fromPlaceHolder.textContent = getFormattedDutyDate(document.getElementById("served-from").value);
 
@@ -1113,8 +1112,7 @@ pageClass: "page-public-assistance"
     const date1 = new Date(dutyDate + 'T00:00');
     return (date1.getMonth() + 1 + '/' + date1.getDate() + '/' + date1.getFullYear());
   }
-
-
+  
   // The functions below determine eligibility for various programs.
   // When a program is added using the "program" shortcode, a matching function
   // should be defined called {id}Eligible where {id} is the id given in
