@@ -115,8 +115,13 @@
     print-color-adjust: exact;
   }
   
-  .badge__ok {
+  .badge__ok,
+  .badge__highlight {
     border-left: 0.4em solid var(--color-green);
+  }
+
+  .badge__highlight {
+    background-color: var(--color-green-light);
   }
   
   .badge__bad {
