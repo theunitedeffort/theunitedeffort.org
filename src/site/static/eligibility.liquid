@@ -268,7 +268,7 @@ pageClass: "page-public-assistance"
           <h4>Household Member 2</h4>
           <div>
             <label for="hh-member-age">Age</label>
-            <input id="hh-member-age" type="number" maxlength="3" min="1" max="130"> years
+            <input id="hh-member-age" type="number" min="1" max="130"> years
           </div>
           <div>
             <ul id="hh-member-types" class="multiselect">
@@ -695,7 +695,7 @@ pageClass: "page-public-assistance"
     }
     // Create a new item using a template tag or, if none is present, the first
     // item in the list as a template.
-    const template = items[0].querySelector('template');
+    const template = items[0].querySelector("template");
     let newItem;
     if (template) {
       newItem = document.createElement("li")
