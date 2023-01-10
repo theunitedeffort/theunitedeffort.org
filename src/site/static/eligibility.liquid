@@ -1194,6 +1194,40 @@ pageClass: "page-public-assistance"
     const date1 = new Date(dutyDate + 'T00:00');
     return (date1.getMonth() + 1 + '/' + date1.getDate() + '/' + date1.getFullYear());
   }
+
+  function incomeTotal(incomeType) {
+    const selector = "#page-income-details-" + incomeType + " .income_total";
+    return Number(document.querySelector(selector).textContent);
+  }
+
+  function totalEarnedIncome() {
+    return incomeTotal("wages") + incomeTotal("self-employed");
+  }
+
+  function totalUnearnedIncome() {
+    return (incomeTotal("social-security") + incomeTotal("unemployment") + 
+      incomeTotal("veterans") + incomeTotal("workers-comp") + 
+      incomeTotal("child-support") + incomeTotal("retirement") + 
+      incomeTotal("other"));
+  }
+
+  class IncomeLimit {
+    constructor(limits, addlPersonExtra) {
+      this.limits = limits;
+      this.addlPersonExtra = addlPersonExtra;
+    }
+
+    getLimit(hhSize) {
+      if (hhSize < 1) {
+        return 0;
+      } else if (hhSize > this.limits.length) {
+        const extra = this.addlPersonExtra * (hhSize - this.limits.length);
+        return this.limits[this.limits.length - 1] + extra;
+      } else {
+        return this.limits[hhSize - 1];
+      }
+    }
+  } 
   
   // The functions below determine eligibility for various programs.
   // When a program is added using the "program" shortcode, a matching function
@@ -1245,8 +1279,63 @@ pageClass: "page-public-assistance"
   }
 
   function calfreshEligible() {
-    // TODO
-    return true;
+    const grossLimit = new IncomeLimit(
+      [
+        2148,
+        2904,
+        3660,
+        4418,
+        5174,
+        5930,
+        6688,
+        7444
+      ],
+      758);
+
+    const age = document.getElementById("age").value;
+    const hh_ages = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-age"]')).map(i => Number(i.value));
+    const hh_disabled = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-disabled"]')).map(i => i.checked);
+    console.log(hh_ages);
+    console.log(hh_disabled);
+
+    const meets_immigration_req = (
+      document.getElementById("citizen").checked
+      || document.getElementById("permanent_resident").checked
+      || document.getElementById("qualified_noncitizen_gt5y").checked
+      || (
+        document.getElementById("qualified_noncitizen_le5y").checked
+        && (
+          (age < 18 && age > 0)
+          || document.getElementById("existing-ssi-me").checked
+          || document.getElementById("existing-ssdi-me").checked
+          || ssdiEligible()
+          || ssiEligible()
+        )
+      )
+    );
+    // TODO: add cash assistance check.
+    const is_income_exempt = (
+      (hh_ages.some(a => a > 60) || age > 60)
+      || (
+        hh_disabled.some(d => d) 
+        || document.getElementById("disabled").checked 
+        || document.getElementById("blind").checked
+        || document.getElementById("existing-ssi-me").checked
+        || document.getElementById("existing-ssdi-me").checked
+        || document.getElementById("existing-ssi-household").checked
+        || document.getElementById("existing-ssdi-household").checked
+        // May not need to check for ssdi/ssi eligibility if we already check for disabled/blind.
+        || ssdiEligible()
+        || ssiEligible()
+      )
+    );
+    const grossIncome = totalEarnedIncome() + totalUnearnedIncome();
+    const under_income_limit = (
+      grossIncome < grossLimit.getLimit(hh_ages.length + 1));
+
+    return meets_immigration_req && (under_income_limit || is_income_exempt);
   }
 
   function calworksEligible() {
@@ -1321,7 +1410,7 @@ pageClass: "page-public-assistance"
 
   function ssdiEligible() {
     // TODO
-    return true;
+    return false;
   }
 
   function vaPensionEligible() {
