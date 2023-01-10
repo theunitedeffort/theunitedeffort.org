@@ -610,6 +610,67 @@ pageClass: "page-public-assistance"
   // This global variable holds the current state of the form navigation.
   let currentPage;
 
+  // Custom boolean "or" logic that propagates null values.  Rather than
+  // coercing a null value into false, null values are retained.  If the 
+  // result of this operation is not determined, e.g. or(false, null) then 
+  // null will be returned. Otherwise, the boolean result of or'ing all 
+  // statements together will be returned.
+  //
+  // null or true = true
+  // null or false = null
+  // null or null = null
+  function or(...stmts) {
+    // Convert all values that are not null to booleans
+    stmts = stmts.map(s => s === null ? null : !!s);
+    // The result is determined only if at least one statement is true or
+    // everything is false.
+    const anyTrue = stmts.some(b => b);
+    const determined = (
+      anyTrue || stmts.every(b => b === false));
+    if (!determined) {
+      return null;
+    }
+    return anyTrue;
+  }
+
+  // Custom boolean "and" logic that propagates null values.  Rather than
+  // coercing a null value into false, null values are retained.  If the 
+  // result of this operation is not determined, e.g. and(true, null) then 
+  // null will be returned.  Otherwise, the boolean result of and'ing all 
+  // statements together will be returned.
+  //
+  // null and true = null
+  // null and false = false
+  // null and null = null
+  function and(...stmts) {
+    // Convert all values that are not null to booleans
+    stmts = stmts.map(s => s === null ? null : !!s);
+    // The result is determined only if at least one statement is false or
+    // everything is true.
+    const allTrue = stmts.every(b => b);
+    const determined = (
+      stmts.some(b => b === false) || allTrue);
+    if (!determined) {
+      return null;
+    }
+    return allTrue;
+  }
+
+  // Custom boolean "not" logic that propagates null values.  Rather than
+  // coercing a null value into false, this will return null if the input
+  // statement is null.  Otherwise, the boolean result of not'ing the statement
+  // will be returned.
+  //
+  // not true = false
+  // not false = true
+  // not null = null
+  function not(stmt) {
+    if (stmt === null) {
+      return null;
+    }
+    return !stmt;
+  }
+
   // Shows or hides the element 'elem' via a class name.
   function setElementVisibility(elem, makeVisible) {
     if (elem) {
