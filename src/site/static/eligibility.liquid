@@ -671,6 +671,24 @@ pageClass: "page-public-assistance"
     return !stmt;
   }
 
+  // Custom less-than operator that returns null if either operand is null.
+  // Otherwise, returns the boolean result of a < b.
+  function lt(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a < b;
+  }
+
+  // Custom greater-than operator that returns null if either operand is null.
+  // Otherwise returns the boolean result of a > b.
+  function gt(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a > b;
+  }
+
   // Shows or hides the element 'elem' via a class name.
   function setElementVisibility(elem, makeVisible) {
     if (elem) {
@@ -1211,6 +1229,14 @@ pageClass: "page-public-assistance"
       incomeTotal("other"));
   }
 
+  function grossIncome() {
+    const total = totalEarnedIncome() + totalUnearnedIncome();
+    if (total == 0 && !document.getElementById("income-has-none").checked) {
+      return null;
+    }
+    return total;
+  }
+
   class IncomeLimit {
     constructor(limits, addlPersonExtra) {
       this.limits = limits;
@@ -1238,49 +1264,30 @@ pageClass: "page-public-assistance"
   // program eligibility, false if the values suggest ineligibility, and 
   // null if an eligibility determination can't be made.
   function adsaEligible() {
-    const hasExistingAssistance = (
-      document.getElementById("existing-ssi-me").checked
-      || document.getElementById("existing-ssdi-me").checked
-      || document.getElementById("existing-ihss-me").checked
-      || document.getElementById("existing-capi-me").checked
-    );
-
-    const dependencies = [
-      ssiEligible(), 
-      ssdiEligible(), 
-      ihssEligible(), 
-      capiEligible()
-    ];
-
-    // The list of dependencies are determined if at least one of them
-    // returns true or if all of them are false.  If they are all null or a
-    // mix of null and false then they are undetermined.
-    let dependenciesDetermined = (
-      dependencies.some(d => d) || dependencies.every(d => d === false));
-    if (!hasExistingAssistance && !dependenciesDetermined) {
-      // There is not enough data to make an eligibility suggestion.
-      return null;
-    }
-
-    // There is enough data to make an eligibility suggestion, so figure out
-    // what that suggestion is.
     return (
-      (
-        document.getElementById("disabled").checked
-        || document.getElementById("blind").checked
-        || document.getElementById("deaf").checked
-      )
-      && document.getElementById("dis_guide_yes").checked
-      && (
-        hasExistingAssistance
-        || dependencies.some(d => d)
+      and(
+        or(
+          document.getElementById("disabled").checked,
+          document.getElementById("blind").checked,
+          document.getElementById("deaf").checked
+        ),
+        document.getElementById("dis_guide_yes").checked,
+        or(
+          document.getElementById("existing-ssi-me").checked,
+          document.getElementById("existing-ssdi-me").checked,
+          document.getElementById("existing-ihss-me").checked,
+          document.getElementById("existing-capi-me").checked,
+          ssiEligible(), 
+          ssdiEligible(), 
+          ihssEligible(), 
+          capiEligible()
+        )
       )
     );
   }
 
   function calfreshEligible() {
-    const grossLimit = new IncomeLimit(
-      [
+    const grossLimit = new IncomeLimit([
         2148,
         2904,
         3660,
@@ -1292,50 +1299,51 @@ pageClass: "page-public-assistance"
       ],
       758);
 
-    const age = document.getElementById("age").value;
+    const age = document.getElementById("age").value || null;
     const hh_ages = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-age"]')).map(i => Number(i.value));
+      'input[id^="hh-member-age"]')).map(i => i.value || null);
     const hh_disabled = Array.from(document.querySelectorAll(
       'input[id^="hh-member-disabled"]')).map(i => i.checked);
-    console.log(hh_ages);
-    console.log(hh_disabled);
 
     const meets_immigration_req = (
-      document.getElementById("citizen").checked
-      || document.getElementById("permanent_resident").checked
-      || document.getElementById("qualified_noncitizen_gt5y").checked
-      || (
-        document.getElementById("qualified_noncitizen_le5y").checked
-        && (
-          (age < 18 && age > 0)
-          || document.getElementById("existing-ssi-me").checked
-          || document.getElementById("existing-ssdi-me").checked
-          || ssdiEligible()
-          || ssiEligible()
+      or(
+        document.getElementById("citizen").checked,
+        document.getElementById("permanent_resident").checked,
+        document.getElementById("qualified_noncitizen_gt5y").checked,
+        and(
+          document.getElementById("qualified_noncitizen_le5y").checked,
+          or(
+            and(lt(age, 18)),
+            document.getElementById("existing-ssi-me").checked,
+            document.getElementById("existing-ssdi-me").checked,
+            ssdiEligible(),
+            ssiEligible()
+          )
         )
       )
     );
     // TODO: add cash assistance check.
     const is_income_exempt = (
-      (hh_ages.some(a => a > 60) || age > 60)
-      || (
-        hh_disabled.some(d => d) 
-        || document.getElementById("disabled").checked 
-        || document.getElementById("blind").checked
-        || document.getElementById("existing-ssi-me").checked
-        || document.getElementById("existing-ssdi-me").checked
-        || document.getElementById("existing-ssi-household").checked
-        || document.getElementById("existing-ssdi-household").checked
+      or(
+        ...hh_ages.map(a => gt(a, 60)),
+        gt(age, 60),
+        ...hh_disabled, 
+        document.getElementById("disabled").checked, 
+        document.getElementById("blind").checked,
+        document.getElementById("existing-ssi-me").checked,
+        document.getElementById("existing-ssdi-me").checked,
+        document.getElementById("existing-ssi-household").checked,
+        document.getElementById("existing-ssdi-household").checked,
         // May not need to check for ssdi/ssi eligibility if we already check for disabled/blind.
-        || ssdiEligible()
-        || ssiEligible()
+        ssdiEligible(),
+        ssiEligible()
       )
     );
-    const grossIncome = totalEarnedIncome() + totalUnearnedIncome();
+    // Add one to number of _other_ household members for total household size.
     const under_income_limit = (
-      grossIncome < grossLimit.getLimit(hh_ages.length + 1));
+      lt(grossIncome(), grossLimit.getLimit(hh_ages.length + 1)));
 
-    return meets_immigration_req && (under_income_limit || is_income_exempt);
+    return and(meets_immigration_req, or(under_income_limit, is_income_exempt));
   }
 
   function calworksEligible() {
