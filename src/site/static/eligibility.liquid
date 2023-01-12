@@ -671,6 +671,42 @@ pageClass: "page-public-assistance"
     return !stmt;
   }
 
+  // Custom less-than operator that returns null if either operand is null.
+  // Otherwise, returns the boolean result of a < b.
+  function lt(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a < b;
+  }
+
+  // Custom greater-than operator that returns null if either operand is null.
+  // Otherwise returns the boolean result of a > b.
+  function gt(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a > b;
+  }
+
+  // Custom less-than-equal-to operator that returns null if either operand 
+  // is null. Otherwise returns the boolean result of a <= b.
+  function le(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a <= b;
+  }
+
+  // Custom greater-than-equal-to operator that returns null if either operand 
+  // is null. Otherwise returns the boolean result of a >= b.
+  function ge(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a >= b;
+  }
+
   // Shows or hides the element 'elem' via a class name.
   function setElementVisibility(elem, makeVisible) {
     if (elem) {
@@ -1194,6 +1230,59 @@ pageClass: "page-public-assistance"
     const date1 = new Date(dutyDate + 'T00:00');
     return (date1.getMonth() + 1 + '/' + date1.getDate() + '/' + date1.getFullYear());
   }
+
+  function incomeTotal(incomeType) {
+    const selector = "#page-income-details-" + incomeType + " .income_total";
+    return Number(document.querySelector(selector).textContent);
+  }
+
+  function totalEarnedIncome() {
+    return incomeTotal("wages") + incomeTotal("self-employed");
+  }
+
+  function totalUnearnedIncome() {
+    return (incomeTotal("social-security") + incomeTotal("unemployment") + 
+      incomeTotal("veterans") + incomeTotal("workers-comp") + 
+      incomeTotal("child-support") + incomeTotal("retirement") + 
+      incomeTotal("other"));
+  }
+
+  function grossIncome() {
+    const total = totalEarnedIncome() + totalUnearnedIncome();
+    if (total == 0 && !document.getElementById("income-has-none").checked) {
+      return null;
+    }
+    return total;
+  }
+
+  function householdSize() {
+    hh_members = document.querySelectorAll(
+      "#page-household-members ul.dynamic_field_list>li");
+    return hh_members.length;
+  }
+
+  class MonthlyIncomeLimit {
+    constructor(limits, addlPersonExtra) {
+      this.limits = limits;
+      this.addlPersonExtra = addlPersonExtra;
+    }
+
+    static fromAnnual(limits, addlPersonExtra) {
+      return new MonthlyIncomeLimit(
+        limits.map(l => l / 12), addlPersonExtra / 12);
+    }
+
+    getLimit(hhSize) {
+      if (hhSize < 1) {
+        return 0;
+      } else if (hhSize > this.limits.length) {
+        const extra = this.addlPersonExtra * (hhSize - this.limits.length);
+        return this.limits[this.limits.length - 1] + extra;
+      } else {
+        return this.limits[hhSize - 1];
+      }
+    }
+  } 
   
   // The functions below determine eligibility for various programs.
   // When a program is added using the "program" shortcode, a matching function
@@ -1202,15 +1291,87 @@ pageClass: "page-public-assistance"
   //
   // An eligibility function should return true if the input values suggest
   // program eligibility, false if the values suggest ineligibility, and 
-  // undefined if an eligibility determination can't be made.
+  // null if an eligibility determination can't be made.
   function adsaEligible() {
-    // TODO
-    return false;
+    return (
+      and(
+        or(
+          document.getElementById("disabled").checked,
+          document.getElementById("blind").checked,
+          document.getElementById("deaf").checked
+        ),
+        document.getElementById("dis_guide_yes").checked,
+        or(
+          document.getElementById("existing-ssi-me").checked,
+          document.getElementById("existing-ssdi-me").checked,
+          document.getElementById("existing-ihss-me").checked,
+          document.getElementById("existing-capi-me").checked,
+          ssiEligible(), 
+          ssdiEligible(), 
+          ihssEligible(), 
+          capiEligible()
+        )
+      )
+    );
   }
 
   function calfreshEligible() {
-    // TODO
-    return true;
+    const grossLimit = new MonthlyIncomeLimit([
+        2148,
+        2904,
+        3660,
+        4418,
+        5174,
+        5930,
+        6688,
+        7444
+      ],
+      758);
+
+    const age = document.getElementById("age").value || null;
+    const hh_ages = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-age"]')).map(i => i.value || null);
+    const hh_disabled = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-disabled"]')).map(i => i.checked);
+
+    const meets_immigration_req = (
+      or(
+        document.getElementById("citizen").checked,
+        document.getElementById("permanent_resident").checked,
+        document.getElementById("qualified_noncitizen_gt5y").checked,
+        and(
+          document.getElementById("qualified_noncitizen_le5y").checked,
+          or(
+            and(lt(age, 18)),
+            document.getElementById("existing-ssi-me").checked,
+            document.getElementById("existing-ssdi-me").checked,
+            ssdiEligible(),
+            ssiEligible()
+          )
+        )
+      )
+    );
+    // TODO: add cash assistance check.
+    const is_income_exempt = (
+      or(
+        ...hh_ages.map(a => gt(a, 60)),
+        gt(age, 60),
+        ...hh_disabled, 
+        document.getElementById("disabled").checked, 
+        document.getElementById("blind").checked,
+        document.getElementById("existing-ssi-me").checked,
+        document.getElementById("existing-ssdi-me").checked,
+        document.getElementById("existing-ssi-household").checked,
+        document.getElementById("existing-ssdi-household").checked,
+        // May not need to check for ssdi/ssi eligibility if we already check for disabled/blind.
+        ssdiEligible(),
+        ssiEligible()
+      )
+    );
+    const under_income_limit = (
+      le(grossIncome(), grossLimit.getLimit(householdSize())));
+
+    return and(meets_immigration_req, or(under_income_limit, is_income_exempt));
   }
 
   function calworksEligible() {
@@ -1220,12 +1381,47 @@ pageClass: "page-public-assistance"
 
   function capiEligible() {
     // TODO
-    return undefined;
+    return null;
   }
 
   function careEligible() {
-    // TODO
-    return true;
+    const grossLimit = MonthlyIncomeLimit.fromAnnual([
+        36620,
+        46060,
+        55500,
+        64940,
+        74380,
+        83820,
+        93260
+      ],
+      9440);
+
+    return (
+      and(
+        document.getElementById("pay-utilities-yes").checked,
+        or(
+          le(grossIncome(), grossLimit.getLimit(householdSize())),
+          // TODO: add remaining assistance programs that help qualify.
+          document.getElementById("existing-ssi-me").checked,
+          document.getElementById("existing-ssi-household").checked,
+          document.getElementById("existing-liheap-me").checked,
+          document.getElementById("existing-liheap-household").checked,
+          document.getElementById("existing-wic-me").checked,
+          document.getElementById("existing-wic-household").checked,
+          document.getElementById("existing-calworks-me").checked,
+          document.getElementById("existing-calworks-household").checked,
+          document.getElementById("existing-calfresh-me").checked,
+          document.getElementById("existing-calfresh-household").checked,
+          document.getElementById("existing-medical-me").checked,
+          document.getElementById("existing-medical-household").checked,
+          ssiEligible(),
+          liheapEligible(),
+          wicEligible(),
+          calworksEligible(),
+          calfreshEligible()
+        )
+      )
+    );
   }
 
   function feraEligible() {
@@ -1275,7 +1471,7 @@ pageClass: "page-public-assistance"
 
   function housingChoiceEligible() {
     // TODO
-    return undefined;
+    return null;
   }
 
   function ssiEligible() {
@@ -1285,7 +1481,7 @@ pageClass: "page-public-assistance"
 
   function ssdiEligible() {
     // TODO
-    return true;
+    return false;
   }
 
   function vaPensionEligible() {
@@ -1306,7 +1502,7 @@ pageClass: "page-public-assistance"
     const unknownList = document.querySelector(".programs__unknown ul");
     for (program of allPrograms) {
       const eligible = window[program.dataset.eligibility]();
-      if (typeof eligible === "undefined") {
+      if (eligible === null) {
         unknownList.appendChild(program);
       } else if (eligible) {
         eligibleList.appendChild(program);
