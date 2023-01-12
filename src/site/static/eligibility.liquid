@@ -1257,7 +1257,7 @@ pageClass: "page-public-assistance"
 
   function householdSize() {
     hh_members = document.querySelectorAll(
-      "#page-household-members ul.dynamic_field_list li");
+      "#page-household-members ul.dynamic_field_list>li");
     return hh_members.length;
   }
 
@@ -1395,7 +1395,7 @@ pageClass: "page-public-assistance"
         93260
       ],
       9440);
-    
+
     return (
       and(
         document.getElementById("pay-utilities-yes").checked,
