@@ -1255,6 +1255,13 @@ pageClass: "page-public-assistance"
     return total;
   }
 
+  function totalResources() {
+    // TODO: Add checkbox for users to explicitly specify they have zero
+    // resources.
+    const selector = "#page-income-assets .income_total";
+    return Number(document.querySelector(selector).textContent);
+  }
+
   function householdSize() {
     hh_members = document.querySelectorAll(
       "#page-household-members ul.dynamic_field_list>li");
@@ -1375,8 +1382,66 @@ pageClass: "page-public-assistance"
   }
 
   function calworksEligible() {
-    // TODO
-    return false;
+    const grossLimit = new MonthlyIncomeLimit([
+      807,
+      1324,
+      1641,
+      1947,
+      2221,
+      2499,
+      2746,
+      2988,
+      3242,
+      3519
+    ],
+    32);
+    const BASE_RESOURCE_LIMIT = 10888;
+    const DISABLED_ELDERLY_RESOURCE_LIMIT = 16333;
+
+    const hhAges = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-age"]')).map(i => i.value || null);
+    const hhDisabled = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-disabled"]')).map(i => i.checked);
+
+    const meetsImmigrationReq = or(
+      document.getElementById("citizen").checked,
+      document.getElementById("permanent_resident").checked,
+      document.getElementById("qualified_noncitizen_gt5y").checked,
+      document.getElementById("qualified_noncitizen_le5y").checked
+    );
+    const meetsFamilyReq = or(
+      ...hhAges.map(a => lt(a, 19)),
+      // TODO: is this head of household check needed?  Could we just
+      // check if _anyone_ is under 19?
+      and(lt(age, 19), document.getElementById("headhh_yes").checked),
+      document.getElementById("pregnant").checked
+    );
+    // TODO: Subtract $90 for each working family member. (or is it
+    // $450? https://lao.ca.gov/Publications/Report/4476/2)
+    // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
+    // TODO: Exclude income from SSI or CAPI
+    const underIncomeLimit = (
+      le(grossIncome(), grossLimit.getLimit(householdSize())));
+
+    let resourceLimit = BASE_RESOURCE_LIMIT;
+    // TODO: If household ages are not specified, we may ok falling back to
+    // BASE_RESOURCE_LIMIT.
+    const hasElderlyOrDisabled = or(
+      ...hhAges.map(a => ge(a, 60)),
+      ...hhDisabled);
+    if (hasElderlyOrDisabled === null) {
+      resourceLimit = null;
+    } else if (hasElderlyOrDisabled) {
+      resourceLimit = DISABLED_ELDERLY_RESOURCE_LIMIT;
+    }
+    const underResourceLimit = le(totalResources(), resourceLimit);
+
+    return and(
+      meetsImmigrationReq,
+      meetsFamilyReq,
+      underIncomeLimit,
+      underResourceLimit
+    );
   }
 
   function capiEligible() {
