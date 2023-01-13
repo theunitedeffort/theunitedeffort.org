@@ -1336,12 +1336,12 @@ pageClass: "page-public-assistance"
       758);
 
     const age = document.getElementById("age").value || null;
-    const hh_ages = Array.from(document.querySelectorAll(
+    const hhAges = Array.from(document.querySelectorAll(
       'input[id^="hh-member-age"]')).map(i => i.value || null);
-    const hh_disabled = Array.from(document.querySelectorAll(
+    const hhDisabled = Array.from(document.querySelectorAll(
       'input[id^="hh-member-disabled"]')).map(i => i.checked);
 
-    const meets_immigration_req = (
+    const meetsImmigrationReq = (
       or(
         document.getElementById("citizen").checked,
         document.getElementById("permanent_resident").checked,
@@ -1359,11 +1359,11 @@ pageClass: "page-public-assistance"
       )
     );
     // TODO: add cash assistance check.
-    const is_income_exempt = (
+    const isIncomeExempt = (
       or(
-        ...hh_ages.map(a => gt(a, 60)),
+        ...hhAges.map(a => gt(a, 60)),
         gt(age, 60),
-        ...hh_disabled, 
+        ...hhDisabled,
         document.getElementById("disabled").checked, 
         document.getElementById("blind").checked,
         document.getElementById("existing-ssi-me").checked,
@@ -1375,10 +1375,10 @@ pageClass: "page-public-assistance"
         ssiEligible()
       )
     );
-    const under_income_limit = (
+    const underIncomeLimit = (
       le(grossIncome(), grossLimit.getLimit(householdSize())));
 
-    return and(meets_immigration_req, or(under_income_limit, is_income_exempt));
+    return and(meetsImmigrationReq, or(underIncomeLimit, isIncomeExempt));
   }
 
   function calworksEligible() {
