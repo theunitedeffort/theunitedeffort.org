@@ -70,8 +70,8 @@ pageClass: "page-public-assistance"
               <label for="feeding">I am breastfeeding a child younger than 1 year old.</label>
             </li>
             <li>
-              <input id="citizen" type="checkbox" />
-              <label for="citizen">I am a U.S. citizen.</label>
+              <input id="not-citizen" type="checkbox" />
+              <label for="not-citizen">I am not a U.S. citizen.</label>
             </li>
           </ul>
         </div>
@@ -1131,7 +1131,7 @@ pageClass: "page-public-assistance"
     };
 
     pageById["page-veteran-duty-period"].next = function() {			
-      if (!document.getElementById("citizen").checked) {
+      if (document.getElementById("not-citizen").checked) {
         return pageById["page-immigration-status"];
       }
       return pageById["page-immigration-status"].next();
