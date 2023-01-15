@@ -47,31 +47,35 @@ pageClass: "page-public-assistance"
           <ul id="yourself-details" class="multiselect">
             <li>
               <input id="not-citizen" type="checkbox" />
-              <label for="not-citizen">I am <span class="italic">not</span> a U.S. citizen.</label>
+              <label for="not-citizen">I am <span class="italic">not</span> a U.S. citizen</label>
             </li>
             <li>
               <input id="disabled" type="checkbox" />
-              <label for="disabled">I am disabled.</label>
+              <label for="disabled">I am disabled</label>
             </li>
             <li>
               <input id="blind" type="checkbox" />
-              <label for="blind">I am blind.</label>
+              <label for="blind">I am blind</label>
             </li>
             <li>
               <input id="deaf" type="checkbox" />
-              <label for="deaf">I am deaf or hard of hearing.</label>
+              <label for="deaf">I am deaf or hard of hearing</label>
             </li>
             <li>
               <input id="veteran" type="checkbox" />
-              <label for="veteran">I am a U.S. veteran.</label>
+              <label for="veteran">I am a U.S. veteran</label>
+            </li>
+            <li>
+              <input id="employed" type="checkbox" />
+              <label for="employed">I am employed</label>
             </li>
             <li>
               <input id="pregnant" type="checkbox" />
-              <label for="pregnant">I am pregnant or was pregnant within the last 6 months.</label>
+              <label for="pregnant">I am pregnant or was pregnant within the last 6 months</label>
             </li>
             <li>
               <input id="feeding" type="checkbox" />
-              <label for="feeding">I am breastfeeding a child younger than 1 year old.</label>
+              <label for="feeding">I am breastfeeding a child younger than 1 year old</label>
             </li>
           </ul>
         </div>
@@ -182,13 +186,13 @@ pageClass: "page-public-assistance"
               <li>
                 <label for="served-from">Served From</label>
                 <input type="date" id="served-from" />
-                
+
                 <label for="served-until">Until</label>
                 <input type="date" id="served-until" />
               </li>
             </ul>
           </div>
-        {% enddynamicFieldList %}        
+        {% enddynamicFieldList %}
       </div>
     {% endeligPage %}
 
@@ -273,12 +277,16 @@ pageClass: "page-public-assistance"
           <div>
             <ul id="hh-member-types" class="multiselect">
               <li>
+                <input id="hh-member-employed" type="checkbox">
+                <label for="hh-member-employed">This person is employed</label>
+              </li>
+              <li>
                 <input id="hh-member-disabled" type="checkbox">
-                <label for="hh-member-disabled">This person is disabled.</label>
+                <label for="hh-member-disabled">This person is disabled</label>
               </li>
               <li>
                 <input id="hh-member-dependent" type="checkbox">
-                <label for="hh-member-dependent">This person is my dependent.</label>
+                <label for="hh-member-dependent">This person is my dependent</label>
               </li>
             </ul>
           </div>
@@ -355,7 +363,7 @@ pageClass: "page-public-assistance"
     <h2>Income</h2>
     {% eligPage "income" %}
       <p>
-        Select all sources of income for you and your household. Include income from all members of your household, including yourself.
+        Select all sources of income for you and your household. Include income from <span class="bold">all members of your household, including yourself</span>.
       </p>
       <div>
         <ul id="income-types" class="multiselect">
@@ -514,15 +522,15 @@ pageClass: "page-public-assistance"
           {% program "Assistance Dog Special Allowance (ADSA)", "adsa", "https://www.cdss.ca.gov/assistance-dogs" %}
             ADSA provides certain people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
           {% endprogram %}
-          
+
           {% program "Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
             Calfresh provides monthly food benefits to certain low-income individuals and families.
           {% endprogram %}
-          
+
           {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm"%}
             CalWORKs provides cash aid and services to certain low-income families with children in the home.
           {% endprogram %}
-          
+
           {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
             CAPI provides monthly cash benefits to certain elderly, blind, or disabled non-citizens.
           {% endprogram %}
