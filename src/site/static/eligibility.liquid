@@ -806,7 +806,7 @@ pageClass: "page-public-assistance"
       newItem = document.createElement("li")
       newItem.appendChild(template.content.cloneNode(true));
     } else {
-      newItem = item[0].cloneNode(true);
+      newItem = items[0].cloneNode(true);
     }
     const newInputs = newItem.querySelectorAll("input");
     const newLabels = newItem.querySelectorAll("label");
