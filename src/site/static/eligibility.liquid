@@ -46,6 +46,10 @@ pageClass: "page-public-assistance"
         <div>
           <ul id="yourself-details" class="multiselect">
             <li>
+              <input id="not-citizen" type="checkbox" />
+              <label for="not-citizen">I am <span class="italic">not</span> a U.S. citizen.</label>
+            </li>
+            <li>
               <input id="disabled" type="checkbox" />
               <label for="disabled">I am disabled.</label>
             </li>
@@ -68,10 +72,6 @@ pageClass: "page-public-assistance"
             <li>
               <input id="feeding" type="checkbox" />
               <label for="feeding">I am breastfeeding a child younger than 1 year old.</label>
-            </li>
-            <li>
-              <input id="not-citizen" type="checkbox" />
-              <label for="not-citizen">I am not a U.S. citizen.</label>
             </li>
           </ul>
         </div>
@@ -1114,7 +1114,7 @@ pageClass: "page-public-assistance"
       if ( document.getElementById("veteran").checked ) {
         return pageById["page-veteran-details"];
       }
-      return pageById["page-veteran-details"].next();		
+      return pageById["page-veteran-details"].next();
     };
 
     pageById["page-veteran-details"].next = function() {
@@ -1127,10 +1127,10 @@ pageClass: "page-public-assistance"
 
         return pageById["page-veteran-duty-period"];
       }
-      return pageById["page-veteran-duty-period"].next();		
+      return pageById["page-veteran-duty-period"].next();
     };
 
-    pageById["page-veteran-duty-period"].next = function() {			
+    pageById["page-veteran-duty-period"].next = function() {
       if (document.getElementById("not-citizen").checked) {
         return pageById["page-immigration-status"];
       }
@@ -1343,7 +1343,7 @@ pageClass: "page-public-assistance"
 
     const meetsImmigrationReq = (
       or(
-        document.getElementById("citizen").checked,
+        !document.getElementById("not-citizen").checked,
         document.getElementById("permanent_resident").checked,
         document.getElementById("qualified_noncitizen_gt5y").checked,
         and(
@@ -1404,7 +1404,7 @@ pageClass: "page-public-assistance"
       'input[id^="hh-member-disabled"]')).map(i => i.checked);
 
     const meetsImmigrationReq = or(
-      document.getElementById("citizen").checked,
+      !document.getElementById("not-citizen").checked,
       document.getElementById("permanent_resident").checked,
       document.getElementById("qualified_noncitizen_gt5y").checked,
       document.getElementById("qualified_noncitizen_le5y").checked
