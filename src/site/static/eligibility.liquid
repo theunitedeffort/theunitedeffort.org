@@ -376,12 +376,18 @@ pageClass: "page-public-assistance"
             <label for="income-has-self-employed">Income from self-employment</label>
           </li>
           <li>
-            <input id="income-has-social-security" type="checkbox">
-            <label for="income-has-social-security">Social Security benefits</label>
+            <input id="income-has-disability" type="checkbox">
+            <label for="income-has-disability">Disability benefits
+            <span class="subtitle">Including SSI/SSP, SSDI, SDI, and CAPI</span></label>
           </li>
           <li>
             <input id="income-has-unemployment" type="checkbox">
             <label for="income-has-unemployment">Unemployment benefits</label>
+          </li>
+          <li>
+            <input id="income-has-retirement" type="checkbox">
+            <label for="income-has-retirement">Retirement benefits
+            <span class="subtitle">Including pensions and Social Security retirement</span></label>
           </li>
           <li>
             <input id="income-has-veterans" type="checkbox">
@@ -396,12 +402,9 @@ pageClass: "page-public-assistance"
             <label for="income-has-child-support">Child support and alimony</label>
           </li>
           <li>
-            <input id="income-has-retirement" type="checkbox">
-            <label for="income-has-retirement">Retirement benefits</label>
-          </li>
-          <li>
             <input id="income-has-other" type="checkbox">
-            <label for="income-has-other">Other source of income not listed here</label>
+            <label for="income-has-other">Other source of income not listed here
+            <span class="subtitle">Including cash assistance, interest, and investment income</span></label>
           </li>
           <li>
             <input id="income-has-none" type="checkbox">
@@ -419,28 +422,34 @@ pageClass: "page-public-assistance"
       {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employment"  %}
     {% endeligPage %}
 
-    {% eligPage "income-details-social-security" %}
-      {% render "eligibility-income-details" desc: "Social Security benefits", heading: "Person", id: "social-security"  %}
+    {% capture disabilityIncomeChecks %}
+      <div>
+        <input type="checkbox" id="income-disability-is-ssi-capi">
+        <label for="income-disability-is-ssi-capi">This is an SSI/SSP or CAPI payment</label>
+      </div>
+    {% endcapture %}
+    {% eligPage "income-details-disability" %}
+      {% render "eligibility-income-details" desc: "disability benefits", heading: "Payment", id: "disability", extraContent: disabilityIncomeChecks %}
     {% endeligPage %}
 
     {% eligPage "income-details-unemployment" %}
-      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Person", id: "unemployment"  %}
-    {% endeligPage %}
-
-    {% eligPage "income-details-veterans" %}
-      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Person", id: "veterans"  %}
-    {% endeligPage %}
-
-    {% eligPage "income-details-workers-comp" %}
-      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Person", id: "workers-comp"  %}
-    {% endeligPage %}
-
-    {% eligPage "income-details-child-support" %}
-      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Person", id: "child-support"  %}
+      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Payment", id: "unemployment"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-retirement" %}
-      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Person", id: "retirement"  %}
+      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Payment", id: "retirement"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-veterans" %}
+      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Payment", id: "veterans"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-workers-comp" %}
+      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Payment", id: "workers-comp"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-child-support" %}
+      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Payment", id: "child-support"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-other" %}
@@ -493,7 +502,7 @@ pageClass: "page-public-assistance"
      {%- endcapture %}
 
      {% checkboxTable "existing", columns, rows %}
-     
+
     {% endeligPage %}
   {% endeligSection %}
 
@@ -1169,13 +1178,13 @@ pageClass: "page-public-assistance"
     };
 
     pageById["page-income-details-self-employed"].next = function() {
-      if (document.getElementById("income-has-social-security").checked) {
-        return pageById["page-income-details-social-security"];
+      if (document.getElementById("income-has-disability").checked) {
+        return pageById["page-income-details-disability"];
       }
-      return pageById["page-income-details-social-security"].next();
+      return pageById["page-income-details-disability"].next();
     };
 
-    pageById["page-income-details-social-security"].next = function() {
+    pageById["page-income-details-disability"].next = function() {
       if (document.getElementById("income-has-unemployment").checked) {
         return pageById["page-income-details-unemployment"];
       }
@@ -1183,6 +1192,13 @@ pageClass: "page-public-assistance"
     };
 
     pageById["page-income-details-unemployment"].next = function() {
+      if (document.getElementById("income-has-retirement").checked) {
+        return pageById["page-income-details-retirement"];
+      }
+      return pageById["page-income-details-retirement"].next();
+    };
+
+    pageById["page-income-details-retirement"].next = function() {
       if (document.getElementById("income-has-veterans").checked) {
         return pageById["page-income-details-veterans"];
       }
@@ -1204,13 +1220,6 @@ pageClass: "page-public-assistance"
     };
 
     pageById["page-income-details-child-support"].next = function() {
-      if (document.getElementById("income-has-retirement").checked) {
-        return pageById["page-income-details-retirement"];
-      }
-      return pageById["page-income-details-retirement"].next();
-    };
-
-    pageById["page-income-details-retirement"].next = function() {
       if (document.getElementById("income-has-other").checked) {
         return pageById["page-income-details-other"];
       }
