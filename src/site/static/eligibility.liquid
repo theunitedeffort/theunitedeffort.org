@@ -1488,8 +1488,8 @@ pageClass: "page-public-assistance"
       and(
         document.getElementById("pay-utilities-yes").checked,
         or(
-          //le(grossIncome(), careIncomeLimit()),
-          le(grossIncome(), grossLimit.getLimit(householdSize())),
+          le(grossIncome(), careIncomeLimit()),
+          //le(grossIncome(), grossLimit.getLimit(householdSize())),
           // TODO: add remaining assistance programs that help qualify.
           document.getElementById("existing-ssi-me").checked,
           document.getElementById("existing-ssi-household").checked,
