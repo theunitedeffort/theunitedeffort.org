@@ -1518,9 +1518,29 @@ pageClass: "page-public-assistance"
   }
 
   function feraEligible() {
-    // TODO
-    return true;
+    const grossLimit = MonthlyIncomeLimit.fromAnnual([
+      57575,
+      69375,
+      81175,
+      92975,
+      104775,
+      116575
+    ],
+    11800);
+
+    return (
+      and(
+        gt(grossIncome(), careIncomeLimit()),		      //CARE stuff
+        le(grossIncome(), grossLimit.getLimit(householdSize())),		    //FERA stuff
+        householdSize() >= 3
+      )
+    );
   }
+
+    //function feraEligible() {
+    // TODO
+    //return true;
+  //}
 
   function vaDisabilityCompEligible() {
     // TODO
