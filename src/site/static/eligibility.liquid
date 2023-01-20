@@ -1473,17 +1473,6 @@ pageClass: "page-public-assistance"
   }
 
   function careEligible() {
-    const grossLimit = MonthlyIncomeLimit.fromAnnual([
-      36620,
-      46060,
-      55500,
-      64940,
-      74380,
-      83820,
-      93260
-    ],
-    9440);
-    
     return (
       and(
         document.getElementById("pay-utilities-yes").checked,
@@ -1536,11 +1525,6 @@ pageClass: "page-public-assistance"
       )
     );
   }
-
-    //function feraEligible() {
-    // TODO
-    //return true;
-  //}
 
   function vaDisabilityCompEligible() {
     // TODO
