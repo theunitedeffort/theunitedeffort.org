@@ -1654,8 +1654,8 @@ pageClass: "page-public-assistance"
       ],
       7300);
 
-    const underIncomeLimit = (
-      le(grossIncome(), grossLimit.getLimit(householdSize())));
+    const underIncomeLimit = le(
+      grossIncome(), grossLimit.getLimit(householdSize()));
 
     const isProgramQualified = or(
       document.getElementById("existing-medical-me").checked,
@@ -1680,8 +1680,7 @@ pageClass: "page-public-assistance"
       calfreshEligible(),
       wicEligible(),
       calworksEligible(),
-      vaPensionEligible()
-      );
+      vaPensionEligible());
 
     return or(
       isProgramQualified,
