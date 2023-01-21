@@ -1654,8 +1654,8 @@ pageClass: "page-public-assistance"
   }
 
   function vtaParatransitEligible() {
-    // TODO
-    return false;
+    // TODO: Determine if blindness should be included here.
+    return document.getElementById('disabled').checked;
   }
 
   function housingChoiceEligible() {
