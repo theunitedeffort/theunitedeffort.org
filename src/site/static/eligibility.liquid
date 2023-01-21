@@ -148,8 +148,8 @@ pageClass: "page-public-assistance"
           <option value="honorable">Honorable</option>
           <option value="general">General under honorable conditions</option>
           <option value="oth">Other than honorable (OTH)</option>
-          <option value="badcond">Bad conduct</option>
-          <option value="dishon">Dishonorable</option>
+          <option value="bad-conduct">Bad conduct</option>
+          <option value="dishonorable">Dishonorable</option>
         </select>
       </div>
 
@@ -158,11 +158,11 @@ pageClass: "page-public-assistance"
         <ul id="service-types" class="multiselect">
           <li>
             <input id="enlisted" type="checkbox" />
-            <label for="enlisted">I served as an enlisted person.</label>
+            <label for="enlisted">I served as an enlisted person</label>
           </li>
           <li>
             <input id="officer" type="checkbox" />
-            <label for="officer">I served as an officer.</label>
+            <label for="officer">I served as an officer</label>
           </li>
         </ul>
       </div>
@@ -175,22 +175,20 @@ pageClass: "page-public-assistance"
             <label for="your-duty-type">Duty type</label>
             <select id="your-duty-type">
               <option value="">--Please choose an option--</option>
-              <option value="act">Active duty</option>
-              <option value="act-train">Active duty for training</option>
-              <option value="inact-train">Inactive duty training</option>
+              <option value="active-duty">Active duty</option>
+              <option value="active-training">Active duty for training</option>
+              <option value="inactive-training">Inactive duty training</option>
+              <option value="reserve-duty">Reserve duty</option>
+              <option value="guard-duty">National Guard duty</option>
             </select>
           </div>
 
           <div>
-            <ul id="duty-dates" class="datesselect">
-              <li>
-                <label for="served-from">Served From</label>
-                <input type="date" id="served-from" />
+            <label for="served-from">Served From</label>
+            <input type="date" id="served-from" />
 
-                <label for="served-until">Until</label>
-                <input type="date" id="served-until" />
-              </li>
-            </ul>
+            <label for="served-until">Until</label>
+            <input type="date" id="served-until" />
           </div>
         {% enddynamicFieldList %}
       </div>
@@ -688,6 +686,24 @@ pageClass: "page-public-assistance"
     return !stmt;
   }
 
+  // Custom equality operator that returns null if either operand is null.
+  // Otherwise, returns the boolean result of a == b.
+  function eq(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a == b;
+  }
+
+  // Custom inequality operator that returns null if either operand is null.
+  // Otherwise, returns the boolean result of a != b.
+  function ne(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a != b;
+  }
+
   // Custom less-than operator that returns null if either operand is null.
   // Otherwise, returns the boolean result of a < b.
   function lt(a, b) {
@@ -817,7 +833,7 @@ pageClass: "page-public-assistance"
     } else {
       newItem = items[0].cloneNode(true);
     }
-    const newInputs = newItem.querySelectorAll("input");
+    const newInputs = newItem.querySelectorAll("input, select");
     const newLabels = newItem.querySelectorAll("label");
     let newIdNumber = 1;
     if (lastIdNumber) {
@@ -826,7 +842,7 @@ pageClass: "page-public-assistance"
     // Ensure element ids are unique and clear out any inputs that a user may 
     // have entered on the template list item.
     for (const input of newInputs) {
-      input.value = ""
+      input.value = "";
       input.id = input.id + "-" + newIdNumber;
     }
     // Ensure labels match the new input id values.
@@ -1228,6 +1244,14 @@ pageClass: "page-public-assistance"
 
   }
 
+  function getSelectValue(id) {
+    const val = document.getElementById(id).value;
+    if (val === '') {
+      return null;
+    }
+    return val;
+  }
+
   function getNumberOfDays(start, end) {
     const date1 = new Date(start + 'T00:00');
     const date2 = new Date(end + 'T00:00');
@@ -1242,7 +1266,6 @@ pageClass: "page-public-assistance"
     return Math.ceil(difference / oneDay);
   }
 
-  
   function getFormattedDutyDate(dutyDate)	{
     const date1 = new Date(dutyDate + 'T00:00');
     return (date1.getMonth() + 1 + '/' + date1.getDate() + '/' + date1.getFullYear());
@@ -1578,8 +1601,26 @@ pageClass: "page-public-assistance"
   }
 
   function vaDisabilityCompEligible() {
-    // TODO
-    return true;
+    const dutyTypeSelects = Array.from(document.querySelectorAll(
+      'select[id^="your-duty-type"]'));
+    const dutyTypes = dutyTypeSelects.map(d => getSelectValue(d.id));
+    const meetsDutyReq = or(
+      ...dutyTypes.map(d => eq(d, 'active-duty')),
+      ...dutyTypes.map(d => eq(d, 'active-training')),
+      ...dutyTypes.map(d => eq(d, 'inactive-training')));
+
+    const dischargeStatus = getSelectValue('your-discharge-status');
+    const meetsDischargeReq = and(
+      ne(dischargeStatus, 'dishonorable'),
+      ne(dischargeStatus, 'oth'),
+      ne(dischargeStatus, 'bad-conduct'));
+
+    return and(
+      document.getElementById('veteran').checked,
+      document.getElementById('disabled').checked,
+      document.getElementById('dis_military_yes').checked,
+      meetsDutyReq,
+      meetsDischargeReq);
   }
 
   function gaEligible() {
