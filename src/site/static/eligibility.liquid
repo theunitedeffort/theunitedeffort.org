@@ -1436,6 +1436,7 @@ pageClass: "page-public-assistance"
       ONE_CHILD_SUPPORT_DISREGARD,
       TWO_CHILD_SUPPORT_DISREGARD];
 
+    const age = document.getElementById("age").value || null;
     const hhAges = Array.from(document.querySelectorAll(
       'input[id^="hh-member-age"]')).map(i => i.value || null);
     const hhDisabled = Array.from(document.querySelectorAll(
@@ -1501,10 +1502,12 @@ pageClass: "page-public-assistance"
     let resourceLimit = BASE_RESOURCE_LIMIT;
     // TODO: If household ages are not specified, we may ok falling back to
     // BASE_RESOURCE_LIMIT.
-    // TODO: check the user's age and disability too.
     const hasElderlyOrDisabled = or(
       ...hhAges.map(a => ge(a, 60)),
-      ...hhDisabled);
+      ge(age, 60),
+      ...hhDisabled,
+      // TODO: Determine if blind or deaf is considered "disabled" here.
+      document.getElementById("disabled").checked)
     if (hasElderlyOrDisabled === null) {
       resourceLimit = null;
     } else if (hasElderlyOrDisabled) {
