@@ -1258,7 +1258,7 @@ pageClass: "page-public-assistance"
   }
 
   function totalUnearnedIncome() {
-    return (incomeTotal("social-security") + incomeTotal("unemployment") + 
+    return (incomeTotal("disability") + incomeTotal("unemployment") +
       incomeTotal("veterans") + incomeTotal("workers-comp") + 
       incomeTotal("child-support") + incomeTotal("retirement") + 
       incomeTotal("other"));
@@ -1456,32 +1456,45 @@ pageClass: "page-public-assistance"
       and(lt(age, 19), document.getElementById("headhh_yes").checked),
       document.getElementById("pregnant").checked
     );
-    // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
 
     let numEmployed = hhEmployed.filter(e => e).length;
     if (document.getElementById("employed").checked) {
       numEmployed++;
     }
-    // If household ages are not given, just don't take the deductions rather
+    // If household ages are not given, just don't take the disregards rather
     // than propagate null age values.
     // Note if the applicant is under 19, they do not count as a child for
     // child support income.
-    const numChildren = hhAges.filter(a => a < 19);
+    const numChildren = hhAges.filter(a => a < 19).length;
 
     const maxEmploymentDisregard = numEmployed * EMPLOYMENT_DISREGARD;
-    const maxChildSupportDisregard = childSupportDisregards[numChildren];
+    const maxChildSupportDisregard = childSupportDisregards[
+      Math.min(numChildren, childSupportDisregards.length - 1)];
     const wagesTotal = incomeTotal("wages");
     const childSupportTotal = incomeTotal("child-support");
+    const retirementEntries = Array.from(document.querySelectorAll(
+      "#page-income-details-disability ul.dynamic_field_list>li"));
+    const ssiEntries = retirementEntries.filter(
+      e => e.querySelector(
+        'input[id^="income-disability-is-ssi-capi"]').checked);
+    const ssiIncomeValues = ssiEntries.map(
+      e => Number(e.querySelector("input[type=number]").value));
 
-    // TODO: Exclude income from SSI or CAPI.
+    let ssiIncome = 0;
+    for (value of ssiIncomeValues) {
+      ssiIncome += value;
+    }
+
     let nonExemptIncome = null;
     if (grossIncome() !== null) {
       nonExemptIncome = (grossIncome() -
-        min(wagesTotal, maxEmploymentDeduction) -
-        min(childSupportTotal, maxChildSupportDeduction) -
-        SELF_EMPLOYED_DISREGARD_FRACTION * incomeTotal("self-employed"));
+        Math.min(wagesTotal, maxEmploymentDisregard) -
+        Math.min(childSupportTotal, maxChildSupportDisregard) -
+        SELF_EMPLOYED_DISREGARD_FRACTION * incomeTotal("self-employed") -
+        ssiIncome);
     }
 
+    // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
     const underIncomeLimit = (
       le(nonExemptIncome, mbsac.getLimit(householdSize())));
 
