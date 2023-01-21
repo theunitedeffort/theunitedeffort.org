@@ -1258,7 +1258,7 @@ pageClass: "page-public-assistance"
   }
 
   function totalUnearnedIncome() {
-    return (incomeTotal("social-security") + incomeTotal("unemployment") + 
+    return (incomeTotal("disability") + incomeTotal("unemployment") +
       incomeTotal("veterans") + incomeTotal("workers-comp") + 
       incomeTotal("child-support") + incomeTotal("retirement") + 
       incomeTotal("other"));
@@ -1399,7 +1399,9 @@ pageClass: "page-public-assistance"
   }
 
   function calworksEligible() {
-    const grossLimit = new MonthlyIncomeLimit([
+    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
+    // Section 1.2
+    const mbsac = new MonthlyIncomeLimit([
       807,
       1324,
       1641,
@@ -1412,13 +1414,35 @@ pageClass: "page-public-assistance"
       3519
     ],
     32);
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
+    // Section 14.1
     const BASE_RESOURCE_LIMIT = 10888;
     const DISABLED_ELDERLY_RESOURCE_LIMIT = 16333;
 
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap33.pdf
+    // Section 33.3
+    const EMPLOYMENT_DISREGARD = 450;
+
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap31.pdf
+    // Section 31.6.1
+    const SELF_EMPLOYED_DISREGARD_FRACTION = 0.4;
+
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
+    // Section 27.9.3
+    const ONE_CHILD_SUPPORT_DISREGARD = 100;
+    const TWO_CHILD_SUPPORT_DISREGARD = 200;
+    const childSupportDisregards = [
+      0,
+      ONE_CHILD_SUPPORT_DISREGARD,
+      TWO_CHILD_SUPPORT_DISREGARD];
+
+    const age = document.getElementById("age").value || null;
     const hhAges = Array.from(document.querySelectorAll(
       'input[id^="hh-member-age"]')).map(i => i.value || null);
     const hhDisabled = Array.from(document.querySelectorAll(
       'input[id^="hh-member-disabled"]')).map(i => i.checked);
+    const hhEmployed = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-employed"]')).map(i => i.checked);
 
     const meetsImmigrationReq = or(
       !document.getElementById("not-citizen").checked,
@@ -1433,19 +1457,57 @@ pageClass: "page-public-assistance"
       and(lt(age, 19), document.getElementById("headhh_yes").checked),
       document.getElementById("pregnant").checked
     );
-    // TODO: Subtract $90 for each working family member. (or is it
-    // $450? https://lao.ca.gov/Publications/Report/4476/2)
+
+    let numEmployed = hhEmployed.filter(e => e).length;
+    if (document.getElementById("employed").checked) {
+      numEmployed++;
+    }
+    // If household ages are not given, just don't take the disregards rather
+    // than propagate null age values.
+    // Note if the applicant is under 19, they do not count as a child for
+    // child support income.
+    const numChildren = hhAges.filter(a => a < 19).length;
+
+    const maxEmploymentDisregard = numEmployed * EMPLOYMENT_DISREGARD;
+    const maxChildSupportDisregard = childSupportDisregards[
+      Math.min(numChildren, childSupportDisregards.length - 1)];
+    const wagesTotal = incomeTotal("wages");
+    const childSupportTotal = incomeTotal("child-support");
+    const retirementEntries = Array.from(document.querySelectorAll(
+      "#page-income-details-disability ul.dynamic_field_list>li"));
+    const ssiEntries = retirementEntries.filter(
+      e => e.querySelector(
+        'input[id^="income-disability-is-ssi-capi"]').checked);
+    const ssiIncomeValues = ssiEntries.map(
+      e => Number(e.querySelector("input[type=number]").value));
+
+    let ssiIncome = 0;
+    for (value of ssiIncomeValues) {
+      ssiIncome += value;
+    }
+
+    let nonExemptIncome = null;
+    if (grossIncome() !== null) {
+      nonExemptIncome = (grossIncome() -
+        Math.min(wagesTotal, maxEmploymentDisregard) -
+        Math.min(childSupportTotal, maxChildSupportDisregard) -
+        SELF_EMPLOYED_DISREGARD_FRACTION * incomeTotal("self-employed") -
+        ssiIncome);
+    }
+
     // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
-    // TODO: Exclude income from SSI or CAPI
     const underIncomeLimit = (
-      le(grossIncome(), grossLimit.getLimit(householdSize())));
+      le(nonExemptIncome, mbsac.getLimit(householdSize())));
 
     let resourceLimit = BASE_RESOURCE_LIMIT;
     // TODO: If household ages are not specified, we may ok falling back to
     // BASE_RESOURCE_LIMIT.
     const hasElderlyOrDisabled = or(
       ...hhAges.map(a => ge(a, 60)),
-      ...hhDisabled);
+      ge(age, 60),
+      ...hhDisabled,
+      // TODO: Determine if blind or deaf is considered "disabled" here.
+      document.getElementById("disabled").checked)
     if (hasElderlyOrDisabled === null) {
       resourceLimit = null;
     } else if (hasElderlyOrDisabled) {
