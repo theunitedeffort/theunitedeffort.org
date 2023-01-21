@@ -2,7 +2,7 @@
   @include bp(mid) {
     display: flex;
     align-items: flex-start;
-    justify-content: space-evenly;
+    justify-content: left;
     flex-wrap: wrap;
     column-gap: 5%;
   }

@@ -1,0 +1,1712 @@
+---
+layout: layouts/base.liquid
+title: Find Assistance Programs For You
+permalink:
+  build: "/public-assistance/eligibility/index.html"
+pageClass: "page-public-assistance"
+---
+
+<h1>{{title}}</h1>
+
+<p>
+  Use this tool to find assistance programs for which you may qualify. <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
+</p>
+
+<div id="form-top" class="step_indicator">
+  <ul>
+  </ul>
+</div>
+
+<form id="eligibility">
+  {% eligSection "intro" %}
+    {% eligPage "intro" %}
+    <p>
+      Fill in each field to the best of your knowledge. The more information you provide, the better your eligibility recommendations will be.  The data you enter is never stored or transmitted and is completely private.
+    </p>
+    <p>
+      After entering all your information, you will be provided with a list of assistance programs you can consider applying for.  You can always re-visit a section by clicking on that section's name, even after you've seen your results. 
+    </p>
+    <p>
+      Ready?  Press Next to begin.
+    </p>
+    {% endeligPage %}
+  {% endeligSection %}
+
+  {% eligSection "yourself" %}
+    <h2>Yourself</h2>
+
+    {% eligPage "yourself-start" %}
+      <div>
+        <div>
+          <label for="age">How old are you?</label>
+          <input id="age" type="number" value="" maxlength="3" min="1" max="130" /> years
+        </div>
+
+        <p>Select any of the following that describe you:</p>
+        <div>
+          <ul id="yourself-details" class="multiselect">
+            <li>
+              <input id="not-citizen" type="checkbox" />
+              <label for="not-citizen">I am <span class="italic">not</span> a U.S. citizen</label>
+            </li>
+            <li>
+              <input id="disabled" type="checkbox" />
+              <label for="disabled">I am disabled</label>
+            </li>
+            <li>
+              <input id="blind" type="checkbox" />
+              <label for="blind">I am blind</label>
+            </li>
+            <li>
+              <input id="deaf" type="checkbox" />
+              <label for="deaf">I am deaf or hard of hearing</label>
+            </li>
+            <li>
+              <input id="veteran" type="checkbox" />
+              <label for="veteran">I am a U.S. veteran</label>
+            </li>
+            <li>
+              <input id="employed" type="checkbox" />
+              <label for="employed">I am employed</label>
+            </li>
+            <li>
+              <input id="pregnant" type="checkbox" />
+              <label for="pregnant">I am pregnant or was pregnant within the last 6 months</label>
+            </li>
+            <li>
+              <input id="feeding" type="checkbox" />
+              <label for="feeding">I am breastfeeding a child younger than 1 year old</label>
+            </li>
+          </ul>
+        </div>
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "head-of-household" %}
+      <p>Are you the head of your household?</p>
+      <div>
+        <ul id="yourself-head-household" class="singleselect-each">
+          <li>
+            <input type="radio" id="headhh_yes" name="head_household" />
+            <label for="headhh_yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="headhh_no" name="head_household" />
+            <label for="headhh_no">No</label>
+          </li>
+        </ul>
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "disability-details" %}
+      <h3>About Your Disability</h3>
+
+      <div>
+        <p>Does your disability prevent you from working?</p>
+        <ul id="prevent-working" class="singleselect-each">
+          <li>
+            <input type="radio" id="dis_prev_work_yes" name="disability_details1" />
+            <label for="dis_prev_work_yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="dis_prev_work_no" name="disability_details1" />
+            <label for="dis_prev_work_no">No</label>
+          </li>
+        </ul>
+        <p>Do you use a guide, signal or training dog?</p>
+        <ul id="use-guide" class="singleselect-each">
+          <LI>
+            <input type="radio" id="dis_guide_yes" name="disability_details2" />
+            <label for="dis_guide_yes">Yes</label>
+          </LI>
+          <li>
+            <input type="radio" id="dis_guide_no" name="disability_details2" />
+            <label for="dis_guide_no">No</label>
+          </li>
+        </ul>
+        <p>Is your disability related to your military service?</p>
+        <ul id="military-related" class="singleselect-each">
+          <li>
+            <input type="radio" id="dis_military_yes" name="disability_details3" />
+            <label for="dis_military_yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="dis_military_no" name="disability_details3"/>
+            <label for="dis_military_no">No</label>
+          </li>
+        </ul>
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "veteran-details" %}
+      <h3>About Your Military Service</h3>
+
+      <div>
+        <label for="your-discharge-status">What is your discharge status?</label>
+        <select id="your-discharge-status">
+          <option value="">--Please choose an option--</option>
+          <option value="honorable">Honorable</option>
+          <option value="general">General under honorable conditions</option>
+          <option value="oth">Other than honorable (OTH)</option>
+          <option value="bad-conduct">Bad conduct</option>
+          <option value="dishonorable">Dishonorable</option>
+        </select>
+      </div>
+
+      <div>
+        <p>Select any of the following that describe you:</p>
+        <ul id="service-types" class="multiselect">
+          <li>
+            <input id="enlisted" type="checkbox" />
+            <label for="enlisted">I served as an enlisted person</label>
+          </li>
+          <li>
+            <input id="officer" type="checkbox" />
+            <label for="officer">I served as an officer</label>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <p>Enter details for your duty periods below:</p>
+        {% dynamicFieldList "Add another duty period" %}
+          <h4>Duty Period 1</h4>
+          <div>
+            <label for="your-duty-type">Duty type</label>
+            <select id="your-duty-type">
+              <option value="">--Please choose an option--</option>
+              <option value="active-duty">Active duty</option>
+              <option value="active-training">Active duty for training</option>
+              <option value="inactive-training">Inactive duty training</option>
+              <option value="reserve-duty">Reserve duty</option>
+              <option value="guard-duty">National Guard duty</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="served-from">Served From</label>
+            <input type="date" id="served-from" />
+
+            <label for="served-until">Until</label>
+            <input type="date" id="served-until" />
+          </div>
+        {% enddynamicFieldList %}
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "veteran-duty-period" %}
+      <h3>About Your Military Service</h3>
+
+      <p>
+        This question is about your <span class="bold">active duty period</span> from <span id="served-from-placeholder" class="bold"></span> until <span id="served-until-placeholder" class="bold"></span>.
+      </p>
+      <div>
+        <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
+        <ul id="duration-military-service" class="singleselect-each">
+          <li>
+            <input type="radio" id="full-dur-yes" name="mil-svc-duration" />
+            <label for="full-dur-yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="full-dur-no" name="mil-svc-duration" />
+            <label for="full-dur-no">No</label>
+          </li>
+          <li>
+            <input type="radio" id="full-dur-not-called" name="mil-svc-duration" />
+            <label for="full-dur-not-called">I was not called or ordered to this active duty period</label>
+          </li>
+        </ul>
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "immigration-status" %}
+      <h3>About Your Immigration Status</h3>
+
+      <p>Select <span class="bold">one</span> of the following that most accurately describes you:
+      </p>
+      <div>
+        <ul id="yourself-immigration-status" class="singleselect-each">
+          <li>
+            <input type="radio" id="permanent_resident" name="immig_status" />
+            <label for="permanent_resident">I have a Permanent Resident Card</label>
+          </li>
+          <li>
+            <input type="radio" id="qualified_noncitizen_gt5y" name="immig_status" />
+            <label for="qualified_noncitizen_gt5y">I have been a qualified non-citizen for 5 years or more</label>
+          </li>
+          <li>
+            <input type="radio" id="qualified_noncitizen_le5y" name="immig_status"/>
+            <label for="qualified_noncitizen_le5y">I have been a qualified non-citizen for less than 5 years</label>
+          </li>
+          <li>
+            <input type="radio" id="live_temporarily" name="immig_status" />
+            <label for="live_temporarily">I am living in the U.S. temporarily</label>
+          </li>
+          <li>
+            <input type="radio" id="none_describe" name="immig_status" />
+            <label for="none_describe">None of these describe my situation</label>
+          </li>
+        </ul>
+      </div>
+    {% endeligPage %}
+  {% endeligSection %}
+
+
+  {% eligSection "household" %}
+    <h2>Household</h2>
+
+    {% eligPage "household-members" %}
+      <p>
+        Enter details for each person living in your household.  Information you have already entered about yourself is pre-filled.
+      </p>
+
+      {% dynamicFieldList "Add a new household member", firstItem %}
+        <h4>Myself</h4>
+        <div>
+          <label for="hh-myself-age">Age</label>
+          <input id="hh-myself-age" type="number" min="1" max="130"> years
+        </div>
+        <template>
+          <h4>Household Member 2</h4>
+          <div>
+            <label for="hh-member-age">Age</label>
+            <input id="hh-member-age" type="number" min="1" max="130"> years
+          </div>
+          <div>
+            <ul id="hh-member-types" class="multiselect">
+              <li>
+                <input id="hh-member-employed" type="checkbox">
+                <label for="hh-member-employed">This person is employed</label>
+              </li>
+              <li>
+                <input id="hh-member-disabled" type="checkbox">
+                <label for="hh-member-disabled">This person is disabled</label>
+              </li>
+              <li>
+                <input id="hh-member-dependent" type="checkbox">
+                <label for="hh-member-dependent">This person is my dependent</label>
+              </li>
+            </ul>
+          </div>
+        </template>
+      {% enddynamicFieldList %}
+    {% endeligPage %}
+
+    {% eligPage "household-situation" %}
+      <p>Select the option below that best describes your current housing situation:</p>
+      <div>
+        <ul id="household-situation-details" class="singleselect-each">
+          <li>
+            <input type="radio" id="housing" name="housing-situation" value="Yes" />
+            <label for="housing">I live in a mobile home, apartment, condo, townhouse, or house</label>
+          </li>
+          <li>
+            <input type="radio" id="vehicle" name="housing-situation" value="Yes" />
+            <label for="vehicle">I live in an RV, travel trailer, or other vehicle</label>
+          </li>
+          <li>
+            <input type="radio" id="transitional" name="housing-situation" value="Yes" />
+            <label for="transitional">I live in transitional housing</label>
+          </li>
+          <li>
+            <input type="radio" id="hotel" name="housing-situation" value="Yes" />
+            <label for="hotel">I live in a hotel or motel room</label>
+          </li>
+          <li>
+            <input type="radio" id="shelter" name="housing-situation" value="Yes" />
+            <label for="shelter">I live in a shelter, interim housing, or emergency housing</label>
+          </li>
+          <li>
+            <input type="radio" id="no-stable-place" name="housing-situation" value="Yes" />
+            <label for="no-stable-place">I do not have a stable place to live</label>
+          </li>
+          <li>
+            <input type="radio" id="unlisted-stable-place" name="housing-situation" value="Yes" />
+            <label for="unlisted-stable-place">I have a stable place to live, but it is not listed here</label>
+          </li>
+        </ul>
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "household-housed" %}
+      <div>
+        <p>Does your household pay a gas or electric bill?</p>
+        <ul id="hh-pay-utilities" class="singleselect-each">
+          <li>
+            <input type="radio" id="pay-utilities-yes" name="housed_details1" value="Yes" />
+            <label for="pay-utilities-yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="pay-utilities-no" name="housed_details1" value="No" />
+            <label for="pay-utilities-no">No</label>
+          </li>
+        </ul>
+        <p>Do you feel you are at risk of becoming homeless?</p>
+        <ul id="hh-risk-homeless" class="singleselect-each">
+          <li>
+            <input type="radio" id="risk_homeless_yes" name="housed_details2" value="Yes" />
+            <label for="risk_homeless_yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="risk_homeless_no" name="housed_details2" value="No" />
+            <label for="risk_homeless_no">No</label>
+          </li>
+        </ul>
+      </div>
+    {% endeligPage %}
+  {% endeligSection %}
+
+
+  {% eligSection "income" %}
+    <h2>Income</h2>
+    {% eligPage "income" %}
+      <p>
+        Select all sources of income for you and your household. Include income from <span class="bold">all members of your household, including yourself</span>.
+      </p>
+      <div>
+        <ul id="income-types" class="multiselect">
+          <li>
+            <input id="income-has-wages" type="checkbox">
+            <label for="income-has-wages">Job wages, tips, or commission</label>
+          </li>
+          <li>
+            <input id="income-has-self-employed" type="checkbox">
+            <label for="income-has-self-employed">Income from self-employment</label>
+          </li>
+          <li>
+            <input id="income-has-disability" type="checkbox">
+            <label for="income-has-disability">Disability benefits
+            <span class="subtitle">Including SSI/SSP, SSDI, SDI, and CAPI</span></label>
+          </li>
+          <li>
+            <input id="income-has-unemployment" type="checkbox">
+            <label for="income-has-unemployment">Unemployment benefits</label>
+          </li>
+          <li>
+            <input id="income-has-retirement" type="checkbox">
+            <label for="income-has-retirement">Retirement benefits
+            <span class="subtitle">Including pensions and Social Security retirement</span></label>
+          </li>
+          <li>
+            <input id="income-has-veterans" type="checkbox">
+            <label for="income-has-veterans">Veteran’s benefits</label>
+          </li>
+          <li>
+            <input id="income-has-workers-comp" type="checkbox">
+            <label for="income-has-workers-comp">Worker’s compensation</label>
+          </li>
+          <li>
+            <input id="income-has-child-support" type="checkbox">
+            <label for="income-has-child-support">Child support and alimony</label>
+          </li>
+          <li>
+            <input id="income-has-other" type="checkbox">
+            <label for="income-has-other">Other source of income not listed here
+            <span class="subtitle">Including cash assistance, interest, and investment income</span></label>
+          </li>
+          <li>
+            <input id="income-has-none" type="checkbox">
+            <label for="income-has-none">My household has no income of any kind</label>
+          </li>
+        </ul>
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "income-details-wages" %}
+      {% render "eligibility-income-details" desc: "job wages, tips, or commission", heading: "Job", id: "wages"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-self-employed" %}
+      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employment"  %}
+    {% endeligPage %}
+
+    {% capture disabilityIncomeChecks %}
+      <div>
+        <input type="checkbox" id="income-disability-is-ssi-capi">
+        <label for="income-disability-is-ssi-capi">This is an SSI/SSP or CAPI payment</label>
+      </div>
+    {% endcapture %}
+    {% eligPage "income-details-disability" %}
+      {% render "eligibility-income-details" desc: "disability benefits", heading: "Payment", id: "disability", extraContent: disabilityIncomeChecks %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-unemployment" %}
+      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Payment", id: "unemployment"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-retirement" %}
+      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Payment", id: "retirement"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-veterans" %}
+      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Payment", id: "veterans"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-workers-comp" %}
+      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Payment", id: "workers-comp"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-child-support" %}
+      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Payment", id: "child-support"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-other" %}
+      {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-assets" %}
+      <h3>Assets</h3>
+      <p>
+        What is the value of all assets or resources you and your household have?  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
+      </p>
+      {% dynamicFieldList "Add another asset" %}
+        <h4>Asset 1</h4>
+        <div>
+          <label for="income-asset">Value</label>
+          $ <input id="income-asset" type="number" class="long">
+        </div>
+      {% enddynamicFieldList %}
+      <p>
+        Combined household assets: <span class="bold">$<span class="income_total">0</span></span>
+      </p>
+    {% endeligPage %}
+  {% endeligSection %}
+
+  {% eligSection "existing-assistance" %}
+    <h2>Existing Assistance</h2>
+    {% eligPage "existing-assistance" %}
+      <p>
+        Mark any public assistance you or your household already receive.
+      </p>
+
+     {% capture columns -%}
+        me: Me
+        household: Someone in my household
+     {%- endcapture %}
+
+     {% capture rows -%}
+        ssi: Supplemental Security Income (SSI)
+        ssdi: Social Security Disability Insurance (SSDI)
+        calworks: California Work Opportunity and Responsibility to Kids (CalWORKs) <span class="subtitle">Also known as Temporary Assistance for Needy Families (TANF)</span>
+        calfresh: CalFresh <span class="subtitle">Also known as Supplemental Nutrition Assistance Program (SNAP) or Food Stamps</span>
+        cfap: California Food Assistance Program (CFAP) <span class="subtitle">Alternative to CalFresh, also known as Food Stamps</span>
+        medical: Medi-Cal <span class="subtitle">Also known as California’s Medicaid program</span>
+        ihss: In-Home Supportive Services (IHSS)
+        capi: Cash Assistance Program for Immigrants (CAPI)
+        liheap: Low Income Home Energy Assistance Program (LIHEAP)
+        wic: Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)
+        nslp: National School Lunch Program (NSLP)
+        ga: General Assistance (GA)
+     {%- endcapture %}
+
+     {% checkboxTable "existing", columns, rows %}
+
+    {% endeligPage %}
+  {% endeligSection %}
+
+  {% eligSection "results" %}
+    <h2>Results</h2>
+    {% eligPage "results" %}
+      <div class="programs programs__eligible">
+        <p>
+          You may qualify for the following programs.  Please click on the name of a program to get further details and find out how to apply.
+        </p>
+        <ul></ul>
+        <p>
+          The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
+        </p>
+        <p>
+          If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
+        </p>
+      </div>
+
+      <h3>Other Programs</h3>
+      <div class="programs programs__unknown">
+        <p>
+          With the information provided, we are unable to determine if you are eligible for the following programs.  If you would like to provide more information you can revisit any form sections and then return to this results section.
+        </p>
+        <ul>
+          {% program "Assistance Dog Special Allowance (ADSA)", "adsa", "https://www.cdss.ca.gov/assistance-dogs" %}
+            ADSA provides certain people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
+          {% endprogram %}
+
+          {% program "Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
+            Calfresh provides monthly food benefits to certain low-income individuals and families.
+          {% endprogram %}
+
+          {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm"%}
+            CalWORKs provides cash aid and services to certain low-income families with children in the home.
+          {% endprogram %}
+
+          {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
+            CAPI provides monthly cash benefits to certain elderly, blind, or disabled non-citizens.
+          {% endprogram %}
+
+          {% program "California Alternate Rates for Energy (CARE)", "care", "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/california-alternate-rates-for-energy" %}
+            CARE provides a discount on electricity and natural gas bills for certain low-income individuals and families.
+          {% endprogram %}
+
+          {% program "Family Electric Rate Assistance (FERA)", "fera", "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/family-electric-rate-assistance-program" %}
+            FERA provides a discount on electricity bills for certain low-income families.
+          {% endprogram %}
+
+          {% program "VA Disability Compensation", "va-disability-comp", "https://www.va.gov/disability/how-to-file-claim/", "https://www.va.gov/disability/" %}
+            VA disability compensation provides a monthly payment to certain injured or disabled veterans.
+          {% endprogram %}
+
+          {% program "General Assistance (GA)", "ga", "https://socialservices.sccgov.org/financial-assistance/financial-assistance-adults-without-dependent-children-general-assistance" %}
+            GA provides cash assistance and employment services to certain low-income individuals with no dependent children.
+          {% endprogram %}
+
+          {% program "No-Fee ID Card", "no-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+            Unhoused or elderly individuals may get an identification card from the Department of Motor Vehicles without having to pay the usual fee.
+          {% endprogram %}
+
+          {% program "Reduced Fee ID Card", "reduced-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+            Low-income individuals may get a discount on the fee for an identification card from the Department of Motor Vehicles.
+          {% endprogram %}
+
+          {% program "In-Home Supportive Services (IHSS)", "ihss", "https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients", "https://ca.db101.org/ca/programs/health_coverage/medi_cal/ihss/program.htm" %}
+            IHSS provides in-home personal assistance to certain low-income individuals who are blind, disabled, or elderly so they can continue to live at home safely.
+          {% endprogram %}
+
+          {% program "California LifeLine", "lifeline", "https://www.californialifeline.com/en/eligibility_requirements", "https://www.californialifeline.com/en" %}
+            Lifeline provides a discount on home phone and cell phone bills for certain low-income households.
+          {% endprogram %}
+
+          {% program "Low Income Home Energy Assistance Program (LIHEAP)", "liheap", "https://www.csd.ca.gov/Pages/Services.aspx?SCU=Santa%20Clara%20County&PT=CM", "https://www.csd.ca.gov/Pages/Assistance-PayingMyEnergyBills.aspx" %}
+            LIHEAP provides one-time assistance with paying energy bills, home weatherization, and energy-related home repairs to certain low-income households.
+          {% endprogram %}
+
+          {% program "VTA ACCESS Paratransit", "vta-paratransit", "https://www.vta.org/go/paratransit#accordion-applying-for-vta-access-paratransit-service", "https://www.vta.org/sites/default/files/2022-05/Paratransit-Rider%27s-Guide_LMR2022.pdf" %}
+            VTA ACCESS Paratransit provides door-to-door transportation service for certain individuals unable to independently use local bus or light rail services due to a disability.
+          {% endprogram %}
+
+          {% program "Housing Choice Voucher", "housing-choice", "https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/", "https://www.scchousingauthority.org/section-8/" %}
+            The Housing Choice Voucher program helps certain low-income individuals and families pay for rental housing. This was previously known as the "Section 8 Program."
+          {% endprogram %}
+
+          {% program "Supplemental Security Income (SSI)", "ssi", "https://www.ssa.gov/benefits/ssi/", "https://ca.db101.org/ca/programs/income_support/ssi/program.htm" %}
+            SSI is a federal program that provides a monthly cash benefit to certain low-income individuals who are disabled, blind, or elderly.
+          {% endprogram %}
+
+          {% program "Social Security Disability Insurance (SSDI)", "ssdi", "https://www.ssa.gov/applyfordisability/", "https://ca.db101.org/ca/programs/income_support/ssdi2/program.htm" %}
+            SSDI is a federal program that provides a monthly cash benefit to certain disabled individuals who have worked and paid Social Security taxes in the past.
+          {% endprogram %}
+
+          {% program "VA Pension", "va-pension", "https://www.va.gov/pension/how-to-apply/", "https://www.va.gov/pension/" %}
+            VA Pension is a program that provides ongoing cash payments for eligible veterans.
+          {% endprogram %}
+
+          {% program "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
+            WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods.
+          {% endprogram %}
+        </ul>
+      </div>
+
+      <div class="programs programs__ineligible">
+        <p>
+          We also checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  A short explanation as to why you are likely not eligible is listed below each program.
+        </p>
+        <ul></ul>
+      </div>
+
+    {% endeligPage %}
+  {% endeligSection %}
+
+  <div id="controls">
+    <button type="button" class="btn btn_secondary hidden" id="back-button">Back</button>
+    <button type="button" class="btn btn_primary" id="next-button">Next</button>
+    <button type="button" class="btn btn_primary hidden" id="submit-button">Finish</button>
+  </div>
+</form>
+
+<script>
+  // This global variable holds the current state of the form navigation.
+  let currentPage;
+
+  // Custom boolean "or" logic that propagates null values.  Rather than
+  // coercing a null value into false, null values are retained.  If the 
+  // result of this operation is not determined, e.g. or(false, null) then 
+  // null will be returned. Otherwise, the boolean result of or'ing all 
+  // statements together will be returned.
+  //
+  // null or true = true
+  // null or false = null
+  // null or null = null
+  function or(...stmts) {
+    // Convert all values that are not null to booleans
+    stmts = stmts.map(s => s === null ? null : !!s);
+    // The result is determined only if at least one statement is true or
+    // everything is false.
+    const anyTrue = stmts.some(b => b);
+    const determined = (
+      anyTrue || stmts.every(b => b === false));
+    if (!determined) {
+      return null;
+    }
+    return anyTrue;
+  }
+
+  // Custom boolean "and" logic that propagates null values.  Rather than
+  // coercing a null value into false, null values are retained.  If the 
+  // result of this operation is not determined, e.g. and(true, null) then 
+  // null will be returned.  Otherwise, the boolean result of and'ing all 
+  // statements together will be returned.
+  //
+  // null and true = null
+  // null and false = false
+  // null and null = null
+  function and(...stmts) {
+    // Convert all values that are not null to booleans
+    stmts = stmts.map(s => s === null ? null : !!s);
+    // The result is determined only if at least one statement is false or
+    // everything is true.
+    const allTrue = stmts.every(b => b);
+    const determined = (
+      stmts.some(b => b === false) || allTrue);
+    if (!determined) {
+      return null;
+    }
+    return allTrue;
+  }
+
+  // Custom boolean "not" logic that propagates null values.  Rather than
+  // coercing a null value into false, this will return null if the input
+  // statement is null.  Otherwise, the boolean result of not'ing the statement
+  // will be returned.
+  //
+  // not true = false
+  // not false = true
+  // not null = null
+  function not(stmt) {
+    if (stmt === null) {
+      return null;
+    }
+    return !stmt;
+  }
+
+  // Custom equality operator that returns null if either operand is null.
+  // Otherwise, returns the boolean result of a == b.
+  function eq(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a == b;
+  }
+
+  // Custom inequality operator that returns null if either operand is null.
+  // Otherwise, returns the boolean result of a != b.
+  function ne(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a != b;
+  }
+
+  // Custom less-than operator that returns null if either operand is null.
+  // Otherwise, returns the boolean result of a < b.
+  function lt(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a < b;
+  }
+
+  // Custom greater-than operator that returns null if either operand is null.
+  // Otherwise returns the boolean result of a > b.
+  function gt(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a > b;
+  }
+
+  // Custom less-than-equal-to operator that returns null if either operand 
+  // is null. Otherwise returns the boolean result of a <= b.
+  function le(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a <= b;
+  }
+
+  // Custom greater-than-equal-to operator that returns null if either operand 
+  // is null. Otherwise returns the boolean result of a >= b.
+  function ge(a, b) {
+    if (a === null || b === null) {
+      return null;
+    }
+    return a >= b;
+  }
+
+  // Shows or hides the element 'elem' via a class name.
+  function setElementVisibility(elem, makeVisible) {
+    if (elem) {
+      if (makeVisible) {
+        elem.classList.remove("hidden");
+      } else {
+        elem.classList.add("hidden");
+      }
+    }
+  }
+
+  // Makes the submit button visible or hidden.
+  function setSubmitVisibility(makeVisible) {
+    const submitButton = document.getElementById("submit-button");
+    setElementVisibility(submitButton, makeVisible);
+  }
+
+  // Makes the next button visible or hidden.
+  function setNextVisibility(makeVisible) {
+    const nextButton = document.getElementById("next-button");
+    setElementVisibility(nextButton, makeVisible);
+  }
+
+  // Makes the back button visible or hidden.
+  function setBackVisibility(makeVisible) {
+    const backButton = document.getElementById("back-button");
+    setElementVisibility(backButton, makeVisible);
+  }
+
+  // Resets the viewport scroll so that the top of the form is visible.
+  function resetScroll() {
+    document.getElementById("form-top").scrollIntoView();
+  }
+
+  // Asks the user to confirm they want to leave.
+  function confirmExit(event) {
+    event.preventDefault();
+    return event.returnValue = "Are you sure you want to exit?";
+  }
+
+  // Called when the user inputs data into a form element.
+  function onInput(event) {
+    // As soon as the user enters any data at all, register the beforeonload
+    // event listener so that they can confirm they want to exit the form
+    // when an unload is about to happen.
+    addEventListener("beforeunload", confirmExit);
+  }
+
+  function onChangeNoIncome() {
+    let wrapper = document.getElementById("income-types");
+    let allIncomeTypes = wrapper.querySelectorAll("input[type=checkbox]");
+    for (const incomeType of allIncomeTypes) {
+      if (incomeType == this) {
+        continue;
+      }
+      let label = wrapper.querySelector("label[for=" + incomeType.id + "]");
+      if (this.checked) {
+        incomeType.checked = false;
+        incomeType.setAttribute("disabled", "disabled");
+        label.classList.add("disabled");
+      } else {
+        incomeType.removeAttribute("disabled");
+        label.classList.remove("disabled");
+      }
+    }
+  }
+
+  function onChangeAge() {
+    document.getElementById("hh-myself-age").value = this.value;
+    document.getElementById("age").value = this.value;
+  }
+
+  // Adds an item to a dynamic list of fields.
+  function addDynamicFieldListItem() {
+    const list = this.parentElement.parentElement.querySelector(
+      "ul.dynamic_field_list");
+    const items = list.querySelectorAll("li");
+    // Figure out the largest id index used so far.
+    const lastInput = items[items.length - 1].querySelector("input");
+    let lastIdNumber;
+    if (lastInput) {
+      lastIdNumber = lastInput.id.match(/-\d+$/g);
+    }
+    // Create a new item using a template tag or, if none is present, the first
+    // item in the list as a template.
+    const template = items[0].querySelector("template");
+    let newItem;
+    if (template) {
+      newItem = document.createElement("li")
+      newItem.appendChild(template.content.cloneNode(true));
+    } else {
+      newItem = items[0].cloneNode(true);
+    }
+    const newInputs = newItem.querySelectorAll("input, select");
+    const newLabels = newItem.querySelectorAll("label");
+    let newIdNumber = 1;
+    if (lastIdNumber) {
+      newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
+    }
+    // Ensure element ids are unique and clear out any inputs that a user may 
+    // have entered on the template list item.
+    for (const input of newInputs) {
+      input.value = "";
+      input.id = input.id + "-" + newIdNumber;
+    }
+    // Ensure labels match the new input id values.
+    for (const label of newLabels) {
+      label.setAttribute("for", label.getAttribute("for") + "-" + newIdNumber);
+    }
+    // Update the item heading if there is one.
+    const itemHeading = newItem.querySelector("h3,h4,h5,h6");
+    if (itemHeading) {
+      itemHeading.textContent = itemHeading.textContent.replace(
+        /\d+$/, newIdNumber + 1);
+    }
+    // Add a remove button for the new item.
+    const removeButton = document.createElement("button");
+    removeButton.classList.add("link");
+    removeButton.textContent = "remove";
+    removeButton.setAttribute("type", "button");
+    removeButton.addEventListener("click", removeDynamicFieldListItem);
+    const fragment = new DocumentFragment();
+    fragment.append(" (", removeButton, ")");
+    // If there is a heading, put the remove button after it.  Otherwise,
+    // make it the first element in the list item.
+    if (itemHeading) {
+      itemHeading.after(fragment);
+    } else {
+      newItem.prepend(fragment);
+    }
+    // Add our new item to the list.
+    list.appendChild(newItem);
+  }
+
+  function removeDynamicFieldListItem() {
+    const item = this.parentElement;
+    const list = this.closest("ul.dynamic_field_list");
+    item.remove();
+    list.dispatchEvent(new Event("input"));
+  }
+
+  function updateIncomeTotal() {
+    const page = this.closest(".elig_page");
+    const totalDisplay = page.querySelector(".income_total");
+    const inputs = page.querySelectorAll("input[type=number]");
+    let sum = 0;
+    for (input of inputs) {
+      sum += Number(input.value);
+    }
+    totalDisplay.textContent = sum;
+  }
+
+  // Marks the section as complete in the step indicator.
+  function markSectionDone(section) {
+    if (section.stepButton) {
+      section.stepButton.classList.remove("todo");
+      section.stepButton.classList.add("done");
+    }
+  }
+
+  // Shows the appropriate buttons for the given 'page'.
+  function configureButtons(page) {
+    let resultsPage = !page.next();
+    // TODO: Is there a better way than hard-coding this ID here?
+    let finalInputPage = page.next()?.id == 'page-results'
+    let firstPage = !page.previous;
+    if (finalInputPage) {
+      // This is the last page with user input, so show a submit button rather
+      // than a generic next button.
+      setBackVisibility(true);
+      setNextVisibility(false);
+      setSubmitVisibility(true);
+    } else if (firstPage) { 
+      // This is the first page, so only show the next button.
+      setBackVisibility(false);
+      setNextVisibility(true);
+      setSubmitVisibility(false);
+    } else if (resultsPage) { 
+      // This is the very last page, so only show the back button.
+      setBackVisibility(true);
+      setNextVisibility(false);
+      setSubmitVisibility(false);
+    } else { 
+      // This is a regular page, so show back an next buttons.
+      setBackVisibility(true);
+      setNextVisibility(true);
+      setSubmitVisibility(false);
+    }
+  }
+
+  // Inserts a step indicator in the DOM based on the sections defined.
+  // The step indicator serves two purposes:
+  //   1. Show progress through the form
+  //   2. Enable navigation back to already-completed sections
+  // Note the text shown for each step in the progress indicator will be
+  // the same as the <h2> text under each section element.  If a section does
+  // not have a level 2 heading, no step indicator for that section will be 
+  // added.
+  function buildStepIndicator() {
+    const allSections = document.querySelectorAll("div.elig_section");
+    const stepIndicatorList = document.querySelector("div.step_indicator ul");
+    for (const section of allSections) { 
+      // TODO: Support different text for the h2 and the step indicator.
+      const heading = section.querySelector("h2");
+      if (!heading) {
+        // The section does not have a heading (e.g. intro) so don't put this
+        // section in the step indicator.
+        continue;
+      }
+      // Make the button that will be used for navigation to already-completed
+      // sections.
+      const button = document.createElement("button");
+      button.id = "nav-" + section.id;
+      button.dataset.sectionId = section.id;
+      button.textContent = heading.textContent;
+      // Sections are to-do and un-clickable by default.  They will become
+      // clickable when the corresponding section is completed by the user.
+      button.className = "todo";
+      button.disabled = true;
+      button.addEventListener("click", toSection);
+      // Store a reference to the step indicator button in the section element
+      // for easier access later.
+      section.stepButton = button;
+      // Make a container for the button.
+      const listItem = document.createElement("li");
+      // Put the button in the container and add it to the step indicator.
+      listItem.appendChild(button);
+      stepIndicatorList.appendChild(listItem);
+    }
+  }
+
+  // Switches the form to the page 'toPage'.
+  // The old page will be hidden and 'toPage' will be shown.  If the two pages
+  // are in different sections, the old section will be hidden and the new
+  // section containing 'toPage' will be shown.
+  function switchToPage(toPage) {
+    // Show the new page and hide the old.
+    setElementVisibility(currentPage, false);
+    setElementVisibility(toPage, true);
+    // Check if the section is changing while also allowing toPage or
+    // currentPage to be undefined.
+    if (toPage?.section.id != currentPage?.section.id) {
+      setElementVisibility(currentPage?.section, false);
+      setElementVisibility(toPage?.section, true);
+      // Update the step indicator to highlight the active section.
+      if (currentPage?.section?.stepButton) {
+        currentPage.section.stepButton.classList.remove("in_progress");
+      }
+      if (toPage?.section?.stepButton) {
+        toPage.section.stepButton.classList.add("in_progress");
+        // Always allow users to navigate directly to sections they have started
+        // even if the section is not complete yet.
+        toPage.section.stepButton.disabled = false;
+      }
+    }
+    configureButtons(toPage);
+    resetScroll();
+    currentPage = toPage;
+  }
+
+  // Brings the user to the first page of a section.
+  // This function is used as a step indicator click handler, and 'this' 
+  // represents the context of the event, i.e. the button that was clicked.
+  function toSection() {
+    const section = document.getElementById(this.dataset.sectionId);
+    if (section.id == "section-results") {
+      // Ensure results are always up-to-date prior to showing them.
+      // TODO: Determine if it would be better to invalidate results on
+      // form data change and require the user to click the submit button
+      // again before viewing results again.
+      computeEligibility();
+    }
+    // Find the first page in the section.
+    const toPage = section.querySelector("div.elig_page");
+    if (toPage) {
+      switchToPage(toPage);
+    }
+  }
+
+  // Moves to the next form page in the sequence.
+  // The sequence used is the one defined in linkPages.  
+  function toNextPage() {
+    const nextPage = currentPage.next();
+    if (nextPage) {
+      if (nextPage.section.id != currentPage.section.id) {
+        // We are moving into a new section, so the old section should be
+        // marked as completed.
+        markSectionDone(currentPage.section);
+      }
+      // Take note of the page we are coming from to allow backwards travel with 
+      // the Back form control button.
+      nextPage.previous = currentPage;
+      switchToPage(nextPage);
+    }
+  }
+
+  // Moves to the previous form page in the sequence.  
+  // This is not necessarily the form page the user was just on (for example, if 
+  // they used the step progress indicator to revisit a completed section).  
+  // Rather it can be thought of as the previous page as defined by the page
+  // sequence from linkPages().
+  function toPrevPage() {
+    // Note currentPage.previous is set by toNextPage().
+    const previousPage = currentPage.previous;
+    if (previousPage) {
+      switchToPage(previousPage);
+    }
+  }
+
+  // "Submits" the form.
+  // Note no data is actually submitted anywhere, and instead the form inputs
+  // are read and processed by computeEligibility().
+  function submitForm() {
+    computeEligibility();
+    // Make the results page visible upon submit.
+    // The submit button acts a lot like a next button preceding the results 
+    // section.
+    toNextPage();
+    // The results section should immediately be marked done, since there are
+    // no form fields to fill out in that section.
+    markSectionDone(currentPage.section);
+  }
+
+  // Sets up listeners for the document.
+  function addListeners() {
+    // Form inputs
+    const inputs = document.querySelectorAll("input, textarea, select");
+    for (const input of inputs) {
+      input.addEventListener("input", onInput);
+    }
+    const fieldListAddButtons = document.querySelectorAll(
+      'button.field_list_add');
+    for (const button of fieldListAddButtons) {
+      button.addEventListener("click", addDynamicFieldListItem);
+    }
+    const incomeLists = document.querySelectorAll("#section-income ul.dynamic_field_list");
+    for (const incomeList of incomeLists) {
+      incomeList.addEventListener("input", updateIncomeTotal);
+    }
+    document.getElementById("income-has-none").addEventListener("change", onChangeNoIncome);
+    document.getElementById("age").addEventListener("change", onChangeAge);
+    document.getElementById("hh-myself-age").addEventListener("change", onChangeAge);
+
+    // Form control buttons
+    document.getElementById("next-button").addEventListener("click", toNextPage);
+    document.getElementById("back-button").addEventListener("click", toPrevPage);
+    document.getElementById("submit-button").addEventListener("click", submitForm);
+
+  }
+
+  // Switches to the first form page in the document.
+  function showFirstPage() {
+    switchToPage(document.querySelector("div.elig_page"));
+  }
+
+  // Initializes the user interface.
+  function initUi() {
+    buildStepIndicator();
+    // All pages and sections are initially hidden by default.
+    showFirstPage();
+  }
+
+  // Gets all page elements and links them together in sequence.
+  // The link is made via a new method on each page element called next().
+  // This also adds the 'section' property to page elements for convenient
+  // access to the containing section element.
+  function linkPages() {
+    const pages = document.querySelectorAll("div.elig_page");
+    const pageById = {};
+    for (let j = 0; j < pages.length; j++) {
+      // Alias the parent element as 'section' for convenience.
+      pages[j].section = pages[j].parentElement;
+      // By default, each page will advance to the next page in the sequence,
+      // regardless of form input.  For conditional next-page selection, 
+      // add the logic to customPageLinking().
+      pages[j].next = function() {
+        return pages[j + 1];
+      };
+      // Store a hash map of page id to the page itself for faster page
+      // retrieval when defining custom page linking.
+      pageById[pages[j].id] = pages[j];
+    }
+    customPageLinking(pageById);
+  }
+
+  // Holder for all page advancing logic that is more complex than simply
+  // "the next page in the sequence".
+  function customPageLinking(pageById) {
+    
+    pageById["page-yourself-start"].next = function() {
+      if (document.getElementById("age").value < 18 && document.getElementById("age").value > 0) {
+        return pageById["page-head-of-household"];
+      }
+      return pageById["page-head-of-household"].next();
+    };
+
+    pageById["page-head-of-household"].next = function() {
+      if (document.getElementById("disabled").checked || document.getElementById("blind").checked || document.getElementById("deaf").checked) {
+        return pageById["page-disability-details"];
+      }
+      return pageById["page-disability-details"].next();
+    };
+
+    pageById["page-disability-details"].next = function() {
+      if ( document.getElementById("veteran").checked ) {
+        return pageById["page-veteran-details"];
+      }
+      return pageById["page-veteran-details"].next();
+    };
+
+    pageById["page-veteran-details"].next = function() {
+      if (getNumberOfDays(document.getElementById("served-from").value, document.getElementById("served-until").value) < 720) {
+        const fromPlaceHolder = document.getElementById("served-from-placeholder");
+        fromPlaceHolder.textContent = getFormattedDutyDate(document.getElementById("served-from").value);
+
+        const untilPlaceHolder = document.getElementById("served-until-placeholder");
+        untilPlaceHolder.textContent = getFormattedDutyDate(document.getElementById("served-until").value);
+
+        return pageById["page-veteran-duty-period"];
+      }
+      return pageById["page-veteran-duty-period"].next();
+    };
+
+    pageById["page-veteran-duty-period"].next = function() {
+      if (document.getElementById("not-citizen").checked) {
+        return pageById["page-immigration-status"];
+      }
+      return pageById["page-immigration-status"].next();
+    };
+
+
+    pageById["page-household-situation"].next = function() {
+      if (document.getElementById("housing").checked || document.getElementById("unlisted-stable-place").checked) {
+        return pageById["page-household-housed"];
+      }
+      return pageById["page-household-housed"].next();
+    };
+
+
+    pageById["page-income"].next = function() {
+      if (document.getElementById("income-has-wages").checked) {
+        return pageById["page-income-details-wages"];
+      }
+      return pageById["page-income-details-wages"].next();
+    };
+
+    pageById["page-income-details-wages"].next = function() {
+      if (document.getElementById("income-has-self-employed").checked) {
+        return pageById["page-income-details-self-employed"];
+      }
+      return pageById["page-income-details-self-employed"].next();
+    };
+
+    pageById["page-income-details-self-employed"].next = function() {
+      if (document.getElementById("income-has-disability").checked) {
+        return pageById["page-income-details-disability"];
+      }
+      return pageById["page-income-details-disability"].next();
+    };
+
+    pageById["page-income-details-disability"].next = function() {
+      if (document.getElementById("income-has-unemployment").checked) {
+        return pageById["page-income-details-unemployment"];
+      }
+      return pageById["page-income-details-unemployment"].next();
+    };
+
+    pageById["page-income-details-unemployment"].next = function() {
+      if (document.getElementById("income-has-retirement").checked) {
+        return pageById["page-income-details-retirement"];
+      }
+      return pageById["page-income-details-retirement"].next();
+    };
+
+    pageById["page-income-details-retirement"].next = function() {
+      if (document.getElementById("income-has-veterans").checked) {
+        return pageById["page-income-details-veterans"];
+      }
+      return pageById["page-income-details-veterans"].next();
+    };
+
+    pageById["page-income-details-veterans"].next = function() {
+      if (document.getElementById("income-has-workers-comp").checked) {
+        return pageById["page-income-details-workers-comp"];
+      }
+      return pageById["page-income-details-workers-comp"].next();
+    };
+
+    pageById["page-income-details-workers-comp"].next = function() {
+      if (document.getElementById("income-has-child-support").checked) {
+        return pageById["page-income-details-child-support"];
+      }
+      return pageById["page-income-details-child-support"].next();
+    };
+
+    pageById["page-income-details-child-support"].next = function() {
+      if (document.getElementById("income-has-other").checked) {
+        return pageById["page-income-details-other"];
+      }
+      return pageById["page-income-details-other"].next();
+    };
+
+  }
+
+  function getSelectValue(id) {
+    const val = document.getElementById(id).value;
+    if (val === '') {
+      return null;
+    }
+    return val;
+  }
+
+  function getNumberOfDays(start, end) {
+    const date1 = new Date(start + 'T00:00');
+    const date2 = new Date(end + 'T00:00');
+
+    // Time difference between two dates.
+    const difference = date2.getTime() - date1.getTime();
+
+    // One day in milliseconds.
+    const oneDay = 1000 * 60 * 60 * 24;
+
+    // Number of days between two dates.
+    return Math.ceil(difference / oneDay);
+  }
+
+  function getFormattedDutyDate(dutyDate)	{
+    const date1 = new Date(dutyDate + 'T00:00');
+    return (date1.getMonth() + 1 + '/' + date1.getDate() + '/' + date1.getFullYear());
+  }
+
+  function incomeTotal(incomeType) {
+    const selector = "#page-income-details-" + incomeType + " .income_total";
+    return Number(document.querySelector(selector).textContent);
+  }
+
+  function totalEarnedIncome() {
+    return incomeTotal("wages") + incomeTotal("self-employed");
+  }
+
+  function totalUnearnedIncome() {
+    return (incomeTotal("disability") + incomeTotal("unemployment") +
+      incomeTotal("veterans") + incomeTotal("workers-comp") + 
+      incomeTotal("child-support") + incomeTotal("retirement") + 
+      incomeTotal("other"));
+  }
+
+  function grossIncome() {
+    const total = totalEarnedIncome() + totalUnearnedIncome();
+    if (total == 0 && !document.getElementById("income-has-none").checked) {
+      return null;
+    }
+    return total;
+  }
+
+  function totalResources() {
+    // TODO: Add checkbox for users to explicitly specify they have zero
+    // resources.
+    const selector = "#page-income-assets .income_total";
+    return Number(document.querySelector(selector).textContent);
+  }
+
+  function householdSize() {
+    hh_members = document.querySelectorAll(
+      "#page-household-members ul.dynamic_field_list>li");
+    return hh_members.length;
+  }
+
+  class MonthlyIncomeLimit {
+    constructor(limits, addlPersonExtra) {
+      this.limits = limits;
+      this.addlPersonExtra = addlPersonExtra;
+    }
+
+    static fromAnnual(limits, addlPersonExtra) {
+      return new MonthlyIncomeLimit(
+        limits.map(l => l / 12), addlPersonExtra / 12);
+    }
+
+    getLimit(hhSize) {
+      if (hhSize < 1) {
+        return 0;
+      } else if (hhSize > this.limits.length) {
+        const extra = this.addlPersonExtra * (hhSize - this.limits.length);
+        return this.limits[this.limits.length - 1] + extra;
+      } else {
+        return this.limits[hhSize - 1];
+      }
+    }
+  } 
+  
+  // The functions below determine eligibility for various programs.
+  // When a program is added using the "program" shortcode, a matching function
+  // should be defined called {id}Eligible where {id} is the id given in
+  // the "program" shortcode for that program.
+  //
+  // An eligibility function should return true if the input values suggest
+  // program eligibility, false if the values suggest ineligibility, and 
+  // null if an eligibility determination can't be made.
+  function adsaEligible() {
+    return (
+      and(
+        or(
+          document.getElementById("disabled").checked,
+          document.getElementById("blind").checked,
+          document.getElementById("deaf").checked
+        ),
+        document.getElementById("dis_guide_yes").checked,
+        or(
+          document.getElementById("existing-ssi-me").checked,
+          document.getElementById("existing-ssdi-me").checked,
+          document.getElementById("existing-ihss-me").checked,
+          document.getElementById("existing-capi-me").checked,
+          ssiEligible(), 
+          ssdiEligible(), 
+          ihssEligible(), 
+          capiEligible()
+        )
+      )
+    );
+  }
+
+  function calfreshEligible() {
+    const grossLimit = new MonthlyIncomeLimit([
+        2148,
+        2904,
+        3660,
+        4418,
+        5174,
+        5930,
+        6688,
+        7444
+      ],
+      758);
+
+    const age = document.getElementById("age").value || null;
+    const hhAges = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-age"]')).map(i => i.value || null);
+    const hhDisabled = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-disabled"]')).map(i => i.checked);
+
+    const meetsImmigrationReq = (
+      or(
+        !document.getElementById("not-citizen").checked,
+        document.getElementById("permanent_resident").checked,
+        document.getElementById("qualified_noncitizen_gt5y").checked,
+        and(
+          document.getElementById("qualified_noncitizen_le5y").checked,
+          or(
+            and(lt(age, 18)),
+            document.getElementById("existing-ssi-me").checked,
+            document.getElementById("existing-ssdi-me").checked,
+            ssdiEligible(),
+            ssiEligible()
+          )
+        )
+      )
+    );
+    // TODO: add cash assistance check.
+    const isIncomeExempt = (
+      or(
+        ...hhAges.map(a => gt(a, 60)),
+        gt(age, 60),
+        ...hhDisabled,
+        document.getElementById("disabled").checked, 
+        document.getElementById("blind").checked,
+        document.getElementById("existing-ssi-me").checked,
+        document.getElementById("existing-ssdi-me").checked,
+        document.getElementById("existing-ssi-household").checked,
+        document.getElementById("existing-ssdi-household").checked,
+        // May not need to check for ssdi/ssi eligibility if we already check for disabled/blind.
+        ssdiEligible(),
+        ssiEligible()
+      )
+    );
+    const underIncomeLimit = (
+      le(grossIncome(), grossLimit.getLimit(householdSize())));
+
+    return and(meetsImmigrationReq, or(underIncomeLimit, isIncomeExempt));
+  }
+
+  function calworksEligible() {
+    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
+    // Section 1.2
+    const mbsac = new MonthlyIncomeLimit([
+      807,
+      1324,
+      1641,
+      1947,
+      2221,
+      2499,
+      2746,
+      2988,
+      3242,
+      3519
+    ],
+    32);
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
+    // Section 14.1
+    const BASE_RESOURCE_LIMIT = 10888;
+    const DISABLED_ELDERLY_RESOURCE_LIMIT = 16333;
+
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap33.pdf
+    // Section 33.3
+    const EMPLOYMENT_DISREGARD = 450;
+
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap31.pdf
+    // Section 31.6.1
+    const SELF_EMPLOYED_DISREGARD_FRACTION = 0.4;
+
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
+    // Section 27.9.3
+    const ONE_CHILD_SUPPORT_DISREGARD = 100;
+    const TWO_CHILD_SUPPORT_DISREGARD = 200;
+    const childSupportDisregards = [
+      0,
+      ONE_CHILD_SUPPORT_DISREGARD,
+      TWO_CHILD_SUPPORT_DISREGARD];
+
+    const age = document.getElementById("age").value || null;
+    const hhAges = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-age"]')).map(i => i.value || null);
+    const hhDisabled = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-disabled"]')).map(i => i.checked);
+    const hhEmployed = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-employed"]')).map(i => i.checked);
+
+    const meetsImmigrationReq = or(
+      !document.getElementById("not-citizen").checked,
+      document.getElementById("permanent_resident").checked,
+      document.getElementById("qualified_noncitizen_gt5y").checked,
+      document.getElementById("qualified_noncitizen_le5y").checked
+    );
+    const meetsFamilyReq = or(
+      ...hhAges.map(a => lt(a, 19)),
+      // TODO: is this head of household check needed?  Could we just
+      // check if _anyone_ is under 19?
+      and(lt(age, 19), document.getElementById("headhh_yes").checked),
+      document.getElementById("pregnant").checked
+    );
+
+    let numEmployed = hhEmployed.filter(e => e).length;
+    if (document.getElementById("employed").checked) {
+      numEmployed++;
+    }
+    // If household ages are not given, just don't take the disregards rather
+    // than propagate null age values.
+    // Note if the applicant is under 19, they do not count as a child for
+    // child support income.
+    const numChildren = hhAges.filter(a => a < 19).length;
+
+    const maxEmploymentDisregard = numEmployed * EMPLOYMENT_DISREGARD;
+    const maxChildSupportDisregard = childSupportDisregards[
+      Math.min(numChildren, childSupportDisregards.length - 1)];
+    const wagesTotal = incomeTotal("wages");
+    const childSupportTotal = incomeTotal("child-support");
+    const retirementEntries = Array.from(document.querySelectorAll(
+      "#page-income-details-disability ul.dynamic_field_list>li"));
+    const ssiEntries = retirementEntries.filter(
+      e => e.querySelector(
+        'input[id^="income-disability-is-ssi-capi"]').checked);
+    const ssiIncomeValues = ssiEntries.map(
+      e => Number(e.querySelector("input[type=number]").value));
+
+    let ssiIncome = 0;
+    for (value of ssiIncomeValues) {
+      ssiIncome += value;
+    }
+
+    let nonExemptIncome = null;
+    if (grossIncome() !== null) {
+      nonExemptIncome = (grossIncome() -
+        Math.min(wagesTotal, maxEmploymentDisregard) -
+        Math.min(childSupportTotal, maxChildSupportDisregard) -
+        SELF_EMPLOYED_DISREGARD_FRACTION * incomeTotal("self-employed") -
+        ssiIncome);
+    }
+
+    // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
+    const underIncomeLimit = (
+      le(nonExemptIncome, mbsac.getLimit(householdSize())));
+
+    let resourceLimit = BASE_RESOURCE_LIMIT;
+    // TODO: If household ages are not specified, we may ok falling back to
+    // BASE_RESOURCE_LIMIT.
+    const hasElderlyOrDisabled = or(
+      ...hhAges.map(a => ge(a, 60)),
+      ge(age, 60),
+      ...hhDisabled,
+      // TODO: Determine if blind or deaf is considered "disabled" here.
+      document.getElementById("disabled").checked)
+    if (hasElderlyOrDisabled === null) {
+      resourceLimit = null;
+    } else if (hasElderlyOrDisabled) {
+      resourceLimit = DISABLED_ELDERLY_RESOURCE_LIMIT;
+    }
+    const underResourceLimit = le(totalResources(), resourceLimit);
+
+    return and(
+      meetsImmigrationReq,
+      meetsFamilyReq,
+      underIncomeLimit,
+      underResourceLimit
+    );
+  }
+
+  function capiEligible() {
+    // TODO
+    return null;
+  }
+
+  function careEligible() {
+    const grossLimit = MonthlyIncomeLimit.fromAnnual([
+        36620,
+        46060,
+        55500,
+        64940,
+        74380,
+        83820,
+        93260
+      ],
+      9440);
+
+    return (
+      and(
+        document.getElementById("pay-utilities-yes").checked,
+        or(
+          le(grossIncome(), grossLimit.getLimit(householdSize())),
+          // TODO: add remaining assistance programs that help qualify.
+          document.getElementById("existing-ssi-me").checked,
+          document.getElementById("existing-ssi-household").checked,
+          document.getElementById("existing-liheap-me").checked,
+          document.getElementById("existing-liheap-household").checked,
+          document.getElementById("existing-wic-me").checked,
+          document.getElementById("existing-wic-household").checked,
+          document.getElementById("existing-calworks-me").checked,
+          document.getElementById("existing-calworks-household").checked,
+          document.getElementById("existing-calfresh-me").checked,
+          document.getElementById("existing-calfresh-household").checked,
+          document.getElementById("existing-medical-me").checked,
+          document.getElementById("existing-medical-household").checked,
+          document.getElementById("existing-cfap-me").checked,
+          document.getElementById("existing-cfap-household").checked,
+          document.getElementById("existing-nslp-me").checked,
+          document.getElementById("existing-nslp-household").checked,
+          ssiEligible(),
+          liheapEligible(),
+          wicEligible(),
+          calworksEligible(),
+          calfreshEligible()
+        )
+      )
+    );
+  }
+
+  function feraEligible() {
+    // TODO
+    return true;
+  }
+
+  function vaDisabilityCompEligible() {
+    const dutyTypeSelects = Array.from(document.querySelectorAll(
+      'select[id^="your-duty-type"]'));
+    const dutyTypes = dutyTypeSelects.map(d => getSelectValue(d.id));
+    const meetsDutyReq = or(
+      ...dutyTypes.map(d => eq(d, 'active-duty')),
+      ...dutyTypes.map(d => eq(d, 'active-training')),
+      ...dutyTypes.map(d => eq(d, 'inactive-training')));
+
+    const dischargeStatus = getSelectValue('your-discharge-status');
+    const meetsDischargeReq = and(
+      ne(dischargeStatus, 'dishonorable'),
+      ne(dischargeStatus, 'oth'),
+      ne(dischargeStatus, 'bad-conduct'));
+
+    return and(
+      document.getElementById('veteran').checked,
+      document.getElementById('disabled').checked,
+      document.getElementById('dis_military_yes').checked,
+      meetsDutyReq,
+      meetsDischargeReq);
+  }
+
+  function gaEligible() {
+    // TODO
+    return true;
+  }
+
+  function noFeeIdEligible() {
+    // TODO
+    return true;
+  }
+
+  function reducedFeeIdEligible() {
+    // TODO
+    return false;
+  }
+
+  function ihssEligible() {
+    // TODO
+    return false;
+  }
+
+  function lifelineEligible() {
+    // TODO
+    return false;
+  }
+
+  function liheapEligible() {
+    // TODO
+    return false;
+  }
+
+  function vtaParatransitEligible() {
+    // TODO
+    return false;
+  }
+
+  function housingChoiceEligible() {
+    // TODO
+    return null;
+  }
+
+  function ssiEligible() {
+    // TODO
+    return false;
+  }
+
+  function ssdiEligible() {
+    // TODO
+    return false;
+  }
+
+  function vaPensionEligible() {
+    // TODO
+    return true;
+  }
+
+  function wicEligible() {
+    // TODO
+    return false;
+  }
+
+  // Determines eligibility for programs based on user form input values.
+  function computeEligibility() {
+    const allPrograms = document.querySelectorAll(".programs li");
+    const eligibleList = document.querySelector(".programs__eligible ul");
+    const ineligibleList = document.querySelector(".programs__ineligible ul");
+    const unknownList = document.querySelector(".programs__unknown ul");
+    for (program of allPrograms) {
+      const eligible = window[program.dataset.eligibility]();
+      if (eligible === null) {
+        unknownList.appendChild(program);
+      } else if (eligible) {
+        eligibleList.appendChild(program);
+      } else {
+        ineligibleList.appendChild(program);
+      }
+    }
+  }
+
+  // Script entry point.
+  function init() {
+    linkPages();
+    initUi();
+    addListeners();
+  }
+
+  init();
+</script>

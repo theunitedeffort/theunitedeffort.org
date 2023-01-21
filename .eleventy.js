@@ -305,6 +305,17 @@ module.exports = function(eleventyConfig) {
     return `${spaced[0].toUpperCase()}${spaced.slice(1)}`
   }
 
+  // Converts "the-test-string", "the_test_string", or "the test string" to "theTestString".
+  const toCamelCase = function(str) {
+    const words = str.trim().toLowerCase().split(/[-_\s]/);
+    const result = [];
+    result.push(words[0]);
+    for (const word of words.slice(1)) {
+      result.push(`${word.slice(0, 1).toUpperCase()}${word.slice(1)}`);
+    }
+    return result.join("");
+  }
+
   // Formats a value as USD with no decimals.
   const formatCurrency = function(value) {
     const num = Number(value)
@@ -320,6 +331,106 @@ module.exports = function(eleventyConfig) {
       });
     }
   }
+
+  eleventyConfig.addPairedShortcode("eligPage", function(content, id) {
+    return `<div id="page-${id}" class="elig_page hidden">${content}</div>`;
+  });
+
+  eleventyConfig.addPairedShortcode("eligSection", function(content, id) {
+    return `<div id="section-${id}" class="elig_section hidden">${content}</div>`;
+  });
+
+  eleventyConfig.addPairedShortcode("incomeDetails", function(content, typeStr) {
+    return `
+      <h3>${typeStr.slice(0, 1).toUpperCase() + typeStr.slice(1)}</h3>
+      <p>
+        Enter all income coming from <span class="bold">${typeStr}</span> for everyone in your household.  Amounts should be before tax and other deductions.
+      </p>
+      ${content}
+      <p>
+        Combined household income from ${typeStr}:  <span class="bold">$<span class="income_total">0</span> per month</span>
+      </p>`;
+  });
+
+
+  // Renders a single public assistance program to display in a list.
+  eleventyConfig.addPairedShortcode("program", function(
+    content, title, id, applyUrl, refUrl="") {
+    const links = [];
+    if (applyUrl) {
+      links.push(`<p><a href=${applyUrl} target="_blank" rel="noopener">How to apply</a></p>`);
+    }
+    if (refUrl) {
+      links.push(`<p><a href=${refUrl} target="_blank" rel="noopener">Learn more</a></p>`);
+    }
+    return `
+      <li id="program-${id}" data-eligibility="${toCamelCase(id)}Eligible">
+        <h4>${title}</h4>
+        <p>${content}</p>
+        ${links.join("")}
+      </li>`;
+  });
+
+  // Generates a list that can have items added and removed dynamically.
+  eleventyConfig.addPairedShortcode("dynamicFieldList", function(
+    listItemContent, addText) {
+    return `
+      <ul class="dynamic_field_list">
+        <li>
+          ${listItemContent}
+        </li>
+      </ul>
+      <div>
+        <button type="button" class="btn btn_secondary field_list_add">${addText}</button>
+      </div>`;
+  });
+
+  eleventyConfig.addShortcode("checkboxTable", function(tableId, columnsStr, rowsStr) {
+    function unpack(str) {
+      const parts = str.split(":");
+      return {id: parts[0].trim(), content: parts[1].trim()};
+    }
+    
+    const columns = columnsStr.split("\n").map(unpack);
+    const rows = rowsStr.split("\n").map(unpack);
+
+    columnsHtml = ['<th></th>'];
+    for (column of columns) {
+      columnsHtml.push(`
+        <th id="col-label-${column.id}">
+          ${column.content}
+        </th>`);
+    }
+    rowsHtml = [];
+    for (row of rows) {
+      cellsHtml = [];
+      for (column of columns) {
+        cellsHtml.push(`
+          <td>
+            <input type="checkbox" id="${tableId}-${row.id}-${column.id}" aria-labelledby="row-label-${row.id} col-label-${column.id}">
+          </td>`);
+      }
+      rowsHtml.push(`
+        <tr>
+          <td class="label" id="row-label-${row.id}">
+            ${row.content}
+          </td>
+          ${cellsHtml.join("")}
+        </tr>`);
+    }
+
+    return `
+      <table>
+        <thead>
+          <tr>
+            ${columnsHtml.join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml.join("")}
+        </tbody>
+      </table>`
+  });
 
   // Generates a label tag for the given 'fieldName'. 
   // 
