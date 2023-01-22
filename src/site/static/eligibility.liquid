@@ -1460,6 +1460,7 @@ pageClass: "page-public-assistance"
   function careIncomeLimit() {
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
       36620,
+      36620,
       46060,
       55500,
       64940,
@@ -1507,6 +1508,8 @@ pageClass: "page-public-assistance"
 
   function feraEligible() {
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
+      0,
+      0,  
       57575,
       69375,
       81175,
@@ -1518,8 +1521,8 @@ pageClass: "page-public-assistance"
 
     return (
       and(
-        gt(grossIncome(), careIncomeLimit()),		      //CARE stuff
-        le(grossIncome(), grossLimit.getLimit(householdSize())),		    //FERA stuff
+        gt(grossIncome(), careIncomeLimit()),
+        le(grossIncome(), grossLimit.getLimit(householdSize())),
         householdSize() >= 3
       )
     );
