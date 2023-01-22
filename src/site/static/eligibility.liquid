@@ -1844,7 +1844,22 @@ pageClass: "page-public-assistance"
   }
 
   function ssiEligible() {
-    // TODO
+    const meetsDisabilityReq = and(
+      or(
+        document.getElementById('disabled').checked,
+        document.getElementById('blind').checked),
+      document.getElementById('prevent-working').checked
+      );
+
+    const meetsImmigrationReq = or(
+      !document.getElementById('not-citizen').checked,
+      document.getElementById("permanent_resident").checked,
+      document.getElementById("qualified_noncitizen_gt5y").checked,
+      document.getElementById("qualified_noncitizen_le5y").checked);
+
+    // Need to collect income and resources for applicant *only*
+    // const underIncomeLimit = ;
+    // const underResourceLimit = ;
     return false;
   }
 
