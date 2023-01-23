@@ -43,6 +43,24 @@
         margin-bottom: 0.2em;
       }
 
+      input[type=text].short,
+      select.short,
+      textarea.short {
+        width: 10em;
+      }
+
+      input[type=text].long,
+      select.long,
+      textarea.long {
+        width: 25em;
+      }
+
+      input[type=text].extra_long,
+      select.extra_long,
+      textarea.extra_long {
+        width: 35em;
+      }
+
       input[type=number].short {
         width: 4em
       }
@@ -120,7 +138,7 @@
     .step_indicator {
       padding-top: 1em;
       margin-top: 1em;
-      
+
       ul {
         list-style: none;
         padding: 0;
@@ -171,7 +189,7 @@
           border-width: var(--bar-top-width) 0 0 0;
           padding: 0.8em 0.3em 0.3em 0.3em;
           margin: 0;
-          
+
           &:enabled:hover {
             border-width: calc(var(--bar-top-width) + var(--bar-top-width-hover-delta)) 0 0 0;
             margin-left: 0;
@@ -233,7 +251,7 @@
         }
       }
     }
-    
+
     .option_columns {
       columns: 8em 3;
     }
@@ -259,7 +277,7 @@
         padding: 0.5em;
         margin-bottom: 1em;
       }
-      
+
       input[type=checkbox] {
         display: inline-block;
       }
@@ -268,24 +286,6 @@
       select,
       textarea {
         width: 20em;
-      }
-
-      input[type=text].short,
-      select.short,
-      textarea.short {
-        width: 10em;
-      }
-
-      input[type=text].long,
-      select.long,
-      textarea.long {
-        width: 25em;
-      }
-
-      input[type=text].extra_long,
-      select.extra_long,
-      textarea.extra_long {
-        width: 35em;
       }
 
       input[type=number] {
@@ -339,7 +339,7 @@
       color: var(--color-gray-600);
       padding-left: 1em;
     }
-    
+
     .label {
       font-size: 0.9em;
     }
@@ -355,7 +355,7 @@
       columns: 11em 3;
     }
 
-    
+
     @media print {
       form {
         font-size: 0.6em;
@@ -375,5 +375,4 @@
       margin-bottom: 2em;
       border-top: solid 1px var(--color-gray-700);
       border-bottom: solid 1px var(--color-gray-700);
-      
     }

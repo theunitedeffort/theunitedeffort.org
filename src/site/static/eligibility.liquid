@@ -269,6 +269,10 @@ pageClass: "page-public-assistance"
         <template>
           <h4>Household Member 2</h4>
           <div>
+            <label for="hh-member-name">First Name</label>
+            <input id="hh-member-name" type="text" class="short">
+          </div>
+          <div>
             <label for="hh-member-age">Age</label>
             <input id="hh-member-age" type="number" min="1" max="130"> years
           </div>
@@ -789,6 +793,17 @@ pageClass: "page-public-assistance"
     addEventListener("beforeunload", confirmExit);
   }
 
+  function onHouseholdMemberAdd() {
+    const nameInputs = document.querySelectorAll(
+      'input[id^="hh-member-name"]');
+    for (const input of nameInputs) {
+      // First remove any existing listeners that may have been already
+      // added so we don't get duplicates.
+      input.removeEventListener('change', onChangeName);
+      input.addEventListener('change', onChangeName);
+    }
+  }
+
   function onChangeNoIncome() {
     let wrapper = document.getElementById("income-types");
     let allIncomeTypes = wrapper.querySelectorAll("input[type=checkbox]");
@@ -811,6 +826,11 @@ pageClass: "page-public-assistance"
   function onChangeAge() {
     document.getElementById("hh-myself-age").value = this.value;
     document.getElementById("age").value = this.value;
+  }
+
+  function onChangeName() {
+    const item = this.closest('ul.dynamic_field_list li');
+    item.querySelector('h4').textContent = this.value;
   }
 
   // Adds an item to a dynamic list of fields.
@@ -1083,6 +1103,10 @@ pageClass: "page-public-assistance"
     document.getElementById("income-has-none").addEventListener("change", onChangeNoIncome);
     document.getElementById("age").addEventListener("change", onChangeAge);
     document.getElementById("hh-myself-age").addEventListener("change", onChangeAge);
+
+    document.querySelector(
+      '#page-household-members button.field_list_add').addEventListener(
+      'click', onHouseholdMemberAdd);
 
     // Form control buttons
     document.getElementById("next-button").addEventListener("click", toNextPage);
