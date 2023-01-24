@@ -358,7 +358,7 @@ pageClass: "page-public-assistance"
     {% eligPage "income" %}
     <h3>Your Income</h3>
       <p>
-        Select all sources of income that <span class="bold">you</span> receive. After this, you'll work on adding income for others in your household.
+        Select all sources of income for you and your household. Include income from <span class="bold">all members of your household, including yourself</span>.
       </p>
       <div>
         <ul id="income-types" class="multiselect">
@@ -403,7 +403,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-none" type="checkbox">
-            <label for="income-has-none">This person has no income of any kind</label>
+            <label for="income-has-none">My household has no income of any kind</label>
           </li>
         </ul>
       </div>
@@ -885,6 +885,9 @@ pageClass: "page-public-assistance"
     // have entered on the template list item.
     for (const input of newInputs) {
       input.value = "";
+      if (input.checked) {
+        input.checked = false;
+      }
       input.id = input.id + "-" + newIdNumber;
     }
     // Ensure labels match the new input id values.
@@ -919,6 +922,17 @@ pageClass: "page-public-assistance"
   function removeDynamicFieldListItem() {
     const item = this.parentElement;
     const parent = item.parentElement;
+
+    // If the item is a household member, it will have associated income lists.
+    if (item.incomeLists) {
+      for (const list of item.incomeLists) {
+        const parent = list.parentElement;
+        list.remove();
+        parent.dispatchEvent(
+          new Event("input", {bubbles: true, cancelable: false}));
+      }
+    }
+
     item.remove();
     // Can't dispatch the event on the item since it's removed.
     parent.dispatchEvent(
@@ -926,9 +940,9 @@ pageClass: "page-public-assistance"
   }
 
   function updateIncomeTotal() {
-    const page = this;
-    const totalDisplay = page.querySelector(".income_total");
-    const inputs = page.querySelectorAll("input[type=number]");
+    const page = this.closest('.elig_page');
+    const totalDisplay = page.querySelector('.income_total');
+    const inputs = page.querySelectorAll('input[type=number]');
     let sum = 0;
     for (input of inputs) {
       sum += Number(input.value);
@@ -1119,7 +1133,7 @@ pageClass: "page-public-assistance"
     for (const button of fieldListAddButtons) {
       button.addEventListener("click", addDynamicFieldListItem);
     }
-    const incomeLists = document.querySelectorAll("#section-income .elig_page");
+    const incomeLists = document.querySelectorAll("#section-income .income_details_wrapper");
     for (const incomeList of incomeLists) {
       incomeList.addEventListener("input", updateIncomeTotal);
     }
