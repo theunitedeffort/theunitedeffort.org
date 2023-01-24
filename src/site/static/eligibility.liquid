@@ -1458,6 +1458,7 @@ pageClass: "page-public-assistance"
   }
 
   function careIncomeLimit() {
+    // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
       36620,
       36620,
@@ -1470,7 +1471,7 @@ pageClass: "page-public-assistance"
     ],
     9440);
 
-    return grossLimit.getLimit(householdSize());
+    return grossLimit;
   }
 
   function careEligible() {
@@ -1478,7 +1479,7 @@ pageClass: "page-public-assistance"
       and(
         document.getElementById("pay-utilities-yes").checked,
         or(
-          le(grossIncome(), careIncomeLimit()),
+          le(grossIncome(), careIncomeLimit().getLimit(householdSize())),
           // TODO: add remaining assistance programs that help qualify.
           document.getElementById("existing-ssi-me").checked,
           document.getElementById("existing-ssi-household").checked,
@@ -1507,6 +1508,7 @@ pageClass: "page-public-assistance"
   }
 
   function feraEligible() {
+    // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
       0,
       0,  
@@ -1519,11 +1521,12 @@ pageClass: "page-public-assistance"
     ],
     11800);
 
+    const MIN_HOUSEHOLD_SIZE = 3;
     return (
       and(
-        gt(grossIncome(), careIncomeLimit()),
+        gt(grossIncome(), careIncomeLimit().getLimit(householdSize())),
         le(grossIncome(), grossLimit.getLimit(householdSize())),
-        householdSize() >= 3
+        householdSize() >= MIN_HOUSEHOLD_SIZE
       )
     );
   }
