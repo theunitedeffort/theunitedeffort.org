@@ -116,6 +116,10 @@
         }
       }
 
+      .dynamic_field_list_wrapper {
+        margin: 0;
+      }
+
       ul.dynamic_field_list {
         h4 {
           display: inline-block;
@@ -132,6 +136,10 @@
       .label {
         font-size: 0.9em;
         font-weight: 700;
+      }
+
+      legend {
+        margin: 0;
       }
     }
 
