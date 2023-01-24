@@ -66,10 +66,6 @@ pageClass: "page-public-assistance"
               <label for="veteran">I am a U.S. veteran</label>
             </li>
             <li>
-              <input id="employed" type="checkbox" />
-              <label for="employed">I am employed</label>
-            </li>
-            <li>
               <input id="pregnant" type="checkbox" />
               <label for="pregnant">I am pregnant or was pregnant within the last 6 months</label>
             </li>
@@ -279,10 +275,6 @@ pageClass: "page-public-assistance"
           <div>
             <ul id="hh-member-types" class="multiselect">
               <li>
-                <input id="hh-member-employed" type="checkbox">
-                <label for="hh-member-employed">This person is employed</label>
-              </li>
-              <li>
                 <input id="hh-member-disabled" type="checkbox">
                 <label for="hh-member-disabled">This person is disabled</label>
               </li>
@@ -364,8 +356,9 @@ pageClass: "page-public-assistance"
   {% eligSection "income" %}
     <h2>Income</h2>
     {% eligPage "income" %}
+    <h3>Your Income</h3>
       <p>
-        Select all sources of income for you and your household. Include income from <span class="bold">all members of your household, including yourself</span>.
+        Select all sources of income that <span class="bold">you</span> receive. After this, you'll work on adding income for others in your household.
       </p>
       <div>
         <ul id="income-types" class="multiselect">
@@ -410,7 +403,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-none" type="checkbox">
-            <label for="income-has-none">My household has no income of any kind</label>
+            <label for="income-has-none">This person has no income of any kind</label>
           </li>
         </ul>
       </div>
@@ -458,18 +451,23 @@ pageClass: "page-public-assistance"
       {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other"  %}
     {% endeligPage %}
 
-    {% eligPage "income-assets" %}
+    {% eligPage "income-details-assets" %}
       <h3>Assets</h3>
       <p>
         What is the value of all assets or resources you and your household have?  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
       </p>
-      {% dynamicFieldList "Add another asset" %}
-        <h4>Asset 1</h4>
-        <div>
-          <label for="income-asset">Value</label>
-          $ <input id="income-asset" type="number" class="long">
-        </div>
-      {% enddynamicFieldList %}
+      <div class="income_details_wrapper">
+        <fieldset>
+          <legend>Myself</legend>
+          {% dynamicFieldList "Add another asset" %}
+            <h4>Asset 1</h4>
+            <div>
+              <label for="income-asset">Value</label>
+              $ <input id="income-asset" type="number" class="long">
+            </div>
+          {% enddynamicFieldList %}
+        </fieldset>
+      </div>
       <p>
         Combined household assets: <span class="bold">$<span class="income_total">0</span></span>
       </p>
@@ -802,6 +800,25 @@ pageClass: "page-public-assistance"
       input.removeEventListener('change', onChangeName);
       input.addEventListener('change', onChangeName);
     }
+
+    const newMember = this.closest('.elig_page').querySelector(
+      'ul.dynamic_field_list').lastChild;
+    newMember.incomeLists = [];
+
+    // TODO: update ids of new field list.
+    // TODO: handle removing household members.
+    const incomePages = document.querySelectorAll(
+      'div[id^="page-income-details"]');
+    for (const incomePage of incomePages) {
+      const template = incomePage.querySelector('fieldset');
+      const newList = template.cloneNode(true);
+      newList.querySelector('legend').textContent = (
+        newMember.querySelector('h4').textContent);
+      template.parentNode.appendChild(newList);
+      const addButton = newList.querySelector('button.field_list_add');
+      addButton.addEventListener("click", addDynamicFieldListItem);
+      newMember.incomeLists.push(newList);
+    }
   }
 
   function onChangeNoIncome() {
@@ -829,8 +846,12 @@ pageClass: "page-public-assistance"
   }
 
   function onChangeName() {
-    const item = this.closest('ul.dynamic_field_list li');
+    // TODO: Revert to placeholder if the name is deleted.
+    const item = this.closest('ul.dynamic_field_list>li');
     item.querySelector('h4').textContent = this.value;
+    for (const incomeList of item.incomeLists) {
+      incomeList.querySelector('legend').textContent = this.value;
+    }
   }
 
   // Adds an item to a dynamic list of fields.
@@ -897,13 +918,15 @@ pageClass: "page-public-assistance"
 
   function removeDynamicFieldListItem() {
     const item = this.parentElement;
-    const list = this.closest("ul.dynamic_field_list");
+    const parent = item.parentElement;
     item.remove();
-    list.dispatchEvent(new Event("input"));
+    // Can't dispatch the event on the item since it's removed.
+    parent.dispatchEvent(
+      new Event("input", {bubbles: true, cancelable: false}));
   }
 
   function updateIncomeTotal() {
-    const page = this.closest(".elig_page");
+    const page = this;
     const totalDisplay = page.querySelector(".income_total");
     const inputs = page.querySelectorAll("input[type=number]");
     let sum = 0;
@@ -1096,7 +1119,7 @@ pageClass: "page-public-assistance"
     for (const button of fieldListAddButtons) {
       button.addEventListener("click", addDynamicFieldListItem);
     }
-    const incomeLists = document.querySelectorAll("#section-income ul.dynamic_field_list");
+    const incomeLists = document.querySelectorAll("#section-income .elig_page");
     for (const incomeList of incomeLists) {
       incomeList.addEventListener("input", updateIncomeTotal);
     }
@@ -1153,7 +1176,7 @@ pageClass: "page-public-assistance"
   // Holder for all page advancing logic that is more complex than simply
   // "the next page in the sequence".
   function customPageLinking(pageById) {
-    
+
     pageById["page-yourself-start"].next = function() {
       if (document.getElementById("age").value < 18 && document.getElementById("age").value > 0) {
         return pageById["page-head-of-household"];
@@ -1323,7 +1346,7 @@ pageClass: "page-public-assistance"
   function totalResources() {
     // TODO: Add checkbox for users to explicitly specify they have zero
     // resources.
-    const selector = "#page-income-assets .income_total";
+    const selector = "#page-income-details-assets .income_total";
     return Number(document.querySelector(selector).textContent);
   }
 
@@ -1489,6 +1512,7 @@ pageClass: "page-public-assistance"
       'input[id^="hh-member-age"]')).map(i => i.value || null);
     const hhDisabled = Array.from(document.querySelectorAll(
       'input[id^="hh-member-disabled"]')).map(i => i.checked);
+    // TODO: change how this employment data is captured.
     const hhEmployed = Array.from(document.querySelectorAll(
       'input[id^="hh-member-employed"]')).map(i => i.checked);
 
@@ -1507,6 +1531,7 @@ pageClass: "page-public-assistance"
     );
 
     let numEmployed = hhEmployed.filter(e => e).length;
+    // TODO: change how this employment data is captured.
     if (document.getElementById("employed").checked) {
       numEmployed++;
     }

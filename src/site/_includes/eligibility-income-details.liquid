@@ -1,4 +1,6 @@
 {% incomeDetails desc %}
+  <fieldset>
+    <legend>Myself</legend>
   {% dynamicFieldList "Add another entry" %}
     <h4>{{heading}} 1</h4>
     <div>
@@ -7,4 +9,5 @@
     </div>
     {{extraContent}}
   {% enddynamicFieldList %}
+  </fieldset>
 {% endincomeDetails %}

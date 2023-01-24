@@ -346,7 +346,9 @@ module.exports = function(eleventyConfig) {
       <p>
         Enter all income coming from <span class="bold">${typeStr}</span> for everyone in your household.  Amounts should be before tax and other deductions.
       </p>
-      ${content}
+      <div class="income_details_wrapper">
+        ${content}
+      </div>
       <p>
         Combined household income from ${typeStr}:  <span class="bold">$<span class="income_total">0</span> per month</span>
       </p>`;
@@ -375,13 +377,15 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPairedShortcode("dynamicFieldList", function(
     listItemContent, addText) {
     return `
-      <ul class="dynamic_field_list">
-        <li>
-          ${listItemContent}
-        </li>
-      </ul>
-      <div>
-        <button type="button" class="btn btn_secondary field_list_add">${addText}</button>
+      <div class="dynamic_field_list_wrapper">
+        <ul class="dynamic_field_list">
+          <li>
+            ${listItemContent}
+          </li>
+        </ul>
+        <div>
+          <button type="button" class="btn btn_secondary field_list_add">${addText}</button>
+        </div>
       </div>`;
   });
 
