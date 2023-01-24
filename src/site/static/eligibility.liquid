@@ -801,12 +801,12 @@ pageClass: "page-public-assistance"
       input.addEventListener('change', onChangeName);
     }
 
+    // Get the household member that was just added.
     const newMember = this.closest('.elig_page').querySelector(
       'ul.dynamic_field_list').lastChild;
     newMember.incomeLists = [];
 
-    // TODO: update ids of new field list.
-    // TODO: handle removing household members.
+    // Insert an income fieldset for that new member in each income page.
     const incomePages = document.querySelectorAll(
       'div[id^="page-income-details"]');
     for (const incomePage of incomePages) {
@@ -814,9 +814,21 @@ pageClass: "page-public-assistance"
       const newList = template.cloneNode(true);
       newList.querySelector('legend').textContent = (
         newMember.querySelector('h4').textContent);
+
+      // Ensure IDs are unique, and update input labels to match.
+      const idElements = newList.querySelectorAll('[id]');
+      const labels = newList.querySelectorAll('label');
+      const idModifier = '-member' + newMember.dynamicFieldListId;
+      for (const elem of idElements) {
+        elem.id = elem.id + idModifier;
+      }
+      for (const label of labels) {
+        label.setAttribute('for', label.getAttribute('for') + idModifier);
+      }
+
       template.parentNode.appendChild(newList);
       const addButton = newList.querySelector('button.field_list_add');
-      addButton.addEventListener("click", addDynamicFieldListItem);
+      addButton.addEventListener('click', addDynamicFieldListItem);
       newMember.incomeLists.push(newList);
     }
   }
@@ -881,6 +893,8 @@ pageClass: "page-public-assistance"
     if (lastIdNumber) {
       newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
     }
+    // Save the reference ID for later access.
+    newItem.dynamicFieldListId = newIdNumber;
     // Ensure element ids are unique and clear out any inputs that a user may 
     // have entered on the template list item.
     for (const input of newInputs) {
