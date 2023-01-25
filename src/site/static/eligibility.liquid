@@ -279,7 +279,7 @@ pageClass: "page-public-assistance"
           </ul>
         </div>
       {% endcapture %}
-      {% dynamicFieldList "Add a new household member", hhTemplate %}
+      {% dynamicFieldList "Add a new household member", "", hhTemplate %}
         <h4>Myself</h4>
         <div>
           <label for="hh-myself-age">Age</label>
@@ -466,7 +466,7 @@ pageClass: "page-public-assistance"
               $ <input id="income-asset" type="number" class="long">
             </div>
           {% endcapture %}
-          {% dynamicFieldList "Add another asset", assetTemplate %}
+          {% dynamicFieldList "Add another asset", "Enter an asset for this person", assetTemplate %}
           {% enddynamicFieldList %}
         </fieldset>
       </div>
@@ -944,6 +944,7 @@ pageClass: "page-public-assistance"
     }
     // Add our new item to the list.
     list.appendChild(newItem);
+    updateDynamicFieldListButtons();
   }
 
   function removeDynamicFieldListItem() {
@@ -964,6 +965,21 @@ pageClass: "page-public-assistance"
     // Can't dispatch the event on the item since it's removed.
     parent.dispatchEvent(
       new Event("input", {bubbles: true, cancelable: false}));
+    updateDynamicFieldListButtons();
+  }
+
+  function updateDynamicFieldListButtons() {
+    const fieldListAddButtons = document.querySelectorAll(
+      'button.field_list_add');
+    for (const button of fieldListAddButtons) {
+      const wrapper = button.closest('.dynamic_field_list_wrapper');
+      const items = wrapper.querySelectorAll('ul.dynamic_field_list>li');
+      if (items.length) {
+        button.textContent = button.dataset.nonEmptyText;
+      } else {
+        button.textContent = button.dataset.emptyText || button.dataset.nonEmptyText;
+      }
+    }
   }
 
   function updateIncomeTotal() {
@@ -1189,6 +1205,7 @@ pageClass: "page-public-assistance"
     buildStepIndicator();
     // All pages and sections are initially hidden by default.
     showFirstPage();
+    updateDynamicFieldListButtons();
   }
 
   // Gets all page elements and links them together in sequence.
