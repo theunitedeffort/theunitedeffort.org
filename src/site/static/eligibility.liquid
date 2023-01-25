@@ -256,7 +256,7 @@ pageClass: "page-public-assistance"
         Enter details for each person living in your household.  Information you have already entered about yourself is pre-filled.
       </p>
 
-      {% dynamicFieldList "Add a new household member", firstItem %}
+      {% dynamicFieldList "Add a new household member" %}
         <h4>Myself</h4>
         <div>
           <label for="hh-myself-age">Age</label>
@@ -460,11 +460,13 @@ pageClass: "page-public-assistance"
         <fieldset>
           <legend>Myself</legend>
           {% dynamicFieldList "Add another asset" %}
-            <h4>Asset 1</h4>
-            <div>
-              <label for="income-asset">Value</label>
-              $ <input id="income-asset" type="number" class="long">
-            </div>
+            <template>
+              <h4>Asset 1</h4>
+              <div>
+                <label for="income-asset">Value</label>
+                $ <input id="income-asset" type="number" class="long">
+              </div>
+            </template>
           {% enddynamicFieldList %}
         </fieldset>
       </div>
@@ -810,14 +812,21 @@ pageClass: "page-public-assistance"
     const incomePages = document.querySelectorAll(
       'div[id^="page-income-details"]');
     for (const incomePage of incomePages) {
-      const template = incomePage.querySelector('fieldset');
-      const newList = template.cloneNode(true);
+      const firstFieldset = incomePage.querySelector('fieldset');
+      const newList = firstFieldset.cloneNode(true);
       newList.querySelector('legend').textContent = (
         newMember.querySelector('h4').textContent);
+      // Remove all items from the new list except the first template item.
+      // TODO perhaps make better use of template tags to clean this up.
+      const firstItem = newList.querySelector('ul.dynamic_field_list>li');
+      while (firstItem.nextElementSibling) {
+        firstItem.nextElementSibling.remove();
+      }
 
       // Ensure IDs are unique, and update input labels to match.
-      const idElements = newList.querySelectorAll('[id]');
-      const labels = newList.querySelectorAll('label');
+      const templ = newList.querySelector('template');
+      const idElements = templ.content.querySelectorAll('[id]');
+      const labels = templ.content.querySelectorAll('label');
       const idModifier = '-member' + newMember.dynamicFieldListId;
       for (const elem of idElements) {
         elem.id = elem.id + idModifier;
@@ -826,7 +835,7 @@ pageClass: "page-public-assistance"
         label.setAttribute('for', label.getAttribute('for') + idModifier);
       }
 
-      template.parentNode.appendChild(newList);
+      firstFieldset.parentNode.appendChild(newList);
       const addButton = newList.querySelector('button.field_list_add');
       addButton.addEventListener('click', addDynamicFieldListItem);
       newMember.incomeLists.push(newList);
@@ -889,7 +898,12 @@ pageClass: "page-public-assistance"
     }
     const newInputs = newItem.querySelectorAll("input, select");
     const newLabels = newItem.querySelectorAll("label");
-    let newIdNumber = 1;
+    let newIdNumber;
+    if (lastInput) {
+      newIdNumber = 1;
+    } else {
+      newIdNumber = 0;
+    }
     if (lastIdNumber) {
       newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
     }
