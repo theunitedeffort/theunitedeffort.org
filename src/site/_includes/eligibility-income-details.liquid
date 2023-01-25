@@ -1,18 +1,15 @@
 {% incomeDetails desc %}
   <fieldset>
     <legend>Myself</legend>
-  {% dynamicFieldList "Add another entry" %}
-    {% comment %}
-    TODO: move the template out of the ul element
-    {% endcomment %}
-    <template>
-      <h4>{{heading}} 1</h4>
-      <div>
-        <label for="income-{{id}}">Income</label>
-        $ <input id="income-{{id}}" type="number" class="long"> per month
-      </div>
-      {{extraContent}}
-    </template>
+  {% capture template %}
+    <h4>{{heading}} 1</h4>
+    <div>
+      <label for="income-{{id}}">Income</label>
+      $ <input id="income-{{id}}" type="number" class="long"> per month
+    </div>
+    {{extraContent}}
+  {% endcapture %}
+  {% dynamicFieldList "Add another entry", template %}
   {% enddynamicFieldList %}
   </fieldset>
 {% endincomeDetails %}

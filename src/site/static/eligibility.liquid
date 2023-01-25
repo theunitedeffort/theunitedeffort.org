@@ -256,35 +256,35 @@ pageClass: "page-public-assistance"
         Enter details for each person living in your household.  Information you have already entered about yourself is pre-filled.
       </p>
 
-      {% dynamicFieldList "Add a new household member" %}
+      {% capture hhTemplate %}
+        <h4>Household Member 2</h4>
+        <div>
+          <label for="hh-member-name">First Name</label>
+          <input id="hh-member-name" type="text" class="short">
+        </div>
+        <div>
+          <label for="hh-member-age">Age</label>
+          <input id="hh-member-age" type="number" min="1" max="130"> years
+        </div>
+        <div>
+          <ul id="hh-member-types" class="multiselect">
+            <li>
+              <input id="hh-member-disabled" type="checkbox">
+              <label for="hh-member-disabled">This person is disabled</label>
+            </li>
+            <li>
+              <input id="hh-member-dependent" type="checkbox">
+              <label for="hh-member-dependent">This person is my dependent</label>
+            </li>
+          </ul>
+        </div>
+      {% endcapture %}
+      {% dynamicFieldList "Add a new household member", hhTemplate %}
         <h4>Myself</h4>
         <div>
           <label for="hh-myself-age">Age</label>
           <input id="hh-myself-age" type="number" min="1" max="130"> years
         </div>
-        <template>
-          <h4>Household Member 2</h4>
-          <div>
-            <label for="hh-member-name">First Name</label>
-            <input id="hh-member-name" type="text" class="short">
-          </div>
-          <div>
-            <label for="hh-member-age">Age</label>
-            <input id="hh-member-age" type="number" min="1" max="130"> years
-          </div>
-          <div>
-            <ul id="hh-member-types" class="multiselect">
-              <li>
-                <input id="hh-member-disabled" type="checkbox">
-                <label for="hh-member-disabled">This person is disabled</label>
-              </li>
-              <li>
-                <input id="hh-member-dependent" type="checkbox">
-                <label for="hh-member-dependent">This person is my dependent</label>
-              </li>
-            </ul>
-          </div>
-        </template>
       {% enddynamicFieldList %}
     {% endeligPage %}
 
@@ -459,14 +459,14 @@ pageClass: "page-public-assistance"
       <div class="income_details_wrapper">
         <fieldset>
           <legend>Myself</legend>
-          {% dynamicFieldList "Add another asset" %}
-            <template>
-              <h4>Asset 1</h4>
-              <div>
-                <label for="income-asset">Value</label>
-                $ <input id="income-asset" type="number" class="long">
-              </div>
-            </template>
+          {% capture assetTemplate %}
+            <h4>Asset 1</h4>
+            <div>
+              <label for="income-asset">Value</label>
+              $ <input id="income-asset" type="number" class="long">
+            </div>
+          {% endcapture %}
+          {% dynamicFieldList "Add another asset", assetTemplate %}
           {% enddynamicFieldList %}
         </fieldset>
       </div>
@@ -816,11 +816,10 @@ pageClass: "page-public-assistance"
       const newList = firstFieldset.cloneNode(true);
       newList.querySelector('legend').textContent = (
         newMember.querySelector('h4').textContent);
-      // Remove all items from the new list except the first template item.
-      // TODO perhaps make better use of template tags to clean this up.
-      const firstItem = newList.querySelector('ul.dynamic_field_list>li');
-      while (firstItem.nextElementSibling) {
-        firstItem.nextElementSibling.remove();
+      // Remove all items from the new list
+      const items = newList.querySelectorAll('ul.dynamic_field_list>li');
+      for (const item of items) {
+        item.remove();
       }
 
       // Ensure IDs are unique, and update input labels to match.
@@ -881,14 +880,14 @@ pageClass: "page-public-assistance"
       "ul.dynamic_field_list");
     const items = list.querySelectorAll("li");
     // Figure out the largest id index used so far.
-    const lastInput = items[items.length - 1].querySelector("input");
+    const lastInput = items[items.length - 1]?.querySelector("input");
     let lastIdNumber;
     if (lastInput) {
       lastIdNumber = lastInput.id.match(/-\d+$/g);
     }
     // Create a new item using a template tag or, if none is present, the first
     // item in the list as a template.
-    const template = items[0].querySelector("template");
+    const template = list.querySelector("template");
     let newItem;
     if (template) {
       newItem = document.createElement("li")

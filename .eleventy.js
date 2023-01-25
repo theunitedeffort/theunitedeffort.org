@@ -375,13 +375,26 @@ module.exports = function(eleventyConfig) {
 
   // Generates a list that can have items added and removed dynamically.
   eleventyConfig.addPairedShortcode("dynamicFieldList", function(
-    listItemContent, addText) {
+    listItemContent, addText, templateContent) {
+    let templateStr = '';
+    let listItemStr = '';
+    if (templateContent) {
+      templateStr = `
+        <template>
+          ${templateContent}
+        </template>`;
+    }
+    if (listItemContent.trim()) {
+      listItemStr = `
+        <li>
+          ${listItemContent}
+        </li>`;
+    }
     return `
       <div class="dynamic_field_list_wrapper">
         <ul class="dynamic_field_list">
-          <li>
-            ${listItemContent}
-          </li>
+          ${templateStr}
+          ${listItemStr}
         </ul>
         <div>
           <button type="button" class="btn btn_secondary field_list_add">${addText}</button>
