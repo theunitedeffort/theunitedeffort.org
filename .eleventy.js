@@ -340,21 +340,6 @@ module.exports = function(eleventyConfig) {
     return `<div id="section-${id}" class="elig_section hidden">${content}</div>`;
   });
 
-  eleventyConfig.addPairedShortcode("incomeDetails", function(content, typeStr) {
-    return `
-      <h3>${typeStr.slice(0, 1).toUpperCase() + typeStr.slice(1)}</h3>
-      <p>
-        Enter all income coming from <span class="bold">${typeStr}</span> for everyone in your household.  Amounts should be before tax and other deductions.
-      </p>
-      <div class="income_details_wrapper">
-        ${content}
-      </div>
-      <p>
-        Combined household income from ${typeStr}:  <span class="bold">$<span class="income_total">0</span> per month</span>
-      </p>`;
-  });
-
-
   // Renders a single public assistance program to display in a list.
   eleventyConfig.addPairedShortcode("program", function(
     content, title, id, applyUrl, refUrl="") {

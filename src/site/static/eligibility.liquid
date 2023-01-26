@@ -451,28 +451,11 @@ pageClass: "page-public-assistance"
       {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other"  %}
     {% endeligPage %}
 
-    {% eligPage "income-details-assets" %}
-      <h3>Assets</h3>
-      <p>
-        What is the value of all assets or resources you and your household have?  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
-      </p>
-      <div class="income_details_wrapper">
-        <fieldset>
-          <legend>Myself</legend>
-          {% capture assetTemplate %}
-            <h4>Asset 1</h4>
-            <div>
-              <label for="income-asset">Value</label>
-              $ <input id="income-asset" type="number" class="long">
-            </div>
-          {% endcapture %}
-          {% dynamicFieldList "Add another asset", "Enter an asset for this person", assetTemplate %}
-          {% enddynamicFieldList %}
-        </fieldset>
-      </div>
-      <p>
-        Combined household assets: <span class="bold">$<span class="income_total">0</span></span>
-      </p>
+    {% eligPage "income-assets" %}
+      {% capture assetPreamble %}
+        Enter the values of all assets or resources you and your household have.  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
+      {% endcapture %}
+      {% render "eligibility-income-details" desc: "assets", heading: "Asset", id: "asset", preamble: assetPreamble, buttonText: "Add another asset", emptyButtonText: "Enter an asset for this person", sumDesc: "Combined household assets", sumUnit: " " %}
     {% endeligPage %}
   {% endeligSection %}
 
@@ -810,7 +793,7 @@ pageClass: "page-public-assistance"
 
     // Insert an income fieldset for that new member in each income page.
     const incomePages = document.querySelectorAll(
-      'div[id^="page-income-details"]');
+      'div[id^="page-income-"]');
     for (const incomePage of incomePages) {
       const firstFieldset = incomePage.querySelector('fieldset');
       const newList = firstFieldset.cloneNode(true);
@@ -984,7 +967,7 @@ pageClass: "page-public-assistance"
 
   function updateIncomeTotal() {
     const page = this.closest('.elig_page');
-    const totalDisplay = page.querySelector('.income_total');
+    const totalDisplay = page.querySelector('.total');
     const inputs = page.querySelectorAll('input[type=number]');
     let sum = 0;
     for (input of inputs) {
@@ -1378,7 +1361,7 @@ pageClass: "page-public-assistance"
   }
 
   function incomeTotal(incomeType) {
-    const selector = "#page-income-details-" + incomeType + " .income_total";
+    const selector = '#page-income-details-' + incomeType + ' .total';
     return Number(document.querySelector(selector).textContent);
   }
 
@@ -1404,7 +1387,7 @@ pageClass: "page-public-assistance"
   function totalResources() {
     // TODO: Add checkbox for users to explicitly specify they have zero
     // resources.
-    const selector = "#page-income-details-assets .income_total";
+    const selector = '#page-income-assets .total';
     return Number(document.querySelector(selector).textContent);
   }
 
