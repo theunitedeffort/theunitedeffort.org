@@ -57,7 +57,7 @@ netlify dev
 
 The site is hosted on [Netlfy](https://netlify.com/) and is managed in a Netlify team called `United Effort Org`.
 
-After setting up the site with Netlify, you will have a CI/CD pipeline set up to deploy on each push to your production git branch. Pushing changes to `main` will automatically build and deploy the site.
+After setting up the site with Netlify, you will have a CI/CD pipeline set up to deploy on each push to your production git branch. Pushing changes to `prod` will automatically build and deploy the site.
 
 ## Planning and contributing
 
