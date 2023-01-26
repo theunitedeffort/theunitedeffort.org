@@ -22,40 +22,56 @@ Data for these page views are drawn from Airtable via the [Airtable API](https:/
 To access the data, the site requires _readonly_ access to Airtable via the appropriate Airtable base ID and the Airtable API key. Provide these via environment variables: 
 
 - `AIRTABLE_API_KEY`
-- `AIRTABLE_BASE_ID` (`apphE4mk8YDqyHM0I`)
+- `AIRTABLE_BASE_ID=apphE4mk8YDqyHM0I`
 
-Permissions to the Airtable base can be granted by the adminitrators of [UEO Airbase](https://airtable.com/apphE4mk8YDqyHM0I/)
+Permissions to the Airtable base can be granted by the adminitrators of the [UEO base](https://airtable.com/apphE4mk8YDqyHM0I/).
+Once you have at least read access to the base, you can get a value for `AIRTABLE_API_KEY` by [generating an Airtable personal access token](https://airtable.com/create/tokens/new) with `data.records:read` scope on the UEO Housing Database.
+
+Public transit data is also drawn from [511 SF Bay](https://511.org).  If you want this data in your development site, you will need to provide an addtional environment variable:
+
+- `SF_BAY_511_API_KEY`
+
+You can get such an API key by [requesting it from 511](https://511.org/open-data/token).
 
 ## Local development
+### Prerequisites
+[npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
+### Environment setup
 To make your own copy of this site and begin development, follow these instructions:
 
-```bash
-# clone this repo
-git clone https://github.com/theunitedeffort/theunitedeffort.org
 
-# move into the working directory and install dependencies
+#### Clone this repo
+```bash
+git clone https://github.com/theunitedeffort/theunitedeffort.org
+```
+
+#### Install dependencies
+```bash
 cd theunitedeffort.org
 npm install
+```
 
-# install Netlify CLI for centralized env var management
-# and serverless function views
+#### Install Netlify CLI
+```bash
 npm i -g netlify-cli
+```
 
-# Set up a new Netlify site for deployment and local dev coordination
-netlify init  
+#### Set environment variables
+Note you may want to add these to your `.bashrc` file or Node.js `.env` file to save them across sessions.
+```bash
+export AIRTABLE_BASE_ID=apphE4mk8YDqyHM0I
+export AIRTABLE_API_KEY={YOUR PERSONAL ACCESS TOKEN}
+```
 
-# set environment variables
-netlify env:set AIRTABLE_BASE_ID apphE4mk8YDqyHM0I
-netlify env:set AIRTABLE_API_KEY {YOUR ENV VAR VALUE}
-
-# run local development build and server
+#### Run local development build and server
+```bash
 netlify dev
 ```
 
 ## Hosting and Deployment
 
-The site is hosted on [Netlfy](https://netlify.com/) and is managed in a Netlify team called `United Effort Org`.
+The site is hosted on [Netlify](https://netlify.com/) and is managed in a Netlify team called `United Effort Org`.
 
 After setting up the site with Netlify, you will have a CI/CD pipeline set up to deploy on each push to your production git branch. Pushing changes to `prod` will automatically build and deploy the site.
 
