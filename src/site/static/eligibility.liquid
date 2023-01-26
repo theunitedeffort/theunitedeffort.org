@@ -807,11 +807,13 @@ pageClass: "page-public-assistance"
       setMemberIncomeHeading(newList,
         newMember.querySelector('h4').textContent);
       // Remove all items from the new list
+      // TODO: make a generic list reset method.
       const items = newList.querySelectorAll('ul.dynamic_field_list>li');
       for (const item of items) {
         item.remove();
       }
 
+      // TODO: combine with similar dynamic field list code
       // Ensure IDs are unique, and update input labels to match.
       const templ = newList.querySelector('template');
       const idElements = templ.content.querySelectorAll('[id]');
@@ -877,9 +879,9 @@ pageClass: "page-public-assistance"
     const items = list.querySelectorAll("li");
     // Figure out the largest id index used so far.
     const lastInput = items[items.length - 1]?.querySelector("input");
-    let lastIdNumber;
+    let lastIdNumber = -1;
     if (lastInput) {
-      lastIdNumber = lastInput.id.match(/-\d+$/g);
+      lastIdNumber = Number(lastInput.id.match(/-\d+$/g)?.[0]?.slice(1)) || 0;
     }
     // Create a new item using a template tag or, if none is present, the first
     // item in the list as a template.
@@ -893,15 +895,7 @@ pageClass: "page-public-assistance"
     }
     const newInputs = newItem.querySelectorAll("input, select");
     const newLabels = newItem.querySelectorAll("label");
-    let newIdNumber;
-    if (lastInput) {
-      newIdNumber = 1;
-    } else {
-      newIdNumber = 0;
-    }
-    if (lastIdNumber) {
-      newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
-    }
+    const newIdNumber = lastIdNumber + 1;
     // Save the reference ID for later access.
     newItem.dynamicFieldListId = newIdNumber;
     // Ensure element ids are unique and clear out any inputs that a user may 
@@ -920,6 +914,7 @@ pageClass: "page-public-assistance"
     // Update the item heading if there is one.
     const itemHeading = newItem.querySelector("h3,h4,h5,h6");
     if (itemHeading) {
+      // Add one for 1 indexing of headings vs 0 indexing of IDs.
       itemHeading.textContent = itemHeading.textContent.replace(
         /\d+$/, newIdNumber + 1);
     }
