@@ -32,10 +32,10 @@ To make your own copy of this site and begin development, follow these instructi
 
 ```bash
 # clone this repo
-git clone https://github.com/philhawksworth/the-united-effort-orginization
+git clone https://github.com/theunitedeffort/theunitedeffort.org
 
 # move into the working directory and install dependencies
-cd the-united-effort-orginization
+cd theunitedeffort.org
 npm install
 
 # install Netlify CLI for centralized env var management
