@@ -803,33 +803,29 @@ pageClass: "page-public-assistance"
       'div[id^="page-income-"]');
     for (const incomePage of incomePages) {
       const firstFieldset = incomePage.querySelector('fieldset');
-      const newList = firstFieldset.cloneNode(true);
-      setMemberIncomeHeading(newList,
+      const newFieldset = firstFieldset.cloneNode(true);
+      setMemberIncomeHeading(newFieldset,
         newMember.querySelector('h4').textContent);
       // Remove all items from the new list
-      // TODO: make a generic list reset method.
-      const items = newList.querySelectorAll('ul.dynamic_field_list>li');
+      // TODO: make a generic list reset method.  This only works because
+      // this particular dynamic field list has no default item first.
+      const items = newFieldset.querySelectorAll('ul.dynamic_field_list>li');
       for (const item of items) {
         item.remove();
       }
 
-      // TODO: combine with similar dynamic field list code
       // Ensure IDs are unique, and update input labels to match.
-      const templ = newList.querySelector('template');
-      const idElements = templ.content.querySelectorAll('[id]');
-      const labels = templ.content.querySelectorAll('label');
+      const templ = newFieldset.querySelector('template');
       const idModifier = '-member' + newMember.dynamicFieldListId;
-      for (const elem of idElements) {
-        elem.id = elem.id + idModifier;
-      }
-      for (const label of labels) {
-        label.setAttribute('for', label.getAttribute('for') + idModifier);
-      }
+      modifyIds(templ.content, idModifier);
 
-      firstFieldset.parentNode.appendChild(newList);
-      const addButton = newList.querySelector('button.field_list_add');
+      // Register event listeners with the new button.
+      // TODO: combine with similar init code.
+      const addButton = newFieldset.querySelector('button.field_list_add');
       addButton.addEventListener('click', addDynamicFieldListItem);
-      newMember.incomeLists.push(newList);
+
+      firstFieldset.parentNode.appendChild(newFieldset);
+      newMember.incomeLists.push(newFieldset);
     }
   }
 
@@ -872,6 +868,31 @@ pageClass: "page-public-assistance"
     incomeFieldset.querySelector('legend').textContent = value;
   }
 
+  function modifyIds(parent, idModifier) {
+    const newElems = parent.querySelectorAll('[id], [for]');
+    for (const elem of newElems) {
+      if (elem.id) {
+        elem.id = elem.id + idModifier;
+      }
+      const forAttr = elem.getAttribute('for');
+      if (forAttr) {
+        elem.setAttribute('for', forAttr + idModifier);
+      }
+    }
+  }
+
+  function clearInputs(parent) {
+    const newElems = parent.querySelectorAll('input, select');
+    for (const elem of newElems) {
+      if (elem.value) {
+        elem.value = '';
+      }
+      if (elem.checked) {
+        elem.checked = false;
+      }
+    }
+  }
+
   // Adds an item to a dynamic list of fields.
   function addDynamicFieldListItem() {
     const list = this.parentElement.parentElement.querySelector(
@@ -893,24 +914,14 @@ pageClass: "page-public-assistance"
     } else {
       newItem = items[0].cloneNode(true);
     }
-    const newInputs = newItem.querySelectorAll("input, select");
-    const newLabels = newItem.querySelectorAll("label");
     const newIdNumber = lastIdNumber + 1;
     // Save the reference ID for later access.
     newItem.dynamicFieldListId = newIdNumber;
-    // Ensure element ids are unique and clear out any inputs that a user may 
+    // Ensure element ids are unique and clear out any inputs that a user may
     // have entered on the template list item.
-    for (const input of newInputs) {
-      input.value = "";
-      if (input.checked) {
-        input.checked = false;
-      }
-      input.id = input.id + "-" + newIdNumber;
-    }
-    // Ensure labels match the new input id values.
-    for (const label of newLabels) {
-      label.setAttribute("for", label.getAttribute("for") + "-" + newIdNumber);
-    }
+    modifyIds(newItem, '-' + newIdNumber);
+    clearInputs(newItem);
+
     // Update the item heading if there is one.
     const itemHeading = newItem.querySelector("h3,h4,h5,h6");
     if (itemHeading) {
