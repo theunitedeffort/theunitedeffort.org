@@ -9,6 +9,10 @@ const fetchTransitData = async(operator_id) => {
   if (!OPERATOR_ID_MAP.hasOwnProperty(operator_id)) {
     return [];
   }
+  if (!process.env.SF_BAY_511_API_KEY) {
+    console.warn('Warning: SF_BAY_511_API_KEY environment variable is not defined. Public transit data will not be available.');
+    return [];
+  }
   const endpoint = `https://api.511.org/transit/stops?api_key=${process.env.SF_BAY_511_API_KEY}&operator_id=${operator_id}&format=json`;
   
   // For some reason the response includes a zero width space at
