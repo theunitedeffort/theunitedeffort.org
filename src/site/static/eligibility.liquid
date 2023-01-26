@@ -819,10 +819,7 @@ pageClass: "page-public-assistance"
       const idModifier = '-member' + newMember.dynamicFieldListId;
       modifyIds(templ.content, idModifier);
 
-      // Register event listeners with the new button.
-      // TODO: combine with similar init code.
-      const addButton = newFieldset.querySelector('button.field_list_add');
-      addButton.addEventListener('click', addDynamicFieldListItem);
+      addDynamicFieldListListeners(newFieldset);
 
       firstFieldset.parentNode.appendChild(newFieldset);
       newMember.incomeLists.push(newFieldset);
@@ -1166,6 +1163,14 @@ pageClass: "page-public-assistance"
     markSectionDone(currentPage.section);
   }
 
+  function addDynamicFieldListListeners(parent) {
+    const fieldListAddButtons = parent.querySelectorAll(
+      'button.field_list_add');
+    for (const button of fieldListAddButtons) {
+      button.addEventListener("click", addDynamicFieldListItem);
+    }
+  }
+
   // Sets up listeners for the document.
   function addListeners() {
     // Form inputs
@@ -1173,11 +1178,8 @@ pageClass: "page-public-assistance"
     for (const input of inputs) {
       input.addEventListener("input", onInput);
     }
-    const fieldListAddButtons = document.querySelectorAll(
-      'button.field_list_add');
-    for (const button of fieldListAddButtons) {
-      button.addEventListener("click", addDynamicFieldListItem);
-    }
+
+    addDynamicFieldListListeners(document);
     const incomeLists = document.querySelectorAll("#section-income .income_details_wrapper");
     for (const incomeList of incomeLists) {
       incomeList.addEventListener("input", updateIncomeTotal);
