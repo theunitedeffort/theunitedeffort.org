@@ -66,6 +66,10 @@ pageClass: "page-public-assistance"
               <label for="veteran">I am a U.S. veteran</label>
             </li>
             <li>
+              <input id="employed" type="checkbox" />
+              <label for="employed">I am employed</label>
+            </li>
+            <li>
               <input id="pregnant" type="checkbox" />
               <label for="pregnant">I am pregnant or was pregnant within the last 6 months</label>
             </li>
@@ -269,6 +273,10 @@ pageClass: "page-public-assistance"
         <div>
           <ul id="hh-member-types" class="multiselect">
             <li>
+              <input id="hh-member-employed" type="checkbox">
+              <label for="hh-member-employed">This person is employed</label>
+            </li>
+            <li>
               <input id="hh-member-disabled" type="checkbox">
               <label for="hh-member-disabled">This person is disabled</label>
             </li>
@@ -356,7 +364,6 @@ pageClass: "page-public-assistance"
   {% eligSection "income" %}
     <h2>Income</h2>
     {% eligPage "income" %}
-    <h3>Your Income</h3>
       <p>
         Select all sources of income for you and your household. Include income from <span class="bold">all members of your household, including yourself</span>.
       </p>
@@ -797,7 +804,7 @@ pageClass: "page-public-assistance"
     for (const incomePage of incomePages) {
       const firstFieldset = incomePage.querySelector('fieldset');
       const newList = firstFieldset.cloneNode(true);
-      newList.querySelector('legend').textContent = (
+      setMemberIncomeHeading(newList,
         newMember.querySelector('h4').textContent);
       // Remove all items from the new list
       const items = newList.querySelectorAll('ul.dynamic_field_list>li');
@@ -851,10 +858,16 @@ pageClass: "page-public-assistance"
   function onChangeName() {
     // TODO: Revert to placeholder if the name is deleted.
     const item = this.closest('ul.dynamic_field_list>li');
+    // Update the heading to the household member's name.
     item.querySelector('h4').textContent = this.value;
+    // Also update the headings in all the income details pages..
     for (const incomeList of item.incomeLists) {
-      incomeList.querySelector('legend').textContent = this.value;
+      setMemberIncomeHeading(incomeList, this.value);
     }
+  }
+
+  function setMemberIncomeHeading(incomeFieldset, value) {
+    incomeFieldset.querySelector('legend').textContent = value;
   }
 
   // Adds an item to a dynamic list of fields.
