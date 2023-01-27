@@ -854,7 +854,7 @@ pageClass: "page-public-assistance"
     const item = this.closest('ul.dynamic_field_list>li');
     // Update the heading to the household member's name.
     item.querySelector('h4').textContent = this.value;
-    // Also update the headings in all the income details pages..
+    // Also update the headings in all the income details pages.
     for (const incomeList of item.incomeLists) {
       setMemberIncomeHeading(incomeList, this.value);
     }
@@ -1386,35 +1386,77 @@ pageClass: "page-public-assistance"
     return (date1.getMonth() + 1 + '/' + date1.getDate() + '/' + date1.getFullYear());
   }
 
-  function incomeTotal(incomeType) {
-    const selector = '#page-income-details-' + incomeType + ' .total';
-    return Number(document.querySelector(selector).textContent);
+  function pageTotal(pageId, hhMemberIdx=null) {
+    // TODO: Can this be refactored to be combined with updateIncomeTotal?
+    if (hhMemberIdx === null) {
+      // Return income total for entire household.
+      return Number(
+        document.querySelector('#' + pageId + ' .total').textContent);
+    }
+    incomeGroups = document.querySelectorAll(
+      '#' + pageId + ' .income_details_wrapper>fieldset');
+    if (hhMemberIdx < 0 || hhMemberIdx > incomeGroups.length - 1) {
+      return 0;
+    }
+    const incomeInputs = incomeGroups[hhMemberIdx].querySelectorAll(
+      'input[type=number]');
+    let sum = 0;
+    for (input of incomeInputs) {
+      sum += Number(input.value);
+    }
+    return sum;
   }
 
-  function totalEarnedIncome() {
-    return incomeTotal("wages") + incomeTotal("self-employed");
+  function incomeTotal(incomeType, hhMemberIdx=null) {
+    return pageTotal('page-income-details-' + incomeType, hhMemberIdx);
   }
 
-  function totalUnearnedIncome() {
-    return (incomeTotal("disability") + incomeTotal("unemployment") +
-      incomeTotal("veterans") + incomeTotal("workers-comp") + 
-      incomeTotal("child-support") + incomeTotal("retirement") + 
-      incomeTotal("other"));
+  function incomeSubTotal(incomeTypes, hhMemberIdx=null) {
+    let sum = 0;
+    for (const incomeType of incomeTypes) {
+      sum += incomeTotal(incomeType, hhMemberIdx);
+    }
+    return sum;
   }
 
-  function grossIncome() {
-    const total = totalEarnedIncome() + totalUnearnedIncome();
-    if (total == 0 && !document.getElementById("income-has-none").checked) {
+  function totalEarnedIncome(hhMemberIdx=null) {
+    // TODO: Do not hardcode this list.
+    const EARNED_INCOME_TYPES = [
+      'wages',
+      'self-employed',
+    ];
+    return incomeSubTotal(EARNED_INCOME_TYPES, hhMemberIdx);
+  }
+
+  function totalUnearnedIncome(hhMemberIdx=null) {
+    // TODO: Do not hardcode this list.
+    const UNEARNED_INCOME_TYPES = [
+      'disability',
+      'unemployment',
+      'veterans',
+      'workers-comp',
+      'child-support',
+      'retirement',
+      'other',
+    ]
+    return incomeSubTotal(UNEARNED_INCOME_TYPES, hhMemberIdx);
+  }
+
+  function grossIncome(hhMemberIdx=null) {
+    const householdTotal = totalEarnedIncome() + totalUnearnedIncome();
+    // Return null only if no income of any kind for any household member was
+    // entered (and the household was not marked as having zero income).
+    if (householdTotal == 0
+        && !document.getElementById("income-has-none").checked) {
       return null;
     }
-    return total;
+    return totalEarnedIncome(hhMemberIdx) + totalUnearnedIncome(hhMemberIdx);
   }
 
-  function totalResources() {
+  function totalResources(hhMemberIdx=null) {
     // TODO: Add checkbox for users to explicitly specify they have zero
     // resources.
-    const selector = '#page-income-assets .total';
-    return Number(document.querySelector(selector).textContent);
+    return pageTotal('page-income-assets', hhMemberIdx);
   }
 
   function householdSize() {
@@ -1844,8 +1886,37 @@ pageClass: "page-public-assistance"
   }
 
   function ssiEligible() {
-    // TODO
-    return false;
+    const SGA_NON_BLIND= 1470;  // USD per month
+    const SGA_BLIND = 2460;  // USD per month
+    const MAX_RESOURCES = 2000;  // USD
+
+    const age = document.getElementById("age").value || null;
+    const isBlind = document.getElementById('blind').checked;
+
+    const meetsDisabilityReq = and(
+      or(
+        document.getElementById('disabled').checked,
+        isBlind),
+      document.getElementById('dis_prev_work_yes').checked,
+      ge(age, 65)
+      );
+
+    const meetsImmigrationReq = or(
+      !document.getElementById('not-citizen').checked,
+      document.getElementById("permanent_resident").checked,
+      document.getElementById("qualified_noncitizen_gt5y").checked,
+      document.getElementById("qualified_noncitizen_le5y").checked);
+
+    // Note income and resources for only the user (applicant) are counted.
+    const incomeLimit = isBlind ? SGA_BLIND : SGA_NON_BLIND;
+    const underIncomeLimit = le(grossIncome(0), incomeLimit);
+
+    const underResourceLimit = le(totalResources(0), MAX_RESOURCES);
+    return and(
+      meetsDisabilityReq,
+      meetsImmigrationReq,
+      underIncomeLimit,
+      underResourceLimit);
   }
 
   function ssdiEligible() {
