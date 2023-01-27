@@ -807,11 +807,10 @@ pageClass: "page-public-assistance"
       setMemberIncomeHeading(newFieldset,
         newMember.querySelector('h4').textContent);
       // Remove all items from the new list
-      // TODO: make a generic list reset method.  This only works because
-      // this particular dynamic field list has no default item first.
-      const items = newFieldset.querySelectorAll('ul.dynamic_field_list>li');
-      for (const item of items) {
-        item.remove();
+      const itemsToRemove = newFieldset.querySelectorAll(
+        'ul.dynamic_field_list>li:not([data-static-item])');
+      for (const item of itemsToRemove) {
+        removeDynamicFieldListItem(item);
       }
 
       // Ensure IDs are unique, and update input labels to match.
@@ -892,6 +891,7 @@ pageClass: "page-public-assistance"
 
   // Adds an item to a dynamic list of fields.
   function addDynamicFieldListItem() {
+    // TODO: update to use .closest()
     const list = this.parentElement.parentElement.querySelector(
       "ul.dynamic_field_list");
     const items = list.querySelectorAll("li");
@@ -931,7 +931,7 @@ pageClass: "page-public-assistance"
     removeButton.classList.add("link");
     removeButton.textContent = "remove";
     removeButton.setAttribute("type", "button");
-    removeButton.addEventListener("click", removeDynamicFieldListItem);
+    removeButton.addEventListener("click", onDynamicFieldListRemove);
     const fragment = new DocumentFragment();
     fragment.append(" (", removeButton, ")");
     // If there is a heading, put the remove button after it.  Otherwise,
@@ -943,41 +943,42 @@ pageClass: "page-public-assistance"
     }
     // Add our new item to the list.
     list.appendChild(newItem);
-    updateDynamicFieldListButtons();
+    updateDynamicFieldListButton(this);
   }
 
-  function removeDynamicFieldListItem() {
-    const item = this.parentElement;
-    const parent = item.parentElement;
+  function removeDynamicFieldListItem(listItem) {
+    const list = listItem.parentElement;
 
     // If the item is a household member, it will have associated income lists.
-    if (item.incomeLists) {
-      for (const list of item.incomeLists) {
-        const parent = list.parentElement;
-        list.remove();
+    if (listItem.incomeLists) {
+      for (const fieldset of listItem.incomeLists) {
+        const parent = fieldset.parentElement;
+        fieldset.remove();
         parent.dispatchEvent(
           new Event("input", {bubbles: true, cancelable: false}));
       }
     }
 
-    item.remove();
+    listItem.remove();
     // Can't dispatch the event on the item since it's removed.
-    parent.dispatchEvent(
+    list.dispatchEvent(
       new Event("input", {bubbles: true, cancelable: false}));
-    updateDynamicFieldListButtons();
+    const fieldListButton = (
+      list.parentElement.querySelector('button.field_list_add'));
+    updateDynamicFieldListButton(fieldListButton);
   }
 
-  function updateDynamicFieldListButtons() {
-    const fieldListAddButtons = document.querySelectorAll(
-      'button.field_list_add');
-    for (const button of fieldListAddButtons) {
-      const wrapper = button.closest('.dynamic_field_list_wrapper');
-      const items = wrapper.querySelectorAll('ul.dynamic_field_list>li');
-      if (items.length) {
-        button.textContent = button.dataset.nonEmptyText;
-      } else {
-        button.textContent = button.dataset.emptyText || button.dataset.nonEmptyText;
-      }
+  function onDynamicFieldListRemove() {
+    removeDynamicFieldListItem(this.closest('li'));
+  }
+
+  function updateDynamicFieldListButton(button) {
+    const wrapper = button.closest('.dynamic_field_list_wrapper');
+    const items = wrapper.querySelectorAll('ul.dynamic_field_list>li');
+    if (items.length) {
+      button.textContent = button.dataset.nonEmptyText;
+    } else {
+      button.textContent = button.dataset.emptyText || button.dataset.nonEmptyText;
     }
   }
 
@@ -1209,7 +1210,11 @@ pageClass: "page-public-assistance"
     buildStepIndicator();
     // All pages and sections are initially hidden by default.
     showFirstPage();
-    updateDynamicFieldListButtons();
+    const fieldListAddButtons = document.querySelectorAll(
+      'button.field_list_add');
+    for (const button of fieldListAddButtons) {
+      updateDynamicFieldListButton(button);
+    }
   }
 
   // Gets all page elements and links them together in sequence.

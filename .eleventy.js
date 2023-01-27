@@ -371,7 +371,7 @@ module.exports = function(eleventyConfig) {
     }
     if (listItemContent.trim()) {
       listItemStr = `
-        <li>
+        <li data-static-item>
           ${listItemContent}
         </li>`;
     }
