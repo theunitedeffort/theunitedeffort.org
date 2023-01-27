@@ -1387,6 +1387,7 @@ pageClass: "page-public-assistance"
   }
 
   function pageTotal(pageId, hhMemberIdx=null) {
+    // TODO: Can this be refactored to be combined with updateIncomeTotal?
     if (hhMemberIdx === null) {
       // Return income total for entire household.
       return Number(
@@ -1407,7 +1408,6 @@ pageClass: "page-public-assistance"
   }
 
   function incomeTotal(incomeType, hhMemberIdx=null) {
-    // TODO: Can this be refactored to be combined with updateIncomeTotal?
     return pageTotal('page-income-details-' + incomeType, hhMemberIdx);
   }
 
@@ -1420,6 +1420,7 @@ pageClass: "page-public-assistance"
   }
 
   function totalEarnedIncome(hhMemberIdx=null) {
+    // TODO: Do not hardcode this list.
     const EARNED_INCOME_TYPES = [
       'wages',
       'self-employed',
@@ -1428,6 +1429,7 @@ pageClass: "page-public-assistance"
   }
 
   function totalUnearnedIncome(hhMemberIdx=null) {
+    // TODO: Do not hardcode this list.
     const UNEARNED_INCOME_TYPES = [
       'disability',
       'unemployment',
