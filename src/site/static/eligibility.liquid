@@ -1875,9 +1875,23 @@ pageClass: "page-public-assistance"
   }
 
   function ssiEligible() {
+    // https://www.ssa.gov/oact/cola/sga.html
     const SGA_NON_BLIND= 1470;  // USD per month
     const SGA_BLIND = 2460;  // USD per month
+
+    // https://www.ssa.gov/oact/cola/SSI.html
+    const MAX_BENEFIT = 914;  // USD per month
+
+    https://www.ssa.gov/ssi/text-resources-ussi.htm
     const MAX_RESOURCES = 2000;  // USD
+
+    // https://www.ssa.gov/oact/cola/incomexcluded.html
+    const MAX_UNEARNED_INCOME_EXCLUSION = 20;  // USD per month
+    const MAX_EARNED_INCOME_EXCLUSION = 65;  // USD per month
+    const EARNED_INCOME_EXCLUSION_FACTOR = 0.5;
+
+    // https://www.ssa.gov/ssi/text-eligibility-ussi.htm
+    const MIN_ELDERLY_AGE = 65;  // Years
 
     const age = document.getElementById("age").value || null;
     const isBlind = document.getElementById('blind').checked;
@@ -1887,7 +1901,7 @@ pageClass: "page-public-assistance"
         document.getElementById('disabled').checked,
         isBlind),
       document.getElementById('dis_prev_work_yes').checked,
-      ge(age, 65)
+      ge(age, MIN_ELDERLY_AGE)
       );
 
     const meetsImmigrationReq = or(
@@ -1896,14 +1910,29 @@ pageClass: "page-public-assistance"
       document.getElementById("qualified_noncitizen_gt5y").checked,
       document.getElementById("qualified_noncitizen_le5y").checked);
 
+    const sgaLimit = isBlind ? SGA_BLIND : SGA_NON_BLIND;
     // Note income and resources for only the user (applicant) are counted.
-    const incomeLimit = isBlind ? SGA_BLIND : SGA_NON_BLIND;
-    const underIncomeLimit = le(grossIncome(0), incomeLimit);
+    const earnedIncome = totalEarnedIncome(0);
+    const unearnedIncome = totalUnearnedIncome(0);
 
+    // See https://www.ssa.gov/oact/cola/incomexcluded.html for calculation.
+    const unearnedExclusion = Math.min(unearnedIncome,
+      MAX_UNEARNED_INCOME_EXCLUSION);
+    const countableEarnedIncome = Math.max(0, EARNED_INCOME_EXCLUSION_FACTOR * (
+      earnedIncome -
+      MAX_EARNED_INCOME_EXCLUSION -
+      (MAX_UNEARNED_INCOME_EXCLUSION - unearnedExclusion)));
+    const countableUnearnedIncome = unearnedIncome - unearnedExclusion;
+    const countableIncome = countableEarnedIncome + countableUnearnedIncome;
+
+    const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
+    const underIncomeLimit = lt(countableIncome, MAX_BENEFIT);
     const underResourceLimit = le(totalResources(0), MAX_RESOURCES);
+
     return and(
       meetsDisabilityReq,
       meetsImmigrationReq,
+      noSubstantialGainfulActivity,
       underIncomeLimit,
       underResourceLimit);
   }
