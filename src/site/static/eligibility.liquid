@@ -66,10 +66,6 @@ pageClass: "page-public-assistance"
               <label for="veteran">I am a U.S. veteran</label>
             </li>
             <li>
-              <input id="employed" type="checkbox" />
-              <label for="employed">I am employed</label>
-            </li>
-            <li>
               <input id="pregnant" type="checkbox" />
               <label for="pregnant">I am pregnant or was pregnant within the last 6 months</label>
             </li>
@@ -272,10 +268,6 @@ pageClass: "page-public-assistance"
         </div>
         <div>
           <ul id="hh-member-types" class="multiselect">
-            <li>
-              <input id="hh-member-employed" type="checkbox">
-              <label for="hh-member-employed">This person is employed</label>
-            </li>
             <li>
               <input id="hh-member-disabled" type="checkbox">
               <label for="hh-member-disabled">This person is disabled</label>
@@ -1621,9 +1613,9 @@ pageClass: "page-public-assistance"
       'input[id^="hh-member-age"]')).map(i => i.value || null);
     const hhDisabled = Array.from(document.querySelectorAll(
       'input[id^="hh-member-disabled"]')).map(i => i.checked);
-    // TODO: change how this employment data is captured.
-    const hhEmployed = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-employed"]')).map(i => i.checked);
+    // This employment array includes the user (idx 0) and the user's household.
+    const employed = (
+      [...Array(householdSize()).keys()].map(i => totalEarnedIncome(i) > 0));
 
     const meetsImmigrationReq = or(
       !document.getElementById("not-citizen").checked,
@@ -1639,11 +1631,8 @@ pageClass: "page-public-assistance"
       document.getElementById("pregnant").checked
     );
 
-    let numEmployed = hhEmployed.filter(e => e).length;
-    // TODO: change how this employment data is captured.
-    if (document.getElementById("employed").checked) {
-      numEmployed++;
-    }
+    const numEmployed = employed.filter(e => e).length;
+
     // If household ages are not given, just don't take the disregards rather
     // than propagate null age values.
     // Note if the applicant is under 19, they do not count as a child for
