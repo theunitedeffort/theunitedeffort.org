@@ -260,39 +260,39 @@ pageClass: "page-public-assistance"
         Enter details for each person living in your household.  Information you have already entered about yourself is pre-filled.
       </p>
 
-      {% dynamicFieldList "Add a new household member", firstItem %}
+      {% capture hhTemplate %}
+        <h4>Household Member 2</h4>
+        <div>
+          <label for="hh-member-name">First Name</label>
+          <input id="hh-member-name" type="text" class="short">
+        </div>
+        <div>
+          <label for="hh-member-age">Age</label>
+          <input id="hh-member-age" type="number" min="1" max="130"> years
+        </div>
+        <div>
+          <ul id="hh-member-types" class="multiselect">
+            <li>
+              <input id="hh-member-employed" type="checkbox">
+              <label for="hh-member-employed">This person is employed</label>
+            </li>
+            <li>
+              <input id="hh-member-disabled" type="checkbox">
+              <label for="hh-member-disabled">This person is disabled</label>
+            </li>
+            <li>
+              <input id="hh-member-dependent" type="checkbox">
+              <label for="hh-member-dependent">This person is my dependent</label>
+            </li>
+          </ul>
+        </div>
+      {% endcapture %}
+      {% dynamicFieldList "Add a new household member", "", hhTemplate %}
         <h4>Myself</h4>
         <div>
           <label for="hh-myself-age">Age</label>
           <input id="hh-myself-age" type="number" min="1" max="130"> years
         </div>
-        <template>
-          <h4>Household Member 2</h4>
-          <div>
-            <label for="hh-member-name">First Name</label>
-            <input id="hh-member-name" type="text" class="short">
-          </div>
-          <div>
-            <label for="hh-member-age">Age</label>
-            <input id="hh-member-age" type="number" min="1" max="130"> years
-          </div>
-          <div>
-            <ul id="hh-member-types" class="multiselect">
-              <li>
-                <input id="hh-member-employed" type="checkbox">
-                <label for="hh-member-employed">This person is employed</label>
-              </li>
-              <li>
-                <input id="hh-member-disabled" type="checkbox">
-                <label for="hh-member-disabled">This person is disabled</label>
-              </li>
-              <li>
-                <input id="hh-member-dependent" type="checkbox">
-                <label for="hh-member-dependent">This person is my dependent</label>
-              </li>
-            </ul>
-          </div>
-        </template>
       {% enddynamicFieldList %}
     {% endeligPage %}
 
@@ -459,20 +459,10 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
 
     {% eligPage "income-assets" %}
-      <h3>Assets</h3>
-      <p>
-        What is the value of all assets or resources you and your household have?  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
-      </p>
-      {% dynamicFieldList "Add another asset" %}
-        <h4>Asset 1</h4>
-        <div>
-          <label for="income-asset">Value</label>
-          $ <input id="income-asset" type="number" class="long">
-        </div>
-      {% enddynamicFieldList %}
-      <p>
-        Combined household assets: <span class="bold">$<span class="income_total">0</span></span>
-      </p>
+      {% capture assetPreamble %}
+        Enter the values of all assets or resources you and your household have.  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
+      {% endcapture %}
+      {% render "eligibility-income-details" desc: "assets", heading: "Asset", id: "asset", preamble: assetPreamble, buttonText: "Add another asset", emptyButtonText: "Enter an asset for this person", sumDesc: "Combined household assets", sumUnit: " " %}
     {% endeligPage %}
   {% endeligSection %}
 
@@ -802,6 +792,37 @@ pageClass: "page-public-assistance"
       input.removeEventListener('change', onChangeName);
       input.addEventListener('change', onChangeName);
     }
+
+    // Get the household member that was just added.
+    const newMember = this.closest('.elig_page').querySelector(
+      'ul.dynamic_field_list').lastChild;
+    newMember.incomeLists = [];
+
+    // Insert an income fieldset for that new member in each income page.
+    const incomePages = document.querySelectorAll(
+      'div[id^="page-income-"]');
+    for (const incomePage of incomePages) {
+      const firstFieldset = incomePage.querySelector('fieldset');
+      const newFieldset = firstFieldset.cloneNode(true);
+      setMemberIncomeHeading(newFieldset,
+        newMember.querySelector('h4').textContent);
+      // Remove all items from the new list
+      const itemsToRemove = newFieldset.querySelectorAll(
+        'ul.dynamic_field_list>li:not([data-static-item])');
+      for (const item of itemsToRemove) {
+        removeDynamicFieldListItem(item);
+      }
+
+      // Ensure IDs are unique, and update input labels to match.
+      const templ = newFieldset.querySelector('template');
+      const idModifier = '-member' + newMember.dynamicFieldListId;
+      modifyIds(templ.content, idModifier);
+
+      addDynamicFieldListListeners(newFieldset);
+
+      firstFieldset.parentNode.appendChild(newFieldset);
+      newMember.incomeLists.push(newFieldset);
+    }
   }
 
   function onChangeNoIncome() {
@@ -829,24 +850,60 @@ pageClass: "page-public-assistance"
   }
 
   function onChangeName() {
-    const item = this.closest('ul.dynamic_field_list li');
+    // TODO: Revert to placeholder if the name is deleted.
+    const item = this.closest('ul.dynamic_field_list>li');
+    // Update the heading to the household member's name.
     item.querySelector('h4').textContent = this.value;
+    // Also update the headings in all the income details pages..
+    for (const incomeList of item.incomeLists) {
+      setMemberIncomeHeading(incomeList, this.value);
+    }
+  }
+
+  function setMemberIncomeHeading(incomeFieldset, value) {
+    incomeFieldset.querySelector('legend').textContent = value;
+  }
+
+  function modifyIds(parent, idModifier) {
+    const newElems = parent.querySelectorAll('[id], [for]');
+    for (const elem of newElems) {
+      if (elem.id) {
+        elem.id = elem.id + idModifier;
+      }
+      const forAttr = elem.getAttribute('for');
+      if (forAttr) {
+        elem.setAttribute('for', forAttr + idModifier);
+      }
+    }
+  }
+
+  function clearInputs(parent) {
+    const newElems = parent.querySelectorAll('input, select');
+    for (const elem of newElems) {
+      if (elem.value) {
+        elem.value = '';
+      }
+      if (elem.checked) {
+        elem.checked = false;
+      }
+    }
   }
 
   // Adds an item to a dynamic list of fields.
   function addDynamicFieldListItem() {
+    // TODO: update to use .closest()
     const list = this.parentElement.parentElement.querySelector(
       "ul.dynamic_field_list");
     const items = list.querySelectorAll("li");
     // Figure out the largest id index used so far.
-    const lastInput = items[items.length - 1].querySelector("input");
-    let lastIdNumber;
+    const lastInput = items[items.length - 1]?.querySelector("input");
+    let lastIdNumber = -1;
     if (lastInput) {
-      lastIdNumber = lastInput.id.match(/-\d+$/g);
+      lastIdNumber = Number(lastInput.id.match(/-\d+$/g)?.[0]?.slice(1)) || 0;
     }
     // Create a new item using a template tag or, if none is present, the first
     // item in the list as a template.
-    const template = items[0].querySelector("template");
+    const template = list.querySelector("template");
     let newItem;
     if (template) {
       newItem = document.createElement("li")
@@ -854,25 +911,18 @@ pageClass: "page-public-assistance"
     } else {
       newItem = items[0].cloneNode(true);
     }
-    const newInputs = newItem.querySelectorAll("input, select");
-    const newLabels = newItem.querySelectorAll("label");
-    let newIdNumber = 1;
-    if (lastIdNumber) {
-      newIdNumber = Number(lastIdNumber[0].slice(1)) + 1;
-    }
-    // Ensure element ids are unique and clear out any inputs that a user may 
+    const newIdNumber = lastIdNumber + 1;
+    // Save the reference ID for later access.
+    newItem.dynamicFieldListId = newIdNumber;
+    // Ensure element ids are unique and clear out any inputs that a user may
     // have entered on the template list item.
-    for (const input of newInputs) {
-      input.value = "";
-      input.id = input.id + "-" + newIdNumber;
-    }
-    // Ensure labels match the new input id values.
-    for (const label of newLabels) {
-      label.setAttribute("for", label.getAttribute("for") + "-" + newIdNumber);
-    }
+    modifyIds(newItem, '-' + newIdNumber);
+    clearInputs(newItem);
+
     // Update the item heading if there is one.
     const itemHeading = newItem.querySelector("h3,h4,h5,h6");
     if (itemHeading) {
+      // Add one for 1 indexing of headings vs 0 indexing of IDs.
       itemHeading.textContent = itemHeading.textContent.replace(
         /\d+$/, newIdNumber + 1);
     }
@@ -881,7 +931,7 @@ pageClass: "page-public-assistance"
     removeButton.classList.add("link");
     removeButton.textContent = "remove";
     removeButton.setAttribute("type", "button");
-    removeButton.addEventListener("click", removeDynamicFieldListItem);
+    removeButton.addEventListener("click", onDynamicFieldListRemove);
     const fragment = new DocumentFragment();
     fragment.append(" (", removeButton, ")");
     // If there is a heading, put the remove button after it.  Otherwise,
@@ -893,19 +943,49 @@ pageClass: "page-public-assistance"
     }
     // Add our new item to the list.
     list.appendChild(newItem);
+    updateDynamicFieldListButton(this);
   }
 
-  function removeDynamicFieldListItem() {
-    const item = this.parentElement;
-    const list = this.closest("ul.dynamic_field_list");
-    item.remove();
-    list.dispatchEvent(new Event("input"));
+  function removeDynamicFieldListItem(listItem) {
+    const list = listItem.parentElement;
+
+    // If the item is a household member, it will have associated income lists.
+    if (listItem.incomeLists) {
+      for (const fieldset of listItem.incomeLists) {
+        const parent = fieldset.parentElement;
+        fieldset.remove();
+        parent.dispatchEvent(
+          new Event("input", {bubbles: true, cancelable: false}));
+      }
+    }
+
+    listItem.remove();
+    // Can't dispatch the event on the item since it's removed.
+    list.dispatchEvent(
+      new Event("input", {bubbles: true, cancelable: false}));
+    const fieldListButton = (
+      list.parentElement.querySelector('button.field_list_add'));
+    updateDynamicFieldListButton(fieldListButton);
+  }
+
+  function onDynamicFieldListRemove() {
+    removeDynamicFieldListItem(this.closest('li'));
+  }
+
+  function updateDynamicFieldListButton(button) {
+    const wrapper = button.closest('.dynamic_field_list_wrapper');
+    const items = wrapper.querySelectorAll('ul.dynamic_field_list>li');
+    if (items.length) {
+      button.textContent = button.dataset.nonEmptyText;
+    } else {
+      button.textContent = button.dataset.emptyText || button.dataset.nonEmptyText;
+    }
   }
 
   function updateIncomeTotal() {
-    const page = this.closest(".elig_page");
-    const totalDisplay = page.querySelector(".income_total");
-    const inputs = page.querySelectorAll("input[type=number]");
+    const page = this.closest('.elig_page');
+    const totalDisplay = page.querySelector('.total');
+    const inputs = page.querySelectorAll('input[type=number]');
     let sum = 0;
     for (input of inputs) {
       sum += Number(input.value);
@@ -1084,6 +1164,14 @@ pageClass: "page-public-assistance"
     markSectionDone(currentPage.section);
   }
 
+  function addDynamicFieldListListeners(parent) {
+    const fieldListAddButtons = parent.querySelectorAll(
+      'button.field_list_add');
+    for (const button of fieldListAddButtons) {
+      button.addEventListener("click", addDynamicFieldListItem);
+    }
+  }
+
   // Sets up listeners for the document.
   function addListeners() {
     // Form inputs
@@ -1091,12 +1179,9 @@ pageClass: "page-public-assistance"
     for (const input of inputs) {
       input.addEventListener("input", onInput);
     }
-    const fieldListAddButtons = document.querySelectorAll(
-      'button.field_list_add');
-    for (const button of fieldListAddButtons) {
-      button.addEventListener("click", addDynamicFieldListItem);
-    }
-    const incomeLists = document.querySelectorAll("#section-income ul.dynamic_field_list");
+
+    addDynamicFieldListListeners(document);
+    const incomeLists = document.querySelectorAll("#section-income .income_details_wrapper");
     for (const incomeList of incomeLists) {
       incomeList.addEventListener("input", updateIncomeTotal);
     }
@@ -1125,6 +1210,11 @@ pageClass: "page-public-assistance"
     buildStepIndicator();
     // All pages and sections are initially hidden by default.
     showFirstPage();
+    const fieldListAddButtons = document.querySelectorAll(
+      'button.field_list_add');
+    for (const button of fieldListAddButtons) {
+      updateDynamicFieldListButton(button);
+    }
   }
 
   // Gets all page elements and links them together in sequence.
@@ -1153,7 +1243,7 @@ pageClass: "page-public-assistance"
   // Holder for all page advancing logic that is more complex than simply
   // "the next page in the sequence".
   function customPageLinking(pageById) {
-    
+
     pageById["page-yourself-start"].next = function() {
       if (document.getElementById("age").value < 18 && document.getElementById("age").value > 0) {
         return pageById["page-head-of-household"];
@@ -1297,7 +1387,7 @@ pageClass: "page-public-assistance"
   }
 
   function incomeTotal(incomeType) {
-    const selector = "#page-income-details-" + incomeType + " .income_total";
+    const selector = '#page-income-details-' + incomeType + ' .total';
     return Number(document.querySelector(selector).textContent);
   }
 
@@ -1323,7 +1413,7 @@ pageClass: "page-public-assistance"
   function totalResources() {
     // TODO: Add checkbox for users to explicitly specify they have zero
     // resources.
-    const selector = "#page-income-assets .income_total";
+    const selector = '#page-income-assets .total';
     return Number(document.querySelector(selector).textContent);
   }
 
@@ -1489,6 +1579,7 @@ pageClass: "page-public-assistance"
       'input[id^="hh-member-age"]')).map(i => i.value || null);
     const hhDisabled = Array.from(document.querySelectorAll(
       'input[id^="hh-member-disabled"]')).map(i => i.checked);
+    // TODO: change how this employment data is captured.
     const hhEmployed = Array.from(document.querySelectorAll(
       'input[id^="hh-member-employed"]')).map(i => i.checked);
 
@@ -1507,6 +1598,7 @@ pageClass: "page-public-assistance"
     );
 
     let numEmployed = hhEmployed.filter(e => e).length;
+    // TODO: change how this employment data is captured.
     if (document.getElementById("employed").checked) {
       numEmployed++;
     }
