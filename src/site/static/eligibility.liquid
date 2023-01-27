@@ -1403,7 +1403,6 @@ pageClass: "page-public-assistance"
     for (input of incomeInputs) {
       sum += Number(input.value);
     }
-    console.log(`${pageId} ${hhMemberIdx}: \$${sum}`);
     return sum;
   }
 
@@ -1442,17 +1441,14 @@ pageClass: "page-public-assistance"
   }
 
   function grossIncome(hhMemberIdx=null) {
-    const total = totalEarnedIncome(hhMemberIdx) + totalUnearnedIncome(hhMemberIdx);
-    // TODO: revisit this null return when hhMemberIdx is supplied.
-    // Note the below conditional catches when hhMemberIdx == 0, i.e. the
-    // user's income.  This assumes that if the user's household has income,
-    // some of it belongs to the user.
-    if (!hhMemberIdx
-        && total == 0
+    const householdTotal = totalEarnedIncome() + totalUnearnedIncome();
+    // Return null only if no income of any kind for any household member was
+    // entered (and the household was not marked as having zero income).
+    if (householdTotal == 0
         && !document.getElementById("income-has-none").checked) {
       return null;
     }
-    return total;
+    return totalEarnedIncome(hhMemberIdx) + totalUnearnedIncome(hhMemberIdx);
   }
 
   function totalResources(hhMemberIdx=null) {
