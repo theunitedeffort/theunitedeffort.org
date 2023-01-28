@@ -1357,7 +1357,7 @@ pageClass: "page-public-assistance"
 
   }
 
-  function getSelectValue(id) {
+  function getValueOrNull(id) {
     const val = document.getElementById(id).value;
     if (val === '') {
       return null;
@@ -1811,13 +1811,13 @@ pageClass: "page-public-assistance"
   function vaDisabilityCompEligible() {
     const dutyTypeSelects = Array.from(document.querySelectorAll(
       'select[id^="your-duty-type"]'));
-    const dutyTypes = dutyTypeSelects.map(d => getSelectValue(d.id));
+    const dutyTypes = dutyTypeSelects.map(d => getValueOrNull(d.id));
     const meetsDutyReq = or(
       ...dutyTypes.map(d => eq(d, 'active-duty')),
       ...dutyTypes.map(d => eq(d, 'active-training')),
       ...dutyTypes.map(d => eq(d, 'inactive-training')));
 
-    const dischargeStatus = getSelectValue('your-discharge-status');
+    const dischargeStatus = getValueOrNull('your-discharge-status');
     const meetsDischargeReq = and(
       ne(dischargeStatus, 'dishonorable'),
       ne(dischargeStatus, 'oth'),
@@ -1978,8 +1978,91 @@ pageClass: "page-public-assistance"
   }
 
   function vaPensionEligible() {
-    // TODO
-    return false;
+    // https://www.va.gov/pension/eligibility/
+    const MIN_ELDERLY_AGE = 65;  // Years
+
+    // https://www.va.gov/pension/veterans-pension-rates/
+    const ANNUAL_NET_WORTH_LIMIT = 150538;  // USD per year
+
+    // https://www.va.gov/pension/eligibility/
+    // Each wartime period is defined as a two-element array.  First the
+    // start date, then the end date.  Dates are given as strings with the
+    // format YYYY-MM-DD.  An empty string is intepreted as "today"
+    const WARTIMES = [
+      ['1916-05-09', '1917-04-05'],  // Mexican Border period
+      ['1917-04-05', '1918-11-11'],  // WWI
+      ['1941-12-07', '1946-12-31'],  // WWII
+      ['1950-06-27', '1955-01-31'],  // Korean conflict
+      ['1955-11-01', '1975-05-07'],  // Vietnam War, in Vietnam
+      ['1964-08-05', '1975-05-07'],  // Vietnam War, out of Vietnam
+      ['1990-08-02', ''],            // Gulf war, no end date yet.
+    ];
+
+    const dischargeStatus = getValueOrNull('your-discharge-status');
+    const meetsDischargeReq = and(
+      ne(dischargeStatus, 'dishonorable'),
+      ne(dischargeStatus, 'oth'),
+      ne(dischargeStatus, 'bad-conduct'));
+
+    const meetsDisabilityReq = or(
+      ge(age, MIN_ELDERLY_AGE),
+      document.getElementById('disabled').checked,
+      document.getElementById("existing-ssi-me").checked,
+      document.getElementById("existing-ssi-household").checked,
+      document.getElementById("existing-ssdi-me").checked,
+      document.getElementById("existing-ssdi-household").checked,
+      ssiEligible(),
+      ssdiEligible());
+
+    const dutyPeriods = document.querySelectorAll(
+      '#page-veteran-details ul.dynamic_field_list>li');
+
+    const meetsServiceReq = [];
+    for (const dutyPeriod of dutyPeriods) {
+      const type = getValueOrNull(
+        dutyPeriod.querySelector('select[id^="your-duty-type"]').id);
+      const startDate = getDateOrNull(
+        dutyPeriod.querySelector('input[id^="served-from"]').id);
+      const endDate = getDateOrNull(
+        dutyPeriod.querySelector('input[id^="served-until"]').id);
+      // TODO: Handle null in getNumberOfDays.
+      const duration = getNumberOfDays(startDate, endDate);
+
+      // https://www.va.gov/pension/eligibility/
+      meetsServiceReq.push(
+        or(
+          and(
+            eq(type, 'active-duty'),
+            lt(startDate, new Date('1980-09-08T00:00')),
+            ge(duration, 90)),
+            // TODO: Add wartime check.
+          and(
+            eq(type, 'active-duty'),
+            document.getElementById('enlisted').checked,
+            gt(startDate, new Date('1989-09-07T00:00')),
+            or(
+              ge(duration, 730),
+              document.getElementById('full-dur-yes').checked)),
+            // TODO: Add wartime check.
+          and(
+            eq(type, 'active-duty'),
+            document.getElementById('officer').checked,
+            gt(startDate, new Date('1981-10-16T00:00')))));
+            // TODO: add previous duty period check.
+    }
+
+    // Assets include the claimant and the spouse
+    // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFR093085c1bf84bc2/section-3.274#p-3.274(c)(1)
+    // Annual income includes the claimant, the spouse, and dependents.
+    // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFRf5fe31f49d4f511/section-3.23#p-3.23(d)(4)
+    const underNetWorthLimit = false;  // TODO
+
+    return and(
+      document.getElementById('veteran').checked,
+      meetsDischargeReq,
+      or(...meetsServiceReq),
+      meetsDisabilityReq,
+      underNetWorthLimit);
   }
 
   function wicEligible() {
