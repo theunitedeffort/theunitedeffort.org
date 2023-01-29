@@ -2037,42 +2037,53 @@ pageClass: "page-public-assistance"
       ssiEligible(),
       ssdiEligible());
 
-    const dutyPeriods = document.querySelectorAll(
+    const dutyPeriodItems = document.querySelectorAll(
       '#page-veteran-details ul.dynamic_field_list>li');
+    let dutyPeriods = [];
+    for (const item of dutyPeriodItems) {
+      dutyPeriods.push({
+        type: getValueOrNull(
+          item.querySelector('select[id^="your-duty-type"]').id),
+        start: getDateOrNan(
+          item.querySelector('input[id^="served-from"]').id),
+        end: getDateOrNan(
+          item.querySelector('input[id^="served-until"]').id),
+      });
+    }
 
     const meetsServiceReq = [];
-    for (const dutyPeriod of dutyPeriods) {
-      const type = getValueOrNull(
-        dutyPeriod.querySelector('select[id^="your-duty-type"]').id);
-      const startDate = getDateOrNull(
-        dutyPeriod.querySelector('input[id^="served-from"]').id);
-      const endDate = getDateOrNull(
-        dutyPeriod.querySelector('input[id^="served-until"]').id);
-      // TODO: Handle null in getNumberOfDays.
-      const duration = getNumberOfDays(startDate, endDate);
-      const isDuringWartime = withinWartime(startDate, endDate);
+    for (const duty of dutyPeriods) {
+      const duration = getNumberOfDays(duty.start, duty.end);
+      const isDuringWartime = withinWartime(duty.start, duty.end);
+      const otherDutyPeriods = dutyPeriods.filter(p => p !== duty);
+      const isRecentPriorActiveDuty = otherDutyPeriods.map(
+        other => and(
+          eq(other.type, 'active-duty'),
+          lt(other.end, duty.start),
+          lt(getNumberOfDays(other.end, duty.start), 730)));
+      const hasRecentPriorActiveDuty = or(...isRecentPriorActiveDuty);
 
       // https://www.va.gov/pension/eligibility/
       meetsServiceReq.push(
         or(
           and(
-            eq(type, 'active-duty'),
-            lt(startDate, new Date(dateStrToLocal('1980-09-08'))),
+            eq(duty.type, 'active-duty'),
+            lt(duty.start, new Date(dateStrToLocal('1980-09-08'))),
             ge(duration, 90),
             isDuringWartime),
           and(
-            eq(type, 'active-duty'),
+            eq(duty.type, 'active-duty'),
             document.getElementById('enlisted').checked,
-            gt(startDate, new Date(dateStrToLocal('1989-09-07'))),
+            gt(duty.start, new Date(dateStrToLocal('1989-09-07'))),
             or(
               ge(duration, 730),
               document.getElementById('full-dur-yes').checked),
             isDuringWartime),
           and(
-            eq(type, 'active-duty'),
+            eq(duty.type, 'active-duty'),
             document.getElementById('officer').checked,
-            gt(startDate, new Date(dateStrToLocal('1981-10-16'))))));
-            // TODO: add previous duty period check.
+            gt(duty.start, new Date(dateStrToLocal('1981-10-16'))),
+            not(hasRecentPriorActiveDuty))));
     }
 
     // Assets include the claimant and the spouse
