@@ -1404,16 +1404,21 @@ pageClass: "page-public-assistance"
       return Number(
         document.querySelector('#' + pageId + ' .total').textContent);
     }
-    incomeGroups = document.querySelectorAll(
-      '#' + pageId + ' .income_details_wrapper>fieldset');
-    if (hhMemberIdx < 0 || hhMemberIdx > incomeGroups.length - 1) {
-      return 0;
+    if (!Array.isArray(hhMemberIdx)) {
+      hhMemberIdx = [hhMemberIdx];
     }
-    const incomeInputs = incomeGroups[hhMemberIdx].querySelectorAll(
-      'input[type=number]');
+    const incomeGroups = document.querySelectorAll(
+      '#' + pageId + ' .income_details_wrapper>fieldset');
     let sum = 0;
-    for (input of incomeInputs) {
-      sum += Number(input.value);
+    for (const idx of hhMemberIdx) {
+      if (idx < 0 || idx > incomeGroups.length - 1) {
+        continue;
+      }
+      const incomeInputs = incomeGroups[idx].querySelectorAll(
+        'input[type=number]');
+      for (input of incomeInputs) {
+        sum += Number(input.value);
+      }
     }
     return sum;
   }
@@ -1430,7 +1435,22 @@ pageClass: "page-public-assistance"
     return sum;
   }
 
+  function incomeValid() {
+    const incomePages = Array.from(document.querySelectorAll(
+      '[id^="page-income-details-"]'));
+    const allIncomeTypes = incomePages.map(
+      p => p.id.replace('page-income-details-', ''));
+    const householdTotal = incomeSubTotal(allIncomeTypes);
+    // Return false only if no income of any kind for any household member was
+    // entered (and the household was not marked as having zero income).
+    return (householdTotal > 0
+      || document.getElementById("income-has-none").checked);
+  }
+
   function totalEarnedIncome(hhMemberIdx=null) {
+    if (!incomeValid()) {
+      return NaN;
+    }
     // TODO: Do not hardcode this list.
     const EARNED_INCOME_TYPES = [
       'wages',
@@ -1440,6 +1460,9 @@ pageClass: "page-public-assistance"
   }
 
   function totalUnearnedIncome(hhMemberIdx=null) {
+    if (!incomeValid()) {
+      return NaN;
+    }
     // TODO: Do not hardcode this list.
     const UNEARNED_INCOME_TYPES = [
       'disability',
@@ -1454,13 +1477,6 @@ pageClass: "page-public-assistance"
   }
 
   function grossIncome(hhMemberIdx=null) {
-    const householdTotal = totalEarnedIncome() + totalUnearnedIncome();
-    // Return null only if no income of any kind for any household member was
-    // entered (and the household was not marked as having zero income).
-    if (householdTotal == 0
-        && !document.getElementById("income-has-none").checked) {
-      return null;
-    }
     return totalEarnedIncome(hhMemberIdx) + totalUnearnedIncome(hhMemberIdx);
   }
 
