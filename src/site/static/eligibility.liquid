@@ -596,6 +596,10 @@ pageClass: "page-public-assistance"
           {% program "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
             WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods.
           {% endprogram %}
+
+          {% program "Universal Pass for Life Improvement From Transportation (UPLIFT)", "uplift", "", "https://scc.bitfocus.com/uplift" %}
+            UPLIFT provides quarterly VTA transit passes to adults who are homeless or at risk of becoming homeless.  Passes are distributed through participating case management agencies.
+          {% endprogram %}
         </ul>
       </div>
 
@@ -2138,6 +2142,16 @@ pageClass: "page-public-assistance"
   function wicEligible() {
     // TODO
     return false;
+  }
+
+  function upliftEligible() {
+    return or(
+      document.getElementById('vehicle').checked,
+      document.getElementById('transitional').checked,
+      document.getElementById('hotel').checked,
+      document.getElementById('shelter').checked,
+      document.getElementById('no-stable-place').checked,
+      document.getElementById('risk_homeless_yes').checked);
   }
 
   // Determines eligibility for programs based on user form input values.
