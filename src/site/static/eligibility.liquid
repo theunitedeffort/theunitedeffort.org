@@ -276,6 +276,14 @@ pageClass: "page-public-assistance"
               <input id="hh-member-dependent" type="checkbox">
               <label for="hh-member-dependent">This person is my dependent</label>
             </li>
+            {% comment %}
+            TODO: disable and clear hh-member-dependent if hh-member-spouse
+            is selected.
+            {% endcomment %}
+            <li>
+              <input id="hh-member-spouse" type="radio" name="hh-spouse">
+              <label for="hh-member-spouse">This person is my spouse</label>
+            </li>
           </ul>
         </div>
       {% endcapture %}
@@ -2057,8 +2065,7 @@ pageClass: "page-public-assistance"
       const isDuringWartime = withinWartime(duty.start, duty.end);
       const otherDutyPeriods = dutyPeriods.filter(p => p !== duty);
       // TODO: does "active duty" include active duty for training and
-      // inactive duty for training?
-      // https://www.va.gov/pension/eligibility/
+      // inactive duty for training? https://www.va.gov/pension/eligibility/
       const isRecentPriorActiveDuty = otherDutyPeriods.map(
         other => and(
           eq(other.type, 'active-duty'),
