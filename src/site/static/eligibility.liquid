@@ -1993,6 +1993,12 @@ pageClass: "page-public-assistance"
   function vaPensionEligible() {
     // https://www.va.gov/pension/eligibility/
     const MIN_ELDERLY_AGE = 65;  // Years
+    const MIN_EARLY_DUTY_DURATION = 90;  // days
+    const MIN_LATE_DUTY_DURATION = 730;  // days
+    const RECENT_DUTY_THRESHOLD = 730;  // days
+    const EARLY_DUTY_BEFORE = '1980-09-08';  // YYYY-MM-DD
+    const LATE_DUTY_AFTER = '1980-09-07';  // YYYY-MM-DD
+    const OFFICER_DUTY_AFTER = '1981-10-16';  // YYYY-MM-DD
 
     // https://www.va.gov/pension/veterans-pension-rates/
     const ANNUAL_NET_WORTH_LIMIT = 150538;  // USD per year
@@ -2075,7 +2081,7 @@ pageClass: "page-public-assistance"
         other => and(
           eq(other.type, 'active-duty'),
           lt(other.end, duty.start),
-          lt(getNumberOfDays(other.end, duty.start), 730)));
+          lt(getNumberOfDays(other.end, duty.start), RECENT_DUTY_THRESHOLD)));
       const hasRecentPriorActiveDuty = or(...isRecentPriorActiveDuty);
 
       // https://www.va.gov/pension/eligibility/
@@ -2083,21 +2089,21 @@ pageClass: "page-public-assistance"
         or(
           and(
             eq(duty.type, 'active-duty'),
-            lt(duty.start, new Date(dateStrToLocal('1980-09-08'))),
-            ge(duration, 90),
+            lt(duty.start, new Date(dateStrToLocal(EARLY_DUTY_BEFORE))),
+            ge(duration, MIN_EARLY_DUTY_DURATION),
             isDuringWartime),
           and(
             eq(duty.type, 'active-duty'),
             document.getElementById('enlisted').checked,
-            gt(duty.start, new Date(dateStrToLocal('1989-09-07'))),
+            gt(duty.start, new Date(dateStrToLocal(LATE_DUTY_AFTER))),
             or(
-              ge(duration, 730),
+              ge(duration, MIN_LATE_DUTY_DURATION),
               document.getElementById('full-dur-yes').checked),
             isDuringWartime),
           and(
             eq(duty.type, 'active-duty'),
             document.getElementById('officer').checked,
-            gt(duty.start, new Date(dateStrToLocal('1981-10-16'))),
+            gt(duty.start, new Date(dateStrToLocal(OFFICER_DUTY_AFTER))),
             not(hasRecentPriorActiveDuty))));
     }
 
