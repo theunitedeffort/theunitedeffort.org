@@ -1374,7 +1374,7 @@ pageClass: "page-public-assistance"
   }
 
   function getDateOrNan(id) {
-    const dateStr = getSelectValue(id);
+    const dateStr = getValueOrNull(id);
     if (dateStr === null) {
       return NaN;
     }
