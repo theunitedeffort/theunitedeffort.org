@@ -1255,19 +1255,21 @@ pageClass: "page-public-assistance"
     };
 
     pageById["page-disability-details"].next = function() {
-      if ( document.getElementById("veteran").checked ) {
+      if (document.getElementById("veteran").checked) {
         return pageById["page-veteran-details"];
       }
       return pageById["page-veteran-details"].next();
     };
 
     pageById["page-veteran-details"].next = function() {
-      if (getNumberOfDays(document.getElementById("served-from").value, document.getElementById("served-until").value) < 720) {
+      const fromDate = getDateOrNan("served-from");
+      const untilDate = getDateOrNan("served-until");
+      if (getNumberOfDays(fromDate, untilDate) < 730) {
         const fromPlaceHolder = document.getElementById("served-from-placeholder");
-        fromPlaceHolder.textContent = getFormattedDutyDate(document.getElementById("served-from").value);
+        fromPlaceHolder.textContent = getFormattedDutyDate(fromDate);
 
         const untilPlaceHolder = document.getElementById("served-until-placeholder");
-        untilPlaceHolder.textContent = getFormattedDutyDate(document.getElementById("served-until").value);
+        untilPlaceHolder.textContent = getFormattedDutyDate(untilDate);
 
         return pageById["page-veteran-duty-period"];
       }
@@ -1363,9 +1365,22 @@ pageClass: "page-public-assistance"
     return val;
   }
 
-  function getNumberOfDays(start, end) {
-    const date1 = new Date(start + 'T00:00');
-    const date2 = new Date(end + 'T00:00');
+  function getDateOrNan(id) {
+    const dateStr = getSelectValue(id);
+    if (dateStr === null) {
+      return NaN;
+    }
+    return new Date(dateStrToLocal(dateStr));
+  }
+
+  function dateStrToLocal(dateStr) {
+    return dateStr + 'T00:00';
+  }
+
+  function getNumberOfDays(startDate, endDate) {
+    // Create new dates from the input values in case either is NaN.
+    const date1 = new Date(startDate);
+    const date2 = new Date(endDate);
 
     // Time difference between two dates.
     const difference = date2.getTime() - date1.getTime();
@@ -1378,7 +1393,7 @@ pageClass: "page-public-assistance"
   }
 
   function getFormattedDutyDate(dutyDate)	{
-    const date1 = new Date(dutyDate + 'T00:00');
+    const date1 = new Date(dutyDate);
     return (date1.getMonth() + 1 + '/' + date1.getDate() + '/' + date1.getFullYear());
   }
 
