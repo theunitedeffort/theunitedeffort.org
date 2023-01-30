@@ -1381,6 +1381,11 @@ pageClass: "page-public-assistance"
     return new Date(dateStrToLocal(dateStr));
   }
 
+  function indexOfAll(arr, value) {
+    const matchingIdxs = arr.map((v, idx) => v == value ? idx : -1);
+    return matchingIdxs.filter(i => i >= 0);
+  }
+
   function dateStrToLocal(dateStr) {
     return dateStr + 'T00:00';
   }
@@ -2096,11 +2101,25 @@ pageClass: "page-public-assistance"
             not(hasRecentPriorActiveDuty))));
     }
 
-    // Assets include the claimant and the spouse
-    // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFR093085c1bf84bc2/section-3.274#p-3.274(c)(1)
+    const hhSpouse = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-spouse"]')).map(i => i.checked);
+    const hhDependents = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-dependent"]')).map(i => i.checked);
+    // Add offset of 1 for user (index 0).
+    const spouseIdx = indexOfAll(hhSpouse, true).map(i => i + 1);
+    const dependentIdxs = indexOfAll(hhDependents, true).map(i => i + 1);
+
+    // Use a Set to remove any duplicate indices.
     // Annual income includes the claimant, the spouse, and dependents.
     // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFRf5fe31f49d4f511/section-3.23#p-3.23(d)(4)
-    const underNetWorthLimit = false;  // TODO
+    incomeIdxs = [...new Set([0, ...spouseIdx, ...dependentIdxs])];
+    // Assets include the claimant and the spouse.
+    // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFR093085c1bf84bc2/section-3.274#p-3.274(c)(1)
+    assetIdxs = [...new Set([0, ...spouseIdx])];
+
+    const underNetWorthLimit = le(
+      grossIncome(incomeIdxs) + totalResources(assetIdxs),
+      ANNUAL_NET_WORTH_LIMIT);
 
     return and(
       document.getElementById('veteran').checked,
