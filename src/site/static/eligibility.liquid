@@ -612,6 +612,10 @@ pageClass: "page-public-assistance"
   // This global variable holds the current state of the form navigation.
   let currentPage;
 
+  function hasNulls(...values) {
+    return values.some(v => v === null || Number.isNaN(v));
+  }
+
   // Custom boolean "or" logic that propagates null values.  Rather than
   // coercing a null value into false, null values are retained.  If the 
   // result of this operation is not determined, e.g. or(false, null) then 
@@ -676,7 +680,7 @@ pageClass: "page-public-assistance"
   // Custom equality operator that returns null if either operand is null.
   // Otherwise, returns the boolean result of a == b.
   function eq(a, b) {
-    if (a === null || b === null) {
+    if (hasNulls(a, b)) {
       return null;
     }
     return a == b;
@@ -685,7 +689,7 @@ pageClass: "page-public-assistance"
   // Custom inequality operator that returns null if either operand is null.
   // Otherwise, returns the boolean result of a != b.
   function ne(a, b) {
-    if (a === null || b === null) {
+    if (hasNulls(a, b)) {
       return null;
     }
     return a != b;
@@ -694,7 +698,7 @@ pageClass: "page-public-assistance"
   // Custom less-than operator that returns null if either operand is null.
   // Otherwise, returns the boolean result of a < b.
   function lt(a, b) {
-    if (a === null || b === null) {
+    if (hasNulls(a, b)) {
       return null;
     }
     return a < b;
@@ -703,7 +707,7 @@ pageClass: "page-public-assistance"
   // Custom greater-than operator that returns null if either operand is null.
   // Otherwise returns the boolean result of a > b.
   function gt(a, b) {
-    if (a === null || b === null) {
+    if (hasNulls(a, b)) {
       return null;
     }
     return a > b;
@@ -712,7 +716,7 @@ pageClass: "page-public-assistance"
   // Custom less-than-equal-to operator that returns null if either operand 
   // is null. Otherwise returns the boolean result of a <= b.
   function le(a, b) {
-    if (a === null || b === null) {
+    if (hasNulls(a, b)) {
       return null;
     }
     return a <= b;
@@ -721,7 +725,7 @@ pageClass: "page-public-assistance"
   // Custom greater-than-equal-to operator that returns null if either operand 
   // is null. Otherwise returns the boolean result of a >= b.
   function ge(a, b) {
-    if (a === null || b === null) {
+    if (hasNulls(a, b)) {
       return null;
     }
     return a >= b;
