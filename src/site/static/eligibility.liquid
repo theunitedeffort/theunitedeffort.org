@@ -1510,6 +1510,11 @@ pageClass: "page-public-assistance"
   }
 
   class MonthlyIncomeLimit {
+    // If 'addlPersonExtra' is a number, that much will be added to the
+    // last limit in 'limits' for each person over the last limit.  If it is
+    // a function, the function should take a single parameter--the number of
+    // people beyond the last limit--and return the additional income amount
+    // to be added to the last limit.
     constructor(limits, addlPersonExtra) {
       this.limits = limits;
       this.addlPersonExtra = addlPersonExtra;
