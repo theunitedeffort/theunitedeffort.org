@@ -1516,15 +1516,27 @@ pageClass: "page-public-assistance"
     }
 
     static fromAnnual(limits, addlPersonExtra) {
+      let extra;
+      if (typeof(addlPersonExtra) === 'function') {
+        extra = (numExtraPeople) => addlPersonExtra(numExtraPeople) / 12;
+      } else {
+        extra = addlPersonExtra / 12;
+      }
       return new MonthlyIncomeLimit(
-        limits.map(l => l / 12), addlPersonExtra / 12);
+        limits.map(l => l / 12), extra);
     }
 
     getLimit(hhSize) {
       if (hhSize < 1) {
         return 0;
       } else if (hhSize > this.limits.length) {
-        const extra = this.addlPersonExtra * (hhSize - this.limits.length);
+        let extraCalc;
+        if (typeof(this.addlPersonExtra) === 'function') {
+          extraCalc = this.addlPersonExtra;
+        } else {
+          extraCalc = (numExtraPeople) => numExtraPeople * this.addlPersonExtra;
+        }
+        const extra = extraCalc(hhSize - this.limits.length);
         return this.limits[this.limits.length - 1] + extra;
       } else {
         return this.limits[hhSize - 1];
@@ -1938,8 +1950,61 @@ pageClass: "page-public-assistance"
   }
 
   function housingChoiceEligible() {
-    // TODO
-    return null;
+    // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
+    const MIN_ELIGIBLE_AGE = 18;
+
+    // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+    const INCOME_ROUND_UP_TO_NEAREST = 50;
+    const BASE_HOUSEHOLD_SIZE = 4;
+    const FAMILY_SIZE_ADJ_8 = 1.32;
+    const INCREMENTAL_ADJ = 0.08;
+
+    // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
+    // See "very low income" here:
+    // https://www.huduser.gov/portal/datasets/il/il2022/2022summary.odn?states=6.0&data=2022&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2022&selection_type=county
+    const grossLimitInput = [
+      59000,
+      67400,
+      75850,
+      84250,
+      91000,
+      97750,
+      104500,
+      111250,
+    ];
+
+    // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+    const extraCalc = function(numExtraPeople) {
+      const incomeLimit = (grossLimitInput[BASE_HOUSEHOLD_SIZE - 1] *
+        (FAMILY_SIZE_ADJ_8 + INCREMENTAL_ADJ * numExtraPeople));
+      const rounded = (INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
+        Math.trunc(incomeLimit) / INCOME_ROUND_UP_TO_NEAREST));
+      // Return incremental change ("extra") from the max listed input value.
+      return rounded - grossLimitInput[grossLimitInput.length - 1];
+    }
+
+    const grossLimit = MonthlyIncomeLimit.fromAnnual(
+      grossLimitInput,
+      extraCalc);
+
+    const age = getValueOrNull('age');
+
+    // TODO: Collect data about whether _anyone_ in the household is
+    // a citizen or qualified nonresident.
+    // https://www.ecfr.gov/current/title-24/subtitle-A/part-5/subpart-E/section-5.516#p-5.516(b)
+    const meetsImmigrationReq = or(
+      !document.getElementById('not-citizen').checked,
+      document.getElementById('permanent_resident').checked,
+      document.getElementById('qualified_noncitizen_gt5y').checked,
+      document.getElementById('qualified_noncitizen_le5y').checked);
+
+    const underIncomeLimit = (
+      le(grossIncome(), grossLimit.getLimit(householdSize())));
+
+    return and(
+      ge(age, MIN_ELIGIBLE_AGE),
+      meetsImmigrationReq,
+      underIncomeLimit);
   }
 
   function ssiEligible() {
