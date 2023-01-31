@@ -1576,7 +1576,7 @@ pageClass: "page-public-assistance"
       ],
       758);
 
-    const age = document.getElementById("age").value || null;
+    const age = getValueOrNull('age');
     const hhAges = Array.from(document.querySelectorAll(
       'input[id^="hh-member-age"]')).map(i => i.value || null);
     const hhDisabled = Array.from(document.querySelectorAll(
@@ -1660,7 +1660,7 @@ pageClass: "page-public-assistance"
       ONE_CHILD_SUPPORT_DISREGARD,
       TWO_CHILD_SUPPORT_DISREGARD];
 
-    const age = document.getElementById("age").value || null;
+    const age = getValueOrNull('age');
     const hhAges = Array.from(document.querySelectorAll(
       'input[id^="hh-member-age"]')).map(i => i.value || null);
     const hhDisabled = Array.from(document.querySelectorAll(
@@ -1864,8 +1864,23 @@ pageClass: "page-public-assistance"
   }
 
   function ihssEligible() {
-    // TODO
-    return false;
+    const MIN_ELDERLY_AGE = 65;
+
+    const age = getValueOrNull('age');
+    const meetsDisabilityReq = or(
+      ge(age, MIN_ELDERLY_AGE),
+      document.getElementById('blind').checked,
+      document.getElementById('disabled').checked);
+
+    const meetsHousedReq = or(
+      document.getElementById('housing').checked,
+      document.getElementById('unlisted-stable-place').checked);
+
+    return and(
+      meetsDisabilityReq,
+      meetsHousedReq,
+      // TODO: Add medicalEligible() once we can screen for Medi-Cal.
+      document.getElementById("existing-medical-me").checked);
   }
 
   function lifelineEligible() {
@@ -1945,7 +1960,7 @@ pageClass: "page-public-assistance"
     // https://www.ssa.gov/ssi/text-eligibility-ussi.htm
     const MIN_ELDERLY_AGE = 65;  // Years
 
-    const age = document.getElementById("age").value || null;
+    const age = getValueOrNull('age');
     const isBlind = document.getElementById('blind').checked;
 
     const meetsDisabilityReq = and(
