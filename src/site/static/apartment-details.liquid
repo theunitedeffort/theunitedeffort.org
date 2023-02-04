@@ -71,7 +71,9 @@ eleventyComputed:
 
 <div class="rent_tables">
   {% assign defaultNoDataStr = "Call for info" %}
-  {% assign unitsByType = apartment.units | groupBy: "type" | rankSort: "key" %}
+  {% assign groupByKeys = "type,openStatus" | split: "," %}
+  {% assign sortKeys = "key0,key1" | split: "," %}
+  {% assign unitsByType = apartment.units | groupBy: groupByKeys | rankSort: sortKeys %}
   {% comment %}
   Only show the income bracket column in the rent table if there is more than
   one rent offering for that unit type OR there is at least one filled-in
@@ -89,14 +91,15 @@ eleventyComputed:
     {% endif %}
   {% endfor %}
   {% for unitGroup in unitsByType %}
-    {% assign unitType = unitGroup.key %}
     {% assign units = unitGroup.values | sortUnitOfferings %}
     {% comment %}
     'units' is guaranteed to have at least one item since it is generated
-    via grouping. Occupancy limits and status should always be the same in every
-    entry for a given rental property & unit type, so just take the first one
-    here.
+    via grouping. Occupancy limits should always be the same in every entry for
+    a given rental property & unit type, so just take the first one here.
+    Type, and status are guaranteed to be uniform across all units in this
+    group because type and status are the grouping keys.
     {% endcomment %}
+    {% assign unitType = units[0].type %}
     {% assign occupancyLimit = units[0].occupancyLimit %}
     {% assign openStatus = units[0].openStatus %}
     {%- capture badgeMod -%}
