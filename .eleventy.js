@@ -185,12 +185,12 @@ module.exports = function(eleventyConfig) {
 
   // Sorts items according to the ranking defined in SORT_RANKING.
   eleventyConfig.addFilter("rankSort", function(values, properties="") {
-    let sorted = values.sort(function (a, b) {
-      properties = [].concat(properties);
+    let sorted = values.sort(function(a, b) {
+      const props = [].concat(properties);
       let ret = 0;
-      for (const property of properties) {
-        let valA = property ? a[property] : a;
-        let valB = property ? b[property] : b;
+      for (const prop of props) {
+        let valA = prop ? a[prop] : a;
+        let valB = prop ? b[prop] : b;
         let rankA = SORT_RANKING.get(valA);
         let rankB = SORT_RANKING.get(valB);
         // Special handling for the -1 rank, which is always sorted last.
