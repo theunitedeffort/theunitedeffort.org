@@ -2039,13 +2039,13 @@ pageClass: "page-public-assistance"
     const age = getValueOrNull('age');
     const isBlind = document.getElementById('blind').checked;
 
-    const meetsDisabilityReq = and(
-      or(
-        document.getElementById('disabled').checked,
-        isBlind),
-      document.getElementById('dis_prev_work_yes').checked,
-      ge(age, MIN_ELDERLY_AGE)
-      );
+    const meetsDisabilityReq = or(
+      and(
+        or(
+          document.getElementById('disabled').checked,
+          isBlind),
+        document.getElementById('dis_prev_work_yes').checked),
+      ge(age, MIN_ELDERLY_AGE));
 
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
