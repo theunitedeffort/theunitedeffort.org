@@ -345,6 +345,17 @@ pageClass: "page-public-assistance"
             <label for="pay-utilities-no">No</label>
           </li>
         </ul>
+        <p>Are you able to cook and store food in your home?</p>
+        <ul id="hh-has-kitchen" class="singleselect-each">
+          <li>
+            <input type="radio" id="has-kitchen-yes" name="has-kitchen" value="Yes" />
+            <label for="has-kitchen-yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="has-kitchen-no" name="has-kitchen" value="No" />
+            <label for="has-kitchen-no">No</label>
+          </li>
+        </ul>
         <p>Do you feel you are at risk of becoming homeless?</p>
         <ul id="hh-risk-homeless" class="singleselect-each">
           <li>
@@ -2022,8 +2033,12 @@ pageClass: "page-public-assistance"
     const SGA_NON_BLIND = 1470;  // USD per month
     const SGA_BLIND = 2460;  // USD per month
 
-    // https://www.ssa.gov/oact/cola/SSI.html
-    const MAX_BENEFIT = 914;  // USD per month
+    // https://www.ssa.gov/pubs/EN-05-11125.pdf
+    // Note these max benefit amounts include the California state supplement.
+    // TODO: Handle other living categories (e.g. non-medical out-of-home care).
+    const MAX_BENEFIT_NON_BLIND = 1133.73;  // USD per month
+    const MAX_BENEFIT_NON_BLIND_NO_KITCHEN = 1251.74;  // USD per month
+    const MAX_BENEFIT_BLIND = 1211;  // USD per month
 
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
     const MAX_RESOURCES = 2000;  // USD
@@ -2054,7 +2069,14 @@ pageClass: "page-public-assistance"
       document.getElementById("qualified_noncitizen_le5y").checked);
 
     const sgaLimit = isBlind ? SGA_BLIND : SGA_NON_BLIND;
+    let maxBenefit = MAX_BENEFIT_NON_BLIND;
+    if (isBlind) {
+      maxBenefit = MAX_BENEFIT_BLIND;
+    } else if (!document.getElementById('has-kitchen-yes').checked) {
+      maxBenefit = MAX_BENEFIT_NON_BLIND_NO_KITCHEN;
+    }
     // Note income and resources for only the user (applicant) are counted.
+    // TODO: Apply deeming.
     const earnedIncome = totalEarnedIncome(0);
     const unearnedIncome = totalUnearnedIncome(0);
 
@@ -2069,7 +2091,7 @@ pageClass: "page-public-assistance"
     const countableIncome = countableEarnedIncome + countableUnearnedIncome;
 
     const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
-    const underIncomeLimit = lt(countableIncome, MAX_BENEFIT);
+    const underIncomeLimit = lt(countableIncome, maxBenefit);
     const underResourceLimit = le(totalResources(0), MAX_RESOURCES);
 
     return and(
