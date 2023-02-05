@@ -235,6 +235,10 @@ pageClass: "page-public-assistance"
             <label for="qualified_noncitizen_le5y">I have been a qualified non-citizen for less than 5 years</label>
           </li>
           <li>
+            <input type="radio" id="prucol" name="immig_status"/>
+            <label for="prucol">I am a non-qualified non-citizen Permanently Residing Under the Color of the Law (PRUCOL)</label>
+          </li>
+          <li>
             <input type="radio" id="live_temporarily" name="immig_status" />
             <label for="live_temporarily">I am living in the U.S. temporarily</label>
           </li>
@@ -390,8 +394,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-disability" type="checkbox">
-            <label for="income-has-disability">Disability benefits
-            <span class="subtitle">Including SSI/SSP, SSDI, SDI, and CAPI</span></label>
+            <label for="income-has-disability">Disability benefits <span class="subtitle">Including SSI/SSP, SSDI, SDI, and CAPI</span></label>
           </li>
           <li>
             <input id="income-has-unemployment" type="checkbox">
@@ -399,8 +402,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-retirement" type="checkbox">
-            <label for="income-has-retirement">Retirement benefits
-            <span class="subtitle">Including pensions and Social Security retirement</span></label>
+            <label for="income-has-retirement">Retirement benefits <span class="subtitle">Including pensions and Social Security retirement</span></label>
           </li>
           <li>
             <input id="income-has-veterans" type="checkbox">
@@ -416,8 +418,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-other" type="checkbox">
-            <label for="income-has-other">Other source of income not listed here
-            <span class="subtitle">Including cash assistance, interest, and investment income</span></label>
+            <label for="income-has-other">Other source of income not listed here <span class="subtitle">Including cash assistance, interest, and investment income</span></label>
           </li>
           <li>
             <input id="income-has-none" type="checkbox">
@@ -541,7 +542,7 @@ pageClass: "page-public-assistance"
             CalWORKs provides cash aid and services to certain low-income families with children in the home.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
+          {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
             CAPI provides monthly cash benefits to certain elderly, blind, or disabled non-citizens.
           {% endprogram %}
 
@@ -1780,8 +1781,18 @@ pageClass: "page-public-assistance"
   }
 
   function capiEligible() {
-    // TODO
-    return null;
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
+    const meetsImmigrationReq = and(
+      document.getElementById('not-citizen').checked,
+      or(
+        document.getElementById('permanent_resident').checked,
+        document.getElementById('qualified_noncitizen_gt5y').checked,
+        document.getElementById('qualified_noncitizen_le5y').checked,
+        document.getElementById('prucol').checked));
+
+    return and(
+      ssiCapiBaseEligibile(),
+      meetsImmigrationReq);
   }
 
   function careIncomeLimit() {
@@ -2028,7 +2039,7 @@ pageClass: "page-public-assistance"
       underIncomeLimit);
   }
 
-  function ssiEligible() {
+  function ssiCapiBaseEligibile() {
     // https://www.ssa.gov/oact/cola/sga.html
     const SGA_NON_BLIND = 1470;  // USD per month
     const SGA_BLIND = 2460;  // USD per month
@@ -2062,12 +2073,6 @@ pageClass: "page-public-assistance"
         document.getElementById('dis_prev_work_yes').checked),
       ge(age, MIN_ELDERLY_AGE));
 
-    const meetsImmigrationReq = or(
-      !document.getElementById('not-citizen').checked,
-      document.getElementById("permanent_resident").checked,
-      document.getElementById("qualified_noncitizen_gt5y").checked,
-      document.getElementById("qualified_noncitizen_le5y").checked);
-
     const sgaLimit = isBlind ? SGA_BLIND : SGA_NON_BLIND;
     let maxBenefit = MAX_BENEFIT_NON_BLIND;
     if (isBlind) {
@@ -2096,10 +2101,21 @@ pageClass: "page-public-assistance"
 
     return and(
       meetsDisabilityReq,
-      meetsImmigrationReq,
       noSubstantialGainfulActivity,
       underIncomeLimit,
       underResourceLimit);
+  }
+
+  function ssiEligible() {
+    const meetsImmigrationReq = or(
+      !document.getElementById('not-citizen').checked,
+      document.getElementById("permanent_resident").checked,
+      document.getElementById("qualified_noncitizen_gt5y").checked,
+      document.getElementById("qualified_noncitizen_le5y").checked);
+
+    return and(
+      ssiCapiBaseEligibile(),
+      meetsImmigrationReq);
   }
 
   function ssdiEligible() {
