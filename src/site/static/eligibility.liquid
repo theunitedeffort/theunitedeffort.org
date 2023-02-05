@@ -1781,6 +1781,7 @@ pageClass: "page-public-assistance"
   }
 
   function capiEligible() {
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
     const meetsImmigrationReq = and(
       document.getElementById('not-citizen').checked,
       or(
