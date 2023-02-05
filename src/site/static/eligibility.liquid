@@ -521,17 +521,11 @@ pageClass: "page-public-assistance"
           Based on your responses, we were not able to find any matching programs for you.  You can see the whole list of programs we checked below.
         </p>
         <ul></ul>
-        <p>
-          The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
-        </p>
-        <p>
-          If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
-        </p>
       </div>
 
       <h3>Other Programs</h3>
       <div class="programs programs__unknown">
-        <p>
+        <p class="has_results">
           With the information provided, we are unable to determine if you are eligible for the following programs.  If you would like to provide additional information you can revisit any form sections and then return to this results section to see your updated eligibility recommendations.
         </p>
         <ul>
@@ -618,12 +612,18 @@ pageClass: "page-public-assistance"
       </div>
 
       <div class="programs programs__ineligible">
-        <p>
-          We also checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  If you think you should be eligible for one of these programs, contact the program provider for an eligibility assessment.
+        <p class="has_results">
+          We checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  If you think you should be eligible for one of these programs, contact the program provider for an eligibility assessment.
         </p>
         <ul></ul>
       </div>
 
+      <p>
+        The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
+      </p>
+      <p>
+        If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
+      </p>
     {% endeligPage %}
   {% endeligSection %}
 
@@ -2269,10 +2269,10 @@ pageClass: "page-public-assistance"
 
   // Determines eligibility for programs based on user form input values.
   function computeEligibility() {
-    const allPrograms = document.querySelectorAll(".programs li");
-    const eligibleList = document.querySelector(".programs__eligible ul");
-    const ineligibleList = document.querySelector(".programs__ineligible ul");
-    const unknownList = document.querySelector(".programs__unknown ul");
+    const allPrograms = document.querySelectorAll('.programs li');
+    const eligibleList = document.querySelector('.programs__eligible ul');
+    const ineligibleList = document.querySelector('.programs__ineligible ul');
+    const unknownList = document.querySelector('.programs__unknown ul');
     for (program of allPrograms) {
       const eligible = window[program.dataset.eligibility]();
       if (eligible === null) {
@@ -2283,16 +2283,27 @@ pageClass: "page-public-assistance"
         ineligibleList.appendChild(program);
       }
     }
-    const noResultsMsg = document.querySelector(
-      '.programs__eligible .no_results');
-    const hasResultsMsg = document.querySelector(
-      '.programs__eligible .has_results');
-    if (!eligibleList.children.length) {
-      noResultsMsg.classList.remove('hidden');
-      hasResultsMsg.classList.add('hidden');
-    } else {
-      noResultsMsg.classList.add('hidden');
-      hasResultsMsg.classList.remove('hidden');
+
+    for (const container of document.querySelectorAll('.programs')) {
+      const list = container.querySelector('ul');
+      const resultsMsgs = container.querySelectorAll('.has_results');
+      const noResultsMsgs = container.querySelectorAll('.no_results');
+
+      for (const resultMsg of resultsMsgs) {
+        if (list.children.length) {
+          resultMsg.classList.remove('hidden');
+        } else {
+          resultMsg.classList.add('hidden');
+        }
+      }
+
+      for (const noResultMsg of noResultsMsgs) {
+        if (list.children.length) {
+          noResultMsg.classList.add('hidden');
+        } else {
+          noResultMsg.classList.remove('hidden');
+        }
+      }
     }
   }
 
