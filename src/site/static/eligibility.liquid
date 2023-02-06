@@ -2305,6 +2305,7 @@ pageClass: "page-public-assistance"
       const resultsMsgs = container.querySelectorAll('.has_results');
       const noResultsMsgs = container.querySelectorAll('.no_results');
 
+      // Show/hide info text depending on whether there are items in the list.
       for (const resultMsg of resultsMsgs) {
         if (list.children.length) {
           resultMsg.classList.remove('hidden');
@@ -2312,13 +2313,29 @@ pageClass: "page-public-assistance"
           resultMsg.classList.add('hidden');
         }
       }
-
       for (const noResultMsg of noResultsMsgs) {
         if (list.children.length) {
           noResultMsg.classList.add('hidden');
         } else {
           noResultMsg.classList.remove('hidden');
         }
+      }
+
+      // Sort list items alphabetically.
+      const items = Array.from(list.querySelectorAll('li'));
+      items.sort((a, b) => {
+        const titleA = a.querySelector('h4').textContent;
+        const titleB = b.querySelector('h4').textContent;
+        if (titleA < titleB) {
+          return -1;
+        }
+        if (titleA > titleB) {
+          return 1;
+        }
+        return 0;
+      });
+      for (const item of items) {
+        list.appendChild(item);
       }
     }
   }
