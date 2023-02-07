@@ -277,6 +277,14 @@ pageClass: "page-public-assistance"
               <label for="hh-member-disabled">This person is disabled</label>
             </li>
             <li>
+              <input id="hh-member-pregnant" type="checkbox" />
+              <label for="hh-member-pregnant">This person is pregnant or was pregnant within the last 6 months</label>
+            </li>
+            <li>
+              <input id="hh-member-breastfeeding" type="checkbox" />
+              <label for="hh-member-breastfeeding">This person is breastfeeding a child younger than 1 year old</label>
+            </li>
+            <li>
               <input id="hh-member-dependent" type="checkbox">
               <label for="hh-member-dependent">This person is my dependent</label>
             </li>
@@ -301,11 +309,11 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
 
     {% eligPage "household-unborn-members" %}
-    <p>Some programs count children not yet born as members of the household. How many unborn children are in your household?</p>
-    <div>
-      <label for="unborn-children">Total unborn children</label>
-      <input type="number" id="unborn-children" class="short">
-    </div>
+      <p>How many unborn children are in your household?</p>
+      <div>
+        <label for="unborn-children">Total unborn children</label>
+        <input type="number" id="unborn-children" class="short">
+      </div>
     {% endeligPage %}
 
     {% eligPage "household-situation" %}
@@ -1319,7 +1327,10 @@ pageClass: "page-public-assistance"
     };
 
     pageById["page-household-members"].next = function() {
-      if (document.getElementById("pregnant").checked) {
+      const hhPregnant = Array.from(document.querySelectorAll(
+        'input[id^="hh-member-pregnant"]')).map(i => i.checked);
+      if (document.getElementById('pregnant').checked ||
+          hhPregnant.some(p => p)) {
         return pageById["page-household-unborn-members"];
       }
       return pageById["page-household-situation"];
@@ -2302,12 +2313,16 @@ pageClass: "page-public-assistance"
 
     const hhAges = Array.from(document.querySelectorAll(
       'input[id^="hh-member-age"]')).map(i => getValueOrNull(i.id));
-    console.log(hhAges);
+    const hhPregnant = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-pregnant"]')).map(p => p.checked);
+    const hhBreastfeeding = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-breastfeeding"]')).map(b => b.checked);
     const meetsCategoricalReq = or(
       // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
-      // TODO: Handle the case of a pregnant household member.
       document.getElementById('pregnant').checked,
       document.getElementById('feeding').checked,
+      ...hhPregnant,
+      ...hhBreastfeeding,
       ...hhAges.map(a => lt(a, CHILD_EXIT_AGE)));
 
     // Rather than null, if unborn-children is left empty, numUnborn == 0.
