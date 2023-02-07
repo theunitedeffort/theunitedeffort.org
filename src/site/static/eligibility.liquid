@@ -300,6 +300,14 @@ pageClass: "page-public-assistance"
       {% enddynamicFieldList %}
     {% endeligPage %}
 
+    {% eligPage "household-unborn-members" %}
+    <p>Some programs count children not yet born as members of the household. How many unborn children are in your household?</p>
+    <div>
+      <label for="unborn-children">Total unborn children</label>
+      <input type="number" id="unborn-children" class="short">
+    </div>
+    {% endeligPage %}
+
     {% eligPage "household-situation" %}
       <p>Select the option below that best describes your current housing situation:</p>
       <div>
@@ -602,7 +610,7 @@ pageClass: "page-public-assistance"
             VA Pension is a program that provides ongoing cash payments for eligible veterans.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
+          {% program "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
             WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods.
           {% endprogram %}
 
@@ -1310,6 +1318,13 @@ pageClass: "page-public-assistance"
       return pageById["page-immigration-status"].next();
     };
 
+    pageById["page-household-members"].next = function() {
+      if (document.getElementById("pregnant").checked) {
+        return pageById["page-household-unborn-members"];
+      }
+      return pageById["page-household-situation"];
+    }
+
 
     pageById["page-household-situation"].next = function() {
       if (document.getElementById("housing").checked || document.getElementById("unlisted-stable-place").checked) {
@@ -1610,7 +1625,7 @@ pageClass: "page-public-assistance"
 
     const age = getValueOrNull('age');
     const hhAges = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-age"]')).map(i => i.value || null);
+      'input[id^="hh-member-age"]')).map(i => getValueOrNull(i.id));
     const hhDisabled = Array.from(document.querySelectorAll(
       'input[id^="hh-member-disabled"]')).map(i => i.checked);
 
@@ -1696,7 +1711,7 @@ pageClass: "page-public-assistance"
 
     const age = getValueOrNull('age');
     const hhAges = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-age"]')).map(i => i.value || null);
+      'input[id^="hh-member-age"]')).map(i => getValueOrNull(i.id));
     const hhDisabled = Array.from(document.querySelectorAll(
       'input[id^="hh-member-disabled"]')).map(i => i.checked);
     // This employment array includes the user (idx 0) and the user's household.
@@ -2269,8 +2284,49 @@ pageClass: "page-public-assistance"
   }
 
   function wicEligible() {
-    // TODO
-    return false;
+    // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
+    const grossLimit = new MonthlyIncomeLimit([
+      2096,
+      2823,
+      3551,
+      4279,
+      5006,
+      5734,
+      6462,
+      7189
+    ],
+    728);
+
+    // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
+    const CHILD_EXIT_AGE = 5;  // Birthday at which a child is ineligible.
+
+    const hhAges = Array.from(document.querySelectorAll(
+      'input[id^="hh-member-age"]')).map(i => getValueOrNull(i.id));
+    console.log(hhAges);
+    const meetsCategoricalReq = or(
+      // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
+      // TODO: Handle the case of a pregnant household member.
+      document.getElementById('pregnant').checked,
+      document.getElementById('feeding').checked,
+      ...hhAges.map(a => lt(a, CHILD_EXIT_AGE)));
+
+    // Rather than null, if unborn-children is left empty, numUnborn == 0.
+    const numUnborn = Number(document.getElementById('unborn-children').value);
+    const meetsIncomeReq = or(
+      le(grossIncome, grossLimit.getLimit(householdSize() + numUnborn)),
+      // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
+      document.getElementById("existing-medical-me").checked,
+      document.getElementById("existing-medical-household").checked,
+      document.getElementById("existing-calworks-me").checked,
+      document.getElementById("existing-calworks-household").checked,
+      document.getElementById("existing-calfresh-me").checked,
+      document.getElementById("existing-calfresh-household").checked,
+      calfreshEligible(),
+      calworksEligible());
+
+    return and(
+      meetsCategoricalReq,
+      meetsIncomeReq);
   }
 
   function upliftEligible() {
