@@ -1327,8 +1327,7 @@ pageClass: "page-public-assistance"
     };
 
     pageById["page-household-members"].next = function() {
-      const hhPregnant = Array.from(document.querySelectorAll(
-        'input[id^="hh-member-pregnant"]')).map(i => i.checked);
+      const hhPregnant = getValuesOrNulls('hh-member-pregnant');
       if (document.getElementById('pregnant').checked ||
           hhPregnant.some(p => p)) {
         return pageById["page-household-unborn-members"];
@@ -1411,7 +1410,13 @@ pageClass: "page-public-assistance"
   }
 
   function getValueOrNull(id) {
-    const val = document.getElementById(id).value;
+    const elem = document.getElementById(id);
+    let val;
+    if (elem.type === 'checkbox') {
+      val = elem.checked;
+    } else {
+      val = elem.value;
+    }
     if (val === '') {
       return null;
     }
@@ -1424,6 +1429,12 @@ pageClass: "page-public-assistance"
       return NaN;
     }
     return new Date(dateStrToLocal(dateStr));
+  }
+
+  // Gets values for all input elements with id starting with 'idPrefix'.
+  function getValuesOrNulls(idPrefix) {
+    return Array.from(document.querySelectorAll(
+      'input[id^="' + idPrefix + '"]')).map(e => getValueOrNull(e.id));
   }
 
   function indexOfAll(arr, value) {
@@ -1635,10 +1646,8 @@ pageClass: "page-public-assistance"
       758);
 
     const age = getValueOrNull('age');
-    const hhAges = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-age"]')).map(i => getValueOrNull(i.id));
-    const hhDisabled = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-disabled"]')).map(i => i.checked);
+    const hhAges = getValuesOrNulls('hh-member-age');
+    const hhDisabled = getValuesOrNulls('hh-member-disabled');
 
     const meetsImmigrationReq = (
       or(
@@ -1721,10 +1730,8 @@ pageClass: "page-public-assistance"
       TWO_CHILD_SUPPORT_DISREGARD];
 
     const age = getValueOrNull('age');
-    const hhAges = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-age"]')).map(i => getValueOrNull(i.id));
-    const hhDisabled = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-disabled"]')).map(i => i.checked);
+    const hhAges = getValuesOrNulls('hh-member-age');
+    const hhDisabled = getValuesOrNulls('hh-member-disabled');
     // This employment array includes the user (idx 0) and the user's household.
     const employed = (
       [...Array(householdSize()).keys()].map(i => totalEarnedIncome(i) > 0));
@@ -2266,10 +2273,8 @@ pageClass: "page-public-assistance"
             not(hasRecentPriorActiveDuty))));
     }
 
-    const hhSpouse = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-spouse"]')).map(i => i.checked);
-    const hhDependents = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-dependent"]')).map(i => i.checked);
+    const hhSpouse = getValuesOrNulls('hh-member-spouse');
+    const hhDependents = getValuesOrNulls('hh-member-dependent');
     // Add offset of 1 for user (index 0).
     const spouseIdx = indexOfAll(hhSpouse, true).map(i => i + 1);
     const dependentIdxs = indexOfAll(hhDependents, true).map(i => i + 1);
@@ -2311,12 +2316,9 @@ pageClass: "page-public-assistance"
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
     const CHILD_EXIT_AGE = 5;  // Birthday at which a child is ineligible.
 
-    const hhAges = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-age"]')).map(i => getValueOrNull(i.id));
-    const hhPregnant = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-pregnant"]')).map(p => p.checked);
-    const hhBreastfeeding = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-breastfeeding"]')).map(b => b.checked);
+    const hhAges = getValuesOrNulls('hh-member-age');
+    const hhPregnant = getValuesOrNulls('hh-member-pregnant');
+    const hhBreastfeeding = getValuesOrNulls('hh-member-breastfeeding');
     const meetsCategoricalReq = or(
       // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
       document.getElementById('pregnant').checked,
