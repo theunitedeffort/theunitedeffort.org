@@ -550,7 +550,7 @@ pageClass: "page-public-assistance"
             ADSA provides certain people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
+          {% program "Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
             Calfresh provides monthly food benefits to certain low-income individuals and families.
           {% endprogram %}
 
@@ -1633,62 +1633,91 @@ pageClass: "page-public-assistance"
   }
 
   function calfreshEligible() {
-    const grossLimit = new MonthlyIncomeLimit([
-        2148,
-        2904,
-        3660,
-        4418,
-        5174,
-        5930,
-        6688,
-        7444
+    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
+    // Section 2.1
+    const fedPovertyLevel = new MonthlyIncomeLimit([
+        1133,
+        1526,
+        1920,
+        2313,
+        2706,
+        3100,
+        3493,
+        3886
       ],
-      758);
+      394);
+
+    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
+    // Section 11.8
+    const GROSS_INCOME_LIMIT_MCE_FACTOR = 2.0;  // Times federal poverty limit
+
+    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap19.pdf
+    // Section 19.1.3
+    const SELF_EMPLOYED_EXEMPTION_FRACTION = 0.4;
 
     const age = getValueOrNull('age');
     const hhAges = getValuesOrNulls('hh-member-age');
     const hhDisabled = getValuesOrNulls('hh-member-disabled');
 
-    const meetsImmigrationReq = (
-      or(
-        !document.getElementById("not-citizen").checked,
-        document.getElementById("permanent_resident").checked,
-        document.getElementById("qualified_noncitizen_gt5y").checked,
-        and(
-          document.getElementById("qualified_noncitizen_le5y").checked,
-          or(
-            and(lt(age, 18)),
-            document.getElementById("existing-ssi-me").checked,
-            document.getElementById("existing-ssdi-me").checked,
-            ssdiEligible(),
-            ssiEligible()
-          )
-        )
-      )
-    );
-    // TODO: add cash assistance check.
-    const isIncomeExempt = (
-      or(
-        ...hhAges.map(a => gt(a, 60)),
-        gt(age, 60),
-        ...hhDisabled,
-        document.getElementById("disabled").checked, 
-        document.getElementById("blind").checked,
-        document.getElementById("existing-ssi-me").checked,
-        document.getElementById("existing-ssdi-me").checked,
-        document.getElementById("existing-ssi-household").checked,
-        document.getElementById("existing-ssdi-household").checked,
-        // May not need to check for ssdi/ssi eligibility if we already check for disabled/blind.
-        ssdiEligible(),
-        ssiEligible()
-      )
-    );
+    const meetsShortResidencyReq = or(
+      // TODO: add military connection.
+      lt(age, 18),
+      and(
+        or(
+          document.getElementById('blind').checked,
+          document.getElementById('disabled').checked),
+        or(
+          document.getElementById('existing-ssi-me').checked,
+          document.getElementById('existing-ssdi-me').checked,
+          document.getElementById('existing-capi-me').checked,
+          document.getElementById('existing-medical-me').checked)));
+    const meetsImmigrationReq = or(
+      !document.getElementById('not-citizen').checked,
+      document.getElementById('permanent_resident').checked,
+      document.getElementById('qualified_noncitizen_gt5y').checked,
+      // TODO: Decide how to handle immigration status: Could mark CFAP
+      // eligible for anyone not a citizen and not a permanent resident? See
+      // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap31.pdf
+      // and
+      // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap14.pdf#page=13
+      and(
+        document.getElementById('qualified_noncitizen_le5y').checked,
+        meetsShortResidencyReq));
 
-    // TODO: add net income check.
-    const underIncomeLimit = (
-      le(grossIncome(), grossLimit.getLimit(householdSize())));
+    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
+    // TODO: Determine if _every_ household member is eligible for Calworks
+    // or GA, as that is the true test of categorical eligibility.
+    const isCategoricallyEligible = or(
+      document.getElementById('existing-calworks-me').checked,
+      document.getElementById('existing-calworks-household').checked,
+      document.getElementById('existing-ga-me').checked,
+      document.getElementById('existing-ga-household').checked,
+      calworksEligible(),
+      gaEligible());
 
-    return and(meetsImmigrationReq, or(underIncomeLimit, isIncomeExempt));
+    // Note: Nearly all users will be considered "modified cagegorically
+    // eligible", meaning the MCE income limit factor is used and resources
+    // are not checked.
+    // TODO: Handle edge cases where the user is not MCE.
+    //
+    // TODO: Run net income and resource checks for households containing
+    // and elderly or disabled member in the event gross income is higher than
+    // the MCE limit.
+    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf#page=7
+    // Section 11.8.4
+    //
+    const mceIncomeLimit = (GROSS_INCOME_LIMIT_MCE_FACTOR *
+      fedPovertyLevel.getLimit(householdSize()));
+    let nonExemptIncome = null;
+    if (grossIncome() !== null) {
+      nonExemptIncome = (grossIncome() -
+        SELF_EMPLOYED_EXEMPTION_FRACTION * incomeTotal('self-employed'));
+    }
+    const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
+
+    return and(
+      meetsImmigrationReq,
+      or(underIncomeLimit, isCategoricallyEligible));
   }
 
   function calworksEligible() {
