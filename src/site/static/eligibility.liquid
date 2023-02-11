@@ -660,9 +660,9 @@ pageClass: "page-public-assistance"
   }
 
   // Custom boolean "or" logic that propagates null values.  Rather than
-  // coercing a null value into false, null values are retained.  If the 
-  // result of this operation is not determined, e.g. or(false, null) then 
-  // null will be returned. Otherwise, the boolean result of or'ing all 
+  // coercing a null value into false, null values are retained.  If the
+  // result of this operation is not determined, e.g. or(false, null) then
+  // null will be returned. Otherwise, the boolean result of or'ing all
   // statements together will be returned.
   //
   // null or true = true
@@ -683,9 +683,9 @@ pageClass: "page-public-assistance"
   }
 
   // Custom boolean "and" logic that propagates null values.  Rather than
-  // coercing a null value into false, null values are retained.  If the 
-  // result of this operation is not determined, e.g. and(true, null) then 
-  // null will be returned.  Otherwise, the boolean result of and'ing all 
+  // coercing a null value into false, null values are retained.  If the
+  // result of this operation is not determined, e.g. and(true, null) then
+  // null will be returned.  Otherwise, the boolean result of and'ing all
   // statements together will be returned.
   //
   // null and true = null
@@ -756,7 +756,7 @@ pageClass: "page-public-assistance"
     return a > b;
   }
 
-  // Custom less-than-equal-to operator that returns null if either operand 
+  // Custom less-than-equal-to operator that returns null if either operand
   // is null. Otherwise returns the boolean result of a <= b.
   function le(a, b) {
     if (hasNulls(a, b)) {
@@ -765,7 +765,7 @@ pageClass: "page-public-assistance"
     return a <= b;
   }
 
-  // Custom greater-than-equal-to operator that returns null if either operand 
+  // Custom greater-than-equal-to operator that returns null if either operand
   // is null. Otherwise returns the boolean result of a >= b.
   function ge(a, b) {
     if (hasNulls(a, b)) {
@@ -854,7 +854,7 @@ pageClass: "page-public-assistance"
 
       // Ensure IDs are unique, and update input labels to match.
       const templ = newFieldset.querySelector('template');
-      const idModifier = '-member' + newMember.dynamicFieldListId;
+      const idModifier = `-member${newMember.dynamicFieldListId}`;
       modifyIds(templ.content, idModifier);
 
       addDynamicFieldListListeners(newFieldset);
@@ -871,7 +871,7 @@ pageClass: "page-public-assistance"
       if (incomeType == this) {
         continue;
       }
-      let label = wrapper.querySelector("label[for=" + incomeType.id + "]");
+      let label = wrapper.querySelector(`label[for="${incomeType.id}"]`);
       if (this.checked) {
         incomeType.checked = false;
         incomeType.setAttribute("disabled", "disabled");
@@ -904,8 +904,8 @@ pageClass: "page-public-assistance"
   }
 
   function modifyIds(parent, idModifier) {
-    const newElems = parent.querySelectorAll('[id], [for]');
-    for (const elem of newElems) {
+    const elems = parent.querySelectorAll('[id], [for]');
+    for (const elem of elems) {
       if (elem.id) {
         elem.id = elem.id + idModifier;
       }
@@ -917,8 +917,8 @@ pageClass: "page-public-assistance"
   }
 
   function clearInputs(parent) {
-    const newElems = parent.querySelectorAll('input, select');
-    for (const elem of newElems) {
+    const inputs = parent.querySelectorAll('input, select');
+    for (const elem of inputs) {
       if (elem.value) {
         elem.value = '';
       }
@@ -935,6 +935,7 @@ pageClass: "page-public-assistance"
       "ul.dynamic_field_list");
     const items = list.querySelectorAll("li");
     // Figure out the largest id index used so far.
+    // TODO: replace optional chaining operators.
     const lastInput = items[items.length - 1]?.querySelector("input");
     let lastIdNumber = -1;
     if (lastInput) {
@@ -955,7 +956,7 @@ pageClass: "page-public-assistance"
     newItem.dynamicFieldListId = newIdNumber;
     // Ensure element ids are unique and clear out any inputs that a user may
     // have entered on the template list item.
-    modifyIds(newItem, '-' + newIdNumber);
+    modifyIds(newItem, `-${newIdNumber}`);
     clearInputs(newItem);
 
     // Update the item heading if there is one.
@@ -1052,17 +1053,17 @@ pageClass: "page-public-assistance"
       setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(true);
-    } else if (firstPage) { 
+    } else if (firstPage) {
       // This is the first page, so only show the next button.
       setBackVisibility(false);
       setNextVisibility(true);
       setSubmitVisibility(false);
-    } else if (resultsPage) { 
+    } else if (resultsPage) {
       // This is the very last page, so only show the back button.
       setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(false);
-    } else { 
+    } else {
       // This is a regular page, so show back an next buttons.
       setBackVisibility(true);
       setNextVisibility(true);
@@ -1076,12 +1077,12 @@ pageClass: "page-public-assistance"
   //   2. Enable navigation back to already-completed sections
   // Note the text shown for each step in the progress indicator will be
   // the same as the <h2> text under each section element.  If a section does
-  // not have a level 2 heading, no step indicator for that section will be 
+  // not have a level 2 heading, no step indicator for that section will be
   // added.
   function buildStepIndicator() {
     const allSections = document.querySelectorAll("div.elig_section");
     const stepIndicatorList = document.querySelector("div.step_indicator ul");
-    for (const section of allSections) { 
+    for (const section of allSections) {
       // TODO: Support different text for the h2 and the step indicator.
       const heading = section.querySelector("h2");
       if (!heading) {
@@ -1092,7 +1093,7 @@ pageClass: "page-public-assistance"
       // Make the button that will be used for navigation to already-completed
       // sections.
       const button = document.createElement("button");
-      button.id = "nav-" + section.id;
+      button.id = `nav-${section.id}`;
       button.dataset.sectionId = section.id;
       button.textContent = heading.textContent;
       // Sections are to-do and un-clickable by default.  They will become
@@ -1141,7 +1142,7 @@ pageClass: "page-public-assistance"
   }
 
   // Brings the user to the first page of a section.
-  // This function is used as a step indicator click handler, and 'this' 
+  // This function is used as a step indicator click handler, and 'this'
   // represents the context of the event, i.e. the button that was clicked.
   function toSection() {
     const section = document.getElementById(this.dataset.sectionId);
@@ -1160,7 +1161,7 @@ pageClass: "page-public-assistance"
   }
 
   // Moves to the next form page in the sequence.
-  // The sequence used is the one defined in linkPages.  
+  // The sequence used is the one defined in linkPages.
   function toNextPage() {
     const nextPage = currentPage.next();
     if (nextPage) {
@@ -1169,16 +1170,16 @@ pageClass: "page-public-assistance"
         // marked as completed.
         markSectionDone(currentPage.section);
       }
-      // Take note of the page we are coming from to allow backwards travel with 
+      // Take note of the page we are coming from to allow backwards travel with
       // the Back form control button.
       nextPage.previous = currentPage;
       switchToPage(nextPage);
     }
   }
 
-  // Moves to the previous form page in the sequence.  
-  // This is not necessarily the form page the user was just on (for example, if 
-  // they used the step progress indicator to revisit a completed section).  
+  // Moves to the previous form page in the sequence.
+  // This is not necessarily the form page the user was just on (for example, if
+  // they used the step progress indicator to revisit a completed section).
   // Rather it can be thought of as the previous page as defined by the page
   // sequence from linkPages().
   function toPrevPage() {
@@ -1195,7 +1196,7 @@ pageClass: "page-public-assistance"
   function submitForm() {
     computeEligibility();
     // Make the results page visible upon submit.
-    // The submit button acts a lot like a next button preceding the results 
+    // The submit button acts a lot like a next button preceding the results
     // section.
     toNextPage();
     // The results section should immediately be marked done, since there are
@@ -1267,7 +1268,7 @@ pageClass: "page-public-assistance"
       // Alias the parent element as 'section' for convenience.
       pages[j].section = pages[j].parentElement;
       // By default, each page will advance to the next page in the sequence,
-      // regardless of form input.  For conditional next-page selection, 
+      // regardless of form input.  For conditional next-page selection,
       // add the logic to customPageLinking().
       pages[j].next = function() {
         return pages[j + 1];
@@ -1434,7 +1435,7 @@ pageClass: "page-public-assistance"
   // Gets values for all input elements with id starting with 'idPrefix'.
   function getValuesOrNulls(idPrefix) {
     return Array.from(document.querySelectorAll(
-      'input[id^="' + idPrefix + '"]')).map(e => getValueOrNull(e.id));
+      `input[id^="${idPrefix}"]`), e => getValueOrNull(e.id));
   }
 
   function indexOfAll(arr, value) {
@@ -1443,7 +1444,7 @@ pageClass: "page-public-assistance"
   }
 
   function dateStrToLocal(dateStr) {
-    return dateStr + 'T00:00';
+    return `${dateStr}T00:00`;
   }
 
   function getNumberOfDays(startDate, endDate) {
@@ -1463,7 +1464,7 @@ pageClass: "page-public-assistance"
 
   function getFormattedDutyDate(dutyDate)	{
     const date1 = new Date(dutyDate);
-    return (date1.getMonth() + 1 + '/' + date1.getDate() + '/' + date1.getFullYear());
+    return `${date1.getMonth() + 1}/${date1.getDate()}/${date1.getFullYear()}`;
   }
 
   function pageTotal(pageId, hhMemberIdx=null) {
@@ -1471,13 +1472,13 @@ pageClass: "page-public-assistance"
     if (hhMemberIdx === null) {
       // Return income total for entire household.
       return Number(
-        document.querySelector('#' + pageId + ' .total').textContent);
+        document.querySelector(`#${pageId} .total`).textContent);
     }
     if (!Array.isArray(hhMemberIdx)) {
       hhMemberIdx = [hhMemberIdx];
     }
     const incomeGroups = document.querySelectorAll(
-      '#' + pageId + ' .income_details_wrapper>fieldset');
+      `#${pageId} .income_details_wrapper>fieldset`);
     let sum = 0;
     for (const idx of hhMemberIdx) {
       if (idx < 0 || idx > incomeGroups.length - 1) {
@@ -1493,7 +1494,7 @@ pageClass: "page-public-assistance"
   }
 
   function incomeTotal(incomeType, hhMemberIdx=null) {
-    return pageTotal('page-income-details-' + incomeType, hhMemberIdx);
+    return pageTotal(`page-income-details-${incomeType}`, hhMemberIdx);
   }
 
   function incomeSubTotal(incomeTypes, hhMemberIdx=null) {
@@ -1505,10 +1506,10 @@ pageClass: "page-public-assistance"
   }
 
   function incomeValid() {
-    const incomePages = Array.from(document.querySelectorAll(
-      '[id^="page-income-details-"]'));
-    const allIncomeTypes = incomePages.map(
-      p => p.id.replace('page-income-details-', ''));
+    const incomeDetailPrefix = 'page-income-details-';
+    const allIncomeTypes = Array.from(
+      document.querySelectorAll('[id^=""]'),
+      p => p.id.replace(incomeDetailPrefix, ''));
     const householdTotal = incomeSubTotal(allIncomeTypes);
     // Return false only if no income of any kind for any household member was
     // entered (and the household was not marked as having zero income).
@@ -1599,15 +1600,15 @@ pageClass: "page-public-assistance"
         return this.limits[hhSize - 1];
       }
     }
-  } 
-  
+  }
+
   // The functions below determine eligibility for various programs.
   // When a program is added using the "program" shortcode, a matching function
   // should be defined called {id}Eligible where {id} is the id given in
   // the "program" shortcode for that program.
   //
   // An eligibility function should return true if the input values suggest
-  // program eligibility, false if the values suggest ineligibility, and 
+  // program eligibility, false if the values suggest ineligibility, and
   // null if an eligibility determination can't be made.
   function adsaEligible() {
     return (
@@ -1623,9 +1624,9 @@ pageClass: "page-public-assistance"
           document.getElementById("existing-ssdi-me").checked,
           document.getElementById("existing-ihss-me").checked,
           document.getElementById("existing-capi-me").checked,
-          ssiEligible(), 
-          ssdiEligible(), 
-          ihssEligible(), 
+          ssiEligible(),
+          ssdiEligible(),
+          ihssEligible(),
           capiEligible()
         )
       )
@@ -1792,8 +1793,8 @@ pageClass: "page-public-assistance"
       Math.min(numChildren, childSupportDisregards.length - 1)];
     const wagesTotal = incomeTotal("wages");
     const childSupportTotal = incomeTotal("child-support");
-    const retirementEntries = Array.from(document.querySelectorAll(
-      "#page-income-details-disability ul.dynamic_field_list>li"));
+    const retirementEntries = [...document.querySelectorAll(
+      "#page-income-details-disability ul.dynamic_field_list>li")];
     const ssiEntries = retirementEntries.filter(
       e => e.querySelector(
         'input[id^="income-disability-is-ssi-capi"]').checked);
@@ -1911,7 +1912,7 @@ pageClass: "page-public-assistance"
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
       0,
-      0,  
+      0,
       57575,
       69375,
       81175,
@@ -1932,8 +1933,8 @@ pageClass: "page-public-assistance"
   }
 
   function vaDisabilityCompEligible() {
-    const dutyTypeSelects = Array.from(document.querySelectorAll(
-      'select[id^="your-duty-type"]'));
+    const dutyTypeSelects = [...document.querySelectorAll(
+      'select[id^="your-duty-type"]')];
     const dutyTypes = dutyTypeSelects.map(d => getValueOrNull(d.id));
     const meetsDutyReq = or(
       ...dutyTypes.map(d => eq(d, 'active-duty')),
@@ -2424,7 +2425,7 @@ pageClass: "page-public-assistance"
       }
 
       // Sort list items alphabetically.
-      const items = Array.from(list.querySelectorAll('li'));
+      const items = [...list.querySelectorAll('li')];
       items.sort((a, b) => {
         const titleA = a.querySelector('h4').textContent;
         const titleB = b.querySelector('h4').textContent;
