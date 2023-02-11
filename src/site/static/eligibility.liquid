@@ -81,7 +81,7 @@ pageClass: "page-public-assistance"
     {% eligPage "head-of-household" %}
       <p>Are you the head of your household?</p>
       <div>
-        <ul id="yourself-head-household" class="singleselect-each">
+        <ul id="yourself-head-household" class="yes-no">
           <li>
             <input type="radio" id="headhh_yes" name="head_household" />
             <label for="headhh_yes">Yes</label>
@@ -99,7 +99,7 @@ pageClass: "page-public-assistance"
 
       <div>
         <p>Does your disability prevent you from working?</p>
-        <ul id="prevent-working" class="singleselect-each">
+        <ul id="prevent-working" class="yes-no">
           <li>
             <input type="radio" id="dis_prev_work_yes" name="disability_details1" />
             <label for="dis_prev_work_yes">Yes</label>
@@ -110,7 +110,7 @@ pageClass: "page-public-assistance"
           </li>
         </ul>
         <p>Do you use a guide, signal or training dog?</p>
-        <ul id="use-guide" class="singleselect-each">
+        <ul id="use-guide" class="yes-no">
           <LI>
             <input type="radio" id="dis_guide_yes" name="disability_details2" />
             <label for="dis_guide_yes">Yes</label>
@@ -121,7 +121,7 @@ pageClass: "page-public-assistance"
           </li>
         </ul>
         <p>Is your disability related to your military service?</p>
-        <ul id="military-related" class="singleselect-each">
+        <ul id="military-related" class="yes-no">
           <li>
             <input type="radio" id="dis_military_yes" name="disability_details3" />
             <label for="dis_military_yes">Yes</label>
@@ -198,17 +198,17 @@ pageClass: "page-public-assistance"
       </p>
       <div>
         <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
-        <ul id="duration-military-service" class="singleselect-each">
+        <ul id="mil-svc-duration" class="singleselect">
           <li>
-            <input type="radio" id="full-dur-yes" name="mil-svc-duration" />
+            <input type="radio" id="full-dur-yes" name="mil-svc-duration" value="full-dur-yes">
             <label for="full-dur-yes">Yes</label>
           </li>
           <li>
-            <input type="radio" id="full-dur-no" name="mil-svc-duration" />
+            <input type="radio" id="full-dur-no" name="mil-svc-duration" value="full-dur-no">
             <label for="full-dur-no">No</label>
           </li>
           <li>
-            <input type="radio" id="full-dur-not-called" name="mil-svc-duration" />
+            <input type="radio" id="full-dur-not-called" name="mil-svc-duration" value="full-dur-not-called">
             <label for="full-dur-not-called">I was not called or ordered to this active duty period</label>
           </li>
         </ul>
@@ -221,29 +221,29 @@ pageClass: "page-public-assistance"
       <p>Select <span class="bold">one</span> of the following that most accurately describes you:
       </p>
       <div>
-        <ul id="yourself-immigration-status" class="singleselect-each">
+        <ul id="immig_status" class="singleselect">
           <li>
-            <input type="radio" id="permanent_resident" name="immig_status" />
+            <input type="radio" id="permanent_resident" name="immig_status" value="permanent_resident">
             <label for="permanent_resident">I have a Permanent Resident Card</label>
           </li>
           <li>
-            <input type="radio" id="qualified_noncitizen_gt5y" name="immig_status" />
+            <input type="radio" id="qualified_noncitizen_gt5y" name="immig_status" value="qualified_noncitizen_gt5y">
             <label for="qualified_noncitizen_gt5y">I have been a qualified non-citizen for 5 years or more</label>
           </li>
           <li>
-            <input type="radio" id="qualified_noncitizen_le5y" name="immig_status"/>
+            <input type="radio" id="qualified_noncitizen_le5y" name="immig_status" value="qualified_noncitizen_le5y">
             <label for="qualified_noncitizen_le5y">I have been a qualified non-citizen for less than 5 years</label>
           </li>
           <li>
-            <input type="radio" id="prucol" name="immig_status"/>
+            <input type="radio" id="prucol" name="immig_status" value="prucol">
             <label for="prucol">I am a non-qualified non-citizen Permanently Residing Under the Color of the Law (PRUCOL)</label>
           </li>
           <li>
-            <input type="radio" id="live_temporarily" name="immig_status" />
+            <input type="radio" id="live_temporarily" name="immig_status" value="live_temporarily">
             <label for="live_temporarily">I am living in the U.S. temporarily</label>
           </li>
           <li>
-            <input type="radio" id="none_describe" name="immig_status" />
+            <input type="radio" id="none_describe" name="immig_status" value="none_describe">
             <label for="none_describe">None of these describe my situation</label>
           </li>
         </ul>
@@ -319,33 +319,33 @@ pageClass: "page-public-assistance"
     {% eligPage "household-situation" %}
       <p>Select the option below that best describes your current housing situation:</p>
       <div>
-        <ul id="household-situation-details" class="singleselect-each">
+        <ul id="housing-situation" class="singleselect">
           <li>
-            <input type="radio" id="housing" name="housing-situation" value="Yes" />
-            <label for="housing">I live in a mobile home, apartment, condo, townhouse, or house</label>
+            <input type="radio" id="housed" name="housing-situation" value="housed" />
+            <label for="housed">I live in a mobile home, apartment, condo, townhouse, or house</label>
           </li>
           <li>
-            <input type="radio" id="vehicle" name="housing-situation" value="Yes" />
+            <input type="radio" id="vehicle" name="housing-situation" value="vehicle" />
             <label for="vehicle">I live in an RV, travel trailer, or other vehicle</label>
           </li>
           <li>
-            <input type="radio" id="transitional" name="housing-situation" value="Yes" />
+            <input type="radio" id="transitional" name="housing-situation" value="transitional" />
             <label for="transitional">I live in transitional housing</label>
           </li>
           <li>
-            <input type="radio" id="hotel" name="housing-situation" value="Yes" />
+            <input type="radio" id="hotel" name="housing-situation" value="hotel" />
             <label for="hotel">I live in a hotel or motel room</label>
           </li>
           <li>
-            <input type="radio" id="shelter" name="housing-situation" value="Yes" />
+            <input type="radio" id="shelter" name="housing-situation" value="shelter" />
             <label for="shelter">I live in a shelter, interim housing, or emergency housing</label>
           </li>
           <li>
-            <input type="radio" id="no-stable-place" name="housing-situation" value="Yes" />
+            <input type="radio" id="no-stable-place" name="housing-situation" value="no-stable-place" />
             <label for="no-stable-place">I do not have a stable place to live</label>
           </li>
           <li>
-            <input type="radio" id="unlisted-stable-place" name="housing-situation" value="Yes" />
+            <input type="radio" id="unlisted-stable-place" name="housing-situation" value="unlisted-stable-place" />
             <label for="unlisted-stable-place">I have a stable place to live, but it is not listed here</label>
           </li>
         </ul>
@@ -355,7 +355,7 @@ pageClass: "page-public-assistance"
     {% eligPage "household-housed" %}
       <div>
         <p>Does your household pay a gas or electric bill?</p>
-        <ul id="hh-pay-utilities" class="singleselect-each">
+        <ul id="hh-pay-utilities" class="yes-no">
           <li>
             <input type="radio" id="pay-utilities-yes" name="housed_details1" value="Yes" />
             <label for="pay-utilities-yes">Yes</label>
@@ -366,7 +366,7 @@ pageClass: "page-public-assistance"
           </li>
         </ul>
         <p>Are you able to cook and store food in your home?</p>
-        <ul id="hh-has-kitchen" class="singleselect-each">
+        <ul id="hh-has-kitchen" class="yes-no">
           <li>
             <input type="radio" id="has-kitchen-yes" name="has-kitchen" value="Yes" />
             <label for="has-kitchen-yes">Yes</label>
@@ -377,7 +377,7 @@ pageClass: "page-public-assistance"
           </li>
         </ul>
         <p>Do you feel you are at risk of becoming homeless?</p>
-        <ul id="hh-risk-homeless" class="singleselect-each">
+        <ul id="hh-risk-homeless" class="yes-no">
           <li>
             <input type="radio" id="risk_homeless_yes" name="housed_details2" value="Yes" />
             <label for="risk_homeless_yes">Yes</label>
@@ -1339,7 +1339,7 @@ pageClass: "page-public-assistance"
 
 
     pageById["page-household-situation"].next = function() {
-      if (document.getElementById("housing").checked || document.getElementById("unlisted-stable-place").checked) {
+      if (document.getElementById("housed").checked || document.getElementById("unlisted-stable-place").checked) {
         return pageById["page-household-housed"];
       }
       return pageById["page-household-housed"].next();
@@ -1416,6 +1416,10 @@ pageClass: "page-public-assistance"
     let val;
     if (elem.type === 'checkbox') {
       val = elem.checked;
+    } else if (elem.tagName.toLowerCase() === 'ul' &&
+        elem.classList.contains('singleselect')) {
+      const selected = elem.querySelector('li>input:checked');
+      val = selected ? selected.value : null;
     } else {
       val = elem.value;
     }
@@ -1673,17 +1677,21 @@ pageClass: "page-public-assistance"
           document.getElementById('existing-ssdi-me').checked,
           document.getElementById('existing-capi-me').checked,
           document.getElementById('existing-medical-me').checked)));
+
+    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
-      document.getElementById('permanent_resident').checked,
-      document.getElementById('qualified_noncitizen_gt5y').checked,
+      eq(immigStatus, document.getElementById('permanent_resident').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_gt5y').value),
       // TODO: Decide how to handle immigration status: Could mark CFAP
       // eligible for anyone not a citizen and not a permanent resident? See
       // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap31.pdf
       // and
       // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap14.pdf#page=13
       and(
-        document.getElementById('qualified_noncitizen_le5y').checked,
+        eq(immigStatus,
+           document.getElementById('qualified_noncitizen_le5y').value),
         meetsShortResidencyReq));
 
     // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
@@ -1767,12 +1775,15 @@ pageClass: "page-public-assistance"
     const employed = (
       [...Array(householdSize()).keys()].map(i => totalEarnedIncome(i) > 0));
 
+    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = or(
-      !document.getElementById("not-citizen").checked,
-      document.getElementById("permanent_resident").checked,
-      document.getElementById("qualified_noncitizen_gt5y").checked,
-      document.getElementById("qualified_noncitizen_le5y").checked
-    );
+      !document.getElementById('not-citizen').checked,
+      eq(immigStatus, document.getElementById('permanent_resident').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_gt5y').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_le5y').value));
+
     const meetsFamilyReq = or(
       ...hhAges.map(a => lt(a, 19)),
       // TODO: is this head of household check needed?  Could we just
@@ -1846,13 +1857,16 @@ pageClass: "page-public-assistance"
 
   function capiEligible() {
     // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
+    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = and(
       document.getElementById('not-citizen').checked,
       or(
-        document.getElementById('permanent_resident').checked,
-        document.getElementById('qualified_noncitizen_gt5y').checked,
-        document.getElementById('qualified_noncitizen_le5y').checked,
-        document.getElementById('prucol').checked));
+        eq(immigStatus, document.getElementById('permanent_resident').value),
+        eq(immigStatus,
+           document.getElementById('qualified_noncitizen_gt5y').value),
+        eq(immigStatus,
+           document.getElementById('qualified_noncitizen_le5y').value),
+        eq(immigStatus, document.getElementById('prucol').value)));
 
     return and(
       ssiCapiBaseEligibile(),
@@ -1981,9 +1995,10 @@ pageClass: "page-public-assistance"
       document.getElementById('blind').checked,
       document.getElementById('disabled').checked);
 
+    const housing = getValueOrNull('housing-situation');
     const meetsHousedReq = or(
-      document.getElementById('housing').checked,
-      document.getElementById('unlisted-stable-place').checked);
+      eq(housing, document.getElementById('housed').value),
+      eq(housing, document.getElementById('unlisted-stable-place').value));
 
     return and(
       meetsDisabilityReq,
@@ -2088,11 +2103,14 @@ pageClass: "page-public-assistance"
     // TODO: Collect data about whether _anyone_ in the household is
     // a citizen or qualified nonresident.
     // https://www.ecfr.gov/current/title-24/subtitle-A/part-5/subpart-E/section-5.516#p-5.516(b)
+    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
-      document.getElementById('permanent_resident').checked,
-      document.getElementById('qualified_noncitizen_gt5y').checked,
-      document.getElementById('qualified_noncitizen_le5y').checked);
+      eq(immigStatus, document.getElementById('permanent_resident').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_gt5y').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_le5y').value));
 
     const underIncomeLimit = (
       le(grossIncome(), grossLimit.getLimit(householdSize())));
@@ -2171,11 +2189,14 @@ pageClass: "page-public-assistance"
   }
 
   function ssiEligible() {
+    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
-      document.getElementById("permanent_resident").checked,
-      document.getElementById("qualified_noncitizen_gt5y").checked,
-      document.getElementById("qualified_noncitizen_le5y").checked);
+      eq(immigStatus, document.getElementById('permanent_resident').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_gt5y').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_le5y').value));
 
     return and(
       ssiCapiBaseEligibile(),
@@ -2295,7 +2316,8 @@ pageClass: "page-public-assistance"
             gt(duty.start, new Date(dateStrToLocal(LATE_DUTY_AFTER))),
             or(
               ge(duration, MIN_LATE_DUTY_DURATION),
-              document.getElementById('full-dur-yes').checked),
+              eq(getValueOrNull('mil-svc-duration'),
+                 document.getElementById('full-dur-yes').value)),
             isDuringWartime),
           and(
             eq(duty.type, 'active-duty'),
@@ -2378,13 +2400,14 @@ pageClass: "page-public-assistance"
   }
 
   function upliftEligible() {
+    const housing = getValueOrNull('housing-situation');
     return or(
-      document.getElementById('vehicle').checked,
-      document.getElementById('transitional').checked,
-      document.getElementById('hotel').checked,
-      document.getElementById('shelter').checked,
-      document.getElementById('no-stable-place').checked,
-      document.getElementById('risk_homeless_yes').checked);
+      eq(housing, document.getElementById('vehicle').value),
+      eq(housing, document.getElementById('transitional').value),
+      eq(housing, document.getElementById('hotel').value),
+      eq(housing, document.getElementById('shelter').value),
+      eq(housing, document.getElementById('no-stable-place').value),
+      eq(housing, document.getElementById('risk_homeless_yes').value));
   }
 
   function clearUnusedPages() {
