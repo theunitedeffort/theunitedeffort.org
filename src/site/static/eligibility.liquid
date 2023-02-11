@@ -1970,7 +1970,7 @@ pageClass: "page-public-assistance"
   function gaEligible() {
     const age = document.getElementById("age").value || null;
     const numDependents = document.querySelectorAll('input[id^="hh-member-dependent"]:checked').length;
-  
+
     const MIN_GA_ELIGIBLE_AGE = 18;  // Years
     const NUM_OF_DEPENDENTS = 0;     // None
     const MAX_RESOURCES = 500;       // USD Combined household assets
