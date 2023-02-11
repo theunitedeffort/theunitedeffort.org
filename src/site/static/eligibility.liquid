@@ -1307,7 +1307,8 @@ pageClass: "page-public-assistance"
     pageById["page-veteran-details"].next = function() {
       const fromDate = getDateOrNan("served-from");
       const untilDate = getDateOrNan("served-until");
-      if (getNumberOfDays(fromDate, untilDate) < 730) {
+      if (document.getElementById("veteran").checked &&
+          getNumberOfDays(fromDate, untilDate) < 730) {
         const fromPlaceHolder = document.getElementById("served-from-placeholder");
         fromPlaceHolder.textContent = getFormattedDutyDate(fromDate);
 
@@ -2385,8 +2386,30 @@ pageClass: "page-public-assistance"
       document.getElementById('risk_homeless_yes').checked);
   }
 
+  function clearUnusedPages() {
+    const pages = [...document.querySelectorAll('div.elig_page')];
+    // Reset usage tracking.
+    for (const page of pages) {
+      page.used = false;
+    }
+    // Walk the form to find out which pages are used.
+    let page = pages[0];
+    do {
+      page.used = true;
+      page = page.next();
+    } while (page);
+    // Clear out those pages that are not used with the current form inputs.
+    for (const unusedPage of pages.filter(p => !p.used)) {
+      clearInputs(unusedPage);
+    }
+  }
+
   // Determines eligibility for programs based on user form input values.
   function computeEligibility() {
+    // Ensure any inputs on unused pages are cleared out prior to eligibility
+    // computation.
+    clearUnusedPages();
+
     const allPrograms = document.querySelectorAll('.programs li');
     const eligibleList = document.querySelector('.programs__eligible ul');
     const ineligibleList = document.querySelector('.programs__ineligible ul');
