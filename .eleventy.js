@@ -448,7 +448,25 @@ module.exports = function(eleventyConfig) {
         <tbody>
           ${rowsHtml.join("")}
         </tbody>
-      </table>`
+      </table>`;
+  });
+
+  eleventyConfig.addPairedShortcode("singleselect", function(options, id) {
+    delete this.page.singleselectId;
+    return `
+      <ul id="${id}" class="singleselect">
+        ${options}
+      </ul>`;
+  });
+
+  eleventyConfig.addPairedShortcode("option", function(labelText, id) {
+    this.page.singleselectId = (this.page.singleselectId ||
+      `singleselect-${Math.floor(Math.random() * 1000)}`);
+    return `
+      <li>
+        <input type="radio" id="${id}" name="${this.page.singleselectId}" value="${id}">
+        <label for="${id}">${labelText.trim()}</label>
+      </li>`;
   });
 
   // Generates a label tag for the given 'fieldName'. 

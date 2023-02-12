@@ -198,20 +198,17 @@ pageClass: "page-public-assistance"
       </p>
       <div>
         <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
-        <ul id="mil-svc-duration" class="singleselect">
-          <li>
-            <input type="radio" id="full-dur-yes" name="mil-svc-duration" value="full-dur-yes">
-            <label for="full-dur-yes">Yes</label>
-          </li>
-          <li>
-            <input type="radio" id="full-dur-no" name="mil-svc-duration" value="full-dur-no">
-            <label for="full-dur-no">No</label>
-          </li>
-          <li>
-            <input type="radio" id="full-dur-not-called" name="mil-svc-duration" value="full-dur-not-called">
-            <label for="full-dur-not-called">I was not called or ordered to this active duty period</label>
-          </li>
-        </ul>
+        {% singleselect "mil-svc-duration" %}
+          {% option "full-dur-yes" %}
+            Yes
+          {% endoption %}
+          {% option "full-dur-no" %}
+            No
+          {% endoption %}
+          {% option "full-dur-not-called" %}
+            I was not called or ordered to this active duty period
+          {% endoption %}
+        {% endsingleselect %}
       </div>
     {% endeligPage %}
 
@@ -221,32 +218,26 @@ pageClass: "page-public-assistance"
       <p>Select <span class="bold">one</span> of the following that most accurately describes you:
       </p>
       <div>
-        <ul id="immig_status" class="singleselect">
-          <li>
-            <input type="radio" id="permanent_resident" name="immig_status" value="permanent_resident">
-            <label for="permanent_resident">I have a Permanent Resident Card</label>
-          </li>
-          <li>
-            <input type="radio" id="qualified_noncitizen_gt5y" name="immig_status" value="qualified_noncitizen_gt5y">
-            <label for="qualified_noncitizen_gt5y">I have been a qualified non-citizen for 5 years or more</label>
-          </li>
-          <li>
-            <input type="radio" id="qualified_noncitizen_le5y" name="immig_status" value="qualified_noncitizen_le5y">
-            <label for="qualified_noncitizen_le5y">I have been a qualified non-citizen for less than 5 years</label>
-          </li>
-          <li>
-            <input type="radio" id="prucol" name="immig_status" value="prucol">
-            <label for="prucol">I am a non-qualified non-citizen Permanently Residing Under the Color of the Law (PRUCOL)</label>
-          </li>
-          <li>
-            <input type="radio" id="live_temporarily" name="immig_status" value="live_temporarily">
-            <label for="live_temporarily">I am living in the U.S. temporarily</label>
-          </li>
-          <li>
-            <input type="radio" id="none_describe" name="immig_status" value="none_describe">
-            <label for="none_describe">None of these describe my situation</label>
-          </li>
-        </ul>
+        {% singleselect "immig_status" %}
+          {% option "permanent_resident" %}
+            I have a Permanent Resident Card
+          {% endoption %}
+          {% option "qualified_noncitizen_gt5y" %}
+            I have been a qualified non-citizen for 5 years or more
+          {% endoption %}
+          {% option "qualified_noncitizen_le5y" %}
+            I have been a qualified non-citizen for less than 5 years
+          {% endoption %}
+          {% option "prucol" %}
+            I am a non-qualified non-citizen Permanently Residing Under the Color of the Law (PRUCOL)
+          {% endoption %}
+          {% option "live_temporarily" %}
+            I am living in the U.S. temporarily
+          {% endoption %}
+          {% option "none_describe" %}
+            None of these describe my situation
+          {% endoption %}
+        {% endsingleselect %}
       </div>
     {% endeligPage %}
   {% endeligSection %}
@@ -319,36 +310,29 @@ pageClass: "page-public-assistance"
     {% eligPage "household-situation" %}
       <p>Select the option below that best describes your current housing situation:</p>
       <div>
-        <ul id="housing-situation" class="singleselect">
-          <li>
-            <input type="radio" id="housed" name="housing-situation" value="housed" />
-            <label for="housed">I live in a mobile home, apartment, condo, townhouse, or house</label>
-          </li>
-          <li>
-            <input type="radio" id="vehicle" name="housing-situation" value="vehicle" />
-            <label for="vehicle">I live in an RV, travel trailer, or other vehicle</label>
-          </li>
-          <li>
-            <input type="radio" id="transitional" name="housing-situation" value="transitional" />
-            <label for="transitional">I live in transitional housing</label>
-          </li>
-          <li>
-            <input type="radio" id="hotel" name="housing-situation" value="hotel" />
-            <label for="hotel">I live in a hotel or motel room</label>
-          </li>
-          <li>
-            <input type="radio" id="shelter" name="housing-situation" value="shelter" />
-            <label for="shelter">I live in a shelter, interim housing, or emergency housing</label>
-          </li>
-          <li>
-            <input type="radio" id="no-stable-place" name="housing-situation" value="no-stable-place" />
-            <label for="no-stable-place">I do not have a stable place to live</label>
-          </li>
-          <li>
-            <input type="radio" id="unlisted-stable-place" name="housing-situation" value="unlisted-stable-place" />
-            <label for="unlisted-stable-place">I have a stable place to live, but it is not listed here</label>
-          </li>
-        </ul>
+        {% singleselect "housing-situation" %}
+          {% option "housed" %}
+            I live in a mobile home, apartment, condo, townhouse, or house
+          {% endoption %}
+          {% option "vehicle" %}
+            I live in an RV, travel trailer, or other vehicle
+          {% endoption %}
+          {% option "transitional" %}
+            I live in transitional housing
+          {% endoption %}
+          {% option "hotel" %}
+            I live in a hotel or motel room
+          {% endoption %}
+          {% option "shelter" %}
+            I live in a shelter, interim housing, or emergency housing
+          {% endoption %}
+          {% option "unlisted-stable-place" %}
+            I have a stable place to live, but it is not listed here
+          {% endoption %}
+          {% option "no-stable-place" %}
+            I do not have a stable place to live
+          {% endoption %}
+        {% endsingleselect %}
       </div>
     {% endeligPage %}
 
