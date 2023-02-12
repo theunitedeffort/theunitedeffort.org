@@ -84,16 +84,22 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
-  eleventyConfig.addFilter("groupBy", function(collection, key) {
+  eleventyConfig.addFilter("groupBy", function(collection, keys) {
+    const SEPARATOR = "__"
     const groupMap = {};
+    const keyArr = [].concat(keys);
     for (const item of collection) {
-      const keyValue = item[key];
+      const keyValue = keyArr.map(k => item[k]).join(SEPARATOR);
       groupMap[keyValue] = groupMap[keyValue] || [];
       groupMap[keyValue].push(item);
     }
     const grouped = []
     for (const groupKey in groupMap) {
-      grouped.push({"key": groupKey, "values": groupMap[groupKey]});
+      const entry = {"key": groupKey, "values": groupMap[groupKey]};
+      for (const [index, key] of groupKey.split(SEPARATOR).entries()) {
+        entry["key" + index] = key;
+      }
+      grouped.push(entry);
     }
     return grouped;
   });
@@ -178,32 +184,43 @@ module.exports = function(eleventyConfig) {
   });
 
   // Sorts items according to the ranking defined in SORT_RANKING.
-  eleventyConfig.addFilter("rankSort", function(values, property="") {
+  eleventyConfig.addFilter("rankSort", function(values, properties="") {
     let sorted = values.sort(function(a, b) {
-      let valA = property ? a[property] : a;
-      let valB = property ? b[property] : b;
-      let rankA = SORT_RANKING.get(valA);
-      let rankB = SORT_RANKING.get(valB);
-      // Special handling for the -1 rank, which is always sorted last.
-      if (rankB < 0) {
-        return -1;
-      } else if (rankA < 0) {
-        return 1;
-      // Sort by rank if both items have one.
-      } else if (rankA && rankB) {
-        return rankA - rankB;
-      // Put unranked items after the ranked ones.
-      } else if (rankA && !rankB) {
-        return -1;
-      } else if (!rankA && rankB) {
-        return 1;
-      // Sort unranked items alphabetically.
-      } else if (valA < valB) {
-        return -1;
-      } else if (valA > valB) {
-        return 1;
+      const props = [].concat(properties);
+      let ret = 0;
+      for (const prop of props) {
+        let valA = prop ? a[prop] : a;
+        let valB = prop ? b[prop] : b;
+        let rankA = SORT_RANKING.get(valA);
+        let rankB = SORT_RANKING.get(valB);
+        // Special handling for the -1 rank, which is always sorted last.
+        if (rankB < 0) {
+          ret = -1;
+        } else if (rankA < 0) {
+          ret = 1;
+        // Sort by rank if both items have one.
+        } else if (rankA && rankB) {
+          ret = rankA - rankB;
+        // Put unranked items after the ranked ones.
+        } else if (rankA && !rankB) {
+          ret = -1;
+        } else if (!rankA && rankB) {
+          ret = 1;
+        // Sort unranked items alphabetically.
+        } else if (valA < valB) {
+          ret = -1;
+        } else if (valA > valB) {
+          ret = 1;
+        }
+        // If the values are the same, continue on with the next property to
+        // try to sort them.
+        // Otherwise, get out of the loop because the items can be sorted via
+        // this property.
+        if (ret != 0) {
+          break;
+        }
       }
-      return 0;
+      return ret;
     });
     return sorted;
   });
@@ -431,7 +448,25 @@ module.exports = function(eleventyConfig) {
         <tbody>
           ${rowsHtml.join("")}
         </tbody>
-      </table>`
+      </table>`;
+  });
+
+  eleventyConfig.addPairedShortcode("singleselect", function(options, id) {
+    delete this.page.singleselectId;
+    return `
+      <ul id="${id}" class="singleselect">
+        ${options}
+      </ul>`;
+  });
+
+  eleventyConfig.addPairedShortcode("option", function(labelText, id) {
+    this.page.singleselectId = (this.page.singleselectId ||
+      `singleselect-${Math.floor(Math.random() * 1000)}`);
+    return `
+      <li>
+        <input type="radio" id="${id}" name="${this.page.singleselectId}" value="${id}">
+        <label for="${id}">${labelText.trim()}</label>
+      </li>`;
   });
 
   // Generates a label tag for the given 'fieldName'. 

@@ -81,7 +81,7 @@ pageClass: "page-public-assistance"
     {% eligPage "head-of-household" %}
       <p>Are you the head of your household?</p>
       <div>
-        <ul id="yourself-head-household" class="singleselect-each">
+        <ul id="yourself-head-household" class="yes-no">
           <li>
             <input type="radio" id="headhh_yes" name="head_household" />
             <label for="headhh_yes">Yes</label>
@@ -99,7 +99,7 @@ pageClass: "page-public-assistance"
 
       <div>
         <p>Does your disability prevent you from working?</p>
-        <ul id="prevent-working" class="singleselect-each">
+        <ul id="prevent-working" class="yes-no">
           <li>
             <input type="radio" id="dis_prev_work_yes" name="disability_details1" />
             <label for="dis_prev_work_yes">Yes</label>
@@ -110,7 +110,7 @@ pageClass: "page-public-assistance"
           </li>
         </ul>
         <p>Do you use a guide, signal or training dog?</p>
-        <ul id="use-guide" class="singleselect-each">
+        <ul id="use-guide" class="yes-no">
           <LI>
             <input type="radio" id="dis_guide_yes" name="disability_details2" />
             <label for="dis_guide_yes">Yes</label>
@@ -121,7 +121,7 @@ pageClass: "page-public-assistance"
           </li>
         </ul>
         <p>Is your disability related to your military service?</p>
-        <ul id="military-related" class="singleselect-each">
+        <ul id="military-related" class="yes-no">
           <li>
             <input type="radio" id="dis_military_yes" name="disability_details3" />
             <label for="dis_military_yes">Yes</label>
@@ -198,20 +198,17 @@ pageClass: "page-public-assistance"
       </p>
       <div>
         <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
-        <ul id="duration-military-service" class="singleselect-each">
-          <li>
-            <input type="radio" id="full-dur-yes" name="mil-svc-duration" />
-            <label for="full-dur-yes">Yes</label>
-          </li>
-          <li>
-            <input type="radio" id="full-dur-no" name="mil-svc-duration" />
-            <label for="full-dur-no">No</label>
-          </li>
-          <li>
-            <input type="radio" id="full-dur-not-called" name="mil-svc-duration" />
-            <label for="full-dur-not-called">I was not called or ordered to this active duty period</label>
-          </li>
-        </ul>
+        {% singleselect "mil-svc-duration" %}
+          {% option "full-dur-yes" %}
+            Yes
+          {% endoption %}
+          {% option "full-dur-no" %}
+            No
+          {% endoption %}
+          {% option "full-dur-not-called" %}
+            I was not called or ordered to this active duty period
+          {% endoption %}
+        {% endsingleselect %}
       </div>
     {% endeligPage %}
 
@@ -221,28 +218,26 @@ pageClass: "page-public-assistance"
       <p>Select <span class="bold">one</span> of the following that most accurately describes you:
       </p>
       <div>
-        <ul id="yourself-immigration-status" class="singleselect-each">
-          <li>
-            <input type="radio" id="permanent_resident" name="immig_status" />
-            <label for="permanent_resident">I have a Permanent Resident Card</label>
-          </li>
-          <li>
-            <input type="radio" id="qualified_noncitizen_gt5y" name="immig_status" />
-            <label for="qualified_noncitizen_gt5y">I have been a qualified non-citizen for 5 years or more</label>
-          </li>
-          <li>
-            <input type="radio" id="qualified_noncitizen_le5y" name="immig_status"/>
-            <label for="qualified_noncitizen_le5y">I have been a qualified non-citizen for less than 5 years</label>
-          </li>
-          <li>
-            <input type="radio" id="live_temporarily" name="immig_status" />
-            <label for="live_temporarily">I am living in the U.S. temporarily</label>
-          </li>
-          <li>
-            <input type="radio" id="none_describe" name="immig_status" />
-            <label for="none_describe">None of these describe my situation</label>
-          </li>
-        </ul>
+        {% singleselect "immig_status" %}
+          {% option "permanent_resident" %}
+            I have a Permanent Resident Card
+          {% endoption %}
+          {% option "qualified_noncitizen_gt5y" %}
+            I have been a qualified non-citizen for 5 years or more
+          {% endoption %}
+          {% option "qualified_noncitizen_le5y" %}
+            I have been a qualified non-citizen for less than 5 years
+          {% endoption %}
+          {% option "prucol" %}
+            I am a non-qualified non-citizen Permanently Residing Under the Color of the Law (PRUCOL)
+          {% endoption %}
+          {% option "live_temporarily" %}
+            I am living in the U.S. temporarily
+          {% endoption %}
+          {% option "none_describe" %}
+            None of these describe my situation
+          {% endoption %}
+        {% endsingleselect %}
       </div>
     {% endeligPage %}
   {% endeligSection %}
@@ -273,6 +268,14 @@ pageClass: "page-public-assistance"
               <label for="hh-member-disabled">This person is disabled</label>
             </li>
             <li>
+              <input id="hh-member-pregnant" type="checkbox" />
+              <label for="hh-member-pregnant">This person is pregnant or was pregnant within the last 6 months</label>
+            </li>
+            <li>
+              <input id="hh-member-breastfeeding" type="checkbox" />
+              <label for="hh-member-breastfeeding">This person is breastfeeding a child younger than 1 year old</label>
+            </li>
+            <li>
               <input id="hh-member-dependent" type="checkbox">
               <label for="hh-member-dependent">This person is my dependent</label>
             </li>
@@ -296,46 +299,47 @@ pageClass: "page-public-assistance"
       {% enddynamicFieldList %}
     {% endeligPage %}
 
+    {% eligPage "household-unborn-members" %}
+      <p>How many unborn children are in your household?</p>
+      <div>
+        <label for="unborn-children">Total unborn children</label>
+        <input type="number" id="unborn-children" class="short">
+      </div>
+    {% endeligPage %}
+
     {% eligPage "household-situation" %}
       <p>Select the option below that best describes your current housing situation:</p>
       <div>
-        <ul id="household-situation-details" class="singleselect-each">
-          <li>
-            <input type="radio" id="housing" name="housing-situation" value="Yes" />
-            <label for="housing">I live in a mobile home, apartment, condo, townhouse, or house</label>
-          </li>
-          <li>
-            <input type="radio" id="vehicle" name="housing-situation" value="Yes" />
-            <label for="vehicle">I live in an RV, travel trailer, or other vehicle</label>
-          </li>
-          <li>
-            <input type="radio" id="transitional" name="housing-situation" value="Yes" />
-            <label for="transitional">I live in transitional housing</label>
-          </li>
-          <li>
-            <input type="radio" id="hotel" name="housing-situation" value="Yes" />
-            <label for="hotel">I live in a hotel or motel room</label>
-          </li>
-          <li>
-            <input type="radio" id="shelter" name="housing-situation" value="Yes" />
-            <label for="shelter">I live in a shelter, interim housing, or emergency housing</label>
-          </li>
-          <li>
-            <input type="radio" id="no-stable-place" name="housing-situation" value="Yes" />
-            <label for="no-stable-place">I do not have a stable place to live</label>
-          </li>
-          <li>
-            <input type="radio" id="unlisted-stable-place" name="housing-situation" value="Yes" />
-            <label for="unlisted-stable-place">I have a stable place to live, but it is not listed here</label>
-          </li>
-        </ul>
+        {% singleselect "housing-situation" %}
+          {% option "housed" %}
+            I live in a mobile home, apartment, condo, townhouse, or house
+          {% endoption %}
+          {% option "vehicle" %}
+            I live in an RV, travel trailer, or other vehicle
+          {% endoption %}
+          {% option "transitional" %}
+            I live in transitional housing
+          {% endoption %}
+          {% option "hotel" %}
+            I live in a hotel or motel room
+          {% endoption %}
+          {% option "shelter" %}
+            I live in a shelter, interim housing, or emergency housing
+          {% endoption %}
+          {% option "unlisted-stable-place" %}
+            I have a stable place to live, but it is not listed here
+          {% endoption %}
+          {% option "no-stable-place" %}
+            I do not have a stable place to live
+          {% endoption %}
+        {% endsingleselect %}
       </div>
     {% endeligPage %}
 
     {% eligPage "household-housed" %}
       <div>
         <p>Does your household pay a gas or electric bill?</p>
-        <ul id="hh-pay-utilities" class="singleselect-each">
+        <ul id="hh-pay-utilities" class="yes-no">
           <li>
             <input type="radio" id="pay-utilities-yes" name="housed_details1" value="Yes" />
             <label for="pay-utilities-yes">Yes</label>
@@ -345,8 +349,19 @@ pageClass: "page-public-assistance"
             <label for="pay-utilities-no">No</label>
           </li>
         </ul>
+        <p>Are you able to cook and store food in your home?</p>
+        <ul id="hh-has-kitchen" class="yes-no">
+          <li>
+            <input type="radio" id="has-kitchen-yes" name="has-kitchen" value="Yes" />
+            <label for="has-kitchen-yes">Yes</label>
+          </li>
+          <li>
+            <input type="radio" id="has-kitchen-no" name="has-kitchen" value="No" />
+            <label for="has-kitchen-no">No</label>
+          </li>
+        </ul>
         <p>Do you feel you are at risk of becoming homeless?</p>
-        <ul id="hh-risk-homeless" class="singleselect-each">
+        <ul id="hh-risk-homeless" class="yes-no">
           <li>
             <input type="radio" id="risk_homeless_yes" name="housed_details2" value="Yes" />
             <label for="risk_homeless_yes">Yes</label>
@@ -379,8 +394,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-disability" type="checkbox">
-            <label for="income-has-disability">Disability benefits
-            <span class="subtitle">Including SSI/SSP, SSDI, SDI, and CAPI</span></label>
+            <label for="income-has-disability">Disability benefits <span class="subtitle">Including SSI/SSP, SSDI, SDI, and CAPI</span></label>
           </li>
           <li>
             <input id="income-has-unemployment" type="checkbox">
@@ -388,8 +402,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-retirement" type="checkbox">
-            <label for="income-has-retirement">Retirement benefits
-            <span class="subtitle">Including pensions and Social Security retirement</span></label>
+            <label for="income-has-retirement">Retirement benefits <span class="subtitle">Including pensions and Social Security retirement</span></label>
           </li>
           <li>
             <input id="income-has-veterans" type="checkbox">
@@ -405,8 +418,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-other" type="checkbox">
-            <label for="income-has-other">Other source of income not listed here
-            <span class="subtitle">Including cash assistance, interest, and investment income</span></label>
+            <label for="income-has-other">Other source of income not listed here <span class="subtitle">Including cash assistance, interest, and investment income</span></label>
           </li>
           <li>
             <input id="income-has-none" type="checkbox">
@@ -510,17 +522,11 @@ pageClass: "page-public-assistance"
           Based on your responses, we were not able to find any matching programs for you.  You can see the whole list of programs we checked below.
         </p>
         <ul></ul>
-        <p>
-          The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
-        </p>
-        <p>
-          If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
-        </p>
       </div>
 
       <h3>Other Programs</h3>
       <div class="programs programs__unknown">
-        <p>
+        <p class="has_results">
           With the information provided, we are unable to determine if you are eligible for the following programs.  If you would like to provide additional information you can revisit any form sections and then return to this results section to see your updated eligibility recommendations.
         </p>
         <ul>
@@ -528,7 +534,7 @@ pageClass: "page-public-assistance"
             ADSA provides certain people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
+          {% program "Calfresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
             Calfresh provides monthly food benefits to certain low-income individuals and families.
           {% endprogram %}
 
@@ -536,7 +542,7 @@ pageClass: "page-public-assistance"
             CalWORKs provides cash aid and services to certain low-income families with children in the home.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
+          {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
             CAPI provides monthly cash benefits to certain elderly, blind, or disabled non-citizens.
           {% endprogram %}
 
@@ -596,7 +602,7 @@ pageClass: "page-public-assistance"
             VA Pension is a program that provides ongoing cash payments for eligible veterans.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
+          {% program "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
             WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods.
           {% endprogram %}
 
@@ -607,12 +613,18 @@ pageClass: "page-public-assistance"
       </div>
 
       <div class="programs programs__ineligible">
-        <p>
-          We also checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  If you think you should be eligible for one of these programs, contact the program provider for an eligibility assessment.
+        <p class="has_results">
+          We checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  If you think you should be eligible for one of these programs, contact the program provider for an eligibility assessment.
         </p>
         <ul></ul>
       </div>
 
+      <p>
+        The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
+      </p>
+      <p>
+        If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
+      </p>
     {% endeligPage %}
   {% endeligSection %}
 
@@ -632,9 +644,9 @@ pageClass: "page-public-assistance"
   }
 
   // Custom boolean "or" logic that propagates null values.  Rather than
-  // coercing a null value into false, null values are retained.  If the 
-  // result of this operation is not determined, e.g. or(false, null) then 
-  // null will be returned. Otherwise, the boolean result of or'ing all 
+  // coercing a null value into false, null values are retained.  If the
+  // result of this operation is not determined, e.g. or(false, null) then
+  // null will be returned. Otherwise, the boolean result of or'ing all
   // statements together will be returned.
   //
   // null or true = true
@@ -655,9 +667,9 @@ pageClass: "page-public-assistance"
   }
 
   // Custom boolean "and" logic that propagates null values.  Rather than
-  // coercing a null value into false, null values are retained.  If the 
-  // result of this operation is not determined, e.g. and(true, null) then 
-  // null will be returned.  Otherwise, the boolean result of and'ing all 
+  // coercing a null value into false, null values are retained.  If the
+  // result of this operation is not determined, e.g. and(true, null) then
+  // null will be returned.  Otherwise, the boolean result of and'ing all
   // statements together will be returned.
   //
   // null and true = null
@@ -728,7 +740,7 @@ pageClass: "page-public-assistance"
     return a > b;
   }
 
-  // Custom less-than-equal-to operator that returns null if either operand 
+  // Custom less-than-equal-to operator that returns null if either operand
   // is null. Otherwise returns the boolean result of a <= b.
   function le(a, b) {
     if (hasNulls(a, b)) {
@@ -737,7 +749,7 @@ pageClass: "page-public-assistance"
     return a <= b;
   }
 
-  // Custom greater-than-equal-to operator that returns null if either operand 
+  // Custom greater-than-equal-to operator that returns null if either operand
   // is null. Otherwise returns the boolean result of a >= b.
   function ge(a, b) {
     if (hasNulls(a, b)) {
@@ -826,7 +838,7 @@ pageClass: "page-public-assistance"
 
       // Ensure IDs are unique, and update input labels to match.
       const templ = newFieldset.querySelector('template');
-      const idModifier = '-member' + newMember.dynamicFieldListId;
+      const idModifier = `-member${newMember.dynamicFieldListId}`;
       modifyIds(templ.content, idModifier);
 
       addDynamicFieldListListeners(newFieldset);
@@ -843,7 +855,7 @@ pageClass: "page-public-assistance"
       if (incomeType == this) {
         continue;
       }
-      let label = wrapper.querySelector("label[for=" + incomeType.id + "]");
+      let label = wrapper.querySelector(`label[for="${incomeType.id}"]`);
       if (this.checked) {
         incomeType.checked = false;
         incomeType.setAttribute("disabled", "disabled");
@@ -876,8 +888,8 @@ pageClass: "page-public-assistance"
   }
 
   function modifyIds(parent, idModifier) {
-    const newElems = parent.querySelectorAll('[id], [for]');
-    for (const elem of newElems) {
+    const elems = parent.querySelectorAll('[id], [for]');
+    for (const elem of elems) {
       if (elem.id) {
         elem.id = elem.id + idModifier;
       }
@@ -889,8 +901,8 @@ pageClass: "page-public-assistance"
   }
 
   function clearInputs(parent) {
-    const newElems = parent.querySelectorAll('input, select');
-    for (const elem of newElems) {
+    const inputs = parent.querySelectorAll('input, select');
+    for (const elem of inputs) {
       if (elem.value) {
         elem.value = '';
       }
@@ -907,6 +919,7 @@ pageClass: "page-public-assistance"
       "ul.dynamic_field_list");
     const items = list.querySelectorAll("li");
     // Figure out the largest id index used so far.
+    // TODO: replace optional chaining operators.
     const lastInput = items[items.length - 1]?.querySelector("input");
     let lastIdNumber = -1;
     if (lastInput) {
@@ -927,7 +940,7 @@ pageClass: "page-public-assistance"
     newItem.dynamicFieldListId = newIdNumber;
     // Ensure element ids are unique and clear out any inputs that a user may
     // have entered on the template list item.
-    modifyIds(newItem, '-' + newIdNumber);
+    modifyIds(newItem, `-${newIdNumber}`);
     clearInputs(newItem);
 
     // Update the item heading if there is one.
@@ -1024,17 +1037,17 @@ pageClass: "page-public-assistance"
       setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(true);
-    } else if (firstPage) { 
+    } else if (firstPage) {
       // This is the first page, so only show the next button.
       setBackVisibility(false);
       setNextVisibility(true);
       setSubmitVisibility(false);
-    } else if (resultsPage) { 
+    } else if (resultsPage) {
       // This is the very last page, so only show the back button.
       setBackVisibility(true);
       setNextVisibility(false);
       setSubmitVisibility(false);
-    } else { 
+    } else {
       // This is a regular page, so show back an next buttons.
       setBackVisibility(true);
       setNextVisibility(true);
@@ -1048,12 +1061,12 @@ pageClass: "page-public-assistance"
   //   2. Enable navigation back to already-completed sections
   // Note the text shown for each step in the progress indicator will be
   // the same as the <h2> text under each section element.  If a section does
-  // not have a level 2 heading, no step indicator for that section will be 
+  // not have a level 2 heading, no step indicator for that section will be
   // added.
   function buildStepIndicator() {
     const allSections = document.querySelectorAll("div.elig_section");
     const stepIndicatorList = document.querySelector("div.step_indicator ul");
-    for (const section of allSections) { 
+    for (const section of allSections) {
       // TODO: Support different text for the h2 and the step indicator.
       const heading = section.querySelector("h2");
       if (!heading) {
@@ -1064,7 +1077,7 @@ pageClass: "page-public-assistance"
       // Make the button that will be used for navigation to already-completed
       // sections.
       const button = document.createElement("button");
-      button.id = "nav-" + section.id;
+      button.id = `nav-${section.id}`;
       button.dataset.sectionId = section.id;
       button.textContent = heading.textContent;
       // Sections are to-do and un-clickable by default.  They will become
@@ -1113,7 +1126,7 @@ pageClass: "page-public-assistance"
   }
 
   // Brings the user to the first page of a section.
-  // This function is used as a step indicator click handler, and 'this' 
+  // This function is used as a step indicator click handler, and 'this'
   // represents the context of the event, i.e. the button that was clicked.
   function toSection() {
     const section = document.getElementById(this.dataset.sectionId);
@@ -1132,7 +1145,7 @@ pageClass: "page-public-assistance"
   }
 
   // Moves to the next form page in the sequence.
-  // The sequence used is the one defined in linkPages.  
+  // The sequence used is the one defined in linkPages.
   function toNextPage() {
     const nextPage = currentPage.next();
     if (nextPage) {
@@ -1141,16 +1154,16 @@ pageClass: "page-public-assistance"
         // marked as completed.
         markSectionDone(currentPage.section);
       }
-      // Take note of the page we are coming from to allow backwards travel with 
+      // Take note of the page we are coming from to allow backwards travel with
       // the Back form control button.
       nextPage.previous = currentPage;
       switchToPage(nextPage);
     }
   }
 
-  // Moves to the previous form page in the sequence.  
-  // This is not necessarily the form page the user was just on (for example, if 
-  // they used the step progress indicator to revisit a completed section).  
+  // Moves to the previous form page in the sequence.
+  // This is not necessarily the form page the user was just on (for example, if
+  // they used the step progress indicator to revisit a completed section).
   // Rather it can be thought of as the previous page as defined by the page
   // sequence from linkPages().
   function toPrevPage() {
@@ -1167,7 +1180,7 @@ pageClass: "page-public-assistance"
   function submitForm() {
     computeEligibility();
     // Make the results page visible upon submit.
-    // The submit button acts a lot like a next button preceding the results 
+    // The submit button acts a lot like a next button preceding the results
     // section.
     toNextPage();
     // The results section should immediately be marked done, since there are
@@ -1239,7 +1252,7 @@ pageClass: "page-public-assistance"
       // Alias the parent element as 'section' for convenience.
       pages[j].section = pages[j].parentElement;
       // By default, each page will advance to the next page in the sequence,
-      // regardless of form input.  For conditional next-page selection, 
+      // regardless of form input.  For conditional next-page selection,
       // add the logic to customPageLinking().
       pages[j].next = function() {
         return pages[j + 1];
@@ -1279,7 +1292,8 @@ pageClass: "page-public-assistance"
     pageById["page-veteran-details"].next = function() {
       const fromDate = getDateOrNan("served-from");
       const untilDate = getDateOrNan("served-until");
-      if (getNumberOfDays(fromDate, untilDate) < 730) {
+      if (document.getElementById("veteran").checked &&
+          getNumberOfDays(fromDate, untilDate) < 730) {
         const fromPlaceHolder = document.getElementById("served-from-placeholder");
         fromPlaceHolder.textContent = getFormattedDutyDate(fromDate);
 
@@ -1298,9 +1312,18 @@ pageClass: "page-public-assistance"
       return pageById["page-immigration-status"].next();
     };
 
+    pageById["page-household-members"].next = function() {
+      const hhPregnant = getValuesOrNulls('hh-member-pregnant');
+      if (document.getElementById('pregnant').checked ||
+          hhPregnant.some(p => p)) {
+        return pageById["page-household-unborn-members"];
+      }
+      return pageById["page-household-situation"];
+    }
+
 
     pageById["page-household-situation"].next = function() {
-      if (document.getElementById("housing").checked || document.getElementById("unlisted-stable-place").checked) {
+      if (document.getElementById("housed").checked || document.getElementById("unlisted-stable-place").checked) {
         return pageById["page-household-housed"];
       }
       return pageById["page-household-housed"].next();
@@ -1373,7 +1396,17 @@ pageClass: "page-public-assistance"
   }
 
   function getValueOrNull(id) {
-    const val = document.getElementById(id).value;
+    const elem = document.getElementById(id);
+    let val;
+    if (elem.type === 'checkbox') {
+      val = elem.checked;
+    } else if (elem.tagName.toLowerCase() === 'ul' &&
+        elem.classList.contains('singleselect')) {
+      const selected = elem.querySelector('li>input:checked');
+      val = selected ? selected.value : null;
+    } else {
+      val = elem.value;
+    }
     if (val === '') {
       return null;
     }
@@ -1388,13 +1421,19 @@ pageClass: "page-public-assistance"
     return new Date(dateStrToLocal(dateStr));
   }
 
+  // Gets values for all input elements with id starting with 'idPrefix'.
+  function getValuesOrNulls(idPrefix) {
+    return Array.from(document.querySelectorAll(
+      `input[id^="${idPrefix}"]`), e => getValueOrNull(e.id));
+  }
+
   function indexOfAll(arr, value) {
     const matchingIdxs = arr.map((v, idx) => v == value ? idx : -1);
     return matchingIdxs.filter(i => i >= 0);
   }
 
   function dateStrToLocal(dateStr) {
-    return dateStr + 'T00:00';
+    return `${dateStr}T00:00`;
   }
 
   function getNumberOfDays(startDate, endDate) {
@@ -1414,7 +1453,7 @@ pageClass: "page-public-assistance"
 
   function getFormattedDutyDate(dutyDate)	{
     const date1 = new Date(dutyDate);
-    return (date1.getMonth() + 1 + '/' + date1.getDate() + '/' + date1.getFullYear());
+    return `${date1.getMonth() + 1}/${date1.getDate()}/${date1.getFullYear()}`;
   }
 
   function pageTotal(pageId, hhMemberIdx=null) {
@@ -1422,13 +1461,13 @@ pageClass: "page-public-assistance"
     if (hhMemberIdx === null) {
       // Return income total for entire household.
       return Number(
-        document.querySelector('#' + pageId + ' .total').textContent);
+        document.querySelector(`#${pageId} .total`).textContent);
     }
     if (!Array.isArray(hhMemberIdx)) {
       hhMemberIdx = [hhMemberIdx];
     }
     const incomeGroups = document.querySelectorAll(
-      '#' + pageId + ' .income_details_wrapper>fieldset');
+      `#${pageId} .income_details_wrapper>fieldset`);
     let sum = 0;
     for (const idx of hhMemberIdx) {
       if (idx < 0 || idx > incomeGroups.length - 1) {
@@ -1444,7 +1483,7 @@ pageClass: "page-public-assistance"
   }
 
   function incomeTotal(incomeType, hhMemberIdx=null) {
-    return pageTotal('page-income-details-' + incomeType, hhMemberIdx);
+    return pageTotal(`page-income-details-${incomeType}`, hhMemberIdx);
   }
 
   function incomeSubTotal(incomeTypes, hhMemberIdx=null) {
@@ -1456,10 +1495,10 @@ pageClass: "page-public-assistance"
   }
 
   function incomeValid() {
-    const incomePages = Array.from(document.querySelectorAll(
-      '[id^="page-income-details-"]'));
-    const allIncomeTypes = incomePages.map(
-      p => p.id.replace('page-income-details-', ''));
+    const incomeDetailPrefix = 'page-income-details-';
+    const allIncomeTypes = Array.from(
+      document.querySelectorAll('[id^=""]'),
+      p => p.id.replace(incomeDetailPrefix, ''));
     const householdTotal = incomeSubTotal(allIncomeTypes);
     // Return false only if no income of any kind for any household member was
     // entered (and the household was not marked as having zero income).
@@ -1550,15 +1589,15 @@ pageClass: "page-public-assistance"
         return this.limits[hhSize - 1];
       }
     }
-  } 
-  
+  }
+
   // The functions below determine eligibility for various programs.
   // When a program is added using the "program" shortcode, a matching function
   // should be defined called {id}Eligible where {id} is the id given in
   // the "program" shortcode for that program.
   //
   // An eligibility function should return true if the input values suggest
-  // program eligibility, false if the values suggest ineligibility, and 
+  // program eligibility, false if the values suggest ineligibility, and
   // null if an eligibility determination can't be made.
   function adsaEligible() {
     return (
@@ -1574,9 +1613,9 @@ pageClass: "page-public-assistance"
           document.getElementById("existing-ssdi-me").checked,
           document.getElementById("existing-ihss-me").checked,
           document.getElementById("existing-capi-me").checked,
-          ssiEligible(), 
-          ssdiEligible(), 
-          ihssEligible(), 
+          ssiEligible(),
+          ssdiEligible(),
+          ihssEligible(),
           capiEligible()
         )
       )
@@ -1584,64 +1623,95 @@ pageClass: "page-public-assistance"
   }
 
   function calfreshEligible() {
-    const grossLimit = new MonthlyIncomeLimit([
-        2148,
-        2904,
-        3660,
-        4418,
-        5174,
-        5930,
-        6688,
-        7444
+    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
+    // Section 2.1
+    const fedPovertyLevel = new MonthlyIncomeLimit([
+        1133,
+        1526,
+        1920,
+        2313,
+        2706,
+        3100,
+        3493,
+        3886
       ],
-      758);
+      394);
+
+    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
+    // Section 11.8
+    const GROSS_INCOME_LIMIT_MCE_FACTOR = 2.0;  // Times federal poverty limit
+
+    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap19.pdf
+    // Section 19.1.3
+    const SELF_EMPLOYED_EXEMPTION_FRACTION = 0.4;
 
     const age = getValueOrNull('age');
-    const hhAges = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-age"]')).map(i => i.value || null);
-    const hhDisabled = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-disabled"]')).map(i => i.checked);
+    const hhAges = getValuesOrNulls('hh-member-age');
+    const hhDisabled = getValuesOrNulls('hh-member-disabled');
 
-    const meetsImmigrationReq = (
-      or(
-        !document.getElementById("not-citizen").checked,
-        document.getElementById("permanent_resident").checked,
-        document.getElementById("qualified_noncitizen_gt5y").checked,
-        and(
-          document.getElementById("qualified_noncitizen_le5y").checked,
-          or(
-            and(lt(age, 18)),
-            document.getElementById("existing-ssi-me").checked,
-            document.getElementById("existing-ssdi-me").checked,
-            ssdiEligible(),
-            ssiEligible()
-          )
-        )
-      )
-    );
-    // TODO: add cash assistance check.
-    const isIncomeExempt = (
-      or(
-        ...hhAges.map(a => gt(a, 60)),
-        gt(age, 60),
-        ...hhDisabled,
-        document.getElementById("disabled").checked, 
-        document.getElementById("blind").checked,
-        document.getElementById("existing-ssi-me").checked,
-        document.getElementById("existing-ssdi-me").checked,
-        document.getElementById("existing-ssi-household").checked,
-        document.getElementById("existing-ssdi-household").checked,
-        // May not need to check for ssdi/ssi eligibility if we already check for disabled/blind.
-        ssdiEligible(),
-        ssiEligible()
-      )
-    );
+    const meetsShortResidencyReq = or(
+      // TODO: add military connection.
+      lt(age, 18),
+      and(
+        or(
+          document.getElementById('blind').checked,
+          document.getElementById('disabled').checked),
+        or(
+          document.getElementById('existing-ssi-me').checked,
+          document.getElementById('existing-ssdi-me').checked,
+          document.getElementById('existing-capi-me').checked,
+          document.getElementById('existing-medical-me').checked)));
 
-    // TODO: add net income check.
-    const underIncomeLimit = (
-      le(grossIncome(), grossLimit.getLimit(householdSize())));
+    const immigStatus = getValueOrNull('immig_status');
+    const meetsImmigrationReq = or(
+      !document.getElementById('not-citizen').checked,
+      eq(immigStatus, document.getElementById('permanent_resident').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_gt5y').value),
+      // TODO: Decide how to handle immigration status: Could mark CFAP
+      // eligible for anyone not a citizen and not a permanent resident? See
+      // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap31.pdf
+      // and
+      // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap14.pdf#page=13
+      and(
+        eq(immigStatus,
+           document.getElementById('qualified_noncitizen_le5y').value),
+        meetsShortResidencyReq));
 
-    return and(meetsImmigrationReq, or(underIncomeLimit, isIncomeExempt));
+    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
+    // TODO: Determine if _every_ household member is eligible for Calworks
+    // or GA, as that is the true test of categorical eligibility.
+    const isCategoricallyEligible = or(
+      document.getElementById('existing-calworks-me').checked,
+      document.getElementById('existing-calworks-household').checked,
+      document.getElementById('existing-ga-me').checked,
+      document.getElementById('existing-ga-household').checked,
+      calworksEligible(),
+      gaEligible());
+
+    // Note: Nearly all users will be considered "modified cagegorically
+    // eligible", meaning the MCE income limit factor is used and resources
+    // are not checked.
+    // TODO: Handle edge cases where the user is not MCE.
+    //
+    // TODO: Run net income and resource checks for households containing
+    // and elderly or disabled member in the event gross income is higher than
+    // the MCE limit.
+    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf#page=7
+    // Section 11.8.4
+    //
+    const mceIncomeLimit = (GROSS_INCOME_LIMIT_MCE_FACTOR *
+      fedPovertyLevel.getLimit(householdSize()));
+    let nonExemptIncome = null;
+    if (grossIncome() !== null) {
+      nonExemptIncome = (grossIncome() -
+        SELF_EMPLOYED_EXEMPTION_FRACTION * incomeTotal('self-employed'));
+    }
+    const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
+
+    return and(
+      meetsImmigrationReq,
+      or(underIncomeLimit, isCategoricallyEligible));
   }
 
   function calworksEligible() {
@@ -1683,20 +1753,21 @@ pageClass: "page-public-assistance"
       TWO_CHILD_SUPPORT_DISREGARD];
 
     const age = getValueOrNull('age');
-    const hhAges = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-age"]')).map(i => i.value || null);
-    const hhDisabled = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-disabled"]')).map(i => i.checked);
+    const hhAges = getValuesOrNulls('hh-member-age');
+    const hhDisabled = getValuesOrNulls('hh-member-disabled');
     // This employment array includes the user (idx 0) and the user's household.
     const employed = (
       [...Array(householdSize()).keys()].map(i => totalEarnedIncome(i) > 0));
 
+    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = or(
-      !document.getElementById("not-citizen").checked,
-      document.getElementById("permanent_resident").checked,
-      document.getElementById("qualified_noncitizen_gt5y").checked,
-      document.getElementById("qualified_noncitizen_le5y").checked
-    );
+      !document.getElementById('not-citizen').checked,
+      eq(immigStatus, document.getElementById('permanent_resident').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_gt5y').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_le5y').value));
+
     const meetsFamilyReq = or(
       ...hhAges.map(a => lt(a, 19)),
       // TODO: is this head of household check needed?  Could we just
@@ -1718,8 +1789,8 @@ pageClass: "page-public-assistance"
       Math.min(numChildren, childSupportDisregards.length - 1)];
     const wagesTotal = incomeTotal("wages");
     const childSupportTotal = incomeTotal("child-support");
-    const retirementEntries = Array.from(document.querySelectorAll(
-      "#page-income-details-disability ul.dynamic_field_list>li"));
+    const retirementEntries = [...document.querySelectorAll(
+      "#page-income-details-disability ul.dynamic_field_list>li")];
     const ssiEntries = retirementEntries.filter(
       e => e.querySelector(
         'input[id^="income-disability-is-ssi-capi"]').checked);
@@ -1769,8 +1840,21 @@ pageClass: "page-public-assistance"
   }
 
   function capiEligible() {
-    // TODO
-    return null;
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
+    const immigStatus = getValueOrNull('immig_status');
+    const meetsImmigrationReq = and(
+      document.getElementById('not-citizen').checked,
+      or(
+        eq(immigStatus, document.getElementById('permanent_resident').value),
+        eq(immigStatus,
+           document.getElementById('qualified_noncitizen_gt5y').value),
+        eq(immigStatus,
+           document.getElementById('qualified_noncitizen_le5y').value),
+        eq(immigStatus, document.getElementById('prucol').value)));
+
+    return and(
+      ssiCapiBaseEligibile(),
+      meetsImmigrationReq);
   }
 
   function careIncomeLimit() {
@@ -1827,7 +1911,7 @@ pageClass: "page-public-assistance"
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
       0,
-      0,  
+      0,
       57575,
       69375,
       81175,
@@ -1848,8 +1932,8 @@ pageClass: "page-public-assistance"
   }
 
   function vaDisabilityCompEligible() {
-    const dutyTypeSelects = Array.from(document.querySelectorAll(
-      'select[id^="your-duty-type"]'));
+    const dutyTypeSelects = [...document.querySelectorAll(
+      'select[id^="your-duty-type"]')];
     const dutyTypes = dutyTypeSelects.map(d => getValueOrNull(d.id));
     const meetsDutyReq = or(
       ...dutyTypes.map(d => eq(d, 'active-duty')),
@@ -1916,9 +2000,10 @@ pageClass: "page-public-assistance"
       document.getElementById('blind').checked,
       document.getElementById('disabled').checked);
 
+    const housing = getValueOrNull('housing-situation');
     const meetsHousedReq = or(
-      document.getElementById('housing').checked,
-      document.getElementById('unlisted-stable-place').checked);
+      eq(housing, document.getElementById('housed').value),
+      eq(housing, document.getElementById('unlisted-stable-place').value));
 
     return and(
       meetsDisabilityReq,
@@ -2023,11 +2108,14 @@ pageClass: "page-public-assistance"
     // TODO: Collect data about whether _anyone_ in the household is
     // a citizen or qualified nonresident.
     // https://www.ecfr.gov/current/title-24/subtitle-A/part-5/subpart-E/section-5.516#p-5.516(b)
+    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
-      document.getElementById('permanent_resident').checked,
-      document.getElementById('qualified_noncitizen_gt5y').checked,
-      document.getElementById('qualified_noncitizen_le5y').checked);
+      eq(immigStatus, document.getElementById('permanent_resident').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_gt5y').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_le5y').value));
 
     const underIncomeLimit = (
       le(grossIncome(), grossLimit.getLimit(householdSize())));
@@ -2038,13 +2126,17 @@ pageClass: "page-public-assistance"
       underIncomeLimit);
   }
 
-  function ssiEligible() {
+  function ssiCapiBaseEligibile() {
     // https://www.ssa.gov/oact/cola/sga.html
     const SGA_NON_BLIND = 1470;  // USD per month
     const SGA_BLIND = 2460;  // USD per month
 
-    // https://www.ssa.gov/oact/cola/SSI.html
-    const MAX_BENEFIT = 914;  // USD per month
+    // https://www.ssa.gov/pubs/EN-05-11125.pdf
+    // Note these max benefit amounts include the California state supplement.
+    // TODO: Handle other living categories (e.g. non-medical out-of-home care).
+    const MAX_BENEFIT_NON_BLIND = 1133.73;  // USD per month
+    const MAX_BENEFIT_NON_BLIND_NO_KITCHEN = 1251.74;  // USD per month
+    const MAX_BENEFIT_BLIND = 1211;  // USD per month
 
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
     const MAX_RESOURCES = 2000;  // USD
@@ -2060,22 +2152,23 @@ pageClass: "page-public-assistance"
     const age = getValueOrNull('age');
     const isBlind = document.getElementById('blind').checked;
 
-    const meetsDisabilityReq = and(
-      or(
-        document.getElementById('disabled').checked,
-        isBlind),
-      document.getElementById('dis_prev_work_yes').checked,
-      ge(age, MIN_ELDERLY_AGE)
-      );
-
-    const meetsImmigrationReq = or(
-      !document.getElementById('not-citizen').checked,
-      document.getElementById("permanent_resident").checked,
-      document.getElementById("qualified_noncitizen_gt5y").checked,
-      document.getElementById("qualified_noncitizen_le5y").checked);
+    const meetsDisabilityReq = or(
+      and(
+        or(
+          document.getElementById('disabled').checked,
+          isBlind),
+        document.getElementById('dis_prev_work_yes').checked),
+      ge(age, MIN_ELDERLY_AGE));
 
     const sgaLimit = isBlind ? SGA_BLIND : SGA_NON_BLIND;
+    let maxBenefit = MAX_BENEFIT_NON_BLIND;
+    if (isBlind) {
+      maxBenefit = MAX_BENEFIT_BLIND;
+    } else if (!document.getElementById('has-kitchen-yes').checked) {
+      maxBenefit = MAX_BENEFIT_NON_BLIND_NO_KITCHEN;
+    }
     // Note income and resources for only the user (applicant) are counted.
+    // TODO: Apply deeming.
     const earnedIncome = totalEarnedIncome(0);
     const unearnedIncome = totalUnearnedIncome(0);
 
@@ -2090,15 +2183,29 @@ pageClass: "page-public-assistance"
     const countableIncome = countableEarnedIncome + countableUnearnedIncome;
 
     const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
-    const underIncomeLimit = lt(countableIncome, MAX_BENEFIT);
+    const underIncomeLimit = lt(countableIncome, maxBenefit);
     const underResourceLimit = le(totalResources(0), MAX_RESOURCES);
 
     return and(
       meetsDisabilityReq,
-      meetsImmigrationReq,
       noSubstantialGainfulActivity,
       underIncomeLimit,
       underResourceLimit);
+  }
+
+  function ssiEligible() {
+    const immigStatus = getValueOrNull('immig_status');
+    const meetsImmigrationReq = or(
+      !document.getElementById('not-citizen').checked,
+      eq(immigStatus, document.getElementById('permanent_resident').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_gt5y').value),
+      eq(immigStatus,
+         document.getElementById('qualified_noncitizen_le5y').value));
+
+    return and(
+      ssiCapiBaseEligibile(),
+      meetsImmigrationReq);
   }
 
   function ssdiEligible() {
@@ -2214,7 +2321,8 @@ pageClass: "page-public-assistance"
             gt(duty.start, new Date(dateStrToLocal(LATE_DUTY_AFTER))),
             or(
               ge(duration, MIN_LATE_DUTY_DURATION),
-              document.getElementById('full-dur-yes').checked),
+              eq(getValueOrNull('mil-svc-duration'),
+                 document.getElementById('full-dur-yes').value)),
             isDuringWartime),
           and(
             eq(duty.type, 'active-duty'),
@@ -2223,10 +2331,8 @@ pageClass: "page-public-assistance"
             not(hasRecentPriorActiveDuty))));
     }
 
-    const hhSpouse = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-spouse"]')).map(i => i.checked);
-    const hhDependents = Array.from(document.querySelectorAll(
-      'input[id^="hh-member-dependent"]')).map(i => i.checked);
+    const hhSpouse = getValuesOrNulls('hh-member-spouse');
+    const hhDependents = getValuesOrNulls('hh-member-dependent');
     // Add offset of 1 for user (index 0).
     const spouseIdx = indexOfAll(hhSpouse, true).map(i => i + 1);
     const dependentIdxs = indexOfAll(hhDependents, true).map(i => i + 1);
@@ -2252,26 +2358,91 @@ pageClass: "page-public-assistance"
   }
 
   function wicEligible() {
-    // TODO
-    return false;
+    // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
+    const grossLimit = new MonthlyIncomeLimit([
+      2096,
+      2823,
+      3551,
+      4279,
+      5006,
+      5734,
+      6462,
+      7189
+    ],
+    728);
+
+    // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
+    const CHILD_EXIT_AGE = 5;  // Birthday at which a child is ineligible.
+
+    const hhAges = getValuesOrNulls('hh-member-age');
+    const hhPregnant = getValuesOrNulls('hh-member-pregnant');
+    const hhBreastfeeding = getValuesOrNulls('hh-member-breastfeeding');
+    const meetsCategoricalReq = or(
+      // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
+      document.getElementById('pregnant').checked,
+      document.getElementById('feeding').checked,
+      ...hhPregnant,
+      ...hhBreastfeeding,
+      ...hhAges.map(a => lt(a, CHILD_EXIT_AGE)));
+
+    // Rather than null, if unborn-children is left empty, numUnborn == 0.
+    const numUnborn = Number(document.getElementById('unborn-children').value);
+    const meetsIncomeReq = or(
+      le(grossIncome, grossLimit.getLimit(householdSize() + numUnborn)),
+      // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
+      document.getElementById("existing-medical-me").checked,
+      document.getElementById("existing-medical-household").checked,
+      document.getElementById("existing-calworks-me").checked,
+      document.getElementById("existing-calworks-household").checked,
+      document.getElementById("existing-calfresh-me").checked,
+      document.getElementById("existing-calfresh-household").checked,
+      calfreshEligible(),
+      calworksEligible());
+
+    return and(
+      meetsCategoricalReq,
+      meetsIncomeReq);
   }
 
   function upliftEligible() {
+    const housing = getValueOrNull('housing-situation');
     return or(
-      document.getElementById('vehicle').checked,
-      document.getElementById('transitional').checked,
-      document.getElementById('hotel').checked,
-      document.getElementById('shelter').checked,
-      document.getElementById('no-stable-place').checked,
-      document.getElementById('risk_homeless_yes').checked);
+      eq(housing, document.getElementById('vehicle').value),
+      eq(housing, document.getElementById('transitional').value),
+      eq(housing, document.getElementById('hotel').value),
+      eq(housing, document.getElementById('shelter').value),
+      eq(housing, document.getElementById('no-stable-place').value),
+      eq(housing, document.getElementById('risk_homeless_yes').value));
+  }
+
+  function clearUnusedPages() {
+    const pages = [...document.querySelectorAll('div.elig_page')];
+    // Reset usage tracking.
+    for (const page of pages) {
+      page.used = false;
+    }
+    // Walk the form to find out which pages are used.
+    let page = pages[0];
+    do {
+      page.used = true;
+      page = page.next();
+    } while (page);
+    // Clear out those pages that are not used with the current form inputs.
+    for (const unusedPage of pages.filter(p => !p.used)) {
+      clearInputs(unusedPage);
+    }
   }
 
   // Determines eligibility for programs based on user form input values.
   function computeEligibility() {
-    const allPrograms = document.querySelectorAll(".programs li");
-    const eligibleList = document.querySelector(".programs__eligible ul");
-    const ineligibleList = document.querySelector(".programs__ineligible ul");
-    const unknownList = document.querySelector(".programs__unknown ul");
+    // Ensure any inputs on unused pages are cleared out prior to eligibility
+    // computation.
+    clearUnusedPages();
+
+    const allPrograms = document.querySelectorAll('.programs li');
+    const eligibleList = document.querySelector('.programs__eligible ul');
+    const ineligibleList = document.querySelector('.programs__ineligible ul');
+    const unknownList = document.querySelector('.programs__unknown ul');
     for (program of allPrograms) {
       const eligible = window[program.dataset.eligibility]();
       if (eligible === null) {
@@ -2282,16 +2453,44 @@ pageClass: "page-public-assistance"
         ineligibleList.appendChild(program);
       }
     }
-    const noResultsMsg = document.querySelector(
-      '.programs__eligible .no_results');
-    const hasResultsMsg = document.querySelector(
-      '.programs__eligible .has_results');
-    if (!eligibleList.children.length) {
-      noResultsMsg.classList.remove('hidden');
-      hasResultsMsg.classList.add('hidden');
-    } else {
-      noResultsMsg.classList.add('hidden');
-      hasResultsMsg.classList.remove('hidden');
+
+    for (const container of document.querySelectorAll('.programs')) {
+      const list = container.querySelector('ul');
+      const resultsMsgs = container.querySelectorAll('.has_results');
+      const noResultsMsgs = container.querySelectorAll('.no_results');
+
+      // Show/hide info text depending on whether there are items in the list.
+      for (const resultMsg of resultsMsgs) {
+        if (list.children.length) {
+          resultMsg.classList.remove('hidden');
+        } else {
+          resultMsg.classList.add('hidden');
+        }
+      }
+      for (const noResultMsg of noResultsMsgs) {
+        if (list.children.length) {
+          noResultMsg.classList.add('hidden');
+        } else {
+          noResultMsg.classList.remove('hidden');
+        }
+      }
+
+      // Sort list items alphabetically.
+      const items = [...list.querySelectorAll('li')];
+      items.sort((a, b) => {
+        const titleA = a.querySelector('h4').textContent;
+        const titleB = b.querySelector('h4').textContent;
+        if (titleA < titleB) {
+          return -1;
+        }
+        if (titleA > titleB) {
+          return 1;
+        }
+        return 0;
+      });
+      for (const item of items) {
+        list.appendChild(item);
+      }
     }
   }
 
