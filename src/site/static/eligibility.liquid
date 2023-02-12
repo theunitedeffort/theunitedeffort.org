@@ -1876,8 +1876,13 @@ pageClass: "page-public-assistance"
   }
 
   function careEligible() {
+    const housing = getValueOrNull('housing-situation');
+    const isHoused = or(
+      eq(housing, document.getElementById('housed').value),
+      eq(housing, document.getElementById('unlisted-stable-place').value));
     return (
       and(
+        isHoused,
         document.getElementById("pay-utilities-yes").checked,
         or(
           le(grossIncome(), careIncomeLimit().getLimit(householdSize())),
@@ -1923,13 +1928,18 @@ pageClass: "page-public-assistance"
     11800);
 
     const MIN_HOUSEHOLD_SIZE = 3;
-    return (
-      and(
-        gt(grossIncome(), careIncomeLimit().getLimit(householdSize())),
-        le(grossIncome(), grossLimit.getLimit(householdSize())),
-        householdSize() >= MIN_HOUSEHOLD_SIZE
-      )
-    );
+
+    const housing = getValueOrNull('housing-situation');
+    const isHoused = or(
+      eq(housing, document.getElementById('housed').value),
+      eq(housing, document.getElementById('unlisted-stable-place').value));
+
+    return and(
+      isHoused,
+      document.getElementById("pay-utilities-yes").checked,
+      gt(grossIncome(), careIncomeLimit().getLimit(householdSize())),
+      le(grossIncome(), grossLimit.getLimit(householdSize())),
+      ge(householdSize(), MIN_HOUSEHOLD_SIZE));
   }
 
   function vaDisabilityCompEligible() {
