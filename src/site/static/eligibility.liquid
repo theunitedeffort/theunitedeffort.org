@@ -1968,20 +1968,33 @@ pageClass: "page-public-assistance"
   //   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf (Section 5.1)
   //     Maximum age can be over 64 years with some conditions. May or may not need to implement this.
   function gaEligible() {
-    const age = document.getElementById("age").value || null;
+    const age = getValueOrNull('age');
     const numDependents = document.querySelectorAll('input[id^="hh-member-dependent"]:checked').length;
   
+    const grossLimit = MonthlyIncomeLimit.fromAnnual([
+      343,
+      460,
+      576,
+      693,
+      810,
+      926,
+      1044,
+      1161,
+      1278,
+      1396
+    ],
+    11);
+
     const MIN_GA_ELIGIBLE_AGE = 18;  // Years
     const NUM_OF_DEPENDENTS = 0;     // None
     const MAX_RESOURCES = 500;       // USD Combined household assets
-    const MAX_GROSS_INCOME = 150;    // USD per month
 
     return (
       and(
         ge(age, MIN_GA_ELIGIBLE_AGE),
         eq(numDependents, NUM_OF_DEPENDENTS),
         le(totalResources(), MAX_RESOURCES),
-        le(grossIncome(), MAX_GROSS_INCOME),
+        le(grossIncome(), grossLimit.getLimit(householdSize())),
         or(
           !document.getElementById("not-citizen").checked,
           document.getElementById("permanent_resident").checked,
