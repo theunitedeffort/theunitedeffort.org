@@ -1427,6 +1427,13 @@ pageClass: "page-public-assistance"
       `input[id^="${idPrefix}"]`), e => getValueOrNull(e.id));
   }
 
+  function selectedOneOf(listId, itemIds) {
+    itemIdArr = [].concat(itemIds)
+    return or(
+      ...itemIdArr.map(id => eq(
+        getValueOrNull(listId), document.getElementById(id).value)));
+  }
+
   function indexOfAll(arr, value) {
     const matchingIdxs = arr.map((v, idx) => v == value ? idx : -1);
     return matchingIdxs.filter(i => i >= 0);
@@ -1662,20 +1669,19 @@ pageClass: "page-public-assistance"
           document.getElementById('existing-capi-me').checked,
           document.getElementById('existing-medical-me').checked)));
 
-    const immigStatus = getValueOrNull('immig_status');
+    const immigStatusId = 'immig_status';
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
-      eq(immigStatus, document.getElementById('permanent_resident').value),
-      eq(immigStatus,
-         document.getElementById('qualified_noncitizen_gt5y').value),
+      selectedOneOf(immigStatusId, [
+        'permanent_resident',
+        'qualified_noncitizen_gt5y']),
       // TODO: Decide how to handle immigration status: Could mark CFAP
       // eligible for anyone not a citizen and not a permanent resident? See
       // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap31.pdf
       // and
       // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap14.pdf#page=13
       and(
-        eq(immigStatus,
-           document.getElementById('qualified_noncitizen_le5y').value),
+        selectedOneOf(immigStatusId, 'qualified_noncitizen_le5y'),
         meetsShortResidencyReq));
 
     // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
@@ -1759,14 +1765,12 @@ pageClass: "page-public-assistance"
     const employed = (
       [...Array(householdSize()).keys()].map(i => totalEarnedIncome(i) > 0));
 
-    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
-      eq(immigStatus, document.getElementById('permanent_resident').value),
-      eq(immigStatus,
-         document.getElementById('qualified_noncitizen_gt5y').value),
-      eq(immigStatus,
-         document.getElementById('qualified_noncitizen_le5y').value));
+      selectedOneOf('immig_status', [
+        'permanent_resident',
+        'qualified_noncitizen_gt5y',
+        'qualified_noncitizen_le5y']));
 
     const meetsFamilyReq = or(
       ...hhAges.map(a => lt(a, 19)),
@@ -1841,16 +1845,13 @@ pageClass: "page-public-assistance"
 
   function capiEligible() {
     // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
-    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = and(
       document.getElementById('not-citizen').checked,
-      or(
-        eq(immigStatus, document.getElementById('permanent_resident').value),
-        eq(immigStatus,
-           document.getElementById('qualified_noncitizen_gt5y').value),
-        eq(immigStatus,
-           document.getElementById('qualified_noncitizen_le5y').value),
-        eq(immigStatus, document.getElementById('prucol').value)));
+      selectedOneOf('immig_status', [
+        'permanent_resident',
+        'qualified_noncitizen_gt5y',
+        'qualified_noncitizen_le5y',
+        'prucol']));
 
     return and(
       ssiCapiBaseEligibile(),
@@ -1970,7 +1971,7 @@ pageClass: "page-public-assistance"
   function gaEligible() {
     const age = document.getElementById("age").value || null;
     const numDependents = document.querySelectorAll('input[id^="hh-member-dependent"]:checked').length;
-  
+
     const MIN_GA_ELIGIBLE_AGE = 18;  // Years
     const NUM_OF_DEPENDENTS = 0;     // None
     const MAX_RESOURCES = 500;       // USD Combined household assets
@@ -2012,10 +2013,9 @@ pageClass: "page-public-assistance"
       document.getElementById('blind').checked,
       document.getElementById('disabled').checked);
 
-    const housing = getValueOrNull('housing-situation');
-    const meetsHousedReq = or(
-      eq(housing, document.getElementById('housed').value),
-      eq(housing, document.getElementById('unlisted-stable-place').value));
+    const meetsHousedReq = selectedOneOf('housing-situation', [
+      'housed',
+      'unlisted-stable-place']);
 
     return and(
       meetsDisabilityReq,
@@ -2120,14 +2120,12 @@ pageClass: "page-public-assistance"
     // TODO: Collect data about whether _anyone_ in the household is
     // a citizen or qualified nonresident.
     // https://www.ecfr.gov/current/title-24/subtitle-A/part-5/subpart-E/section-5.516#p-5.516(b)
-    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
-      eq(immigStatus, document.getElementById('permanent_resident').value),
-      eq(immigStatus,
-         document.getElementById('qualified_noncitizen_gt5y').value),
-      eq(immigStatus,
-         document.getElementById('qualified_noncitizen_le5y').value));
+      selectedOneOf('immig_status', [
+        'permanent_resident',
+        'qualified_noncitizen_gt5y',
+        'qualified_noncitizen_le5y']));
 
     const underIncomeLimit = (
       le(grossIncome(), grossLimit.getLimit(householdSize())));
@@ -2206,14 +2204,12 @@ pageClass: "page-public-assistance"
   }
 
   function ssiEligible() {
-    const immigStatus = getValueOrNull('immig_status');
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
-      eq(immigStatus, document.getElementById('permanent_resident').value),
-      eq(immigStatus,
-         document.getElementById('qualified_noncitizen_gt5y').value),
-      eq(immigStatus,
-         document.getElementById('qualified_noncitizen_le5y').value));
+      selectedOneOf('immig_status', [
+        'permanent_resident',
+        'qualified_noncitizen_gt5y',
+        'qualified_noncitizen_le5y']));
 
     return and(
       ssiCapiBaseEligibile(),
@@ -2333,8 +2329,7 @@ pageClass: "page-public-assistance"
             gt(duty.start, new Date(dateStrToLocal(LATE_DUTY_AFTER))),
             or(
               ge(duration, MIN_LATE_DUTY_DURATION),
-              eq(getValueOrNull('mil-svc-duration'),
-                 document.getElementById('full-dur-yes').value)),
+              selectedOneOf('mil-svc-duration', 'full-dur-yes')),
             isDuringWartime),
           and(
             eq(duty.type, 'active-duty'),
@@ -2417,14 +2412,14 @@ pageClass: "page-public-assistance"
   }
 
   function upliftEligible() {
-    const housing = getValueOrNull('housing-situation');
     return or(
-      eq(housing, document.getElementById('vehicle').value),
-      eq(housing, document.getElementById('transitional').value),
-      eq(housing, document.getElementById('hotel').value),
-      eq(housing, document.getElementById('shelter').value),
-      eq(housing, document.getElementById('no-stable-place').value),
-      eq(housing, document.getElementById('risk_homeless_yes').value));
+      selectedOneOf('housing-situation', [
+        'vehicle',
+        'transitional',
+        'hotel',
+        'shelter',
+        'no-stable-place']),
+      getValueOrNull('risk_homeless_yes'));
   }
 
   function clearUnusedPages() {
