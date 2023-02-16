@@ -1,5 +1,6 @@
 {% assign buttonStr = buttonText | default: "Add another entry" %}
 {% assign emptyButtonStr = emptyButtonText | default: "Enter income for this person" %}
+{% assign perTime = sumUnit | default: " per month" %}
 {%- capture defaultSumDesc -%}
   Combined household income from {{desc}}
 {%- endcapture -%}
@@ -17,8 +18,8 @@
     {% capture template %}
       <h4>{{heading}} 1</h4>
       <div>
-        <label for="income-{{id}}">Income</label>
-        $ <input id="income-{{id}}" type="number" class="long"> per month
+        <label for="income-{{id}}">{{entryLabel | default: "Income"}}</label>
+        $ <input id="income-{{id}}" type="number" class="long">{{perTime}}
       </div>
       {{extraContent}}
     {% endcapture %}
@@ -28,5 +29,5 @@
   </fieldset>
 </div>
 <p>
-  {{sumDesc | default: defaultSumDesc}}: <span class="bold">$<span class="total">0</span>{{sumUnit | default: " per month"}}</span>
+  {{sumDesc | default: defaultSumDesc}}: <span class="bold">$<span class="total">0</span>{{perTime}}</span>
 </p>
