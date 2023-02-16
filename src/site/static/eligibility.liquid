@@ -1504,7 +1504,7 @@ pageClass: "page-public-assistance"
   function incomeValid() {
     const incomeDetailPrefix = 'page-income-details-';
     const allIncomeTypes = Array.from(
-      document.querySelectorAll('[id^=""]'),
+      document.querySelectorAll(`[id^="${incomeDetailPrefix}"]`),
       p => p.id.replace(incomeDetailPrefix, ''));
     const householdTotal = incomeSubTotal(allIncomeTypes);
     // Return false only if no income of any kind for any household member was
