@@ -1876,8 +1876,15 @@ pageClass: "page-public-assistance"
   }
 
   function careEligible() {
+    const isHoused = selectedOneOf('housing-situation', [
+      'housed',
+      'unlisted-stable-place']);
+
     return (
       and(
+        isHoused,
+        // TODO: perhaps have the utilities check be null if unanswered instead
+        // of defaulting to "no".
         document.getElementById("pay-utilities-yes").checked,
         or(
           le(grossIncome(), careIncomeLimit().getLimit(householdSize())),
@@ -1911,8 +1918,8 @@ pageClass: "page-public-assistance"
   function feraEligible() {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
-      0,
-      0,
+      0,  // Min household size 3.
+      0,  // Min household size 3.
       57575,
       69375,
       81175,
@@ -1923,13 +1930,17 @@ pageClass: "page-public-assistance"
     11800);
 
     const MIN_HOUSEHOLD_SIZE = 3;
-    return (
-      and(
-        gt(grossIncome(), careIncomeLimit().getLimit(householdSize())),
-        le(grossIncome(), grossLimit.getLimit(householdSize())),
-        householdSize() >= MIN_HOUSEHOLD_SIZE
-      )
-    );
+
+    const isHoused = selectedOneOf('housing-situation', [
+      'housed',
+      'unlisted-stable-place']);
+
+    return and(
+      isHoused,
+      document.getElementById("pay-utilities-yes").checked,
+      gt(grossIncome(), careIncomeLimit().getLimit(householdSize())),
+      le(grossIncome(), grossLimit.getLimit(householdSize())),
+      ge(householdSize(), MIN_HOUSEHOLD_SIZE));
   }
 
   function vaDisabilityCompEligible() {
