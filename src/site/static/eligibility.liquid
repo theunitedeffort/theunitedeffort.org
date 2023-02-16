@@ -2329,7 +2329,7 @@ pageClass: "page-public-assistance"
             gt(duty.start, new Date(dateStrToLocal(LATE_DUTY_AFTER))),
             or(
               ge(duration, MIN_LATE_DUTY_DURATION),
-              selectedOneOf('mil-svc-duration', 'full-dur-yes'),
+              selectedOneOf('mil-svc-duration', 'full-dur-yes')),
             isDuringWartime),
           and(
             eq(duty.type, 'active-duty'),
