@@ -1980,22 +1980,21 @@ pageClass: "page-public-assistance"
     const age = getValueOrNull('age');
     const numDependents = document.querySelectorAll('input[id^="hh-member-dependent"]:checked').length;
 
-     //   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf (Section 4.2)
-     //     UNSHARED Housing in Section 4.2.1. max gross income cannot exceed max grant level, and max grant level changees with family size and living arrangement.
-     //     In Section 4.2.1, the maximum grant amounts are listed on a monthly basis and has been converted to an yearly basis in the table below.
-    const grossLimit = MonthlyIncomeLimit.fromAnnual([
-      4116,
-      5520,
-      6912,
-      8316,
-      9720,
-      11112,
-      12258,
-      13392,
-      15336,
-      16752
+    //   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf (Section 4.2)
+    //     UNSHARED Housing in Section 4.2.1. max gross income cannot exceed max grant level, and max grant level changees with family size and living arrangement.
+    const grossLimit = new MonthlyIncomeLimit([
+      343,
+      460,
+      576,
+      693,
+      810,
+      926,
+      1044,
+      1161,
+      1278,
+      1396
     ],
-    132);
+    11);
 
     const MIN_GA_ELIGIBLE_AGE = 18;  // Years
     const NUM_OF_DEPENDENTS = 0;     // None
