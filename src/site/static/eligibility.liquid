@@ -2017,13 +2017,24 @@ pageClass: "page-public-assistance"
   }
 
   function noFeeIdEligible() {
-    // TODO
-    return false;
+    // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
+    const age = getValueOrNull('age');
+
+    const MIN_NOFEEID_ELIGIBLE_AGE = 62;  // Years
+
+    return or(
+      selectedOneOf('housing-situation', [
+        'vehicle',
+        'transitional',
+        'hotel',
+        'shelter',
+        'no-stable-place']),
+      ge(age, MIN_NOFEEID_ELIGIBLE_AGE));
   }
 
   function reducedFeeIdEligible() {
     // TODO
-    return false;
+    return  false;
   }
 
   function ihssEligible() {
