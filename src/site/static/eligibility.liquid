@@ -562,7 +562,7 @@ pageClass: "page-public-assistance"
             GA provides cash assistance and employment services to certain low-income individuals with no dependent children.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> No-Fee ID Card", "no-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+          {% program "No-Fee ID Card", "no-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
             Unhoused or elderly individuals may get an identification card from the Department of Motor Vehicles without having to pay the usual fee.
           {% endprogram %}
 
@@ -2032,9 +2032,43 @@ pageClass: "page-public-assistance"
       ge(age, MIN_NOFEEID_ELIGIBLE_AGE));
   }
 
+  /*
   function reducedFeeIdEligible() {
     // TODO
     return  false;
+  }
+  */
+
+  function reducedFeeIdEligible() {
+    const isHoused = selectedOneOf('housing-situation', [
+      'housed',
+      'unlisted-stable-place']);
+    
+    const age = getValueOrNull('age');
+    const MAX_REDUCEDFEEID_ELIGIBLE_AGE = 62;  // Years
+
+    const isProgramQualified = or(
+      document.getElementById("existing-wic-me").checked,
+      document.getElementById("existing-calworks-me").checked,
+      document.getElementById("existing-ihss-me").checked,
+      document.getElementById("existing-ssi-me").checked,
+      document.getElementById('existing-ga-me').checked,
+      document.getElementById("existing-calfresh-me").checked,
+      document.getElementById("existing-cfap-me").checked,
+      document.getElementById("existing-capi-me").checked,
+      wicEligible(),
+      calworksEligible(),
+      ihssEligible(),
+      ssiEligible(),
+      gaEligible(),
+      calfreshEligible(),
+      capiEligible());
+
+    return (
+      and(
+        isHoused,
+        lt(age, MAX_REDUCEDFEEID_ELIGIBLE_AGE),
+        isProgramQualified));
   }
 
   function ihssEligible() {
