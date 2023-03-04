@@ -566,7 +566,7 @@ pageClass: "page-public-assistance"
             Unhoused or elderly individuals may get an identification card from the Department of Motor Vehicles without having to pay the usual fee.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> Reduced Fee ID Card", "reduced-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+          {% program "Reduced Fee ID Card", "reduced-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
             Low-income individuals may get a discount on the fee for an identification card from the Department of Motor Vehicles.
           {% endprogram %}
 
@@ -2032,14 +2032,16 @@ pageClass: "page-public-assistance"
       ge(age, MIN_NOFEEID_ELIGIBLE_AGE));
   }
 
-  /*
   function reducedFeeIdEligible() {
-    // TODO
-    return  false;
-  }
-  */
-
-  function reducedFeeIdEligible() {
+    // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
+    // https://www.icarol.info/ResourceView2.aspx?org=2225&agencynum=73919505
+    //
+    // DL 937 order form:
+    // https://www.dmv.ca.gov/portal/file/order-request-reduced-fee-or-no-fee-identification-card-program-dl-932-pdf/
+    //   Burton-Moscone-Bagley Citizens’ Income Security Act for Aged, Blind, and Disabled Californians (WIC §12000); is called WIC Section 12000 and does not have a seperate progam name, 
+    //   so could be part of the broader WIC benefits progam.
+    //
+    // Other benefit programs for Aged, Blind and Disabled are: IHSS, SSI.
     const isHoused = selectedOneOf('housing-situation', [
       'housed',
       'unlisted-stable-place']);
