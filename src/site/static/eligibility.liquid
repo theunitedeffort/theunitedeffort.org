@@ -2038,10 +2038,6 @@ pageClass: "page-public-assistance"
     //
     // DL 937 order form:
     // https://www.dmv.ca.gov/portal/file/order-request-reduced-fee-or-no-fee-identification-card-program-dl-932-pdf/
-    //   Burton-Moscone-Bagley Citizens’ Income Security Act for Aged, Blind, and Disabled Californians (WIC §12000); is called WIC Section 12000 and does not have a seperate progam name, 
-    //   so could be part of the broader WIC benefits progam.
-    //
-    // Other benefit programs for Aged, Blind and Disabled are: IHSS, SSI.
     const isHoused = selectedOneOf('housing-situation', [
       'housed',
       'unlisted-stable-place']);
@@ -2050,17 +2046,13 @@ pageClass: "page-public-assistance"
     const MAX_REDUCEDFEEID_ELIGIBLE_AGE = 62;  // Years
 
     const isProgramQualified = or(
-      document.getElementById("existing-wic-me").checked,
       document.getElementById("existing-calworks-me").checked,
-      document.getElementById("existing-ihss-me").checked,
       document.getElementById("existing-ssi-me").checked,
       document.getElementById('existing-ga-me').checked,
       document.getElementById("existing-calfresh-me").checked,
       document.getElementById("existing-cfap-me").checked,
       document.getElementById("existing-capi-me").checked,
-      wicEligible(),
       calworksEligible(),
-      ihssEligible(),
       ssiEligible(),
       gaEligible(),
       calfreshEligible(),
