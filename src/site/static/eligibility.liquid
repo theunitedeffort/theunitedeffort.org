@@ -562,11 +562,11 @@ pageClass: "page-public-assistance"
             GA provides cash assistance and employment services to certain low-income individuals with no dependent children.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> No-Fee ID Card", "no-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+          {% program "No-Fee ID Card", "no-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
             Unhoused or elderly individuals may get an identification card from the Department of Motor Vehicles without having to pay the usual fee.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> Reduced Fee ID Card", "reduced-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+          {% program "Reduced Fee ID Card", "reduced-fee-id", "", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
             Low-income individuals may get a discount on the fee for an identification card from the Department of Motor Vehicles.
           {% endprogram %}
 
@@ -2033,8 +2033,36 @@ pageClass: "page-public-assistance"
   }
 
   function reducedFeeIdEligible() {
-    // TODO
-    return  false;
+    // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
+    // https://www.icarol.info/ResourceView2.aspx?org=2225&agencynum=73919505
+    //
+    // DL 937 order form:
+    // https://www.dmv.ca.gov/portal/file/order-request-reduced-fee-or-no-fee-identification-card-program-dl-932-pdf/
+    const isHoused = selectedOneOf('housing-situation', [
+      'housed',
+      'unlisted-stable-place']);
+    
+    const age = getValueOrNull('age');
+    const MAX_REDUCEDFEEID_ELIGIBLE_AGE = 62;  // Years
+
+    const isProgramQualified = or(
+      document.getElementById("existing-calworks-me").checked,
+      document.getElementById("existing-ssi-me").checked,
+      document.getElementById('existing-ga-me').checked,
+      document.getElementById("existing-calfresh-me").checked,
+      document.getElementById("existing-cfap-me").checked,
+      document.getElementById("existing-capi-me").checked,
+      calworksEligible(),
+      ssiEligible(),
+      gaEligible(),
+      calfreshEligible(),
+      capiEligible());
+
+    return (
+      and(
+        isHoused,
+        lt(age, MAX_REDUCEDFEEID_ELIGIBLE_AGE),
+        isProgramQualified));
   }
 
   function ihssEligible() {
