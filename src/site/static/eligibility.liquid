@@ -6,10 +6,11 @@ permalink:
 pageClass: "page-public-assistance"
 ---
 
-<h1>{{title}}</h1>
+<h1>{{title}}
+<span class="subtitle">In Santa Clara County</span></h1>
 
 <p>
-  Use this tool to find assistance programs for which you may qualify. <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
+  Use this tool to find assistance programs for which you may qualify. <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span> Some of the assistance programs in this tool only apply to residents of Santa Clara County, CA.
 </p>
 
 <div id="form-top" class="step_indicator">
@@ -508,7 +509,7 @@ pageClass: "page-public-assistance"
     {% eligPage "results" %}
       <div class="programs programs__eligible">
         <p class="has_results">
-          You may qualify for the following programs.  Please click on the name of a program to get further details and find out how to apply.
+          You may qualify for the following programs.  Please use the links below each program to get further details and find out how to apply.
         </p>
         <p class="no_results">
           Based on your responses, we were not able to find any matching programs for you.  You can see the whole list of programs we checked below.
@@ -578,8 +579,8 @@ pageClass: "page-public-assistance"
             VTA ACCESS Paratransit provides door-to-door transportation service for certain individuals unable to independently use local bus or light rail services due to a disability.
           {% endprogram %}
 
-          {% program "Housing Choice Voucher", "housing-choice", "https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/", "https://www.scchousingauthority.org/section-8/" %}
-            The Housing Choice Voucher program helps certain low-income individuals and families pay for rental housing. This was previously known as the "Section 8 Program."
+          {% program "Housing Choice Voucher Interest List", "housing-choice", "https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/", "https://www.scchousingauthority.org/section-8/" %}
+            The Housing Choice Voucher program helps certain low-income individuals and families pay for rental housing. This was previously known as the "Section 8 Program."  Eligible individuals will be added to a Housing Choice Voucher interest list to await the availability of vouchers.
           {% endprogram %}
 
           {% program "Supplemental Security Income (SSI)", "ssi", "https://www.ssa.gov/benefits/ssi/", "https://ca.db101.org/ca/programs/income_support/ssi/program.htm" %}
