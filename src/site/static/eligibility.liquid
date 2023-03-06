@@ -98,17 +98,6 @@ pageClass: "page-public-assistance"
       <h3>About Your Disability</h3>
 
       <div>
-        <p>Does your disability prevent you from working?</p>
-        <ul id="prevent-working" class="yes-no">
-          <li>
-            <input type="radio" id="dis_prev_work_yes" name="disability_details1" />
-            <label for="dis_prev_work_yes">Yes</label>
-          </li>
-          <li>
-            <input type="radio" id="dis_prev_work_no" name="disability_details1" />
-            <label for="dis_prev_work_no">No</label>
-          </li>
-        </ul>
         <p>Do you use a guide, signal or training dog?</p>
         <ul id="use-guide" class="yes-no">
           <LI>
@@ -120,6 +109,9 @@ pageClass: "page-public-assistance"
             <label for="dis_guide_no">No</label>
           </li>
         </ul>
+        {% comment %}
+        TODO: Only show this section if the user is a veteran.
+        {% endcomment %}
         <p>Is your disability related to your military service?</p>
         <ul id="military-related" class="yes-no">
           <li>
@@ -2224,12 +2216,13 @@ pageClass: "page-public-assistance"
     const age = getValueOrNull('age');
     const isBlind = document.getElementById('blind').checked;
 
+    // Note we are not checking if the user's disability is preventing them
+    // from working, as that decision can be complex to make--better to just
+    // assume they have trouble working to avoid screening someone out
+    // erroneously.
     const meetsDisabilityReq = or(
-      and(
-        or(
-          document.getElementById('disabled').checked,
-          isBlind),
-        document.getElementById('dis_prev_work_yes').checked),
+      document.getElementById('disabled').checked,
+      isBlind,
       ge(age, MIN_ELDERLY_AGE));
 
     const sgaLimit = isBlind ? SGA_BLIND : SGA_NON_BLIND;
