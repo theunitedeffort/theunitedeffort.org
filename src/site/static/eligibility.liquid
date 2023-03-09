@@ -1591,38 +1591,68 @@ pageClass: "page-public-assistance"
     }
   }
 
+  // Flags that can be associated with an EligResult to alter the display
+  // of that result to the user.
+  const Flags = Object.freeze({
+    TOO_COMPLEX: Symbol("too_complex"),
+    NEAR_INCOME_LIMIT: Symbol("near_income_limit")
+  })
+
+  // A single eligibility condition that can be displayed to the user.  Note
+  // an EligCondition will often be a combination of a few conditional
+  // statements in order to simplify the eligibility conditions displayed.
+  //
+  // For example, we can combine aged, disabled, and blind into a single
+  // EligCondition for simplified display:
+  //
+  //   const condition = new EligCondition(
+  //     "Disabled, blind, or 65+ years old",
+  //     or(isDisabled, isBlind, ge(age, 65)));
+  function EligCondition(desc, met) {
+    this.desc = desc;
+    this.met = met;
+  }
+
+  // An eligibility determination for a given program.
+  // 'eligible' can be true, false, or null
+  // 'conditions' is a list of EligConditions that were used to compute eligible
+  // 'flags' is a list of Flags relvant to the eligibility determination.
+  function EligResult(eligible, conditions=[], flags=[]) {
+    this.eligible = eligible;
+    this.flags = [].concat(flags);
+    this.conditions = [].concat(conditions);
+  }
+
   // The functions below determine eligibility for various programs.
   // When a program is added using the "program" shortcode, a matching function
   // should be defined called {id}Eligible where {id} is the id given in
   // the "program" shortcode for that program.
   //
-  // An eligibility function should return true if the input values suggest
+  // An eligibility function should return an EligResult object with the
+  // 'eligibility' property set to true if the input values suggest
   // program eligibility, false if the values suggest ineligibility, and
   // null if an eligibility determination can't be made.
-  function adsaEligible() {
-    return (
-      and(
+  function adsaResult() {
+    const eligible = and(
         or(
           document.getElementById("disabled").checked,
           document.getElementById("blind").checked,
-          document.getElementById("deaf").checked
-        ),
+          document.getElementById("deaf").checked),
         document.getElementById("dis_guide_yes").checked,
         or(
           document.getElementById("existing-ssi-me").checked,
           document.getElementById("existing-ssdi-me").checked,
           document.getElementById("existing-ihss-me").checked,
           document.getElementById("existing-capi-me").checked,
-          ssiEligible(),
-          ssdiEligible(),
-          ihssEligible(),
-          capiEligible()
-        )
-      )
-    );
+          ssiResult().eligible,
+          ssdiResult().eligible,
+          ihssResult().eligible,
+          capiResult().eligible));
+
+    return new EligResult(eligible);
   }
 
-  function calfreshEligible() {
+  function calfreshResult() {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
     // Section 2.1
     const fedPovertyLevel = new MonthlyIncomeLimit([
@@ -1685,8 +1715,8 @@ pageClass: "page-public-assistance"
       document.getElementById('existing-calworks-household').checked,
       document.getElementById('existing-ga-me').checked,
       document.getElementById('existing-ga-household').checked,
-      calworksEligible(),
-      gaEligible());
+      calworksResult().eligible,
+      gaResult().eligible);
 
     // Note: Nearly all users will be considered "modified cagegorically
     // eligible", meaning the MCE income limit factor is used and resources
@@ -1708,12 +1738,14 @@ pageClass: "page-public-assistance"
     }
     const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
 
-    return and(
+    const eligible = and(
       meetsImmigrationReq,
       or(underIncomeLimit, isCategoricallyEligible));
+
+    return new EligResult(eligible);
   }
 
-  function calworksEligible() {
+  function calworksResult() {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
     // Section 1.2
     const mbsac = new MonthlyIncomeLimit([
@@ -1828,15 +1860,17 @@ pageClass: "page-public-assistance"
     }
     const underResourceLimit = le(totalResources(), resourceLimit);
 
-    return and(
+    const eligible = and(
       meetsImmigrationReq,
       meetsFamilyReq,
       underIncomeLimit,
       underResourceLimit
     );
+
+    return new EligResult(eligible);
   }
 
-  function capiEligible() {
+  function capiResult() {
     // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
     const meetsImmigrationReq = and(
       document.getElementById('not-citizen').checked,
@@ -1846,9 +1880,11 @@ pageClass: "page-public-assistance"
         'qualified_noncitizen_le5y',
         'prucol']));
 
-    return and(
+    const eligible = and(
       ssiCapiBaseEligibile(),
       meetsImmigrationReq);
+
+    return new EligResult(eligible);
   }
 
   function careIncomeLimit() {
@@ -1868,13 +1904,12 @@ pageClass: "page-public-assistance"
     return grossLimit;
   }
 
-  function careEligible() {
+  function careResult() {
     const isHoused = selectedOneOf('housing-situation', [
       'housed',
       'unlisted-stable-place']);
 
-    return (
-      and(
+    const eligible = and(
         isHoused,
         // TODO: perhaps have the utilities check be null if unanswered instead
         // of defaulting to "no".
@@ -1898,17 +1933,16 @@ pageClass: "page-public-assistance"
           document.getElementById("existing-cfap-household").checked,
           document.getElementById("existing-nslp-me").checked,
           document.getElementById("existing-nslp-household").checked,
-          ssiEligible(),
-          liheapEligible(),
-          wicEligible(),
-          calworksEligible(),
-          calfreshEligible()
-        )
-      )
-    );
+          ssiResult().eligible,
+          liheapResult().eligible,
+          wicResult().eligible,
+          calworksResult().eligible,
+          calfreshResult().eligible));
+
+    return new EligResult(eligible);
   }
 
-  function feraEligible() {
+  function feraResult() {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
       0,  // Min household size 3.
@@ -1928,15 +1962,17 @@ pageClass: "page-public-assistance"
       'housed',
       'unlisted-stable-place']);
 
-    return and(
+    const eligible = and(
       isHoused,
       document.getElementById("pay-utilities-yes").checked,
       gt(grossIncome(), careIncomeLimit().getLimit(householdSize())),
       le(grossIncome(), grossLimit.getLimit(householdSize())),
       ge(householdSize(), MIN_HOUSEHOLD_SIZE));
+
+    return new EligResult(eligible);
   }
 
-  function vaDisabilityCompEligible() {
+  function vaDisabilityCompResult() {
     const dutyTypeSelects = [...document.querySelectorAll(
       'select[id^="your-duty-type"]')];
     const dutyTypes = dutyTypeSelects.map(d => getValueOrNull(d.id));
@@ -1951,12 +1987,14 @@ pageClass: "page-public-assistance"
       ne(dischargeStatus, 'oth'),
       ne(dischargeStatus, 'bad-conduct'));
 
-    return and(
+    const eligible = and(
       document.getElementById('veteran').checked,
       document.getElementById('disabled').checked,
       document.getElementById('dis_military_yes').checked,
       meetsDutyReq,
       meetsDischargeReq);
+
+    return new EligResult(eligible);
   }
 
   // GA-specific references:
@@ -1969,7 +2007,7 @@ pageClass: "page-public-assistance"
   //
   //   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf (Section 5.1)
   //     Maximum age can be over 64 years with some conditions. May or may not need to implement this.
-  function gaEligible() {
+  function gaResult() {
     const age = getValueOrNull('age');
     const numDependents = document.querySelectorAll('input[id^="hh-member-dependent"]:checked').length;
 
@@ -1993,8 +2031,7 @@ pageClass: "page-public-assistance"
     const NUM_OF_DEPENDENTS = 0;     // None
     const MAX_RESOURCES = 500;       // USD Combined household assets
 
-    return (
-      and(
+    const eligible = and(
         ge(age, MIN_GA_ELIGIBLE_AGE),
         eq(numDependents, NUM_OF_DEPENDENTS),
         le(totalResources(), MAX_RESOURCES),
@@ -2003,19 +2040,18 @@ pageClass: "page-public-assistance"
           !document.getElementById("not-citizen").checked,
           document.getElementById("permanent_resident").checked,
           document.getElementById("qualified_noncitizen_gt5y").checked,
-          document.getElementById("qualified_noncitizen_le5y").checked,
-        )
-      )
-    );
+          document.getElementById("qualified_noncitizen_le5y").checked));
+
+    return new EligResult(eligible);
   }
 
-  function noFeeIdEligible() {
+  function noFeeIdResult() {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
-    const age = getValueOrNull('age');
-
     const MIN_NOFEEID_ELIGIBLE_AGE = 62;  // Years
 
-    return or(
+    const age = getValueOrNull('age');
+
+    const eligible = or(
       selectedOneOf('housing-situation', [
         'vehicle',
         'transitional',
@@ -2023,21 +2059,24 @@ pageClass: "page-public-assistance"
         'shelter',
         'no-stable-place']),
       ge(age, MIN_NOFEEID_ELIGIBLE_AGE));
+
+    return new EligResult(eligible);
   }
 
-  function reducedFeeIdEligible() {
+  function reducedFeeIdResult() {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
+    const MAX_REDUCEDFEEID_ELIGIBLE_AGE = 62;  // Years
+
+    const isHoused = selectedOneOf('housing-situation', [
+      'housed',
+      'unlisted-stable-place']);
+
+    const age = getValueOrNull('age');
+
     // https://www.icarol.info/ResourceView2.aspx?org=2225&agencynum=73919505
     //
     // DL 937 order form:
     // https://www.dmv.ca.gov/portal/file/order-request-reduced-fee-or-no-fee-identification-card-program-dl-932-pdf/
-    const isHoused = selectedOneOf('housing-situation', [
-      'housed',
-      'unlisted-stable-place']);
-    
-    const age = getValueOrNull('age');
-    const MAX_REDUCEDFEEID_ELIGIBLE_AGE = 62;  // Years
-
     const isProgramQualified = or(
       document.getElementById("existing-calworks-me").checked,
       document.getElementById("existing-ssi-me").checked,
@@ -2045,20 +2084,21 @@ pageClass: "page-public-assistance"
       document.getElementById("existing-calfresh-me").checked,
       document.getElementById("existing-cfap-me").checked,
       document.getElementById("existing-capi-me").checked,
-      calworksEligible(),
-      ssiEligible(),
-      gaEligible(),
-      calfreshEligible(),
-      capiEligible());
+      calworksResult().eligible,
+      ssiResult().eligible,
+      gaResult().eligible,
+      calfreshResult().eligible,
+      capiResult().eligible);
 
-    return (
-      and(
-        isHoused,
-        lt(age, MAX_REDUCEDFEEID_ELIGIBLE_AGE),
-        isProgramQualified));
+    const eligible = and(
+      isHoused,
+      lt(age, MAX_REDUCEDFEEID_ELIGIBLE_AGE),
+      isProgramQualified);
+
+    return new EligResult(eligible);
   }
 
-  function ihssEligible() {
+  function ihssResult() {
     // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
     const MIN_ELDERLY_AGE = 65;
 
@@ -2072,14 +2112,16 @@ pageClass: "page-public-assistance"
       'housed',
       'unlisted-stable-place']);
 
-    return and(
+    const eligible = and(
       meetsDisabilityReq,
       meetsHousedReq,
-      // TODO: Add medicalEligible() once we can screen for Medi-Cal.
+      // TODO: Add medicalResult() once we can screen for Medi-Cal.
       document.getElementById("existing-medical-me").checked);
+
+    return new EligResult(eligible);
   }
 
-  function lifelineEligible() {
+  function lifelineResult() {
     // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
         28700,
@@ -2110,19 +2152,21 @@ pageClass: "page-public-assistance"
       document.getElementById("existing-calworks-household").checked,
       document.getElementById("existing-va-pension-me").checked,
       document.getElementById("existing-va-pension-household").checked,
-      liheapEligible(),
-      ssiEligible(),
-      calfreshEligible(),
-      wicEligible(),
-      calworksEligible(),
-      vaPensionEligible());
+      liheapResult().eligible,
+      ssiResult().eligible,
+      calfreshResult().eligible,
+      wicResult().eligible,
+      calworksResult().eligible,
+      vaPensionResult().eligible);
 
-    return or(
+    const eligible = or(
       isProgramQualified,
       underIncomeLimit);
+
+    return new EligResult(eligible);
   }
 
-  function liheapEligible() {
+  function liheapResult() {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
     //
     // LIHEAP income limits are set at 60% of State Median Income:
@@ -2148,20 +2192,21 @@ pageClass: "page-public-assistance"
       'housed',
       'unlisted-stable-place']);
 
-    return (
-      and(
-        isHoused,
-        le(grossIncome(), grossLimit.getLimit(householdSize())),
-      )
-    );
+    const eligible = and(
+      isHoused,
+      le(grossIncome(), grossLimit.getLimit(householdSize())));
+
+    return new EligResult(eligible);
   }
 
-  function vtaParatransitEligible() {
+  function vtaParatransitResult() {
     // TODO: Determine if blindness should be included here.
-    return document.getElementById('disabled').checked;
+    const eligible = document.getElementById('disabled').checked;
+
+    return new EligResult(eligible);
   }
 
-  function housingChoiceEligible() {
+  function housingChoiceResult() {
     // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
     const MIN_ELIGIBLE_AGE = 18;
 
@@ -2214,10 +2259,12 @@ pageClass: "page-public-assistance"
     const underIncomeLimit = (
       le(grossIncome(), grossLimit.getLimit(householdSize())));
 
-    return and(
+    const eligible = and(
       ge(age, MIN_ELIGIBLE_AGE),
       meetsImmigrationReq,
       underIncomeLimit);
+
+    return new EligResult(eligible);
   }
 
   function ssiCapiBaseEligibile() {
@@ -2288,7 +2335,7 @@ pageClass: "page-public-assistance"
       underResourceLimit);
   }
 
-  function ssiEligible() {
+  function ssiResult() {
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
       selectedOneOf('immig_status', [
@@ -2296,17 +2343,19 @@ pageClass: "page-public-assistance"
         'qualified_noncitizen_gt5y',
         'qualified_noncitizen_le5y']));
 
-    return and(
+    const eligible = and(
       ssiCapiBaseEligibile(),
       meetsImmigrationReq);
+
+    return new EligResult(eligible);
   }
 
-  function ssdiEligible() {
+  function ssdiResult() {
     // TODO
-    return false;
+    return new EligResult(false);
   }
 
-  function vaPensionEligible() {
+  function vaPensionResult() {
     // https://www.va.gov/pension/eligibility/
     const MIN_ELDERLY_AGE = 65;  // Years
     const MIN_EARLY_DUTY_DURATION = 90;  // days
@@ -2369,8 +2418,8 @@ pageClass: "page-public-assistance"
       document.getElementById("existing-ssi-household").checked,
       document.getElementById("existing-ssdi-me").checked,
       document.getElementById("existing-ssdi-household").checked,
-      ssiEligible(),
-      ssdiEligible());
+      ssiResult().eligible,
+      ssdiResult().eligible);
 
     const dutyPeriodItems = document.querySelectorAll(
       '#page-veteran-details ul.dynamic_field_list>li');
@@ -2441,15 +2490,17 @@ pageClass: "page-public-assistance"
       grossIncome(incomeIdxs) + totalResources(assetIdxs),
       ANNUAL_NET_WORTH_LIMIT);
 
-    return and(
+    const eligible = and(
       document.getElementById('veteran').checked,
       meetsDischargeReq,
       or(...meetsServiceReq),
       meetsDisabilityReq,
       underNetWorthLimit);
+
+    return new EligResult(eligible);
   }
 
-  function wicEligible() {
+  function wicResult() {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
     const grossLimit = new MonthlyIncomeLimit([
       2096,
@@ -2488,16 +2539,18 @@ pageClass: "page-public-assistance"
       document.getElementById("existing-calworks-household").checked,
       document.getElementById("existing-calfresh-me").checked,
       document.getElementById("existing-calfresh-household").checked,
-      calfreshEligible(),
-      calworksEligible());
+      calfreshResult().eligible,
+      calworksResult().eligible);
 
-    return and(
+    const eligible = and(
       meetsCategoricalReq,
       meetsIncomeReq);
+
+    return new EligResult(eligible);
   }
 
-  function upliftEligible() {
-    return or(
+  function upliftResult() {
+    const eligible = or(
       selectedOneOf('housing-situation', [
         'vehicle',
         'transitional',
@@ -2505,6 +2558,8 @@ pageClass: "page-public-assistance"
         'shelter',
         'no-stable-place']),
       getValueOrNull('risk_homeless_yes'));
+
+    return new EligResult(eligible);
   }
 
   function clearUnusedPages() {
@@ -2536,7 +2591,7 @@ pageClass: "page-public-assistance"
     const ineligibleList = document.querySelector('.programs__ineligible ul');
     const unknownList = document.querySelector('.programs__unknown ul');
     for (program of allPrograms) {
-      const eligible = window[program.dataset.eligibility]();
+      const eligible = window[program.dataset.eligibility]().eligible;
       if (eligible === null) {
         unknownList.appendChild(program);
       } else if (eligible) {

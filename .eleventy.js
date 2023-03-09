@@ -368,7 +368,7 @@ module.exports = function(eleventyConfig) {
       links.push(`<p><a href=${refUrl} target="_blank" rel="noopener">Learn more</a></p>`);
     }
     return `
-      <li id="program-${id}" data-eligibility="${toCamelCase(id)}Eligible">
+      <li id="program-${id}" data-eligibility="${toCamelCase(id)}Result">
         <h4>${title}</h4>
         <p>${content}</p>
         ${links.join("")}
