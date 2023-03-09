@@ -1591,16 +1591,32 @@ pageClass: "page-public-assistance"
     }
   }
 
+  // Flags that can be associated with an EligResult to alter the display
+  // of that result to the user.
   const Flags = Object.freeze({
     TOO_COMPLEX: Symbol("too_complex"),
     NEAR_INCOME_LIMIT: Symbol("near_income_limit")
   })
 
+  // A single eligibility condition that can be displayed to the user.  Note
+  // an EligCondition will often be a combination of a few conditional
+  // statements in order to simplify the eligibility conditions displayed.
+  //
+  // For example, we can combine aged, disabled, and blind into a single
+  // EligCondition for simplified display:
+  //
+  //   const condition = new EligCondition(
+  //     "Disabled, blind, or 65+ years old",
+  //     or(isDisabled, isBlind, ge(age, 65)));
   function EligCondition(desc, met) {
     this.desc = desc;
     this.met = met;
   }
 
+  // An eligibility determination for a given program.
+  // 'eligible' can be true, false, or null
+  // 'conditions' is a list of EligConditions that were used to compute eligible
+  // 'flags' is a list of Flags relvant to the eligibility determination.
   function EligResult(eligible, conditions=[], flags=[]) {
     this.eligible = eligible;
     this.flags = [].concat(flags);
