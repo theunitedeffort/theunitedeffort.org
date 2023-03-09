@@ -571,7 +571,7 @@ pageClass: "page-public-assistance"
             Lifeline provides a discount on home phone and cell phone bills for certain low-income households.  In some situations, the program will cover the full cost of phone bills and provide a new phone for free.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> Low Income Home Energy Assistance Program (LIHEAP)", "liheap", "https://www.csd.ca.gov/Pages/Services.aspx?SCU=Santa%20Clara%20County&PT=CM", "https://www.csd.ca.gov/Pages/Assistance-PayingMyEnergyBills.aspx" %}
+          {% program "Low Income Home Energy Assistance Program (LIHEAP)", "liheap", "https://www.csd.ca.gov/Pages/Services.aspx?SCU=Santa%20Clara%20County&PT=CM", "https://www.csd.ca.gov/Pages/Assistance-PayingMyEnergyBills.aspx" %}
             LIHEAP provides one-time assistance with paying energy bills, home weatherization, and energy-related home repairs to certain low-income households.
           {% endprogram %}
 
@@ -2123,8 +2123,37 @@ pageClass: "page-public-assistance"
   }
 
   function liheapEligible() {
-    // TODO
-    return false;
+    // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
+    //
+    // LIHEAP income limits are set at 60% of State Median Income:
+    //   https://www.acf.hhs.gov/ocs/policy-guidance/liheap-im-2022-04-state-median-income-estimates-optional-use-ffy-2022-and
+    //
+    // Calculating income limit for various household sizes by multiplying the 4-person limit by various values:
+    //   https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf
+    const grossLimit = new MonthlyIncomeLimit([
+      2700.17,
+      3531.0,
+      4361.83,
+      5192.75,
+      6023.59,
+      6854.43,
+      7010.21,
+      7166.0,
+      7321.78,
+      7477.56
+    ],
+    155.78);
+
+    const isHoused = selectedOneOf('housing-situation', [
+      'housed',
+      'unlisted-stable-place']);
+
+    return (
+      and(
+        isHoused,
+        le(grossIncome(), grossLimit.getLimit(householdSize())),
+      )
+    );
   }
 
   function vtaParatransitEligible() {
