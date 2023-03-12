@@ -1669,26 +1669,29 @@ pageClass: "page-public-assistance"
   // program eligibility, false if the values suggest ineligibility, and
   // null if an eligibility determination can't be made.
   function adsaResult() {
-    const eligible = and(
-        or(
-          document.getElementById("disabled").checked,
-          document.getElementById("blind").checked,
-          document.getElementById("deaf").checked),
-        document.getElementById("dis_guide_yes").checked,
-        or(
-          document.getElementById("existing-ssi-me").checked,
-          document.getElementById("existing-ssdi-me").checked,
-          document.getElementById("existing-ihss-me").checked,
-          document.getElementById("existing-capi-me").checked,
-          ssiResult().eligible,
-          ssdiResult().eligible,
-          ihssResult().eligible,
-          capiResult().eligible));
+    const isDisabled = or(
+      document.getElementById('disabled').checked,
+      document.getElementById('blind').checked,
+      document.getElementById('deaf').checked);
+    const isProgramQualified = or(
+      document.getElementById('existing-ssi-me').checked,
+      document.getElementById('existing-ssdi-me').checked,
+      document.getElementById('existing-ihss-me').checked,
+      document.getElementById('existing-capi-me').checked,
+      ssiResult().eligible,
+      ssdiResult().eligible,
+      ihssResult().eligible,
+      capiResult().eligible);
+    const usesGuideDog = document.getElementById('dis_guide_yes').checked;
 
     const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    program.addCondition(
+      new EligCondition('Disabled, blind, or deaf', isDisabled));
+    program.addCondition(
+      new EligCondition('Uses a service dog', usesGuideDog));
+    program.addCondition(
+      new EligCondition('Receives or is eligible for SSI, SSDI, IHSS, or CAPI',
+        isProgramQualified));
     return program.getResult();
   }
 
