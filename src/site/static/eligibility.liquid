@@ -1781,14 +1781,16 @@ pageClass: "page-public-assistance"
     }
     const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
 
-    const eligible = and(
-      meetsImmigrationReq,
-      or(underIncomeLimit, isCategoricallyEligible));
-
     const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    program.addCondition(
+      new EligCondition('U.S. citizen or qualified non-citizen',
+        meetsImmigrationReq));
+    program.addConditionsOneOf([
+      new EligCondition(`Below income limit of \$${mceIncomeLimit} per month`,
+        underIncomeLimit),
+      new EligCondition('Receives or is eligible for CalWORKS or GA',
+        isCategoricallyEligible),
+    ]);
     return program.getResult();
   }
 
