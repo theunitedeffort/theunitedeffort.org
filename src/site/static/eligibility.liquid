@@ -1591,8 +1591,8 @@ pageClass: "page-public-assistance"
     }
   }
 
-  // Flags that can be associated with an EligResult to alter the display
-  // of that result to the user.
+  // Flags that can be associated with a Program to alter the display
+  // of that Program's eligibility result to the user.
   const Flags = Object.freeze({
     TOO_COMPLEX: Symbol("too_complex"),
     NEAR_INCOME_LIMIT: Symbol("near_income_limit")
@@ -1613,14 +1613,50 @@ pageClass: "page-public-assistance"
     this.met = met;
   }
 
-  // An eligibility determination for a given program.
-  // 'eligible' can be true, false, or null
-  // 'conditions' is a list of EligConditions that were used to compute eligible
-  // 'flags' is a list of Flags relvant to the eligibility determination.
-  function EligResult(eligible, conditions=[], flags=[]) {
-    this.eligible = eligible;
-    this.flags = [].concat(flags);
-    this.conditions = [].concat(conditions);
+  // A program to be checked for eligibility.
+  // 'logic' contains the list of EligConditions used to assess eligibility.
+  // 'flags' is a list of Flags relvant to the eligibility assessment.
+  function Program() {
+    this.conditions = [];
+    this.flags = [];
+
+    // Adds a single EligCondition that must be met in addition to all other
+    // previously added conditions.
+    this.addCondition = function(condition) {
+      this.conditions.push(condition);
+    }
+
+    // Adds a list of EligConditions, one of which must be met in addition to
+    // all other previously added conditions.
+    this.addConditionsOneOf = function(conditions) {
+      this.conditions.push([].concat(conditions));
+    }
+
+    // Evaluates the entire set of conditions, returning true, false, or null.
+    // True should be returned if all the conditions are met, false if they
+    // are not all met, and null if it can't be determined.
+    this.evaluate = function() {
+      const values = [];
+      for (const condition of this.conditions) {
+        if (condition instanceof Array) {
+          values.push(or(...condition.map(c => c.met)));
+        } else {
+          values.push(condition.met);
+        }
+      }
+      return and(...values);
+    }
+
+    // Returns a result object containing the eligibility determination,
+    // the list of conditions used to make that determination, and
+    // any relevant flags.
+    this.getResult = function() {
+      return {
+        'eligible': this.evaluate(),
+        'conditions': this.conditions,
+        'flags': this.flags
+      };
+    }
   }
 
   // The functions below determine eligibility for various programs.
@@ -1649,7 +1685,11 @@ pageClass: "page-public-assistance"
           ihssResult().eligible,
           capiResult().eligible));
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function calfreshResult() {
@@ -1742,7 +1782,11 @@ pageClass: "page-public-assistance"
       meetsImmigrationReq,
       or(underIncomeLimit, isCategoricallyEligible));
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function calworksResult() {
@@ -1867,7 +1911,11 @@ pageClass: "page-public-assistance"
       underResourceLimit
     );
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function capiResult() {
@@ -1884,7 +1932,11 @@ pageClass: "page-public-assistance"
       ssiCapiBaseEligibile(),
       meetsImmigrationReq);
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function careIncomeLimit() {
@@ -1939,7 +1991,11 @@ pageClass: "page-public-assistance"
           calworksResult().eligible,
           calfreshResult().eligible));
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function feraResult() {
@@ -1969,7 +2025,11 @@ pageClass: "page-public-assistance"
       le(grossIncome(), grossLimit.getLimit(householdSize())),
       ge(householdSize(), MIN_HOUSEHOLD_SIZE));
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function vaDisabilityCompResult() {
@@ -1994,7 +2054,11 @@ pageClass: "page-public-assistance"
       meetsDutyReq,
       meetsDischargeReq);
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   // GA-specific references:
@@ -2042,7 +2106,11 @@ pageClass: "page-public-assistance"
           document.getElementById("qualified_noncitizen_gt5y").checked,
           document.getElementById("qualified_noncitizen_le5y").checked));
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function noFeeIdResult() {
@@ -2060,7 +2128,11 @@ pageClass: "page-public-assistance"
         'no-stable-place']),
       ge(age, MIN_NOFEEID_ELIGIBLE_AGE));
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function reducedFeeIdResult() {
@@ -2095,7 +2167,11 @@ pageClass: "page-public-assistance"
       lt(age, MAX_REDUCEDFEEID_ELIGIBLE_AGE),
       isProgramQualified);
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function ihssResult() {
@@ -2118,7 +2194,11 @@ pageClass: "page-public-assistance"
       // TODO: Add medicalResult() once we can screen for Medi-Cal.
       document.getElementById("existing-medical-me").checked);
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function lifelineResult() {
@@ -2163,7 +2243,11 @@ pageClass: "page-public-assistance"
       isProgramQualified,
       underIncomeLimit);
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function liheapResult() {
@@ -2196,14 +2280,22 @@ pageClass: "page-public-assistance"
       isHoused,
       le(grossIncome(), grossLimit.getLimit(householdSize())));
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function vtaParatransitResult() {
     // TODO: Determine if blindness should be included here.
     const eligible = document.getElementById('disabled').checked;
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function housingChoiceResult() {
@@ -2264,7 +2356,11 @@ pageClass: "page-public-assistance"
       meetsImmigrationReq,
       underIncomeLimit);
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function ssiCapiBaseEligibile() {
@@ -2347,12 +2443,21 @@ pageClass: "page-public-assistance"
       ssiCapiBaseEligibile(),
       meetsImmigrationReq);
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function ssdiResult() {
     // TODO
-    return new EligResult(false);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', false));
+
+    return program.getResult();
   }
 
   function vaPensionResult() {
@@ -2497,7 +2602,11 @@ pageClass: "page-public-assistance"
       meetsDisabilityReq,
       underNetWorthLimit);
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function wicResult() {
@@ -2546,7 +2655,11 @@ pageClass: "page-public-assistance"
       meetsCategoricalReq,
       meetsIncomeReq);
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function upliftResult() {
@@ -2559,7 +2672,11 @@ pageClass: "page-public-assistance"
         'no-stable-place']),
       getValueOrNull('risk_homeless_yes'));
 
-    return new EligResult(eligible);
+    const program = new Program();
+    // TODO: Replace this single example condition with a set of simplified
+    // conditions describing the separate eligibility requirements.
+    program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
   }
 
   function clearUnusedPages() {
