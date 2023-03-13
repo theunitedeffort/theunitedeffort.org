@@ -2708,15 +2708,62 @@ pageClass: "page-public-assistance"
     // computation.
     clearUnusedPages();
 
-    const allPrograms = document.querySelectorAll('.programs li');
-    const eligibleList = document.querySelector('.programs__eligible ul');
-    const ineligibleList = document.querySelector('.programs__ineligible ul');
-    const unknownList = document.querySelector('.programs__unknown ul');
+    const allPrograms = document.querySelectorAll('.programs>ul>li');
+    const eligibleList = document.querySelector('.programs__eligible>ul');
+    const ineligibleList = document.querySelector('.programs__ineligible>ul');
+    const unknownList = document.querySelector('.programs__unknown>ul');
     for (program of allPrograms) {
-      const eligible = window[program.dataset.eligibility]().eligible;
-      if (eligible === null) {
+      const result = window[program.dataset.eligibility]();
+      const conditionList = program.querySelector('.elig_conditions');
+      while (conditionList.firstChild) {
+        conditionList.removeChild(conditionList.firstChild);
+      }
+      for (condition of result.conditions) {
+        if (condition instanceof Array) {
+          const listItem = document.createElement('li');
+          listItem.textContent = "One of:"
+          const combinedMet = or(...condition.map(c => c.met));
+          let markerCls = 'marker__ng';
+          if (combinedMet == null) {
+            markerCls = 'marker__unk';
+          } else if (combinedMet) {
+            markerCls = 'marker__ok';
+          }
+          conditionList.appendChild(listItem);
+          listItem.className = `marker ${markerCls}`;
+
+          const subList = document.createElement('ul');
+          for (conditionPart of condition) {
+            const listItem = document.createElement('li');
+            let markerCls = '';
+            if (conditionPart.met == null && !combinedMet) {
+              markerCls = 'marker__unk';
+            } else if (!conditionPart.met && !combinedMet) {
+              markerCls = 'marker__ng';
+            } else if (conditionPart.met) {
+              markerCls = 'marker__ok';
+            }
+            listItem.textContent = conditionPart.desc;
+            listItem.className = `marker ${markerCls}`;
+            subList.appendChild(listItem);
+          }
+          conditionList.appendChild(subList);
+        } else {
+          const listItem = document.createElement('li');
+          let markerCls = 'marker__ng';
+          if (condition.met == null) {
+            markerCls = 'marker__unk';
+          } else if (condition.met) {
+            markerCls = 'marker__ok';
+          }
+          listItem.textContent = condition.desc;
+          listItem.className = `marker ${markerCls}`;
+          conditionList.appendChild(listItem);
+        }
+      }
+      if (result.eligible === null) {
         unknownList.appendChild(program);
-      } else if (eligible) {
+      } else if (result.eligible) {
         eligibleList.appendChild(program);
       } else {
         ineligibleList.appendChild(program);
@@ -2745,7 +2792,7 @@ pageClass: "page-public-assistance"
       }
 
       // Sort list items alphabetically.
-      const items = [...list.querySelectorAll('li')];
+      const items = [...list.children];
       items.sort((a, b) => {
         const titleA = a.querySelector('h4').textContent;
         const titleB = b.querySelector('h4').textContent;
