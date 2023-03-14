@@ -2145,36 +2145,28 @@ pageClass: "page-public-assistance"
 
   function noFeeIdResult() {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
-    const MIN_NOFEEID_ELIGIBLE_AGE = 62;  // Years
+    const MIN_ELIGIBLE_AGE = 62;  // Years
 
-    const age = getValueOrNull('age');
-
-    const eligible = or(
-      selectedOneOf('housing-situation', [
+    const isUnhoused = selectedOneOf('housing-situation', [
         'vehicle',
         'transitional',
         'hotel',
         'shelter',
-        'no-stable-place']),
-      ge(age, MIN_NOFEEID_ELIGIBLE_AGE));
+        'no-stable-place']);
+    const meetsAgeReq = ge(getValueOrNull('age'), MIN_ELIGIBLE_AGE);
 
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
     // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    program.addConditionsOneOf([
+      new EligCondition('Experiencing homelessness', isUnhoused),
+      new EligCondition(`Age ${MIN_ELIGIBLE_AGE} or older`, meetsAgeReq)
+    ]);
     return program.getResult();
   }
 
   function reducedFeeIdResult() {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
-    const MAX_REDUCEDFEEID_ELIGIBLE_AGE = 62;  // Years
-
-    const isHoused = selectedOneOf('housing-situation', [
-      'housed',
-      'unlisted-stable-place']);
-
-    const age = getValueOrNull('age');
-
     // https://www.icarol.info/ResourceView2.aspx?org=2225&agencynum=73919505
     //
     // DL 937 order form:
@@ -2191,16 +2183,16 @@ pageClass: "page-public-assistance"
       gaResult().eligible,
       calfreshResult().eligible,
       capiResult().eligible);
-
-    const eligible = and(
-      isHoused,
-      lt(age, MAX_REDUCEDFEEID_ELIGIBLE_AGE),
-      isProgramQualified);
+    const ineligibleForNoFeeId = not(noFeeIdResult().eligible);
 
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
     // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    program.addCondition(new EligCondition(
+      'Receives or is eligible for CalWORKS, SSI, GA, CalFresh, CFAP, or CAPI',
+      isProgramQualified));
+    program.addCondition(new EligCondition(
+      'Not eligible for a cheaper no-fee ID card', ineligibleForNoFeeId));
     return program.getResult();
   }
 
