@@ -751,6 +751,22 @@ pageClass: "page-public-assistance"
     return a >= b;
   }
 
+  // Formats a value as USD with no decimals (always rounding up).
+  const usdLimit = function(value) {
+    const num = Math.ceil(Number(value));
+    if (isNaN(num)) {
+      return "the limit";
+    } else {
+      return num.toLocaleString("en-US",
+      {
+        style: "currency",
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+        currency: "USD"
+      });
+    }
+  }
+
   // Shows or hides the element 'elem' via a class name.
   function setElementVisibility(elem, makeVisible) {
     if (elem) {
@@ -1800,7 +1816,8 @@ pageClass: "page-public-assistance"
       new EligCondition('U.S. citizen or qualified immigrant',
         meetsImmigrationReq));
     program.addConditionsOneOf([
-      new EligCondition(`Adjusted income is below \$${mceIncomeLimit} per month`,
+      new EligCondition(
+        `Adjusted income is below ${usdLimit(mceIncomeLimit)} per month`,
         underIncomeLimit),
       new EligCondition('Receives or is eligible for CalWORKS or GA',
         isCategoricallyEligible),
@@ -1930,8 +1947,6 @@ pageClass: "page-public-assistance"
     const underResourceLimit = le(totalResources(), resourceLimit);
 
     const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
     program.addCondition(
       new EligCondition('U.S. citizen or qualified immigrant',
         meetsImmigrationReq));
@@ -1940,10 +1955,12 @@ pageClass: "page-public-assistance"
         `Household has a member who is pregnant or under ${MAX_CHILD_AGE + 1}`,
         meetsFamilyReq));
     program.addCondition(
-      new EligCondition(`Adjusted income is below \$${mbsacIncomeLimit} per month`,
+      new EligCondition(
+        `Adjusted income is below ${usdLimit(mbsacIncomeLimit)} per month`,
         underIncomeLimit));
     program.addCondition(
-      new EligCondition(`Total value of assets is below \$${resourceLimit}`,
+      new EligCondition(
+        `Total value of assets is below ${usdLimit(resourceLimit)}`,
         underResourceLimit));
     return program.getResult();
   }
@@ -2156,8 +2173,6 @@ pageClass: "page-public-assistance"
     const meetsAgeReq = ge(getValueOrNull('age'), MIN_ELIGIBLE_AGE);
 
     const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
     program.addConditionsOneOf([
       new EligCondition('Experiencing homelessness', isUnhoused),
       new EligCondition(`Age ${MIN_ELIGIBLE_AGE} or older`, meetsAgeReq)
@@ -2186,8 +2201,6 @@ pageClass: "page-public-assistance"
     const ineligibleForNoFeeId = not(noFeeIdResult().eligible);
 
     const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
     program.addCondition(new EligCondition(
       'Receives or is eligible for CalWORKS, SSI, GA, CalFresh, CFAP, or CAPI',
       isProgramQualified));
@@ -2358,8 +2371,6 @@ pageClass: "page-public-assistance"
       grossLimitInput,
       extraCalc);
 
-    const age = getValueOrNull('age');
-
     // TODO: Collect data about whether _anyone_ in the household is
     // a citizen or qualified nonresident.
     // https://www.ecfr.gov/current/title-24/subtitle-A/part-5/subpart-E/section-5.516#p-5.516(b)
@@ -2369,19 +2380,20 @@ pageClass: "page-public-assistance"
         'permanent_resident',
         'qualified_noncitizen_gt5y',
         'qualified_noncitizen_le5y']));
-
-    const underIncomeLimit = (
-      le(grossIncome(), grossLimit.getLimit(householdSize())));
-
-    const eligible = and(
-      ge(age, MIN_ELIGIBLE_AGE),
-      meetsImmigrationReq,
-      underIncomeLimit);
+    const incomeLimit = grossLimit.getLimit(householdSize());
+    const underIncomeLimit = le(grossIncome(), incomeLimit);
+    const meetsAgeReq = ge(getValueOrNull('age'), MIN_ELIGIBLE_AGE);
 
     const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    program.addCondition(
+      new EligCondition('U.S. citizen or qualified immigrant',
+        meetsImmigrationReq));
+    program.addCondition(
+      new EligCondition(`Age ${MIN_ELIGIBLE_AGE} or older`, meetsAgeReq));
+    program.addCondition(
+      new EligCondition(
+        `Gross income is below ${usdLimit(incomeLimit)} per month`,
+        underIncomeLimit));
     return program.getResult();
   }
 
