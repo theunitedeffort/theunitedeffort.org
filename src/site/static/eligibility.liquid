@@ -754,7 +754,7 @@ pageClass: "page-public-assistance"
   // Formats a value as USD with no decimals (always rounding up).
   const usdLimit = function(value) {
     const num = Math.ceil(Number(value));
-    if (isNaN(num)) {
+    if (isNaN(num) || value === null) {
       return "the limit";
     } else {
       return num.toLocaleString("en-US",
