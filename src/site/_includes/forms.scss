@@ -91,7 +91,7 @@
       }
     }
 
-    form#eligibility {
+    form.eligibility {
       display: block;
       margin-top: 1em;
 
@@ -99,21 +99,24 @@
         margin-top: 0;
       }
 
-      h5 {
-        margin-top: 1.2em;
+      ul {
+        list-style: none;
+        margin: 0;
       }
 
       .elig_page div {
         margin: 1em 0;
       }
 
+      .elig_conditions {
+        padding: 0;
+      }
+
       ul.multiselect,
       ul.dynamic_field_list,
       ul.singleselect,
       ul.yes-no {
-        list-style: none;
         padding: 0;
-        margin: 0;
 
         li {
           margin-top: 0.5em;
@@ -149,6 +152,39 @@
 
       legend {
         margin: 0;
+      }
+
+      .programs {
+        h4 {
+          font-size: 1.2em;
+        }
+
+        h5 {
+          font-size: 1.0em;
+          margin-top: 1.2em;
+        }
+
+        & > ul > li {
+          margin-bottom: 2.5em;
+          padding-left: 0.5em;
+          border-left: 4px solid var(--color-gray-900);
+
+          p {
+            margin: 0;
+          }
+        }
+      }
+
+      .programs__eligible > ul > li {
+        border-color: var(--color-green);
+      }
+
+      .programs__ineligible > ul > li {
+        border-color: var(--color-red);
+      }
+
+      .programs__unknown > ul > li {
+        border-color: var(--color-gray-600);
       }
     }
 

@@ -18,7 +18,7 @@ pageClass: "page-public-assistance"
   </ul>
 </div>
 
-<form id="eligibility">
+<form class="eligibility">
   {% eligSection "intro" %}
     {% eligPage "intro" %}
     <p>
@@ -2708,10 +2708,10 @@ pageClass: "page-public-assistance"
     // computation.
     clearUnusedPages();
 
-    const allPrograms = document.querySelectorAll('.programs>ul>li');
-    const eligibleList = document.querySelector('.programs__eligible>ul');
-    const ineligibleList = document.querySelector('.programs__ineligible>ul');
-    const unknownList = document.querySelector('.programs__unknown>ul');
+    const allPrograms = document.querySelectorAll('.programs > ul > li');
+    const eligibleList = document.querySelector('.programs__eligible > ul');
+    const ineligibleList = document.querySelector('.programs__ineligible > ul');
+    const unknownList = document.querySelector('.programs__unknown > ul');
     for (program of allPrograms) {
       const result = window[program.dataset.eligibility]();
       const conditionList = program.querySelector('.elig_conditions');
@@ -2723,41 +2723,41 @@ pageClass: "page-public-assistance"
           const listItem = document.createElement('li');
           listItem.textContent = "One of:"
           const combinedMet = or(...condition.map(c => c.met));
-          let markerCls = 'marker__ng';
+          let cls = 'condition__unmet';
           if (combinedMet == null) {
-            markerCls = 'marker__unk';
+            cls = 'condition__unk';
           } else if (combinedMet) {
-            markerCls = 'marker__ok';
+            cls = 'condition__met';
           }
           conditionList.appendChild(listItem);
-          listItem.className = `marker ${markerCls}`;
+          listItem.className = `condition ${cls}`;
 
           const subList = document.createElement('ul');
           for (conditionPart of condition) {
             const listItem = document.createElement('li');
-            let markerCls = '';
+            let cls = '';
             if (conditionPart.met == null && !combinedMet) {
-              markerCls = 'marker__unk';
+              cls = 'condition__unk';
             } else if (!conditionPart.met && !combinedMet) {
-              markerCls = 'marker__ng';
+              cls = 'condition__unmet';
             } else if (conditionPart.met) {
-              markerCls = 'marker__ok';
+              cls = 'condition__met';
             }
             listItem.textContent = conditionPart.desc;
-            listItem.className = `marker ${markerCls}`;
+            listItem.className = `condition ${cls}`;
             subList.appendChild(listItem);
           }
           conditionList.appendChild(subList);
         } else {
           const listItem = document.createElement('li');
-          let markerCls = 'marker__ng';
+          let cls = 'condition__unmet';
           if (condition.met == null) {
-            markerCls = 'marker__unk';
+            cls = 'condition__unk';
           } else if (condition.met) {
-            markerCls = 'marker__ok';
+            cls = 'condition__met';
           }
           listItem.textContent = condition.desc;
-          listItem.className = `marker ${markerCls}`;
+          listItem.className = `condition ${cls}`;
           conditionList.appendChild(listItem);
         }
       }
