@@ -2739,8 +2739,8 @@ pageClass: "page-public-assistance"
         if (condition instanceof Array) {
           // For nested lists of conditions, first create a
           // HTML list item to act as a heading for the grouping.
-          listItem.textContent = "One of:"
           const combinedMet = or(...condition.map(c => c.met));
+          listItem.textContent = "One of:";
           addConditionIcon(listItem, combinedMet);
           conditionList.appendChild(listItem);
           // Then, create a list to sit under that heading.
@@ -2749,7 +2749,10 @@ pageClass: "page-public-assistance"
             const subListItem = document.createElement('li');
             subListItem.textContent = conditionPart.desc;
             // If the combined group is met, we only notate the components
-            // that contribute to the overall group being met.
+            // that contribute to the overall group being met. This will avoid
+            // showing a potentially confusing unmet "X" within a group that's
+            // met (because the group is OR'd together). If the combined
+            // group is not met, we show everything.
             addConditionIcon(subListItem, conditionPart.met,
               {displayUnmet: !combinedMet, displayUnk: !combinedMet});
             subList.appendChild(subListItem);
