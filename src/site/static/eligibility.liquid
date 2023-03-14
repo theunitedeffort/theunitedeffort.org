@@ -2700,7 +2700,7 @@ pageClass: "page-public-assistance"
         'hotel',
         'shelter',
         'no-stable-place']),
-      getValueOrNull('risk_homeless_yes'));
+      document.getElementById('risk_homeless_yes').checked);
 
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
