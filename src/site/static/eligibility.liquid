@@ -876,6 +876,20 @@ pageClass: "page-public-assistance"
     }
   }
 
+  // Helper function to add the correct class name to a displayed condition.
+  function addConditionIcon(listItem, met,
+      {displayMet=true, displayUnmet=true, displayUnk=true}={}) {
+    let cls = '';
+    if (met == null && displayUnk) {
+      cls = 'condition__unk';
+    } else if (!met && displayUnmet) {
+      cls = 'condition__unmet';
+    } else if (met && displayMet) {
+      cls = 'condition__met';
+    }
+    listItem.className = `condition ${cls}`;
+  }
+
   function setMemberIncomeHeading(incomeFieldset, value) {
     incomeFieldset.querySelector('legend').textContent = value;
   }
@@ -2708,15 +2722,51 @@ pageClass: "page-public-assistance"
     // computation.
     clearUnusedPages();
 
-    const allPrograms = document.querySelectorAll('.programs li');
-    const eligibleList = document.querySelector('.programs__eligible ul');
-    const ineligibleList = document.querySelector('.programs__ineligible ul');
-    const unknownList = document.querySelector('.programs__unknown ul');
+    const allPrograms = document.querySelectorAll('.programs > ul > li');
+    const eligibleList = document.querySelector('.programs__eligible > ul');
+    const ineligibleList = document.querySelector('.programs__ineligible > ul');
+    const unknownList = document.querySelector('.programs__unknown > ul');
     for (program of allPrograms) {
-      const eligible = window[program.dataset.eligibility]().eligible;
-      if (eligible === null) {
+      const result = window[program.dataset.eligibility]();
+      const conditionList = program.querySelector('.elig_conditions');
+      // Reset the program's displayed conditions.
+      while (conditionList.firstChild) {
+        conditionList.removeChild(conditionList.firstChild);
+      }
+      // Render each program's conditions.
+      for (condition of result.conditions) {
+        const listItem = document.createElement('li');
+        if (condition instanceof Array) {
+          // For nested lists of conditions, first create a
+          // HTML list item to act as a heading for the grouping.
+          const combinedMet = or(...condition.map(c => c.met));
+          listItem.textContent = "One of:";
+          addConditionIcon(listItem, combinedMet);
+          conditionList.appendChild(listItem);
+          // Then, create a list to sit under that heading.
+          const subList = document.createElement('ul');
+          for (conditionPart of condition) {
+            const subListItem = document.createElement('li');
+            subListItem.textContent = conditionPart.desc;
+            // If the combined group is met, we only notate the components
+            // that contribute to the overall group being met. This will avoid
+            // showing a potentially confusing unmet "X" within a group that's
+            // met (because the group is OR'd together). If the combined
+            // group is not met, we show everything.
+            addConditionIcon(subListItem, conditionPart.met,
+              {displayUnmet: !combinedMet, displayUnk: !combinedMet});
+            subList.appendChild(subListItem);
+          }
+          conditionList.appendChild(subList);
+        } else {
+          listItem.textContent = condition.desc;
+          addConditionIcon(listItem, condition.met);
+          conditionList.appendChild(listItem);
+        }
+      }
+      if (result.eligible === null) {
         unknownList.appendChild(program);
-      } else if (eligible) {
+      } else if (result.eligible) {
         eligibleList.appendChild(program);
       } else {
         ineligibleList.appendChild(program);
@@ -2745,7 +2795,7 @@ pageClass: "page-public-assistance"
       }
 
       // Sort list items alphabetically.
-      const items = [...list.querySelectorAll('li')];
+      const items = [...list.children];
       items.sort((a, b) => {
         const titleA = a.querySelector('h4').textContent;
         const titleB = b.querySelector('h4').textContent;

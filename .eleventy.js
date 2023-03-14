@@ -372,6 +372,8 @@ module.exports = function(eleventyConfig) {
         <h4>${title}</h4>
         <p>${content}</p>
         ${links.join("")}
+        <h5>Eligibility Requirements</h5>
+        <ul class="elig_conditions"></ul>
       </li>`;
   });
 

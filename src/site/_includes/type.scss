@@ -1,7 +1,8 @@
   h1,
   h2,
   h3,
-  h4 {
+  h4,
+  h5 {
     color: var(--color-gray-200);
     font-family: var(--font-headline);
     font-weight: 850;
@@ -29,6 +30,10 @@
   
   h3 {
     font-size: 1.3em;
+  }
+
+  h4 {
+    font-size: 1em;
   }
   
   main p,
@@ -167,6 +172,27 @@
     display: inline-block;
   }
   
+  .condition::before {
+    content: "";
+    width: 1em;
+    display: inline-block;
+  }
+
+  .condition__met::before {
+    content: "\2713";
+    color: var(--color-green);
+  }
+
+  .condition__unmet::before {
+    content: "\2717";
+    color: var(--color-red);
+  }
+
+  .condition__unk::before {
+    content: "?";
+    font-weight: 600;
+    color: var(--color-gray-600);
+  }
   
   .rent_tables {
     h2 {
@@ -281,33 +307,6 @@
     width: 50%;
   }
 
-  .programs {
-    ul {
-      list-style: none;
-
-      li {
-        margin-bottom: 2.5em;
-        padding-left: 0.5em;
-        border-left: 4px solid var(--color-gray-900);
-
-        p {
-          margin: 0;
-        }
-      }
-    }
-  }
-
-  .programs__eligible ul li {
-    border-color: var(--color-green);
-  }
-
-  .programs__ineligible ul li {
-    border-color: var(--color-red);
-  }
-  
-  .programs__unknown ul li {
-    border-color: var(--color-orange);
-  }
 
   p[data-toggletip] {
     font-size: 0.7em;
