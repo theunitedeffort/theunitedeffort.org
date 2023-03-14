@@ -1797,10 +1797,10 @@ pageClass: "page-public-assistance"
 
     const program = new Program();
     program.addCondition(
-      new EligCondition('U.S. citizen or qualified non-citizen',
+      new EligCondition('U.S. citizen or qualified immigrant',
         meetsImmigrationReq));
     program.addConditionsOneOf([
-      new EligCondition(`Below income limit of \$${mceIncomeLimit} per month`,
+      new EligCondition(`Adjusted income is below \$${mceIncomeLimit} per month`,
         underIncomeLimit),
       new EligCondition('Receives or is eligible for CalWORKS or GA',
         isCategoricallyEligible),
@@ -1846,6 +1846,10 @@ pageClass: "page-public-assistance"
       ONE_CHILD_SUPPORT_DISREGARD,
       TWO_CHILD_SUPPORT_DISREGARD];
 
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap13.pdf
+    // Section 13.1.1
+    MAX_CHILD_AGE = 18;
+
     const age = getValueOrNull('age');
     const hhAges = getValuesOrNulls('hh-member-age');
     const hhDisabled = getValuesOrNulls('hh-member-disabled');
@@ -1861,10 +1865,11 @@ pageClass: "page-public-assistance"
         'qualified_noncitizen_le5y']));
 
     const meetsFamilyReq = or(
-      ...hhAges.map(a => lt(a, 19)),
+      ...hhAges.map(a => le(a, MAX_CHILD_AGE)),
       // TODO: is this head of household check needed?  Could we just
       // check if _anyone_ is under 19?
-      and(lt(age, 19), document.getElementById("headhh_yes").checked),
+      and(le(age, MAX_CHILD_AGE), document.getElementById("headhh_yes").checked),
+      // TODO: Add check for other household members who are pregnant.
       document.getElementById("pregnant").checked
     );
 
@@ -1874,7 +1879,7 @@ pageClass: "page-public-assistance"
     // than propagate null age values.
     // Note if the applicant is under 19, they do not count as a child for
     // child support income.
-    const numChildren = hhAges.filter(a => a < 19).length;
+    const numChildren = hhAges.filter(a => a <= MAX_CHILD_AGE).length;
 
     const maxEmploymentDisregard = numEmployed * EMPLOYMENT_DISREGARD;
     const maxChildSupportDisregard = childSupportDisregards[
@@ -1904,8 +1909,9 @@ pageClass: "page-public-assistance"
     }
 
     // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
+    const mbsacIncomeLimit = mbsac.getLimit(householdSize());
     const underIncomeLimit = (
-      le(nonExemptIncome, mbsac.getLimit(householdSize())));
+      le(nonExemptIncome, mbsacIncomeLimit));
 
     let resourceLimit = BASE_RESOURCE_LIMIT;
     // TODO: If household ages are not specified, we may ok falling back to
@@ -1923,17 +1929,22 @@ pageClass: "page-public-assistance"
     }
     const underResourceLimit = le(totalResources(), resourceLimit);
 
-    const eligible = and(
-      meetsImmigrationReq,
-      meetsFamilyReq,
-      underIncomeLimit,
-      underResourceLimit
-    );
-
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
     // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    program.addCondition(
+      new EligCondition('U.S. citizen or qualified immigrant',
+        meetsImmigrationReq));
+    program.addCondition(
+      new EligCondition(
+        `Household has a member who is pregnant or under ${MAX_CHILD_AGE + 1}`,
+        meetsFamilyReq));
+    program.addCondition(
+      new EligCondition(`Adjusted income is below \$${mbsacIncomeLimit} per month`,
+        underIncomeLimit));
+    program.addCondition(
+      new EligCondition(`Total value of assets is below \$${resourceLimit}`,
+        underResourceLimit));
     return program.getResult();
   }
 
