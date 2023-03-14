@@ -876,6 +876,20 @@ pageClass: "page-public-assistance"
     }
   }
 
+  // Helper function to add the correct class name to a displayed condition.
+  function addConditionIcon(listItem, met,
+      {displayMet=true, displayUnmet=true, displayUnk=true}={}) {
+    let cls = '';
+    if (met == null && displayUnk) {
+      cls = 'condition__unk';
+    } else if (!met && displayUnmet) {
+      cls = 'condition__unmet';
+    } else if (met && displayMet) {
+      cls = 'condition__met';
+    }
+    listItem.className = `condition ${cls}`;
+  }
+
   function setMemberIncomeHeading(incomeFieldset, value) {
     incomeFieldset.querySelector('legend').textContent = value;
   }
@@ -2715,49 +2729,35 @@ pageClass: "page-public-assistance"
     for (program of allPrograms) {
       const result = window[program.dataset.eligibility]();
       const conditionList = program.querySelector('.elig_conditions');
+      // Reset the program's displayed conditions.
       while (conditionList.firstChild) {
         conditionList.removeChild(conditionList.firstChild);
       }
+      // Render each program's conditions.
       for (condition of result.conditions) {
+        const listItem = document.createElement('li');
         if (condition instanceof Array) {
-          const listItem = document.createElement('li');
+          // For nested lists of conditions, first create a
+          // HTML list item to act as a heading for the grouping.
           listItem.textContent = "One of:"
           const combinedMet = or(...condition.map(c => c.met));
-          let cls = 'condition__unmet';
-          if (combinedMet == null) {
-            cls = 'condition__unk';
-          } else if (combinedMet) {
-            cls = 'condition__met';
-          }
+          addConditionIcon(listItem, combinedMet);
           conditionList.appendChild(listItem);
-          listItem.className = `condition ${cls}`;
-
+          // Then, create a list to sit under that heading.
           const subList = document.createElement('ul');
           for (conditionPart of condition) {
-            const listItem = document.createElement('li');
-            let cls = '';
-            if (conditionPart.met == null && !combinedMet) {
-              cls = 'condition__unk';
-            } else if (!conditionPart.met && !combinedMet) {
-              cls = 'condition__unmet';
-            } else if (conditionPart.met) {
-              cls = 'condition__met';
-            }
-            listItem.textContent = conditionPart.desc;
-            listItem.className = `condition ${cls}`;
-            subList.appendChild(listItem);
+            const subListItem = document.createElement('li');
+            subListItem.textContent = conditionPart.desc;
+            // If the combined group is met, we only notate the components
+            // that contribute to the overall group being met.
+            addConditionIcon(subListItem, conditionPart.met,
+              {displayUnmet: !combinedMet, displayUnk: !combinedMet});
+            subList.appendChild(subListItem);
           }
           conditionList.appendChild(subList);
         } else {
-          const listItem = document.createElement('li');
-          let cls = 'condition__unmet';
-          if (condition.met == null) {
-            cls = 'condition__unk';
-          } else if (condition.met) {
-            cls = 'condition__met';
-          }
           listItem.textContent = condition.desc;
-          listItem.className = `condition ${cls}`;
+          addConditionIcon(listItem, condition.met);
           conditionList.appendChild(listItem);
         }
       }
