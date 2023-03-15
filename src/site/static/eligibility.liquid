@@ -2559,9 +2559,9 @@ pageClass: "page-public-assistance"
       ne(dischargeStatus, 'oth'),
       ne(dischargeStatus, 'bad-conduct'));
 
-    const meetsDisabilityReq = or(
-      ge(age, MIN_ELDERLY_AGE),
-      document.getElementById('disabled').checked,
+    const meetsAgeReq = ge(getValueOrNull('age'), MIN_ELDERLY_AGE);
+    const isDisabled = document.getElementById('disabled').checked;
+    const isProgramQualified = or(
       document.getElementById("existing-ssi-me").checked,
       document.getElementById("existing-ssi-household").checked,
       document.getElementById("existing-ssdi-me").checked,
@@ -2634,21 +2634,31 @@ pageClass: "page-public-assistance"
     // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFR093085c1bf84bc2/section-3.274#p-3.274(c)(1)
     assetIdxs = [...new Set([0, ...spouseIdx])];
 
+    let yearlyIncome = null;
+    const monthlyIncome = grossIncome(incomeIdxs);
+    if (monthlyIncome !== null) {
+      yearlyIncome = 12 * monthlyIncome;
+    }
     const underNetWorthLimit = le(
-      grossIncome(incomeIdxs) + totalResources(assetIdxs),
+      yearlyIncome + totalResources(assetIdxs),
       ANNUAL_NET_WORTH_LIMIT);
 
-    const eligible = and(
-      document.getElementById('veteran').checked,
-      meetsDischargeReq,
-      or(...meetsServiceReq),
-      meetsDisabilityReq,
-      underNetWorthLimit);
+    const isVeteran = document.getElementById('veteran').checked;
+    const meetsAnyServiceReq = or(...meetsServiceReq);
 
     const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    program.addCondition(new EligCondition('U.S. veteran', isVeteran));
+    program.addCondition(
+      new EligCondition('Discharged honorably or under honorable conditions',
+        meetsDischargeReq));
+    program.addCondition(new EligCondition('Meets specific duty type and duration <a href="https://www.va.gov/pension/eligibility/" target="_blank" rel="noopener">requirements</a>',
+      meetsAnyServiceReq));
+    program.addCondition(new EligCondition(`Gross income and assets combined are below ${usdLimit(ANNUAL_NET_WORTH_LIMIT)} per year`, underNetWorthLimit));
+    program.addConditionsOneOf([
+      new EligCondition('Disabled', isDisabled),
+      new EligCondition(`Age ${MIN_ELDERLY_AGE} or older`, meetsAgeReq),
+      new EligCondition('Receives or is eligible for SSI or SSDI', isProgramQualified)
+    ]);
     return program.getResult();
   }
 
@@ -2771,7 +2781,7 @@ pageClass: "page-public-assistance"
           const subList = document.createElement('ul');
           for (conditionPart of condition) {
             const subListItem = document.createElement('li');
-            subListItem.textContent = conditionPart.desc;
+            subListItem.innerHTML = conditionPart.desc;
             // If the combined group is met, we only notate the components
             // that contribute to the overall group being met. This will avoid
             // showing a potentially confusing unmet "X" within a group that's
@@ -2783,7 +2793,7 @@ pageClass: "page-public-assistance"
           }
           conditionList.appendChild(subList);
         } else {
-          listItem.textContent = condition.desc;
+          listItem.innerHTML = condition.desc;
           addConditionIcon(listItem, condition.met);
           conditionList.appendChild(listItem);
         }
