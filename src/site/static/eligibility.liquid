@@ -2656,8 +2656,6 @@ pageClass: "page-public-assistance"
     program.addCondition(new EligCondition('Meets specific duty type and duration <a href="https://www.va.gov/pension/eligibility/" target="_blank" rel="noopener">requirements</a>',
       meetsAnyServiceReq));
     program.addCondition(new EligCondition(`Gross income and assets combined are below ${usdLimit(ANNUAL_NET_WORTH_LIMIT)} per year`, underNetWorthLimit));
-    // program.addCondition(new EligCondition(`Disabled, ${MIN_ELDERLY_AGE}+, or receives/eligible for SSI or SSDI`,
-    //   meetsDisabilityReq));
     program.addConditionsOneOf([
       new EligCondition('Disabled', isDisabled),
       new EligCondition(`Age ${MIN_ELDERLY_AGE} or older`, meetsAgeReq),
