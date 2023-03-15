@@ -2093,18 +2093,23 @@ pageClass: "page-public-assistance"
       ne(dischargeStatus, 'dishonorable'),
       ne(dischargeStatus, 'oth'),
       ne(dischargeStatus, 'bad-conduct'));
-
-    const eligible = and(
-      document.getElementById('veteran').checked,
+    const isVeteran = document.getElementById('veteran').checked;
+    const isServiceDisabled = and(
       document.getElementById('disabled').checked,
-      document.getElementById('dis_military_yes').checked,
-      meetsDutyReq,
-      meetsDischargeReq);
+      document.getElementById('dis_military_yes').checked);
 
     const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    program.addCondition(new EligCondition('U.S. veteran', isVeteran));
+    program.addCondition(
+      new EligCondition('Has a disability related to military service',
+        isServiceDisabled));
+    program.addCondition(
+      new EligCondition(
+        'Served on active duty, active duty for training, or inactive duty training',
+        meetsDutyReq));
+    program.addCondition(
+      new EligCondition('Discharged honorably or under honorable conditions',
+        meetsDischargeReq));
     return program.getResult();
   }
 
