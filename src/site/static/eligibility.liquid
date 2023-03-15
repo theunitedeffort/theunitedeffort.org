@@ -2559,7 +2559,7 @@ pageClass: "page-public-assistance"
       ne(dischargeStatus, 'oth'),
       ne(dischargeStatus, 'bad-conduct'));
 
-    const meetsAgeReq = ge(age, MIN_ELDERLY_AGE);
+    const meetsAgeReq = ge(getValueOrNull('age'), MIN_ELDERLY_AGE);
     const isDisabled = document.getElementById('disabled').checked;
     const isProgramQualified = or(
       document.getElementById("existing-ssi-me").checked,
@@ -2634,19 +2634,17 @@ pageClass: "page-public-assistance"
     // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFR093085c1bf84bc2/section-3.274#p-3.274(c)(1)
     assetIdxs = [...new Set([0, ...spouseIdx])];
 
+    let yearlyIncome = null;
+    const monthlyIncome = grossIncome(incomeIdxs);
+    if (monthlyIncome !== null) {
+      yearlyIncome = 12 * monthlyIncome;
+    }
     const underNetWorthLimit = le(
-      grossIncome(incomeIdxs) + totalResources(assetIdxs),
+      yearlyIncome + totalResources(assetIdxs),
       ANNUAL_NET_WORTH_LIMIT);
 
     const isVeteran = document.getElementById('veteran').checked;
     const meetsAnyServiceReq = or(...meetsServiceReq);
-
-    const eligible = and(
-      document.getElementById('veteran').checked,
-      meetsDischargeReq,
-      or(...meetsServiceReq),
-      meetsDisabilityReq,
-      underNetWorthLimit);
 
     const program = new Program();
     program.addCondition(new EligCondition('U.S. veteran', isVeteran));
