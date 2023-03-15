@@ -1426,7 +1426,7 @@ pageClass: "page-public-assistance"
     } else if (elem.tagName.toLowerCase() === 'ul' &&
         elem.classList.contains('singleselect')) {
       const selected = elem.querySelector('li>input:checked');
-      val = selected ? selected.value : null;
+      val = selected ? selected.id : null;
     } else {
       val = elem.value;
     }
@@ -1451,10 +1451,14 @@ pageClass: "page-public-assistance"
   }
 
   function selectedOneOf(listId, itemIds) {
-    itemIdArr = [].concat(itemIds)
+    const listElem = document.getElementById(listId);
+    const itemIdArr = [].concat(itemIds);
     return or(
       ...itemIdArr.map(id => eq(
-        getValueOrNull(listId), document.getElementById(id).value)));
+        // Access the id property of the element rather than comparing to an
+        // id string so that an error is thrown if the supplied id does not
+        // exist.
+        getValueOrNull(listId), listElem.querySelector(`#${id}`).id)));
   }
 
   function indexOfAll(arr, value) {

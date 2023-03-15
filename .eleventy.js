@@ -466,7 +466,7 @@ module.exports = function(eleventyConfig) {
       `singleselect-${Math.floor(Math.random() * 1000)}`);
     return `
       <li>
-        <input type="radio" id="${id}" name="${this.page.singleselectId}" value="${id}">
+        <input type="radio" id="${id}" name="${this.page.singleselectId}">
         <label for="${id}">${labelText.trim()}</label>
       </li>`;
   });
