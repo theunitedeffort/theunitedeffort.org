@@ -2672,18 +2672,21 @@ pageClass: "page-public-assistance"
     const hhAges = getValuesOrNulls('hh-member-age');
     const hhPregnant = getValuesOrNulls('hh-member-pregnant');
     const hhBreastfeeding = getValuesOrNulls('hh-member-breastfeeding');
-    const meetsCategoricalReq = or(
-      // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
+
+    // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
+    const hasPregnant = or(
       document.getElementById('pregnant').checked,
+      ...hhPregnant);
+    const hasBreastfeeding = or(
       document.getElementById('feeding').checked,
-      ...hhPregnant,
-      ...hhBreastfeeding,
-      ...hhAges.map(a => lt(a, CHILD_EXIT_AGE)));
+      ...hhBreastfeeding);
+    const hasChild = or(...hhAges.map(a => lt(a, CHILD_EXIT_AGE)));
 
     // Rather than null, if unborn-children is left empty, numUnborn == 0.
     const numUnborn = Number(document.getElementById('unborn-children').value);
-    const meetsIncomeReq = or(
-      le(grossIncome, grossLimit.getLimit(householdSize() + numUnborn)),
+    const incomeLimit = grossLimit.getLimit(householdSize() + numUnborn);
+    const meetsIncomeReq = le(grossIncome(), incomeLimit);
+    const isProgramQualified = or(
       // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
       document.getElementById("existing-medical-me").checked,
       document.getElementById("existing-medical-household").checked,
@@ -2694,14 +2697,24 @@ pageClass: "page-public-assistance"
       calfreshResult().eligible,
       calworksResult().eligible);
 
-    const eligible = and(
-      meetsCategoricalReq,
-      meetsIncomeReq);
-
     const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    program.addConditionsOneOf([
+      new EligCondition(
+        `Gross income is below ${usdLimit(incomeLimit)} per month`,
+        meetsIncomeReq),
+      new EligCondition(
+        'Receives or is eligibile for Medi-Cal, CalWORKS, or CalFresh',
+        isProgramQualified)]);
+    program.addConditionsOneOf([
+      new EligCondition(
+        'Household includes a pregnant or recently pregnant person',
+        hasPregnant),
+      new EligCondition(
+        'Household includes a person breastfeeding an infant under 1 year old',
+        hasBreastfeeding),
+      new EligCondition(
+        `Household includes a child under the age of ${CHILD_EXIT_AGE}`,
+        hasChild)]);
     return program.getResult();
   }
 
