@@ -1421,7 +1421,7 @@ pageClass: "page-public-assistance"
   function getValueOrNull(id) {
     const elem = document.getElementById(id);
     let val;
-    if (elem.type === 'checkbox') {
+    if (elem.type === 'checkbox' || elem.type === 'radio') {
       val = elem.checked;
     } else if (elem.tagName.toLowerCase() === 'ul' &&
         elem.classList.contains('singleselect')) {
