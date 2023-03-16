@@ -1979,14 +1979,14 @@ pageClass: "page-public-assistance"
         'qualified_noncitizen_le5y',
         'prucol']));
 
-    const eligible = and(
-      ssiCapiBaseEligibile(),
-      meetsImmigrationReq);
+    // const eligible = and(
+    //   ssiCapiBaseEligibile(),
+    //   meetsImmigrationReq);
 
-    const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    const program = ssiCapiBaseProgram();
+    program.addCondition(new EligCondition(
+      'Ineligible for SSI due to immigration status',
+      meetsImmigrationReq));
     return program.getResult();
   }
 
@@ -2406,7 +2406,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function ssiCapiBaseEligibile() {
+  function ssiCapiBaseProgram() {
     // https://www.ssa.gov/oact/cola/sga.html
     const SGA_NON_BLIND = 1470;  // USD per month
     const SGA_BLIND = 2460;  // USD per month
@@ -2467,11 +2467,21 @@ pageClass: "page-public-assistance"
     const underIncomeLimit = lt(countableIncome, maxBenefit);
     const underResourceLimit = le(totalResources(0), MAX_RESOURCES);
 
-    return and(
-      meetsDisabilityReq,
-      noSubstantialGainfulActivity,
-      underIncomeLimit,
-      underResourceLimit);
+    const program = new Program();
+    program.addCondition(new EligCondition(
+      `Disabled, blind or age ${MIN_ELDERLY_AGE} or older`,
+      meetsDisabilityReq));
+    program.addCondition(new EligCondition(
+      `Income from employment is below ${usdLimit(sgaLimit)} per month`,
+      noSubstantialGainfulActivity));
+    program.addCondition(new EligCondition(
+      `Total adjusted income is below ${usdLimit(maxBenefit)} per month`,
+      underIncomeLimit));
+    program.addCondition(new EligCondition(
+      `Total value of assets is below ${usdLimit(MAX_RESOURCES)}`,
+      underResourceLimit));
+
+    return program;
   }
 
   function ssiResult() {
@@ -2483,13 +2493,13 @@ pageClass: "page-public-assistance"
         'qualified_noncitizen_le5y']));
 
     const eligible = and(
-      ssiCapiBaseEligibile(),
+      ssiCapiBaseProgram(),
       meetsImmigrationReq);
 
-    const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    const program = ssiCapiBaseProgram();
+    program.addCondition(new EligCondition(
+      'U.S. citizen or qualified immigrant',
+      meetsImmigrationReq));
     return program.getResult();
   }
 
