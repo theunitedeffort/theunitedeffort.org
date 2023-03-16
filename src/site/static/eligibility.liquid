@@ -1973,19 +1973,13 @@ pageClass: "page-public-assistance"
     // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
     const meetsImmigrationReq = and(
       document.getElementById('not-citizen').checked,
-      selectedOneOf('immig_status', [
-        'permanent_resident',
-        'qualified_noncitizen_gt5y',
-        'qualified_noncitizen_le5y',
-        'prucol']));
-
-    // const eligible = and(
-    //   ssiCapiBaseEligibile(),
-    //   meetsImmigrationReq);
+      // TODO: Handle certain qualified aliens per Section 6.4 of
+      // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
+      selectedOneOf('immig_status', ['prucol']));
 
     const program = ssiCapiBaseProgram();
     program.addCondition(new EligCondition(
-      'Ineligible for SSI due to immigration status',
+      'Meets expanded immigration status <a href="https://ca.db101.org/ca/programs/income_support/capi/program2b.htm" target="_blank" rel="noopener">requirements</a>',
       meetsImmigrationReq));
     return program.getResult();
   }
@@ -2491,10 +2485,6 @@ pageClass: "page-public-assistance"
         'permanent_resident',
         'qualified_noncitizen_gt5y',
         'qualified_noncitizen_le5y']));
-
-    const eligible = and(
-      ssiCapiBaseProgram(),
-      meetsImmigrationReq);
 
     const program = ssiCapiBaseProgram();
     program.addCondition(new EligCondition(
