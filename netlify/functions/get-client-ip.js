@@ -4,6 +4,6 @@ exports.handler = function(event, context, callback) {
   callback(null, {
   statusCode: 200,
   // TODO: Remove event.headers['client-ip'] (dev only)
-  body: JSON.stringify({'client-ip': event.headers['x-nf-client-connection-ip'] || event.headers['client-ip']})
+  body: JSON.stringify({'clientIp': event.headers['x-nf-client-connection-ip'] || event.headers['client-ip']})
   });
 }
