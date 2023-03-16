@@ -1,4 +1,4 @@
-{% if item and item != "" %}
+{% if item and item.size != 0 %}
 <tr>
   <td class="definition_term">{{ label }}</td>
   <td class="definition">
@@ -8,7 +8,12 @@
     <a href="tel:{{ item }}" >{{ item }}</a>
   {%- elsif label == "Website" -%}
     <a href="{{ item }}" target="_blank" rel="noopener">{{ item }}</a>
-  {%- else -%}
+  {%- elsif label == "Additional Info" -%}
+    <ul>
+      {%- for link in item -%}
+        <li><a href="{{ link }}" target="_blank" rel="noopener">{{ link }}</a></li>
+      {%- endfor -%}
+    </ul>
   {%- elsif label == "Address" -%}
      {{ item }} (<a href="https://maps.google.com/maps?q={{item | url_encode}}+{{apartment.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)
   {%- else -%}

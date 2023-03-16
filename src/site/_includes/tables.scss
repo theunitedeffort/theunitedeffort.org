@@ -23,9 +23,16 @@ table.deflist {
   td {
     border: none;
     padding-left: 0;
+    vertical-align: top;
   }
   td:first-child {
     font-weight: 600;
+    white-space: nowrap;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 }
 
