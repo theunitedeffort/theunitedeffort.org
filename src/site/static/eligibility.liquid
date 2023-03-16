@@ -2439,7 +2439,9 @@ pageClass: "page-public-assistance"
     let maxBenefit = MAX_BENEFIT_NON_BLIND;
     if (isBlind) {
       maxBenefit = MAX_BENEFIT_BLIND;
-    } else if (!document.getElementById('has-kitchen-yes').checked) {
+    } else if (not(document.getElementById('has-kitchen-yes').checked)) {
+      // TODO: Update the form to always show the kitchen question regardless
+      // of housing situation.
       maxBenefit = MAX_BENEFIT_NON_BLIND_NO_KITCHEN;
     }
     // Note income and resources for only the user (applicant) are counted.
