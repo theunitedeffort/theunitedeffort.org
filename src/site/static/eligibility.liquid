@@ -1973,20 +1973,14 @@ pageClass: "page-public-assistance"
     // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
     const meetsImmigrationReq = and(
       document.getElementById('not-citizen').checked,
-      selectedOneOf('immig_status', [
-        'permanent_resident',
-        'qualified_noncitizen_gt5y',
-        'qualified_noncitizen_le5y',
-        'prucol']));
+      // TODO: Handle certain qualified aliens per Section 6.4 of
+      // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
+      selectedOneOf('immig_status', ['prucol']));
 
-    const eligible = and(
-      ssiCapiBaseEligibile(),
-      meetsImmigrationReq);
-
-    const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    const program = ssiCapiBaseProgram();
+    program.addCondition(new EligCondition(
+      'Meets expanded immigration status <a href="https://ca.db101.org/ca/programs/income_support/capi/program2b.htm" target="_blank" rel="noopener">requirements</a>',
+      meetsImmigrationReq));
     return program.getResult();
   }
 
@@ -2406,7 +2400,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function ssiCapiBaseEligibile() {
+  function ssiCapiBaseProgram() {
     // https://www.ssa.gov/oact/cola/sga.html
     const SGA_NON_BLIND = 1470;  // USD per month
     const SGA_BLIND = 2460;  // USD per month
@@ -2445,7 +2439,9 @@ pageClass: "page-public-assistance"
     let maxBenefit = MAX_BENEFIT_NON_BLIND;
     if (isBlind) {
       maxBenefit = MAX_BENEFIT_BLIND;
-    } else if (!document.getElementById('has-kitchen-yes').checked) {
+    } else if (not(document.getElementById('has-kitchen-yes').checked)) {
+      // TODO: Update the form to always show the kitchen question regardless
+      // of housing situation.
       maxBenefit = MAX_BENEFIT_NON_BLIND_NO_KITCHEN;
     }
     // Note income and resources for only the user (applicant) are counted.
@@ -2467,11 +2463,21 @@ pageClass: "page-public-assistance"
     const underIncomeLimit = lt(countableIncome, maxBenefit);
     const underResourceLimit = le(totalResources(0), MAX_RESOURCES);
 
-    return and(
-      meetsDisabilityReq,
-      noSubstantialGainfulActivity,
-      underIncomeLimit,
-      underResourceLimit);
+    const program = new Program();
+    program.addCondition(new EligCondition(
+      `Disabled, blind or age ${MIN_ELDERLY_AGE} or older`,
+      meetsDisabilityReq));
+    program.addCondition(new EligCondition(
+      `Income from employment is below ${usdLimit(sgaLimit)} per month`,
+      noSubstantialGainfulActivity));
+    program.addCondition(new EligCondition(
+      `Total adjusted income is below ${usdLimit(maxBenefit)} per month`,
+      underIncomeLimit));
+    program.addCondition(new EligCondition(
+      `Total value of assets is below ${usdLimit(MAX_RESOURCES)}`,
+      underResourceLimit));
+
+    return program;
   }
 
   function ssiResult() {
@@ -2482,14 +2488,10 @@ pageClass: "page-public-assistance"
         'qualified_noncitizen_gt5y',
         'qualified_noncitizen_le5y']));
 
-    const eligible = and(
-      ssiCapiBaseEligibile(),
-      meetsImmigrationReq);
-
-    const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    const program = ssiCapiBaseProgram();
+    program.addCondition(new EligCondition(
+      'U.S. citizen or qualified immigrant',
+      meetsImmigrationReq));
     return program.getResult();
   }
 
