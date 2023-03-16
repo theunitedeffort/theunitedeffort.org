@@ -2001,61 +2001,18 @@ pageClass: "page-public-assistance"
     return grossLimit;
   }
 
-/*
   function careResult() {
-    const isHoused = selectedOneOf('housing-situation', [
-      'housed',
-      'unlisted-stable-place']);
-
-    const eligible = and(
-        isHoused,
-        // TODO: perhaps have the utilities check be null if unanswered instead
-        // of defaulting to "no".
-        document.getElementById("pay-utilities-yes").checked,
-        or(
-          le(grossIncome(), careIncomeLimit().getLimit(householdSize())),
-          // TODO: add remaining assistance programs that help qualify.
-          document.getElementById("existing-ssi-me").checked,
-          document.getElementById("existing-ssi-household").checked,
-          document.getElementById("existing-liheap-me").checked,
-          document.getElementById("existing-liheap-household").checked,
-          document.getElementById("existing-wic-me").checked,
-          document.getElementById("existing-wic-household").checked,
-          document.getElementById("existing-calworks-me").checked,
-          document.getElementById("existing-calworks-household").checked,
-          document.getElementById("existing-calfresh-me").checked,
-          document.getElementById("existing-calfresh-household").checked,
-          document.getElementById("existing-medical-me").checked,
-          document.getElementById("existing-medical-household").checked,
-          document.getElementById("existing-cfap-me").checked,
-          document.getElementById("existing-cfap-household").checked,
-          document.getElementById("existing-nslp-me").checked,
-          document.getElementById("existing-nslp-household").checked,
-          ssiResult().eligible,
-          liheapResult().eligible,
-          wicResult().eligible,
-          calworksResult().eligible,
-          calfreshResult().eligible));
-
-    const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
-    return program.getResult();
-  }
-  */
-
-
-  function careResult() {
+    // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const isHoused = selectedOneOf('housing-situation', [
       'housed',
       'unlisted-stable-place']);
 
     const paysUtilities = document.getElementById("pay-utilities-yes").checked;
-    const underIncomeLimit = le(grossIncome(), careIncomeLimit().getLimit(householdSize()));
+    
+    const incomeLimit = careIncomeLimit().getLimit(householdSize());
+    const underIncomeLimit = le(grossIncome(), incomeLimit);
 
-    const isProgramQualified = or(
-      underIncomeLimit,
+    const isCategoricallyEligible = or(
       // TODO: add remaining assistance programs that help qualify.
       document.getElementById("existing-ssi-me").checked,
       document.getElementById("existing-ssi-household").checked,
@@ -2084,9 +2041,13 @@ pageClass: "page-public-assistance"
       new EligCondition('Is housed', isHoused));
     program.addCondition(
       new EligCondition('Pays utilities', paysUtilities));
-    program.addCondition(
-      new EligCondition('Is below income limit, or receives or is eligible for SSI, LIHEAP, WIC, CalWorks, CalFresh, Medical, CFAP or NSLP',
-        isProgramQualified));
+    program.addConditionsOneOf([
+      new EligCondition(`Adjusted income is below ${usdLimit(incomeLimit)} per month`,
+        underIncomeLimit),
+      new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, CFAP or NSLP',
+        isCategoricallyEligible),
+    ]);
+
     return program.getResult();
 }
 
