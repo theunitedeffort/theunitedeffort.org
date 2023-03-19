@@ -2007,6 +2007,7 @@ pageClass: "page-public-assistance"
       'housed',
       'unlisted-stable-place']);
 
+    // TODO: perhaps have the utilities check be null if unanswered instead of defaulting to "no".
     const paysUtilities = document.getElementById("pay-utilities-yes").checked;
     
     const incomeLimit = careIncomeLimit().getLimit(householdSize());
@@ -2042,7 +2043,7 @@ pageClass: "page-public-assistance"
     program.addCondition(
       new EligCondition('Pays utilities', paysUtilities));
     program.addConditionsOneOf([
-      new EligCondition(`Adjusted income is below ${usdLimit(incomeLimit)} per month`,
+      new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`,
         underIncomeLimit),
       new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, CFAP or NSLP',
         isCategoricallyEligible),
