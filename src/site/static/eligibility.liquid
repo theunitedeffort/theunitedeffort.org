@@ -2052,42 +2052,6 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-/*
-  function feraResult() {
-    // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    const grossLimit = MonthlyIncomeLimit.fromAnnual([
-      0,  // Min household size 3.
-      0,  // Min household size 3.
-      57575,
-      69375,
-      81175,
-      92975,
-      104775,
-      116575
-    ],
-    11800);
-
-    const MIN_HOUSEHOLD_SIZE = 3;
-
-    const isHoused = selectedOneOf('housing-situation', [
-      'housed',
-      'unlisted-stable-place']);
-
-    const eligible = and(
-      isHoused,
-      document.getElementById("pay-utilities-yes").checked,
-      gt(grossIncome(), careIncomeLimit().getLimit(householdSize())),
-      le(grossIncome(), grossLimit.getLimit(householdSize())),
-      ge(householdSize(), MIN_HOUSEHOLD_SIZE));
-
-    const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
-    return program.getResult();
-  }
-  */
-
   function feraResult() {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
@@ -2122,6 +2086,7 @@ pageClass: "page-public-assistance"
       new EligCondition('Is housed', isHoused));
     program.addCondition(
       new EligCondition('Pays utilities', paysUtilities));
+    // TODO: more descriptive text about income being above CARE limit and below FERA limit?
     program.addCondition(
       new EligCondition(`Gross income is above ${usdLimit(incomeLimitCare)} per month`,
         overCareIncomeLimit));
