@@ -2052,7 +2052,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-
+/*
   function feraResult() {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
@@ -2084,6 +2084,53 @@ pageClass: "page-public-assistance"
     // TODO: Replace this single example condition with a set of simplified
     // conditions describing the separate eligibility requirements.
     program.addCondition(new EligCondition('Example', eligible));
+    return program.getResult();
+  }
+  */
+
+  function feraResult() {
+    // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
+    const grossLimit = MonthlyIncomeLimit.fromAnnual([
+      0,  // Min household size 3.
+      0,  // Min household size 3.
+      57575,
+      69375,
+      81175,
+      92975,
+      104775,
+      116575
+    ],
+    11800);
+
+    const MIN_HOUSEHOLD_SIZE = 3;
+
+    const isHoused = selectedOneOf('housing-situation', [
+      'housed',
+      'unlisted-stable-place']);
+    // TODO: perhaps have the utilities check be null if unanswered instead of defaulting to "no".
+    const paysUtilities = document.getElementById("pay-utilities-yes").checked;
+
+    const incomeLimitCare = careIncomeLimit().getLimit(householdSize());
+    const overCareIncomeLimit = gt(grossIncome(), incomeLimitCare);
+    const incomeLimitFera = grossLimit.getLimit(householdSize());
+    const underFeraIncomeLimit = le(grossIncome(), incomeLimitFera);
+
+    const mimHouseholdSize = ge(householdSize(), MIN_HOUSEHOLD_SIZE);
+
+    const program = new Program();
+    program.addCondition(
+      new EligCondition('Is housed', isHoused));
+    program.addCondition(
+      new EligCondition('Pays utilities', paysUtilities));
+    program.addCondition(
+      new EligCondition(`Gross income is above ${usdLimit(incomeLimitCare)} per month`,
+        overCareIncomeLimit));
+    program.addCondition(
+      new EligCondition(`Gross income is below ${usdLimit(incomeLimitFera)} per month`,
+        underFeraIncomeLimit));
+    program.addCondition(
+      new EligCondition('Has minimum household size', mimHouseholdSize));
+
     return program.getResult();
   }
 
