@@ -2079,22 +2079,22 @@ pageClass: "page-public-assistance"
     const incomeLimitFera = grossLimit.getLimit(householdSize());
     const underFeraIncomeLimit = le(grossIncome(), incomeLimitFera);
 
-    const mimHouseholdSize = ge(householdSize(), MIN_HOUSEHOLD_SIZE);
+    const meetsHouseholdSizeReq = ge(householdSize(), MIN_HOUSEHOLD_SIZE);
 
     const program = new Program();
     program.addCondition(
       new EligCondition('Is housed', isHoused));
     program.addCondition(
       new EligCondition('Pays utilities', paysUtilities));
-    // TODO: more descriptive text about income being above CARE limit and below FERA limit?
     program.addCondition(
-      new EligCondition(`Gross income is above ${usdLimit(incomeLimitCare)} per month`,
+      new EligCondition(`Gross income exceeds CARE program limit of ${usdLimit(incomeLimitCare)} per month`,
         overCareIncomeLimit));
     program.addCondition(
-      new EligCondition(`Gross income is below ${usdLimit(incomeLimitFera)} per month`,
+      new EligCondition(`Gross income is under FERA program limit of ${usdLimit(incomeLimitFera)} per month`,
         underFeraIncomeLimit));
     program.addCondition(
-      new EligCondition('Has minimum household size', mimHouseholdSize));
+      new EligCondition(`Household has at least ${MIN_HOUSEHOLD_SIZE} people`,
+        meetsHouseholdSizeReq));
 
     return program.getResult();
   }
