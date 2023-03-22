@@ -2052,7 +2052,6 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-
   function feraResult() {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
@@ -2072,18 +2071,31 @@ pageClass: "page-public-assistance"
     const isHoused = selectedOneOf('housing-situation', [
       'housed',
       'unlisted-stable-place']);
+    // TODO: perhaps have the utilities check be null if unanswered instead of defaulting to "no".
+    const paysUtilities = document.getElementById("pay-utilities-yes").checked;
 
-    const eligible = and(
-      isHoused,
-      document.getElementById("pay-utilities-yes").checked,
-      gt(grossIncome(), careIncomeLimit().getLimit(householdSize())),
-      le(grossIncome(), grossLimit.getLimit(householdSize())),
-      ge(householdSize(), MIN_HOUSEHOLD_SIZE));
+    const incomeLimitCare = careIncomeLimit().getLimit(householdSize());
+    const overCareIncomeLimit = gt(grossIncome(), incomeLimitCare);
+    const incomeLimitFera = grossLimit.getLimit(householdSize());
+    const underFeraIncomeLimit = le(grossIncome(), incomeLimitFera);
+
+    const meetsHouseholdSizeReq = ge(householdSize(), MIN_HOUSEHOLD_SIZE);
 
     const program = new Program();
-    // TODO: Replace this single example condition with a set of simplified
-    // conditions describing the separate eligibility requirements.
-    program.addCondition(new EligCondition('Example', eligible));
+    program.addCondition(
+      new EligCondition('Is housed', isHoused));
+    program.addCondition(
+      new EligCondition('Pays utilities', paysUtilities));
+    program.addCondition(
+      new EligCondition(`Gross income exceeds CARE program limit of ${usdLimit(incomeLimitCare)} per month`,
+        overCareIncomeLimit));
+    program.addCondition(
+      new EligCondition(`Gross income is under FERA program limit of ${usdLimit(incomeLimitFera)} per month`,
+        underFeraIncomeLimit));
+    program.addCondition(
+      new EligCondition(`Household has at least ${MIN_HOUSEHOLD_SIZE} people`,
+        meetsHouseholdSizeReq));
+
     return program.getResult();
   }
 
