@@ -751,6 +751,18 @@ pageClass: "page-public-assistance"
     return a >= b;
   }
 
+  // Converts "the-test-string", "the_test_string", or "the test string" to
+  // "theTestString".
+  const toCamelCase = function(str) {
+    const words = str.trim().toLowerCase().split(/[-_\s]/);
+    const result = [];
+    result.push(words[0]);
+    for (const word of words.slice(1)) {
+      result.push(`${word.slice(0, 1).toUpperCase()}${word.slice(1)}`);
+    }
+    return result.join('');
+  }
+
   // Formats a value as USD with no decimals (always rounding up).
   const usdLimit = function(value) {
     const num = Math.ceil(Number(value));
@@ -1702,7 +1714,7 @@ pageClass: "page-public-assistance"
   // 'eligibility' property set to true if the input values suggest
   // program eligibility, false if the values suggest ineligibility, and
   // null if an eligibility determination can't be made.
-  function adsaResult() {
+  function adsaResult(input) {
     const isDisabled = or(
       document.getElementById('disabled').checked,
       document.getElementById('blind').checked,
@@ -1729,7 +1741,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function calfreshResult() {
+  function calfreshResult(input) {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
     // Section 2.1
     const fedPovertyLevel = new MonthlyIncomeLimit([
@@ -1829,7 +1841,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function calworksResult() {
+  function calworksResult(input) {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
     // Section 1.2
     const mbsac = new MonthlyIncomeLimit([
@@ -1969,7 +1981,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function capiResult() {
+  function capiResult(input) {
     // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
     const meetsImmigrationReq = and(
       document.getElementById('not-citizen').checked,
@@ -2001,7 +2013,7 @@ pageClass: "page-public-assistance"
     return grossLimit;
   }
 
-  function careResult() {
+  function careResult(input) {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const isHoused = selectedOneOf('housing-situation', [
       'housed',
@@ -2052,7 +2064,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function feraResult() {
+  function feraResult(input) {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
       0,  // Min household size 3.
@@ -2099,7 +2111,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function vaDisabilityCompResult() {
+  function vaDisabilityCompResult(input) {
     const dutyTypeSelects = [...document.querySelectorAll(
       'select[id^="your-duty-type"]')];
     const dutyTypes = dutyTypeSelects.map(d => getValueOrNull(d.id));
@@ -2143,7 +2155,7 @@ pageClass: "page-public-assistance"
   //
   //   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf (Section 5.1)
   //     Maximum age can be over 64 years with some conditions. May or may not need to implement this.
-  function gaResult() {
+  function gaResult(input) {
     const age = getValueOrNull('age');
     const numDependents = document.querySelectorAll('input[id^="hh-member-dependent"]:checked').length;
 
@@ -2185,7 +2197,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function noFeeIdResult() {
+  function noFeeIdResult(input) {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
     const MIN_ELIGIBLE_AGE = 62;  // Years
 
@@ -2205,7 +2217,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function reducedFeeIdResult() {
+  function reducedFeeIdResult(input) {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
     // https://www.icarol.info/ResourceView2.aspx?org=2225&agencynum=73919505
     //
@@ -2234,7 +2246,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function ihssResult() {
+  function ihssResult(input) {
     // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
     const MIN_ELDERLY_AGE = 65;
 
@@ -2261,7 +2273,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function lifelineResult() {
+  function lifelineResult(input) {
     // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
     const grossLimit = MonthlyIncomeLimit.fromAnnual([
         28700,
@@ -2310,7 +2322,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function liheapResult() {
+  function liheapResult(input) {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
     //
     // LIHEAP income limits are set at 60% of State Median Income:
@@ -2347,7 +2359,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function vtaParatransitResult() {
+  function vtaParatransitResult(input) {
     // TODO: Determine if blindness should be included here.
     const eligible = document.getElementById('disabled').checked;
 
@@ -2358,7 +2370,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function housingChoiceResult() {
+  function housingChoiceResult(input) {
     // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
     const MIN_ELIGIBLE_AGE = 18;
 
@@ -2502,7 +2514,7 @@ pageClass: "page-public-assistance"
     return program;
   }
 
-  function ssiResult() {
+  function ssiResult(input) {
     const meetsImmigrationReq = or(
       !document.getElementById('not-citizen').checked,
       selectedOneOf('immig_status', [
@@ -2517,7 +2529,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function ssdiResult() {
+  function ssdiResult(input) {
     // TODO
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
@@ -2527,7 +2539,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function vaPensionResult() {
+  function vaPensionResult(input) {
     // https://www.va.gov/pension/eligibility/
     const MIN_ELDERLY_AGE = 65;  // Years
     const MIN_EARLY_DUTY_DURATION = 90;  // days
@@ -2686,7 +2698,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function wicResult() {
+  function wicResult(input) {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
     const grossLimit = new MonthlyIncomeLimit([
       2096,
@@ -2752,7 +2764,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function upliftResult() {
+  function upliftResult(input) {
     const eligible = or(
       selectedOneOf('housing-situation', [
         'vehicle',
@@ -2787,18 +2799,90 @@ pageClass: "page-public-assistance"
     }
   }
 
+  // Creates a single object from all the form inputs that can be passed
+  // to the various program eligibility logic functions.
+  function buildInputObj() {
+    // Helper function to get income or asset value lists.
+    function getIncomeValues(page) {
+      const allValues = []
+      const groups = page.querySelectorAll(
+        '.income_details_wrapper > fieldset');
+      for (const group of groups) {
+        const values = Array.from(group.querySelectorAll('input[type=number]'),
+          i => Number(i.value));
+        allValues.push(values);
+      }
+      return allValues;
+    }
+
+    let inputData = {
+      age: getValueOrNull('age'),
+      notCitizen: getValueOrNull('not-citizen'),
+      disabled: getValueOrNull('disabled'),
+      blind: getValueOrNull('blind'),
+      deaf: getValueOrNull('deaf'),
+      veteran: getValueOrNull('veteran'),
+      pregnant: getValueOrNull('pregnant'),
+      feeding: getValueOrNull('feeding'),
+      // TODO: Perhaps make a list of household member objects.
+      householdAges: getValuesOrNulls('hh-member-age'),
+      householdDisabled: getValuesOrNulls('hh-member-disabled'),
+      householdPregnant: getValuesOrNulls('hh-member-pregnant'),
+      householdFeeding: getValuesOrNulls('hh-member-breastfeeding'),
+      householdSpouse: getValuesOrNulls('hh-member-spouse'),
+      householdDependents: getValuesOrNulls('hh-member-dependent'),
+      unbornChildren: getValueOrNull('unborn-children'),
+      housingSituation: getValueOrNull('housing-situation'),
+      paysUtilities: getValueOrNull('pay-utilities-yes'),
+      hasKitchen: getValueOrNull('has-kitchen-yes'),
+      homelessRisk: getValueOrNull('risk_homeless_yes'),
+      immigrationStatus: getValueOrNull('immig_status'),
+      usesGuideDog: getValueOrNull('dis_guide_yes'),
+      militaryDisabled: getValueOrNull('dis_military_yes'),
+      dischargeStatus: getValueOrNull('your-discharge-status'),
+      enlisted: getValueOrNull('enlisted'),
+      officer: getValueOrNull('officer'),
+      dutyTypes: Array.from(document.querySelectorAll(
+      `select[id^="your-duty-type"]`), e => getValueOrNull(e.id)),
+      servedFroms: getValuesOrNulls('served-from'),
+      servedUntils: getValuesOrNulls('served-until'),
+      income: {
+        valid: incomeValid(),
+      },
+      assets: getIncomeValues(document.getElementById('page-income-assets')),
+    };
+
+    // Existing assistance checkboxes
+    const extAssistancePage = document.getElementById('page-existing-assistance');
+    const extAssistanceInputs = extAssistancePage.querySelectorAll('input');
+    for (const inputElem of extAssistanceInputs) {
+      inputData[toCamelCase(inputElem.id)] = getValueOrNull(inputElem.id);
+    }
+
+    // Income inputs
+    const incomePagePrefix = 'page-income-details-';
+    const incomePages = document.querySelectorAll(`[id^=${incomePagePrefix}]`);
+    for (const incomePage of incomePages) {
+      const category = toCamelCase(incomePage.id.replace(incomePagePrefix, ''));
+      inputData.income[category] = getIncomeValues(incomePage);
+    }
+
+    return inputData;
+  }
+
   // Determines eligibility for programs based on user form input values.
   function computeEligibility() {
     // Ensure any inputs on unused pages are cleared out prior to eligibility
     // computation.
     clearUnusedPages();
 
+    const input = buildInputObj();
     const allPrograms = document.querySelectorAll('.programs > ul > li');
     const eligibleList = document.querySelector('.programs__eligible > ul');
     const ineligibleList = document.querySelector('.programs__ineligible > ul');
     const unknownList = document.querySelector('.programs__unknown > ul');
     for (program of allPrograms) {
-      const result = window[program.dataset.eligibility]();
+      const result = window[program.dataset.eligibility](input);
       const conditionList = program.querySelector('.elig_conditions');
       // Reset the program's displayed conditions.
       while (conditionList.firstChild) {
