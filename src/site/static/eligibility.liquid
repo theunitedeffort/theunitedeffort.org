@@ -1500,7 +1500,6 @@ pageClass: "page-public-assistance"
     return `${date1.getMonth() + 1}/${date1.getDate()}/${date1.getFullYear()}`;
   }
 
-  // TODO: rename "page"
   function categoryTotal(pageValues, hhMemberIdx=null) {
     if (hhMemberIdx === null) {
       // Return income total for entire household.
@@ -1517,11 +1516,7 @@ pageClass: "page-public-assistance"
     return sum;
   }
 
-  function incomeTotal(incomeArray, hhMemberIdx=null) {
-    return categoryTotal(incomeArray, hhMemberIdx);
-  }
-
-  function incomeSubTotal(incomeArrays, hhMemberIdx=null) {
+  function incomeSubtotal(incomeArrays, hhMemberIdx=null) {
     incomeArrays = [].concat(incomeArrays);
     let sum = 0;
     for (const incomeArray of incomeArrays) {
@@ -1559,16 +1554,16 @@ pageClass: "page-public-assistance"
     return incomeSubTotal(UNEARNED_INCOME_VALUES, hhMemberIdx);
   }
 
-  function grossIncome(income, hhMemberIdx=null) {
+  function grossIncome(input, hhMemberIdx=null) {
     return (
-      totalEarnedIncome(income, hhMemberIdx) +
-      totalUnearnedIncome(income, hhMemberIdx));
+      totalEarnedIncome(input.income, hhMemberIdx) +
+      totalUnearnedIncome(input.income, hhMemberIdx));
   }
 
-  function totalResources(assets, hhMemberIdx=null) {
+  function totalResources(input, hhMemberIdx=null) {
     // TODO: Add checkbox for users to explicitly specify they have zero
     // resources.
-    return categoryTotal(assets, hhMemberIdx);
+    return categoryTotal(input.assets, hhMemberIdx);
   }
 
   class MonthlyIncomeLimit {
@@ -1790,9 +1785,10 @@ pageClass: "page-public-assistance"
     const mceIncomeLimit = (GROSS_INCOME_LIMIT_MCE_FACTOR *
       fedPovertyLevel.getLimit(input.householdSize));
     let nonExemptIncome = null;
-    if (grossIncome(input.income) !== null) {
-      nonExemptIncome = (grossIncome(input.income) -
-        SELF_EMPLOYED_EXEMPT_FRACTION * incomeTotal(input.income.selfEmployed));
+    if (grossIncome(input) !== null) {
+      nonExemptIncome = (grossIncome(input) -
+        SELF_EMPLOYED_EXEMPT_FRACTION *
+        incomeSubtotal(input.income.selfEmployed));
     }
     const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
 
@@ -1885,17 +1881,17 @@ pageClass: "page-public-assistance"
     const maxEmploymentDisregard = numEmployed * EMPLOYMENT_DISREGARD;
     const maxChildSupportDisregard = childSupportDisregards[
       Math.min(numChildren, childSupportDisregards.length - 1)];
-    const wagesTotal = incomeTotal(input.income.wages);
-    const childSupportTotal = incomeTotal(input.income.childSupport);
+    const wagesTotal = incomeSubtotal(input.income.wages);
+    const childSupportTotal = incomeSubtotal(input.income.childSupport);
     const ssiIncomeTotal = input.ssiIncome.reduce(summation, 0);
 
     let nonExemptIncome = null;
-    if (grossIncome(input.income) !== null) {
-      nonExemptIncome = (grossIncome(input.income) -
+    if (grossIncome(input) !== null) {
+      nonExemptIncome = (grossIncome(input) -
         Math.min(wagesTotal, maxEmploymentDisregard) -
         Math.min(childSupportTotal, maxChildSupportDisregard) -
-        SELF_EMPLOYED_DISREGARD_FRAC * incomeTotal(input.income.selfEmployed) -
-        ssiIncomeTotal);
+        SELF_EMPLOYED_DISREGARD_FRAC *
+        incomeSubtotal(input.income.selfEmployed) - ssiIncomeTotal);
     }
 
     // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
@@ -1916,7 +1912,7 @@ pageClass: "page-public-assistance"
     } else if (hasElderlyOrDisabled) {
       resourceLimit = DISABLED_ELDERLY_RESOURCE_LIMIT;
     }
-    const underResourceLimit = le(totalResources(input.assets), resourceLimit);
+    const underResourceLimit = le(totalResources(input), resourceLimit);
 
     const program = new Program();
     program.addCondition(
@@ -1976,7 +1972,7 @@ pageClass: "page-public-assistance"
       'unlisted-stable-place']);
 
     const incomeLimit = careIncomeLimit().getLimit(input.householdSize);
-    const underIncomeLimit = le(grossIncome(input.income), incomeLimit);
+    const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
     const isCategoricallyEligible = or(
       // TODO: add remaining assistance programs that help qualify.
@@ -2038,9 +2034,9 @@ pageClass: "page-public-assistance"
       'unlisted-stable-place']);
 
     const incomeLimitCare = careIncomeLimit().getLimit(input.householdSize);
-    const overCareIncomeLimit = gt(grossIncome(input.income), incomeLimitCare);
+    const overCareIncomeLimit = gt(grossIncome(input), incomeLimitCare);
     const incomeLimitFera = grossLimit.getLimit(input.householdSize);
-    const underFeraIncomeLimit = le(grossIncome(input.income), incomeLimitFera);
+    const underFeraIncomeLimit = le(grossIncome(input), incomeLimitFera);
 
     const meetsHouseholdSizeReq = ge(input.householdSize, MIN_HOUSEHOLD_SIZE);
 
@@ -2128,8 +2124,8 @@ pageClass: "page-public-assistance"
     const eligible = and(
         ge(input.age, MIN_GA_ELIGIBLE_AGE),
         eq(numDependents, NUM_OF_DEPENDENTS),
-        le(totalResources(input.assets), MAX_RESOURCES),
-        le(grossIncome(input.income), grossLimit.getLimit(input.householdSize)),
+        le(totalResources(input), MAX_RESOURCES),
+        le(grossIncome(input), grossLimit.getLimit(input.householdSize)),
         or(
           not(input.notCitizen),
           selectedOneOf(input.immigrationStatus, [
@@ -2231,7 +2227,7 @@ pageClass: "page-public-assistance"
       7300);
 
     const underIncomeLimit = le(
-      grossIncome(input.income), grossLimit.getLimit(input.householdSize));
+      grossIncome(input), grossLimit.getLimit(input.householdSize));
 
     const isProgramQualified = or(
       input.existingMedicalMe,
@@ -2297,7 +2293,7 @@ pageClass: "page-public-assistance"
 
     const eligible = and(
       isHoused,
-      le(grossIncome(input.income), grossLimit.getLimit(input.householdSize)));
+      le(grossIncome(input), grossLimit.getLimit(input.householdSize)));
 
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
@@ -2365,7 +2361,7 @@ pageClass: "page-public-assistance"
         'qualified_noncitizen_gt5y',
         'qualified_noncitizen_le5y']));
     const incomeLimit = grossLimit.getLimit(input.householdSize);
-    const underIncomeLimit = le(grossIncome(input.income), incomeLimit);
+    const underIncomeLimit = le(grossIncome(input), incomeLimit);
     const meetsAgeReq = ge(input.age, MIN_ELIGIBLE_AGE);
 
     const program = new Program();
@@ -2440,7 +2436,7 @@ pageClass: "page-public-assistance"
     const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
     const underIncomeLimit = lt(countableIncome, maxBenefit);
     const underResourceLimit = le(
-      totalResources(input.assets, 0),MAX_RESOURCES);
+      totalResources(input, 0),MAX_RESOURCES);
 
     const program = new Program();
     program.addCondition(new EligCondition(
@@ -2598,12 +2594,12 @@ pageClass: "page-public-assistance"
     assetIdxs = [...new Set([0, ...spouseIdx])];
 
     let yearlyIncome = null;
-    const monthlyIncome = grossIncome(input.income, incomeIdxs);
+    const monthlyIncome = grossIncome(input, incomeIdxs);
     if (monthlyIncome !== null) {
       yearlyIncome = 12 * monthlyIncome;
     }
     const underNetWorthLimit = le(
-      yearlyIncome + totalResources(input.assets, assetIdxs),
+      yearlyIncome + totalResources(input, assetIdxs),
       ANNUAL_NET_WORTH_LIMIT);
 
     const meetsAnyServiceReq = or(...meetsServiceReq);
@@ -2653,7 +2649,7 @@ pageClass: "page-public-assistance"
     // Rather than null, if unborn-children is left empty, numUnborn == 0.
     const numUnborn = Number(input.unbornChildren);
     const incomeLimit = grossLimit.getLimit(input.householdSize + numUnborn);
-    const meetsIncomeReq = le(grossIncome(input.income), incomeLimit);
+    const meetsIncomeReq = le(grossIncome(input), incomeLimit);
     const isProgramQualified = or(
       // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
       input.existingMedicalMe,
