@@ -751,8 +751,8 @@ pageClass: "page-public-assistance"
     return a >= b;
   }
 
-  function summation(runningTotal, newValue) {
-    return runningTotal + newValue;
+  function add(a, b) {
+    return a + b;
   }
 
   // Converts "the-test-string", "the_test_string", or "the test string" to
@@ -1500,18 +1500,19 @@ pageClass: "page-public-assistance"
     return `${date1.getMonth() + 1}/${date1.getDate()}/${date1.getFullYear()}`;
   }
 
-  function categoryTotal(pageValues, hhMemberIdx=null) {
+  function categoryTotal(incomeArrays, hhMemberIdx=null) {
+    // TODO: Check for invalid income here?
     if (hhMemberIdx === null) {
-      // Return income total for entire household.
-      return pageValues.flat().reduce(summation, 0);
+      // Return income category total for entire household.
+      return incomeArray.flat().reduce(add, 0);
     }
     hhMemberIdx = [].concat(hhMemberIdx);
     let sum = 0;
     for (const idx of hhMemberIdx) {
-      if (idx < 0 || idx > pageValues.length - 1) {
+      if (idx < 0 || idx > incomeArray.length - 1) {
         continue;
       }
-      sum += pageValues[idx].reduce(summation, 0);
+      sum += incomeArray[idx].reduce(add, 0);
     }
     return sum;
   }
@@ -1525,39 +1526,39 @@ pageClass: "page-public-assistance"
     return sum;
   }
 
-  function totalEarnedIncome(income, hhMemberIdx=null) {
-    if (!income.valid) {
+  function totalEarnedIncome(input, hhMemberIdx=null) {
+    if (!input.income.valid) {
       return NaN;
     }
     // TODO: Do not hardcode this list.
     const EARNED_INCOME_VALUES = [
-      income.wages,
-      income.selfEmployed,
+      input.income.wages,
+      input.income.selfEmployed,
     ];
     return incomeSubTotal(EARNED_INCOME_VALUES, hhMemberIdx);
   }
 
-  function totalUnearnedIncome(income, hhMemberIdx=null) {
-    if (!income.valid) {
+  function totalUnearnedIncome(input, hhMemberIdx=null) {
+    if (!input.income.valid) {
       return NaN;
     }
     // TODO: Do not hardcode this list.
     const UNEARNED_INCOME_VALUES = [
-      income.disability,
-      income.unemployment,
-      income.veterans,
-      income.workersComp,
-      income.childSupport,
-      income.retirement,
-      income.other,
+      input.income.disability,
+      input.income.unemployment,
+      input.income.veterans,
+      input.income.workersComp,
+      input.income.childSupport,
+      input.income.retirement,
+      input.income.other,
     ]
     return incomeSubTotal(UNEARNED_INCOME_VALUES, hhMemberIdx);
   }
 
   function grossIncome(input, hhMemberIdx=null) {
     return (
-      totalEarnedIncome(input.income, hhMemberIdx) +
-      totalUnearnedIncome(input.income, hhMemberIdx));
+      totalEarnedIncome(input, hhMemberIdx) +
+      totalUnearnedIncome(input, hhMemberIdx));
   }
 
   function totalResources(input, hhMemberIdx=null) {
@@ -1756,7 +1757,7 @@ pageClass: "page-public-assistance"
       // and
       // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap14.pdf#page=13
       and(
-        selectedOneOf(input.immigrationStatus, 'qualified_noncitizen_le5y'),
+        eq(input.immigrationStatus, 'qualified_noncitizen_le5y'),
         meetsShortResidencyReq));
 
     // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
@@ -1768,8 +1769,7 @@ pageClass: "page-public-assistance"
       input.existingGaMe,
       input.existingGaHousehold,
       calworksResult(input).eligible,
-      gaResult(input).eligible
-      );
+      gaResult(input).eligible);
 
     // Note: Nearly all users will be considered "modified cagegorically
     // eligible", meaning the MCE income limit factor is used and resources
@@ -1868,7 +1868,7 @@ pageClass: "page-public-assistance"
 
     // This employment array includes the user (idx 0) and the user's household.
     const employed = [...Array(input.householdSize).keys()].map(
-      i => totalEarnedIncome(input.income, i) > 0);
+      i => totalEarnedIncome(input, i) > 0);
     const numEmployed = employed.filter(e => e).length;
 
     // If household ages are not given, simply don't take the disregards rather
@@ -1883,7 +1883,7 @@ pageClass: "page-public-assistance"
       Math.min(numChildren, childSupportDisregards.length - 1)];
     const wagesTotal = incomeSubtotal(input.income.wages);
     const childSupportTotal = incomeSubtotal(input.income.childSupport);
-    const ssiIncomeTotal = input.ssiIncome.reduce(summation, 0);
+    const ssiIncomeTotal = input.ssiIncome.reduce(add, 0);
 
     let nonExemptIncome = null;
     if (grossIncome(input) !== null) {
@@ -2420,8 +2420,8 @@ pageClass: "page-public-assistance"
     }
     // Note income and resources for only the user (applicant) are counted.
     // TODO: Apply deeming.
-    const earnedIncome = totalEarnedIncome(input.income, 0);
-    const unearnedIncome = totalUnearnedIncome(input.income, 0);
+    const earnedIncome = totalEarnedIncome(input, 0);
+    const unearnedIncome = totalUnearnedIncome(input, 0);
 
     // See https://www.ssa.gov/oact/cola/incomexcluded.html for calculation.
     const unearnedExclusion = Math.min(unearnedIncome,
@@ -2436,7 +2436,7 @@ pageClass: "page-public-assistance"
     const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
     const underIncomeLimit = lt(countableIncome, maxBenefit);
     const underResourceLimit = le(
-      totalResources(input, 0),MAX_RESOURCES);
+      totalResources(input, 0), MAX_RESOURCES);
 
     const program = new Program();
     program.addCondition(new EligCondition(
