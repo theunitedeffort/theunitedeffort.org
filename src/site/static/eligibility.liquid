@@ -1500,7 +1500,7 @@ pageClass: "page-public-assistance"
     return `${date1.getMonth() + 1}/${date1.getDate()}/${date1.getFullYear()}`;
   }
 
-  function categoryTotal(incomeArrays, hhMemberIdx=null) {
+  function categoryTotal(incomeArray, hhMemberIdx=null) {
     // TODO: Check for invalid income here?
     if (hhMemberIdx === null) {
       // Return income category total for entire household.
