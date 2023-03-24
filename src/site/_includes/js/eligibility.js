@@ -904,7 +904,7 @@ function totalEarnedIncome(input, hhMemberIdx=null) {
     input.income.wages,
     input.income.selfEmployed,
   ];
-  return incomeSubTotal(EARNED_INCOME_VALUES, hhMemberIdx);
+  return incomeSubtotal(EARNED_INCOME_VALUES, hhMemberIdx);
 }
 
 function totalUnearnedIncome(input, hhMemberIdx=null) {
@@ -921,7 +921,7 @@ function totalUnearnedIncome(input, hhMemberIdx=null) {
     input.income.retirement,
     input.income.other,
   ]
-  return incomeSubTotal(UNEARNED_INCOME_VALUES, hhMemberIdx);
+  return incomeSubtotal(UNEARNED_INCOME_VALUES, hhMemberIdx);
 }
 
 function grossIncome(input, hhMemberIdx=null) {
