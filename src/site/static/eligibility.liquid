@@ -1698,10 +1698,10 @@ pageClass: "page-public-assistance"
       input.existingSsdiMe,
       input.existingIhssMe,
       input.existingCapiMe,
-      ssiResult().eligible,
-      ssdiResult().eligible,
-      ihssResult().eligible,
-      capiResult().eligible);
+      ssiResult(input).eligible,
+      ssdiResult(input).eligible,
+      ihssResult(input).eligible,
+      capiResult(input).eligible);
 
     const program = new Program();
     program.addCondition(
@@ -1772,8 +1772,8 @@ pageClass: "page-public-assistance"
       input.existingCalworksHousehold,
       input.existingGaMe,
       input.existingGaHousehold,
-      calworksResult().eligible,
-      gaResult().eligible
+      calworksResult(input).eligible,
+      gaResult(input).eligible
       );
 
     // Note: Nearly all users will be considered "modified cagegorically
@@ -1945,7 +1945,7 @@ pageClass: "page-public-assistance"
       // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
       selectedOneOf(input.immigrationStatus, ['prucol']));
 
-    const program = ssiCapiBaseProgram();
+    const program = ssiCapiBaseProgram(input);
     program.addCondition(new EligCondition(
       'Meets expanded immigration status <a href="https://ca.db101.org/ca/programs/income_support/capi/program2b.htm" target="_blank" rel="noopener">requirements</a>',
       meetsImmigrationReq));
@@ -1996,11 +1996,11 @@ pageClass: "page-public-assistance"
       input.existingCfapHousehold,
       input.existingNslpMe,
       input.existingNslpHousehold,
-      ssiResult().eligible,
-      liheapResult().eligible,
-      wicResult().eligible,
-      calworksResult().eligible,
-      calfreshResult().eligible);
+      ssiResult(input).eligible,
+      liheapResult(input).eligible,
+      wicResult(input).eligible,
+      calworksResult(input).eligible,
+      calfreshResult(input).eligible);
 
     const program = new Program();
     program.addCondition(
@@ -2063,26 +2063,22 @@ pageClass: "page-public-assistance"
   }
 
   function vaDisabilityCompResult(input) {
-    const dutyTypeSelects = [...document.querySelectorAll(
-      'select[id^="your-duty-type"]')];
-    const dutyTypes = dutyTypeSelects.map(d => getValueOrNull(d.id));
     const meetsDutyReq = or(
-      ...dutyTypes.map(d => eq(d, 'active-duty')),
-      ...dutyTypes.map(d => eq(d, 'active-training')),
-      ...dutyTypes.map(d => eq(d, 'inactive-training')));
+      ...input.dutyPeriods.map(d => eq(d.type, 'active-duty')),
+      ...input.dutyPeriods.map(d => eq(d.type, 'active-training')),
+      ...input.dutyPeriods.map(d => eq(d.type, 'inactive-training')));
 
-    const dischargeStatus = getValueOrNull('your-discharge-status');
     const meetsDischargeReq = and(
-      ne(dischargeStatus, 'dishonorable'),
-      ne(dischargeStatus, 'oth'),
-      ne(dischargeStatus, 'bad-conduct'));
-    const isVeteran = document.getElementById('veteran').checked;
+      ne(input.dischargeStatus, 'dishonorable'),
+      ne(input.dischargeStatus, 'oth'),
+      ne(input.dischargeStatus, 'bad-conduct'));
+
     const isServiceDisabled = and(
-      document.getElementById('disabled').checked,
-      document.getElementById('dis_military_yes').checked);
+      input.disabled,
+      input.militaryDisabled);
 
     const program = new Program();
-    program.addCondition(new EligCondition('U.S. veteran', isVeteran));
+    program.addCondition(new EligCondition('U.S. veteran', input.veteran));
     program.addCondition(
       new EligCondition('Has a disability related to military service',
         isServiceDisabled));
@@ -2107,9 +2103,6 @@ pageClass: "page-public-assistance"
   //   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf (Section 5.1)
   //     Maximum age can be over 64 years with some conditions. May or may not need to implement this.
   function gaResult(input) {
-    const age = getValueOrNull('age');
-    const numDependents = document.querySelectorAll('input[id^="hh-member-dependent"]:checked').length;
-
     //   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf (Section 4.2)
     //     UNSHARED Housing in Section 4.2.1. max gross income cannot exceed max grant level, and max grant level changees with family size and living arrangement.
     const grossLimit = new MonthlyIncomeLimit([
@@ -2130,16 +2123,20 @@ pageClass: "page-public-assistance"
     const NUM_OF_DEPENDENTS = 0;     // None
     const MAX_RESOURCES = 500;       // USD Combined household assets
 
+    const numDependents = input.householdDependents.filter(d => d).length;
+
     const eligible = and(
-        ge(age, MIN_GA_ELIGIBLE_AGE),
+        ge(input.age, MIN_GA_ELIGIBLE_AGE),
         eq(numDependents, NUM_OF_DEPENDENTS),
-        le(totalResources(), MAX_RESOURCES),
-        le(grossIncome(), grossLimit.getLimit(householdSize())),
+        le(totalResources(input.assets), MAX_RESOURCES),
+        le(grossIncome(input.income), grossLimit.getLimit(input.householdSize)),
         or(
-          !document.getElementById("not-citizen").checked,
-          document.getElementById("permanent_resident").checked,
-          document.getElementById("qualified_noncitizen_gt5y").checked,
-          document.getElementById("qualified_noncitizen_le5y").checked));
+          not(input.notCitizen),
+          selectedOneOf(input.immigrationStatus, [
+            'permanent_resident',
+            'qualified_noncitizen_gt5y',
+            'qualified_noncitizen_le5y',
+          ])));
 
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
@@ -2152,13 +2149,13 @@ pageClass: "page-public-assistance"
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
     const MIN_ELIGIBLE_AGE = 62;  // Years
 
-    const isUnhoused = selectedOneOf('housing-situation', [
+    const isUnhoused = selectedOneOf(input.housingSituation, [
         'vehicle',
         'transitional',
         'hotel',
         'shelter',
         'no-stable-place']);
-    const meetsAgeReq = ge(getValueOrNull('age'), MIN_ELIGIBLE_AGE);
+    const meetsAgeReq = ge(input.age, MIN_ELIGIBLE_AGE);
 
     const program = new Program();
     program.addConditionsOneOf([
@@ -2175,18 +2172,18 @@ pageClass: "page-public-assistance"
     // DL 937 order form:
     // https://www.dmv.ca.gov/portal/file/order-request-reduced-fee-or-no-fee-identification-card-program-dl-932-pdf/
     const isProgramQualified = or(
-      document.getElementById("existing-calworks-me").checked,
-      document.getElementById("existing-ssi-me").checked,
-      document.getElementById('existing-ga-me').checked,
-      document.getElementById("existing-calfresh-me").checked,
-      document.getElementById("existing-cfap-me").checked,
-      document.getElementById("existing-capi-me").checked,
-      calworksResult().eligible,
-      ssiResult().eligible,
-      gaResult().eligible,
-      calfreshResult().eligible,
-      capiResult().eligible);
-    const ineligibleForNoFeeId = not(noFeeIdResult().eligible);
+      input.existingCalworksMe,
+      input.existingSsiMe,
+      input.existingGaMe,
+      input.existingCalfreshMe,
+      input.existingCfapMe,
+      input.existingCapiMe,
+      calworksResult(input).eligible,
+      ssiResult(input).eligible,
+      gaResult(input).eligible,
+      calfreshResult(input).eligible,
+      capiResult(input).eligible);
+    const ineligibleForNoFeeId = not(noFeeIdResult(input).eligible);
 
     const program = new Program();
     program.addCondition(new EligCondition(
@@ -2201,21 +2198,20 @@ pageClass: "page-public-assistance"
     // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
     const MIN_ELDERLY_AGE = 65;
 
-    const age = getValueOrNull('age');
     const meetsDisabilityReq = or(
-      ge(age, MIN_ELDERLY_AGE),
-      document.getElementById('blind').checked,
-      document.getElementById('disabled').checked);
+      ge(input.age, MIN_ELDERLY_AGE),
+      input.blind,
+      input.disabled);
 
-    const meetsHousedReq = selectedOneOf('housing-situation', [
+    const meetsHousedReq = selectedOneOf(input.housingSituation, [
       'housed',
       'unlisted-stable-place']);
 
     const eligible = and(
       meetsDisabilityReq,
       meetsHousedReq,
-      // TODO: Add medicalResult() once we can screen for Medi-Cal.
-      document.getElementById("existing-medical-me").checked);
+      // TODO: Add medicalResult(input).eligible once we can screen for Medi-Cal.
+      input.existingMedicalMe);
 
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
@@ -2235,32 +2231,32 @@ pageClass: "page-public-assistance"
       7300);
 
     const underIncomeLimit = le(
-      grossIncome(), grossLimit.getLimit(householdSize()));
+      grossIncome(input.income), grossLimit.getLimit(input.householdSize));
 
     const isProgramQualified = or(
-      document.getElementById("existing-medical-me").checked,
-      document.getElementById("existing-medical-household").checked,
-      document.getElementById("existing-liheap-me").checked,
-      document.getElementById("existing-liheap-household").checked,
-      document.getElementById("existing-ssi-me").checked,
-      document.getElementById("existing-ssi-household").checked,
+      input.existingMedicalMe,
+      input.existingMedicalHousehold,
+      input.existingLiheapMe,
+      input.existingLiheapHousehold,
+      input.existingSsiMe,
+      input.existingSsiHousehold,
       // TODO: add Section 8.
-      document.getElementById("existing-calfresh-me").checked,
-      document.getElementById("existing-calfresh-household").checked,
-      document.getElementById("existing-wic-me").checked,
-      document.getElementById("existing-wic-household").checked,
-      document.getElementById("existing-nslp-me").checked,
-      document.getElementById("existing-nslp-household").checked,
-      document.getElementById("existing-calworks-me").checked,
-      document.getElementById("existing-calworks-household").checked,
-      document.getElementById("existing-va-pension-me").checked,
-      document.getElementById("existing-va-pension-household").checked,
-      liheapResult().eligible,
-      ssiResult().eligible,
-      calfreshResult().eligible,
-      wicResult().eligible,
-      calworksResult().eligible,
-      vaPensionResult().eligible);
+      input.existingCalfreshMe,
+      input.existingCalfreshHousehold,
+      input.existingWicMe,
+      input.existingWicHousehold,
+      input.existingNslpMe,
+      input.existingNslpHousehold,
+      input.existingCalworksMe,
+      input.existingCalworksHousehold,
+      input.existingVaPensionMe,
+      input.existingVaPensionHousehold,
+      liheapResult(input).eligible,
+      ssiResult(input).eligible,
+      calfreshResult(input).eligible,
+      wicResult(input).eligible,
+      calworksResult(input).eligible,
+      vaPensionResult(input).eligible);
 
     const eligible = or(
       isProgramQualified,
@@ -2295,13 +2291,13 @@ pageClass: "page-public-assistance"
     ],
     155.78);
 
-    const isHoused = selectedOneOf('housing-situation', [
+    const isHoused = selectedOneOf(input.housingSituation, [
       'housed',
       'unlisted-stable-place']);
 
     const eligible = and(
       isHoused,
-      le(grossIncome(), grossLimit.getLimit(householdSize())));
+      le(grossIncome(input.income), grossLimit.getLimit(input.householdSize)));
 
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
@@ -2312,7 +2308,7 @@ pageClass: "page-public-assistance"
 
   function vtaParatransitResult(input) {
     // TODO: Determine if blindness should be included here.
-    const eligible = document.getElementById('disabled').checked;
+    const eligible = input.disabled;
 
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
@@ -2363,14 +2359,14 @@ pageClass: "page-public-assistance"
     // a citizen or qualified nonresident.
     // https://www.ecfr.gov/current/title-24/subtitle-A/part-5/subpart-E/section-5.516#p-5.516(b)
     const meetsImmigrationReq = or(
-      !document.getElementById('not-citizen').checked,
-      selectedOneOf('immig_status', [
+      not(input.notCitizen),
+      selectedOneOf(input.immigrationStatus, [
         'permanent_resident',
         'qualified_noncitizen_gt5y',
         'qualified_noncitizen_le5y']));
-    const incomeLimit = grossLimit.getLimit(householdSize());
-    const underIncomeLimit = le(grossIncome(), incomeLimit);
-    const meetsAgeReq = ge(getValueOrNull('age'), MIN_ELIGIBLE_AGE);
+    const incomeLimit = grossLimit.getLimit(input.householdSize);
+    const underIncomeLimit = le(grossIncome(input.income), incomeLimit);
+    const meetsAgeReq = ge(input.age, MIN_ELIGIBLE_AGE);
 
     const program = new Program();
     program.addCondition(
@@ -2385,7 +2381,7 @@ pageClass: "page-public-assistance"
     return program.getResult();
   }
 
-  function ssiCapiBaseProgram() {
+  function ssiCapiBaseProgram(input) {
     // https://www.ssa.gov/oact/cola/sga.html
     const SGA_NON_BLIND = 1470;  // USD per month
     const SGA_BLIND = 2460;  // USD per month
@@ -2408,31 +2404,28 @@ pageClass: "page-public-assistance"
     // https://www.ssa.gov/ssi/text-eligibility-ussi.htm
     const MIN_ELDERLY_AGE = 65;  // Years
 
-    const age = getValueOrNull('age');
-    const isBlind = document.getElementById('blind').checked;
-
     // Note we are not checking if the user's disability is preventing them
     // from working, as that decision can be complex to make--better to just
     // assume they have trouble working to avoid screening someone out
     // erroneously.
     const meetsDisabilityReq = or(
-      document.getElementById('disabled').checked,
-      isBlind,
-      ge(age, MIN_ELDERLY_AGE));
+      input.disabled,
+      input.blind,
+      ge(input.age, MIN_ELDERLY_AGE));
 
-    const sgaLimit = isBlind ? SGA_BLIND : SGA_NON_BLIND;
+    const sgaLimit = input.blind ? SGA_BLIND : SGA_NON_BLIND;
     let maxBenefit = MAX_BENEFIT_NON_BLIND;
-    if (isBlind) {
+    if (input.blind) {
       maxBenefit = MAX_BENEFIT_BLIND;
-    } else if (not(document.getElementById('has-kitchen-yes').checked)) {
+    } else if (not(input.hasKitchen)) {
       // TODO: Update the form to always show the kitchen question regardless
       // of housing situation.
       maxBenefit = MAX_BENEFIT_NON_BLIND_NO_KITCHEN;
     }
     // Note income and resources for only the user (applicant) are counted.
     // TODO: Apply deeming.
-    const earnedIncome = totalEarnedIncome(0);
-    const unearnedIncome = totalUnearnedIncome(0);
+    const earnedIncome = totalEarnedIncome(input.income, 0);
+    const unearnedIncome = totalUnearnedIncome(input.income, 0);
 
     // See https://www.ssa.gov/oact/cola/incomexcluded.html for calculation.
     const unearnedExclusion = Math.min(unearnedIncome,
@@ -2446,7 +2439,8 @@ pageClass: "page-public-assistance"
 
     const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
     const underIncomeLimit = lt(countableIncome, maxBenefit);
-    const underResourceLimit = le(totalResources(0), MAX_RESOURCES);
+    const underResourceLimit = le(
+      totalResources(input.assets, 0),MAX_RESOURCES);
 
     const program = new Program();
     program.addCondition(new EligCondition(
@@ -2467,13 +2461,13 @@ pageClass: "page-public-assistance"
 
   function ssiResult(input) {
     const meetsImmigrationReq = or(
-      !document.getElementById('not-citizen').checked,
-      selectedOneOf('immig_status', [
+      not(input.notCitizen),
+      selectedOneOf(input.immigrationStatus, [
         'permanent_resident',
         'qualified_noncitizen_gt5y',
         'qualified_noncitizen_le5y']));
 
-    const program = ssiCapiBaseProgram();
+    const program = ssiCapiBaseProgram(input);
     program.addCondition(new EligCondition(
       'U.S. citizen or qualified immigrant',
       meetsImmigrationReq));
@@ -2540,41 +2534,25 @@ pageClass: "page-public-assistance"
     const wartimes = WARTIMES_INPUT.map(
       p => ({start: dateOrToday(p[0]), end: dateOrToday(p[1])}));
 
-    const dischargeStatus = getValueOrNull('your-discharge-status');
     const meetsDischargeReq = and(
-      ne(dischargeStatus, 'dishonorable'),
-      ne(dischargeStatus, 'oth'),
-      ne(dischargeStatus, 'bad-conduct'));
+      ne(input.dischargeStatus, 'dishonorable'),
+      ne(input.dischargeStatus, 'oth'),
+      ne(input.dischargeStatus, 'bad-conduct'));
 
-    const meetsAgeReq = ge(getValueOrNull('age'), MIN_ELDERLY_AGE);
-    const isDisabled = document.getElementById('disabled').checked;
+    const meetsAgeReq = ge(input.age, MIN_ELDERLY_AGE);
     const isProgramQualified = or(
-      document.getElementById("existing-ssi-me").checked,
-      document.getElementById("existing-ssi-household").checked,
-      document.getElementById("existing-ssdi-me").checked,
-      document.getElementById("existing-ssdi-household").checked,
-      ssiResult().eligible,
-      ssdiResult().eligible);
-
-    const dutyPeriodItems = document.querySelectorAll(
-      '#page-veteran-details ul.dynamic_field_list>li');
-    let dutyPeriods = [];
-    for (const item of dutyPeriodItems) {
-      dutyPeriods.push({
-        type: getValueOrNull(
-          item.querySelector('select[id^="your-duty-type"]').id),
-        start: getDateOrNan(
-          item.querySelector('input[id^="served-from"]').id),
-        end: getDateOrNan(
-          item.querySelector('input[id^="served-until"]').id),
-      });
-    }
+      input.existingSsiMe,
+      input.existingSsiHousehold,
+      input.existingSsdiMe,
+      input.existingSsdiHousehold,
+      ssiResult(input).eligible,
+      ssdiResult(input).eligible);
 
     const meetsServiceReq = [];
-    for (const duty of dutyPeriods) {
+    for (const duty of input.dutyPeriods) {
       const duration = getNumberOfDays(duty.start, duty.end);
       const isDuringWartime = withinWartime(duty.start, duty.end);
-      const otherDutyPeriods = dutyPeriods.filter(p => p !== duty);
+      const otherDutyPeriods = input.dutyPeriods.filter(p => p !== duty);
       // TODO: does "active duty" include active duty for training and
       // inactive duty for training? https://www.va.gov/pension/eligibility/
       const isRecentPriorActiveDuty = otherDutyPeriods.map(
@@ -2594,7 +2572,7 @@ pageClass: "page-public-assistance"
             isDuringWartime),
           and(
             eq(duty.type, 'active-duty'),
-            document.getElementById('enlisted').checked,
+            input.enlisted,
             gt(duty.start, new Date(dateStrToLocal(LATE_DUTY_AFTER))),
             or(
               ge(duration, MIN_LATE_DUTY_DURATION),
@@ -2602,16 +2580,14 @@ pageClass: "page-public-assistance"
             isDuringWartime),
           and(
             eq(duty.type, 'active-duty'),
-            document.getElementById('officer').checked,
+            input.officer,
             gt(duty.start, new Date(dateStrToLocal(OFFICER_DUTY_AFTER))),
             not(hasRecentPriorActiveDuty))));
     }
 
-    const hhSpouse = getValuesOrNulls('hh-member-spouse');
-    const hhDependents = getValuesOrNulls('hh-member-dependent');
     // Add offset of 1 for user (index 0).
-    const spouseIdx = indexOfAll(hhSpouse, true).map(i => i + 1);
-    const dependentIdxs = indexOfAll(hhDependents, true).map(i => i + 1);
+    const spouseIdx = indexOfAll(input.householdSpouse, true).map(i => i + 1);
+    const dependentIdxs = indexOfAll(input.householdDependents, true).map(i => i + 1);
 
     // Use a Set to remove any duplicate indices.
     // Annual income includes the claimant, the spouse, and dependents.
@@ -2622,19 +2598,18 @@ pageClass: "page-public-assistance"
     assetIdxs = [...new Set([0, ...spouseIdx])];
 
     let yearlyIncome = null;
-    const monthlyIncome = grossIncome(incomeIdxs);
+    const monthlyIncome = grossIncome(input.income, incomeIdxs);
     if (monthlyIncome !== null) {
       yearlyIncome = 12 * monthlyIncome;
     }
     const underNetWorthLimit = le(
-      yearlyIncome + totalResources(assetIdxs),
+      yearlyIncome + totalResources(input.assets, assetIdxs),
       ANNUAL_NET_WORTH_LIMIT);
 
-    const isVeteran = document.getElementById('veteran').checked;
     const meetsAnyServiceReq = or(...meetsServiceReq);
 
     const program = new Program();
-    program.addCondition(new EligCondition('U.S. veteran', isVeteran));
+    program.addCondition(new EligCondition('U.S. veteran', input.veteran));
     program.addCondition(
       new EligCondition('Discharged honorably or under honorable conditions',
         meetsDischargeReq));
@@ -2642,7 +2617,7 @@ pageClass: "page-public-assistance"
       meetsAnyServiceReq));
     program.addCondition(new EligCondition(`Gross income and assets combined are below ${usdLimit(ANNUAL_NET_WORTH_LIMIT)} per year`, underNetWorthLimit));
     program.addConditionsOneOf([
-      new EligCondition('Disabled', isDisabled),
+      new EligCondition('Disabled', input.disabled),
       new EligCondition(`Age ${MIN_ELDERLY_AGE} or older`, meetsAgeReq),
       new EligCondition('Receives or is eligible for SSI or SSDI', isProgramQualified)
     ]);
@@ -2666,33 +2641,29 @@ pageClass: "page-public-assistance"
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
     const CHILD_EXIT_AGE = 5;  // Birthday at which a child is ineligible.
 
-    const hhAges = getValuesOrNulls('hh-member-age');
-    const hhPregnant = getValuesOrNulls('hh-member-pregnant');
-    const hhBreastfeeding = getValuesOrNulls('hh-member-breastfeeding');
-
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
     const hasPregnant = or(
-      document.getElementById('pregnant').checked,
-      ...hhPregnant);
+      input.pregnant,
+      ...input.householdPregnant);
     const hasBreastfeeding = or(
-      document.getElementById('feeding').checked,
-      ...hhBreastfeeding);
-    const hasChild = or(...hhAges.map(a => lt(a, CHILD_EXIT_AGE)));
+      input.feeding,
+      ...input.householdFeeding);
+    const hasChild = or(...input.householdAges.map(a => lt(a, CHILD_EXIT_AGE)));
 
     // Rather than null, if unborn-children is left empty, numUnborn == 0.
-    const numUnborn = Number(document.getElementById('unborn-children').value);
-    const incomeLimit = grossLimit.getLimit(householdSize() + numUnborn);
-    const meetsIncomeReq = le(grossIncome(), incomeLimit);
+    const numUnborn = Number(input.unbornChildren);
+    const incomeLimit = grossLimit.getLimit(input.householdSize + numUnborn);
+    const meetsIncomeReq = le(grossIncome(input.income), incomeLimit);
     const isProgramQualified = or(
       // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
-      document.getElementById("existing-medical-me").checked,
-      document.getElementById("existing-medical-household").checked,
-      document.getElementById("existing-calworks-me").checked,
-      document.getElementById("existing-calworks-household").checked,
-      document.getElementById("existing-calfresh-me").checked,
-      document.getElementById("existing-calfresh-household").checked,
-      calfreshResult().eligible,
-      calworksResult().eligible);
+      input.existingMedicalMe,
+      input.existingMedicalHousehold,
+      input.existingCalworksMe,
+      input.existingCalworksHousehold,
+      input.existingCalfreshMe,
+      input.existingCalfreshHousehold,
+      calfreshResult(input).eligible,
+      calworksResult(input).eligible);
 
     const program = new Program();
     program.addConditionsOneOf([
@@ -2717,13 +2688,13 @@ pageClass: "page-public-assistance"
 
   function upliftResult(input) {
     const eligible = or(
-      selectedOneOf('housing-situation', [
+      selectedOneOf(input.housingSituation, [
         'vehicle',
         'transitional',
         'hotel',
         'shelter',
         'no-stable-place']),
-      document.getElementById('risk_homeless_yes').checked);
+      input.homelessRisk);
 
     const program = new Program();
     // TODO: Replace this single example condition with a set of simplified
@@ -2798,10 +2769,7 @@ pageClass: "page-public-assistance"
       dischargeStatus: getValueOrNull('your-discharge-status'),
       enlisted: getValueOrNull('enlisted'),
       officer: getValueOrNull('officer'),
-      dutyTypes: Array.from(document.querySelectorAll(
-        `select[id^="your-duty-type"]`), e => getValueOrNull(e.id)),
-      servedFroms: getValuesOrNulls('served-from'),
-      servedUntils: getValuesOrNulls('served-until'),
+      dutyPeriods: [],
       income: {},
       assets: getIncomeValues(document.getElementById('page-income-assets')),
     };
@@ -2813,11 +2781,6 @@ pageClass: "page-public-assistance"
       // TODO: Rename to userGetsSsi or householdGetsSsi (for example).
       inputData[toCamelCase(inputElem.id)] = getValueOrNull(inputElem.id);
     }
-
-    const incomeDetailPrefix = 'page-income-details-';
-    const allIncomeTypes = Array.from(
-      document.querySelectorAll(`[id^="${incomeDetailPrefix}"]`),
-      p => p.id.replace(incomeDetailPrefix, ''));
 
     // Income inputs
     let householdTotal = 0;
@@ -2834,6 +2797,7 @@ pageClass: "page-public-assistance"
     inputData.income.valid = (householdTotal > 0
       || getValueOrNull('income-has-none'));
 
+    // Income specifically from SSI
     const retirementEntries = [...document.querySelectorAll(
       "#page-income-details-disability ul.dynamic_field_list>li")];
     const ssiEntries = retirementEntries.filter(
@@ -2841,6 +2805,20 @@ pageClass: "page-public-assistance"
         'input[id^="income-disability-is-ssi-capi"]').checked);
     inputData.ssiIncome = ssiEntries.map(
       e => Number(e.querySelector("input[type=number]").value));
+
+    // Military duty periods
+    const dutyPeriodItems = document.querySelectorAll(
+      '#page-veteran-details ul.dynamic_field_list>li');
+    for (const item of dutyPeriodItems) {
+      inputData.dutyPeriods.push({
+        type: getValueOrNull(
+          item.querySelector('select[id^="your-duty-type"]').id),
+        start: getDateOrNan(
+          item.querySelector('input[id^="served-from"]').id),
+        end: getDateOrNan(
+          item.querySelector('input[id^="served-until"]').id),
+      });
+    }
 
     return inputData;
   }
