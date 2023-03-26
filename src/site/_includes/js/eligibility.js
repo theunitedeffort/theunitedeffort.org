@@ -457,7 +457,7 @@ function updateIncomeTotal() {
   for (input of inputs) {
     sum += Number(input.value);
   }
-  totalDisplay.textContent = sum;
+  totalDisplay.textContent = sum.toLocaleString("en-US");
 }
 
 // Marks the section as complete in the step indicator.
