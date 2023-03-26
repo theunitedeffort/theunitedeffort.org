@@ -32,7 +32,7 @@ module.exports = function(eleventyConfig) {
 
   // Pass through static assets and client-side js files.
   eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
-  eleventyConfig.addPassthroughCopy({ "src/site/_includes/js": "/js" });
+  eleventyConfig.addPassthroughCopy({ "src/site/_includes/js/*.js": "/js" });
 
   // Eleventy Serverless plugin
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {

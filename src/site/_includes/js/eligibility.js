@@ -152,6 +152,41 @@ const usdLimit = function(value) {
   }
 }
 
+function isOneOf(value, allowedValues) {
+  const allowedValuesArr = [].concat(allowedValues);
+  return or(...allowedValuesArr.map(v => eq(value, v)));
+}
+
+function indexOfAll(arr, value) {
+  const matchingIdxs = arr.map((v, idx) => v == value ? idx : -1);
+  return matchingIdxs.filter(i => i >= 0);
+}
+
+function dateStrToLocal(dateStr) {
+  return `${dateStr}T00:00`;
+}
+
+function getNumberOfDays(startDate, endDate) {
+  // One day in milliseconds.
+  const ONE_DAY = 1000 * 60 * 60 * 24;
+
+  // Create new dates from the input values in case either is NaN.
+  const date1 = new Date(startDate);
+  const date2 = new Date(endDate);
+
+  // Time difference between two dates.
+  const difference = date2.getTime() - date1.getTime();
+
+  // Number of days between two dates.
+  return Math.ceil(difference / ONE_DAY);
+}
+
+function formatUsDate(date) {
+  const date1 = new Date(date);
+  console.log(date1);
+  return `${date1.getMonth() + 1}/${date1.getDate()}/${date1.getFullYear()}`;
+}
+
 // Shows or hides the element 'elem' via a class name.
 function setElementVisibility(elem, makeVisible) {
   if (elem) {
@@ -703,10 +738,10 @@ function customPageLinking(pageById) {
     if (document.getElementById("veteran").checked &&
         getNumberOfDays(fromDate, untilDate) < 730) {
       const fromPlaceHolder = document.getElementById("served-from-placeholder");
-      fromPlaceHolder.textContent = getFormattedDutyDate(fromDate);
+      fromPlaceHolder.textContent = formatUsDate(fromDate);
 
       const untilPlaceHolder = document.getElementById("served-until-placeholder");
-      untilPlaceHolder.textContent = getFormattedDutyDate(untilDate);
+      untilPlaceHolder.textContent = formatUsDate(untilDate);
 
       return pageById["page-veteran-duty-period"];
     }
@@ -833,40 +868,6 @@ function getDateOrNan(id) {
 function getValuesOrNulls(idPrefix) {
   return Array.from(document.querySelectorAll(
     `input[id^="${idPrefix}"]`), e => getValueOrNull(e.id));
-}
-
-function selectedOneOf(value, allowedValues) {
-  const allowedValuesArr = [].concat(allowedValues);
-  return or(...allowedValuesArr.map(v => eq(value, v)));
-}
-
-function indexOfAll(arr, value) {
-  const matchingIdxs = arr.map((v, idx) => v == value ? idx : -1);
-  return matchingIdxs.filter(i => i >= 0);
-}
-
-function dateStrToLocal(dateStr) {
-  return `${dateStr}T00:00`;
-}
-
-function getNumberOfDays(startDate, endDate) {
-  // Create new dates from the input values in case either is NaN.
-  const date1 = new Date(startDate);
-  const date2 = new Date(endDate);
-
-  // Time difference between two dates.
-  const difference = date2.getTime() - date1.getTime();
-
-  // One day in milliseconds.
-  const oneDay = 1000 * 60 * 60 * 24;
-
-  // Number of days between two dates.
-  return Math.ceil(difference / oneDay);
-}
-
-function getFormattedDutyDate(dutyDate)	{
-  const date1 = new Date(dutyDate);
-  return `${date1.getMonth() + 1}/${date1.getDate()}/${date1.getFullYear()}`;
 }
 
 function categoryTotal(incomeArray, hhMemberIdx=null) {
@@ -1117,7 +1118,7 @@ function calfreshResult(input) {
 
   const meetsImmigrationReq = or(
     not(input.notCitizen),
-    selectedOneOf(input.immigrationStatus, [
+    isOneOf(input.immigrationStatus, [
       'permanent_resident',
       'qualified_noncitizen_gt5y']),
     // TODO: Decide how to handle immigration status: Could mark CFAP
@@ -1219,7 +1220,7 @@ function calworksResult(input) {
 
   const meetsImmigrationReq = or(
     not(input.notCitizen),
-    selectedOneOf(input.immigrationStatus, [
+    isOneOf(input.immigrationStatus, [
       'permanent_resident',
       'qualified_noncitizen_gt5y',
       'qualified_noncitizen_le5y']));
@@ -1308,7 +1309,7 @@ function capiResult(input) {
     input.notCitizen,
     // TODO: Handle certain qualified aliens per Section 6.4 of
     // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
-    selectedOneOf(input.immigrationStatus, ['prucol']));
+    isOneOf(input.immigrationStatus, ['prucol']));
 
   const program = ssiCapiBaseProgram(input);
   program.addCondition(new EligCondition(
@@ -1336,7 +1337,7 @@ function careIncomeLimit() {
 
 function careResult(input) {
   // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-  const isHoused = selectedOneOf(input.housingSituation, [
+  const isHoused = isOneOf(input.housingSituation, [
     'housed',
     'unlisted-stable-place']);
 
@@ -1398,7 +1399,7 @@ function feraResult(input) {
 
   const MIN_HOUSEHOLD_SIZE = 3;
 
-  const isHoused = selectedOneOf(input.housingSituation, [
+  const isHoused = isOneOf(input.housingSituation, [
     'housed',
     'unlisted-stable-place']);
 
@@ -1497,7 +1498,7 @@ function gaResult(input) {
       le(grossIncome(input), grossLimit.getLimit(input.householdSize)),
       or(
         not(input.notCitizen),
-        selectedOneOf(input.immigrationStatus, [
+        isOneOf(input.immigrationStatus, [
           'permanent_resident',
           'qualified_noncitizen_gt5y',
           'qualified_noncitizen_le5y',
@@ -1514,7 +1515,7 @@ function noFeeIdResult(input) {
   // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
   const MIN_ELIGIBLE_AGE = 62;  // Years
 
-  const isUnhoused = selectedOneOf(input.housingSituation, [
+  const isUnhoused = isOneOf(input.housingSituation, [
       'vehicle',
       'transitional',
       'hotel',
@@ -1568,7 +1569,7 @@ function ihssResult(input) {
     input.blind,
     input.disabled);
 
-  const meetsHousedReq = selectedOneOf(input.housingSituation, [
+  const meetsHousedReq = isOneOf(input.housingSituation, [
     'housed',
     'unlisted-stable-place']);
 
@@ -1656,7 +1657,7 @@ function liheapResult(input) {
   ],
   155.78);
 
-  const isHoused = selectedOneOf(input.housingSituation, [
+  const isHoused = isOneOf(input.housingSituation, [
     'housed',
     'unlisted-stable-place']);
 
@@ -1725,7 +1726,7 @@ function housingChoiceResult(input) {
   // https://www.ecfr.gov/current/title-24/subtitle-A/part-5/subpart-E/section-5.516#p-5.516(b)
   const meetsImmigrationReq = or(
     not(input.notCitizen),
-    selectedOneOf(input.immigrationStatus, [
+    isOneOf(input.immigrationStatus, [
       'permanent_resident',
       'qualified_noncitizen_gt5y',
       'qualified_noncitizen_le5y']));
@@ -1827,7 +1828,7 @@ function ssiCapiBaseProgram(input) {
 function ssiResult(input) {
   const meetsImmigrationReq = or(
     not(input.notCitizen),
-    selectedOneOf(input.immigrationStatus, [
+    isOneOf(input.immigrationStatus, [
       'permanent_resident',
       'qualified_noncitizen_gt5y',
       'qualified_noncitizen_le5y']));
@@ -1941,7 +1942,7 @@ function vaPensionResult(input) {
           gt(duty.start, new Date(dateStrToLocal(LATE_DUTY_AFTER))),
           or(
             ge(duration, MIN_LATE_DUTY_DURATION),
-            selectedOneOf('mil-svc-duration', 'full-dur-yes')),
+            isOneOf('mil-svc-duration', 'full-dur-yes')),
           isDuringWartime),
         and(
           eq(duty.type, 'active-duty'),
@@ -2053,7 +2054,7 @@ function wicResult(input) {
 
 function upliftResult(input) {
   const eligible = or(
-    selectedOneOf(input.housingSituation, [
+    isOneOf(input.housingSituation, [
       'vehicle',
       'transitional',
       'hotel',
@@ -2291,4 +2292,27 @@ function init() {
   linkPages();
   initUi();
   addListeners();
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    hasNulls,
+    add,
+    or,
+    and,
+    not,
+    eq,
+    ne,
+    lt,
+    le,
+    gt,
+    ge,
+    toCamelCase,
+    usdLimit,
+    dateStrToLocal,
+    getNumberOfDays,
+    formatUsDate,
+    indexOfAll,
+    isOneOf,
+  };
 }
