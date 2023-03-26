@@ -1458,53 +1458,6 @@ function vaDisabilityCompResult(input) {
   return program.getResult();
 }
 
-/*
-function gaResult(input) {
-  //   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf (Section 4.2)
-  //     UNSHARED Housing in Section 4.2.1. max gross income cannot exceed max grant level, and max grant level changees with family size and living arrangement.
-  const grossLimit = new MonthlyIncomeLimit([
-    343,
-    460,
-    576,
-    693,
-    810,
-    926,
-    1044,
-    1161,
-    1278,
-    1396
-  ],
-  11);
-
-  const MIN_GA_ELIGIBLE_AGE = 18;  // Years
-  const NUM_OF_DEPENDENTS = 0;     // None
-  const MAX_RESOURCES = 500;       // USD Combined household assets
-
-  const numDependents = input.householdDependents.filter(d => d).length;
-
-  const eligible = and(
-      ge(input.age, MIN_GA_ELIGIBLE_AGE),
-      eq(numDependents, NUM_OF_DEPENDENTS),
-      le(totalResources(input), MAX_RESOURCES),
-      le(grossIncome(input), grossLimit.getLimit(input.householdSize)),
-      or(
-        not(input.notCitizen),
-        isOneOf(input.immigrationStatus, [
-          'permanent_resident',
-          'qualified_noncitizen_gt5y',
-          'qualified_noncitizen_le5y',
-        ])));
-
-  const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', eligible));
-  return program.getResult();
-}
-*/
-
-
-
 // GA-specific references:
 //   https://socialservices.sccgov.org/about-us/department-employment-and-benefit-services/regulation-and-policy-handbooks/general-assistance
 //   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
@@ -1567,7 +1520,6 @@ function gaResult(input) {
     
   return program.getResult();
 }
-
 
 function noFeeIdResult(input) {
   // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
