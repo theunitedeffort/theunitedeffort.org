@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "eleventy",
-    "dev": "eleventy --watch --serve"
+    "dev": "eleventy --watch --serve",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +17,8 @@
     "airtable": "^0.11.2",
     "marked": "^4.0.12",
     "sass": "^1.49.9"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }
