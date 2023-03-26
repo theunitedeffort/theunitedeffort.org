@@ -1458,16 +1458,7 @@ function vaDisabilityCompResult(input) {
   return program.getResult();
 }
 
-// GA-specific references:
-//   https://socialservices.sccgov.org/about-us/department-employment-and-benefit-services/regulation-and-policy-handbooks/general-assistance
-//   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
-//
-// TO DO:
-//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap07.pdf (7. Citizens/Noncitizens)
-//     Qualified non-citizen: Need to determine all non-citizen groups which fit this category. May or may not need to add more detail to immigration status form page.
-//
-//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf (Section 5.1)
-//     Maximum age can be over 64 years with some conditions. May or may not need to implement this.
+/*
 function gaResult(input) {
   //   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf (Section 4.2)
   //     UNSHARED Housing in Section 4.2.1. max gross income cannot exceed max grant level, and max grant level changees with family size and living arrangement.
@@ -1510,6 +1501,73 @@ function gaResult(input) {
   program.addCondition(new EligCondition('Example', eligible));
   return program.getResult();
 }
+*/
+
+
+
+// GA-specific references:
+//   https://socialservices.sccgov.org/about-us/department-employment-and-benefit-services/regulation-and-policy-handbooks/general-assistance
+//   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
+//
+// TO DO:
+//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap07.pdf (7. Citizens/Noncitizens)
+//     Qualified non-citizen: Need to determine all non-citizen groups which fit this category. May or may not need to add more detail to immigration status form page.
+//
+//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf (Section 5.1)
+//     Maximum age can be over 64 years with some conditions. May or may not need to implement this.
+function gaResult(input) {
+  //   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf (Section 4.2)
+  //     UNSHARED Housing in Section 4.2.1. max gross income cannot exceed max grant level, and max grant level changees with family size and living arrangement.
+  const grossLimit = new MonthlyIncomeLimit([
+    343,
+    460,
+    576,
+    693,
+    810,
+    926,
+    1044,
+    1161,
+    1278,
+    1396
+  ],
+  11);
+
+  const MIN_GA_ELIGIBLE_AGE = 18;  // Years
+  const NUM_OF_DEPENDENTS = 0;     // None
+  const MAX_RESOURCES = 500;       // USD Combined household assets
+
+  const meetsAgeReq = ge(input.age, MIN_GA_ELIGIBLE_AGE);
+
+  const numDependents = input.householdDependents.filter(d => d).length;
+  const hasNoDependents = eq(numDependents, NUM_OF_DEPENDENTS);
+
+  const underResourceLimit = le(totalResources(input), MAX_RESOURCES);
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
+
+  const meetsImmigrationReq = or(
+    not(input.notCitizen),
+    isOneOf(input.immigrationStatus, [
+      'permanent_resident',
+      'qualified_noncitizen_gt5y',
+      'qualified_noncitizen_le5y',
+    ]));
+
+  const program = new Program();
+  program.addCondition(
+    new EligCondition(`Age ${MIN_GA_ELIGIBLE_AGE} or older`, meetsAgeReq));
+  program.addCondition(
+    new EligCondition(`Number of dependents are ${NUM_OF_DEPENDENTS}`, hasNoDependents));
+  program.addCondition(
+    new EligCondition(`Total value of assets is below ${usdLimit(MAX_RESOURCES)}`, underResourceLimit));
+  program.addCondition(
+    new EligCondition( `Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
+  program.addCondition(
+    new EligCondition('U.S. citizen or qualified immigrant', meetsImmigrationReq));
+    
+  return program.getResult();
+}
+
 
 function noFeeIdResult(input) {
   // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
