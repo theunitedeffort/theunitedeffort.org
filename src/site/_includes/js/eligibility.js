@@ -183,7 +183,6 @@ function getNumberOfDays(startDate, endDate) {
 
 function formatUsDate(date) {
   const date1 = new Date(date);
-  console.log(date1);
   return `${date1.getMonth() + 1}/${date1.getDate()}/${date1.getFullYear()}`;
 }
 
@@ -887,25 +886,16 @@ function categoryTotal(incomeArray, hhMemberIdx=null) {
   return sum;
 }
 
-function incomeSubtotal(incomeArrays, hhMemberIdx=null) {
-  incomeArrays = [].concat(incomeArrays);
-  let sum = 0;
-  for (const incomeArray of incomeArrays) {
-    sum += categoryTotal(incomeArray, hhMemberIdx);
-  }
-  return sum;
-}
-
 function totalEarnedIncome(input, hhMemberIdx=null) {
   if (!input.income.valid) {
     return NaN;
   }
   // TODO: Do not hardcode this list.
-  const EARNED_INCOME_VALUES = [
+  const EARNED_INCOME = [
     input.income.wages,
     input.income.selfEmployed,
   ];
-  return incomeSubtotal(EARNED_INCOME_VALUES, hhMemberIdx);
+  return EARNED_INCOME.map(i => categoryTotal(i, hhMemberIdx)).reduce(add, 0);
 }
 
 function totalUnearnedIncome(input, hhMemberIdx=null) {
@@ -913,7 +903,7 @@ function totalUnearnedIncome(input, hhMemberIdx=null) {
     return NaN;
   }
   // TODO: Do not hardcode this list.
-  const UNEARNED_INCOME_VALUES = [
+  const UNEARNED_INCOME = [
     input.income.disability,
     input.income.unemployment,
     input.income.veterans,
@@ -922,7 +912,7 @@ function totalUnearnedIncome(input, hhMemberIdx=null) {
     input.income.retirement,
     input.income.other,
   ]
-  return incomeSubtotal(UNEARNED_INCOME_VALUES, hhMemberIdx);
+  return UNEARNED_INCOME.map(i => categoryTotal(i, hhMemberIdx)).reduce(add, 0);
 }
 
 function grossIncome(input, hhMemberIdx=null) {
@@ -1158,7 +1148,7 @@ function calfreshResult(input) {
   if (grossIncome(input) !== null) {
     nonExemptIncome = (grossIncome(input) -
       SELF_EMPLOYED_EXEMPT_FRACTION *
-      incomeSubtotal(input.income.selfEmployed));
+      categoryTotal(input.income.selfEmployed));
   }
   const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
 
@@ -1251,8 +1241,8 @@ function calworksResult(input) {
   const maxEmploymentDisregard = numEmployed * EMPLOYMENT_DISREGARD;
   const maxChildSupportDisregard = childSupportDisregards[
     Math.min(numChildren, childSupportDisregards.length - 1)];
-  const wagesTotal = incomeSubtotal(input.income.wages);
-  const childSupportTotal = incomeSubtotal(input.income.childSupport);
+  const wagesTotal = categoryTotal(input.income.wages);
+  const childSupportTotal = categoryTotal(input.income.childSupport);
   const ssiIncomeTotal = input.ssiIncome.reduce(add, 0);
 
   let nonExemptIncome = null;
@@ -1261,7 +1251,7 @@ function calworksResult(input) {
       Math.min(wagesTotal, maxEmploymentDisregard) -
       Math.min(childSupportTotal, maxChildSupportDisregard) -
       SELF_EMPLOYED_DISREGARD_FRAC *
-      incomeSubtotal(input.income.selfEmployed) - ssiIncomeTotal);
+      categoryTotal(input.income.selfEmployed) - ssiIncomeTotal);
   }
 
   // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
@@ -2314,5 +2304,10 @@ if (typeof module !== 'undefined' && module.exports) {
     formatUsDate,
     indexOfAll,
     isOneOf,
+    categoryTotal,
+    totalEarnedIncome,
+    totalUnearnedIncome,
+    grossIncome,
+    totalResources,
   };
 }
