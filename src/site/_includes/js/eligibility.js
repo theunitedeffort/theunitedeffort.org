@@ -457,7 +457,7 @@ function updateIncomeTotal() {
   for (input of inputs) {
     sum += Number(input.value);
   }
-  sum = sum.toFixed(2)
+  sum = sum.toFixed(2);
   const intSum = parseInt(sum);
   if (sum - intSum === 0) {
     sum = intSum;
