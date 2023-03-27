@@ -664,7 +664,12 @@ function addListeners() {
   document.getElementById("next-button").addEventListener("click", toNextPage);
   document.getElementById("back-button").addEventListener("click", toPrevPage);
   document.getElementById("submit-button").addEventListener("click", submitForm);
-
+  document.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      document.getElementById("next-button").click();
+    }
+  })
 }
 
 // Switches to the first form page in the document.
