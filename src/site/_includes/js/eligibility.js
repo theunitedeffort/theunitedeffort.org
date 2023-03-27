@@ -457,9 +457,10 @@ function updateIncomeTotal() {
   for (input of inputs) {
     sum += Number(input.value);
   }
-  sum = parseFloat(sum).toFixed(2)
-  if(sum-parseInt(sum) === 0){
-    sum = parseInt(sum)
+  sum = sum.toFixed(2)
+  const intSum = parseInt(sum);
+  if (sum - intSum === 0) {
+    sum = intSum;
   }
   totalDisplay.textContent = sum.toLocaleString("en-US");
 }
