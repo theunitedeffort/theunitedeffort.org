@@ -457,7 +457,12 @@ function updateIncomeTotal() {
   for (input of inputs) {
     sum += Number(input.value);
   }
-  totalDisplay.textContent = sum;
+  sum = sum.toFixed(2);
+  const intSum = parseInt(sum);
+  if (sum - intSum === 0) {
+    sum = intSum;
+  }
+  totalDisplay.textContent = sum.toLocaleString("en-US");
 }
 
 // Marks the section as complete in the step indicator.
