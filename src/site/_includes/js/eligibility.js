@@ -665,9 +665,14 @@ function addListeners() {
   document.getElementById("back-button").addEventListener("click", toPrevPage);
   document.getElementById("submit-button").addEventListener("click", submitForm);
   document.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
+    if ( event.key === "Enter" && ( document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "SELECT" ) ){
       event.preventDefault();
-      document.getElementById("next-button").click();
+      if(document.getElementById("next-button").className !== "btn btn_primary hidden") {
+        document.getElementById("next-button").click();
+      }
+      else{
+        document.getElementById("submit-button").click();
+      }
     }
   })
 }
