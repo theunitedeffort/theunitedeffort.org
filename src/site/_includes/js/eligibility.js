@@ -1510,11 +1510,11 @@ function gaResult(input) {
   program.addCondition(
     new EligCondition(`Age ${MIN_GA_ELIGIBLE_AGE} or older`, meetsAgeReq));
   program.addCondition(
-    new EligCondition(`Number of dependents are ${NUM_OF_DEPENDENTS}`, hasNoDependents));
+    new EligCondition(`Has ${NUM_OF_DEPENDENTS} dependent children`, hasNoDependents));
   program.addCondition(
     new EligCondition(`Total value of assets is below ${usdLimit(MAX_RESOURCES)}`, underResourceLimit));
   program.addCondition(
-    new EligCondition( `Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
+    new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
   program.addCondition(
     new EligCondition('U.S. citizen or qualified immigrant', meetsImmigrationReq));
     
