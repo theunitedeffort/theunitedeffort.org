@@ -668,7 +668,15 @@ function addListeners() {
   document.getElementById("next-button").addEventListener("click", toNextPage);
   document.getElementById("back-button").addEventListener("click", toPrevPage);
   document.getElementById("submit-button").addEventListener("click", submitForm);
-
+  document.addEventListener("keypress", function(event) {
+    if (event.key === "Enter" && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "SELECT")){
+      event.preventDefault();
+      const actionButton = document.querySelector("#controls button.btn_primary:not(.hidden)");
+      if (actionButton) {
+        actionButton.click();
+      }
+    }
+  });
 }
 
 // Switches to the first form page in the document.
