@@ -1494,25 +1494,35 @@ function gaResult(input) {
   const NUM_OF_DEPENDENTS = 0;     // None
   const MAX_RESOURCES = 500;       // USD Combined household assets
 
-  const numDependents = input.householdDependents.filter(d => d).length;
+  const meetsAgeReq = ge(input.age, MIN_GA_ELIGIBLE_AGE);
 
-  const eligible = and(
-      ge(input.age, MIN_GA_ELIGIBLE_AGE),
-      eq(numDependents, NUM_OF_DEPENDENTS),
-      le(totalResources(input), MAX_RESOURCES),
-      le(grossIncome(input), grossLimit.getLimit(input.householdSize)),
-      or(
-        not(input.notCitizen),
-        isOneOf(input.immigrationStatus, [
-          'permanent_resident',
-          'qualified_noncitizen_gt5y',
-          'qualified_noncitizen_le5y',
-        ])));
+  const numDependents = input.householdDependents.filter(d => d).length;
+  const hasNoDependents = eq(numDependents, NUM_OF_DEPENDENTS);
+
+  const underResourceLimit = le(totalResources(input), MAX_RESOURCES);
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
+
+  const meetsImmigrationReq = or(
+    not(input.notCitizen),
+    isOneOf(input.immigrationStatus, [
+      'permanent_resident',
+      'qualified_noncitizen_gt5y',
+      'qualified_noncitizen_le5y',
+    ]));
 
   const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', eligible));
+  program.addCondition(
+    new EligCondition(`Age ${MIN_GA_ELIGIBLE_AGE} or older`, meetsAgeReq));
+  program.addCondition(
+    new EligCondition(`Has ${NUM_OF_DEPENDENTS} dependent children`, hasNoDependents));
+  program.addCondition(
+    new EligCondition(`Total value of assets is below ${usdLimit(MAX_RESOURCES)}`, underResourceLimit));
+  program.addCondition(
+    new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
+  program.addCondition(
+    new EligCondition('U.S. citizen or qualified immigrant', meetsImmigrationReq));
+    
   return program.getResult();
 }
 
