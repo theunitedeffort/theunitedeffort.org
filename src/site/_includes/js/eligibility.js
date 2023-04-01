@@ -1,5 +1,6 @@
 // This global variable holds the current state of the form navigation.
 let currentPage;
+let ext = {};
 
 function hasNulls(...values) {
   return values.some(v => v === null || Number.isNaN(v));
@@ -1067,10 +1068,10 @@ function adsaResult(input) {
     input.existingSsdiMe,
     input.existingIhssMe,
     input.existingCapiMe,
-    ssiResult(input).eligible,
-    ssdiResult(input).eligible,
-    ihssResult(input).eligible,
-    capiResult(input).eligible);
+    ext.ssiResult(input).eligible,
+    ext.ssdiResult(input).eligible,
+    ext.ihssResult(input).eligible,
+    ext.capiResult(input).eligible);
 
   const program = new Program();
   program.addCondition(
@@ -2307,30 +2308,38 @@ function init() {
   addListeners();
 }
 
+ext = {
+  hasNulls,
+  add,
+  or,
+  and,
+  not,
+  eq,
+  ne,
+  lt,
+  le,
+  gt,
+  ge,
+  toCamelCase,
+  usdLimit,
+  dateStrToLocal,
+  getNumberOfDays,
+  formatUsDate,
+  indexOfAll,
+  isOneOf,
+  categoryTotal,
+  totalEarnedIncome,
+  totalUnearnedIncome,
+  grossIncome,
+  totalResources,
+  MonthlyIncomeLimit,
+  adsaResult,
+  ssiResult,
+  ssdiResult,
+  ihssResult,
+  capiResult,
+};
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    hasNulls,
-    add,
-    or,
-    and,
-    not,
-    eq,
-    ne,
-    lt,
-    le,
-    gt,
-    ge,
-    toCamelCase,
-    usdLimit,
-    dateStrToLocal,
-    getNumberOfDays,
-    formatUsDate,
-    indexOfAll,
-    isOneOf,
-    categoryTotal,
-    totalEarnedIncome,
-    totalUnearnedIncome,
-    grossIncome,
-    totalResources,
-  };
+  module.exports = ext;
 }
