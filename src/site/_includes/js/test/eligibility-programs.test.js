@@ -2,24 +2,18 @@ const elig = require('../eligibility');
 
 function isEligibleIf(target) {
   this.target = target;
-  this.expected = true;
+  if (typeof this.target === 'function') {
+    let mergedInput = this.target(this.input);
+    const msg = (
+      `Checking ${this.program.name} with ${mergedInput._verifyFn.name} returning ` +
+      `eligible`
+    );
+    expect(this.program(this.input).eligible, msg).not.toBe(true);
+    expect(mergedInput._verifyFn(mergedInput).eligible, msg).toBe(true);
+    expect(this.program(mergedInput).eligible, msg).toBe(true);
+    return;
+  }
   return this;
-};
-
-function isIneligibleIf(target) {
-  this.target = target;
-  this.expected = false;
-  return this;
-};
-
-function returns(value) {
-  const msg = (
-    `Checking ${this.program.name} with ` +
-    `${this.target.getMockName()} returning ${JSON.stringify(value)}`
-  );
-  expect(this.program(this.input).eligible, msg).not.toBe(this.expected);
-  this.target.mockReturnValueOnce(value);
-  expect(this.program(this.input).eligible, msg).toBe(this.expected);
 };
 
 function is(value) {
@@ -31,9 +25,9 @@ function is(value) {
     );
   }
   const initValue = this.input[this.target];
-  expect(this.program(this.input).eligible, msg('initial')).not.toBe(this.expected);
+  expect(this.program(this.input).eligible, msg('initial')).not.toBe(true);
   this.input[this.target] = value;
-  expect(this.program(this.input).eligible, msg('modified')).toBe(this.expected);
+  expect(this.program(this.input).eligible, msg('modified')).toBe(true);
   this.input[this.target] = initValue;
 };
 
@@ -42,9 +36,7 @@ function check(program, input) {
     program,
     input,
     isEligibleIf,
-    isIneligibleIf,
     is,
-    returns,
   };
 };
 
@@ -112,27 +104,30 @@ describe('Program eligibility', () => {
     return JSON.parse(JSON.stringify(original));
   }
 
-  function makeCapiEligible(baseInput) {
+  function capiMadeEligible(baseInput) {
     let modified = deepCopy(baseInput);
     modified.notCitizen = true;
     modified.immigrationStatus = 'prucol';
     modified.age = 99;
     modified.income.valid = true;
+    modified._verifyFn = elig.capiResult;
     return modified;
   }
 
-  function makeIhssEligible(baseInput) {
+  function ihssMadeEligible(baseInput) {
     let modified = deepCopy(baseInput);
     modified.age = 99;
     modified.housingSituation = 'housed';
     modified.existingMedicalMe = true;
+    modified._verifyFn = elig.ihssResult;
     return modified;
   }
 
-  function makeSsiEligible(baseInput) {
+  function ssiMadeEligible(baseInput) {
     let modified = deepCopy(baseInput);
     modified.age = 99;
     modified.income.valid = true;
+    modified._verifyFn = elig.ssiResult;
     return modified;
   }
 
@@ -236,38 +231,27 @@ describe('Program eligibility', () => {
       check(elig.adsaResult, input).isEligibleIf('existingIhssMe').is(true);
       check(elig.adsaResult, input).isEligibleIf('existingCapiMe').is(true);
 
-      expect(elig.adsaResult(input).eligible).not.toBe(true);
-      let mergedInput = makeSsiEligible(input);
-      expect(elig.ssiResult(mergedInput).eligible).toBe(true);
-      expect(elig.adsaResult(mergedInput).eligible).toBe(true);
-
-      expect(elig.adsaResult(input).eligible).not.toBe(true);
-      mergedInput = makeIhssEligible(input);
-      expect(elig.ihssResult(mergedInput).eligible).toBe(true);
-      expect(elig.adsaResult(mergedInput).eligible).toBe(true);
-
-      expect(elig.adsaResult(input).eligible).not.toBe(true);
-      mergedInput = makeCapiEligible(input);
-      expect(elig.capiResult(mergedInput).eligible).toBe(true);
-      expect(elig.adsaResult(mergedInput).eligible).toBe(true);
+      check(elig.adsaResult, input).isEligibleIf(capiMadeEligible);
+      check(elig.adsaResult, input).isEligibleIf(ihssMadeEligible);
+      check(elig.adsaResult, input).isEligibleIf(ssiMadeEligible);
     });
   });
 
   describe('CAPI Program', () => {
     test('Eligible with input for other program dependencies', () => {
-      expect(elig.capiResult(makeCapiEligible(input)).eligible).toBe(true);
+      expect(elig.capiResult(capiMadeEligible(input)).eligible).toBe(true);
     });
   });
 
   describe('IHSS Program', () => {
     test('Eligible with input for other program dependencies', () => {
-      expect(elig.ihssResult(makeIhssEligible(input)).eligible).toBe(true);
+      expect(elig.ihssResult(ihssMadeEligible(input)).eligible).toBe(true);
     });
   });
 
   describe('SSI Program', () => {
     test('Eligible with input for other program dependencies', () => {
-      expect(elig.ssiResult(makeSsiEligible(input)).eligible).toBe(true);
+      expect(elig.ssiResult(ssiMadeEligible(input)).eligible).toBe(true);
     });
   });
 });
