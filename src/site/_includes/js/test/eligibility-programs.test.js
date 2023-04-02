@@ -106,51 +106,115 @@ describe('MonthlyIncomeLimit', () => {
 });
 
 describe('Program eligibility', () => {
-  let eligible;
+  let input;
+
+  function deepCopy(original) {
+    return JSON.parse(JSON.stringify(original));
+  }
+
+  function makeCapiEligible(baseInput) {
+    let modified = deepCopy(baseInput);
+    modified.notCitizen = true;
+    modified.immigrationStatus = 'prucol';
+    modified.age = 99;
+    modified.income.valid = true;
+    return modified;
+  }
+
+  function makeIhssEligible(baseInput) {
+    let modified = deepCopy(baseInput);
+    modified.age = 99;
+    modified.housingSituation = 'housed';
+    modified.existingMedicalMe = true;
+    return modified;
+  }
+
+  function makeSsiEligible(baseInput) {
+    let modified = deepCopy(baseInput);
+    modified.age = 99;
+    modified.income.valid = true;
+    return modified;
+  }
+
   beforeEach(() => {
-    eligible = {eligible: true};
+    input = {
+      age: null,
+      notCitizen: false,
+      disabled: false,
+      blind: false,
+      deaf: false,
+      veteran: false,
+      pregnant: false,
+      feeding: false,
+      headOfHousehold: false,
+      householdAges: [],
+      householdDisabled: [],
+      householdPregnant: [],
+      householdFeeding: [],
+      householdSpouse: [],
+      householdDependents: [],
+      householdSize: 1,
+      unbornChildren: null,
+      housingSituation: null,
+      paysUtilities: false,
+      hasKitchen: false,
+      homelessRisk: false,
+      immigrationStatus: null,
+      usesGuideDog: false,
+      militaryDisabled: false,
+      dischargeStatus: null,
+      enlisted: false,
+      officer: false,
+      dutyPeriods: [],
+      income: {
+        valid: false,
+        wages: [[]],
+        selfEmployed: [[]],
+        disability: [[]],
+        unemployment: [[]],
+        veterans: [[]],
+        workersComp: [[]],
+        childSupport: [[]],
+        retirement: [[]],
+        other: [[]],
+      },
+      assets: [[]],
+      ssiIncome: [],
+      existingSsiMe: false,
+      existingSsiHousehold: false,
+      existingSsdiMe: false,
+      existingSsdiHousehold: false,
+      existingCalworksMe: false,
+      existingCalworksHousehold: false,
+      existingCalfreshMe: false,
+      existingCalfreshHousehold: false,
+      existingCfapMe: false,
+      existingCfapHousehold: false,
+      existingMedicalMe: false,
+      existingMedicalHousehold: false,
+      existingIhssMe: false,
+      existingIhssHousehold: false,
+      existingCapiMe: false,
+      existingCapiHousehold: false,
+      existingLiheapMe: false,
+      existingLiheapHousehold: false,
+      existingWicMe: false,
+      existingWicHousehold: false,
+      existingNslpMe: false,
+      existingNslpHousehold: false,
+      existingGaMe: false,
+      existingGaHousehold: false,
+      existingVaPensionMe: false,
+      existingVaPensionHousehold: false,
+    };
   });
 
   describe('ADSA Program', () => {
-    let input;
-    let mockSsiResult;
-    let mockSsdiResult;
-    let mockIhssResult;
-    let mockCapiResult;
-    beforeEach(() => {
-      input = {
-        disabled: false,
-        blind: false,
-        deaf: false,
-        usesGuideDog: false,
-        existingSsiMe: false,
-        existingSsdiMe: false,
-        existingIhssMe: false,
-        existingCapiMe: false,
-      };
-      mockSsiResult = jest.spyOn(elig, 'ssiResult');
-      mockSsdiResult = jest.spyOn(elig, 'ssdiResult');
-      mockIhssResult = jest.spyOn(elig, 'ihssResult');
-      mockCapiResult = jest.spyOn(elig, 'capiResult');
-      mockSsiResult.mockName('mockSsiResult');
-      mockSsdiResult.mockName('mockSsdiResult');
-      mockIhssResult.mockName('mockIhssResult');
-      mockCapiResult.mockName('mockCapiResult');
-      mockSsiResult.mockReturnValue({eligible: false});
-      mockSsdiResult.mockReturnValue({eligible: false});
-      mockIhssResult.mockReturnValue({eligible: false});
-      mockCapiResult.mockReturnValue({eligible: false});
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
-
     test('Not eligible with default input', () => {
       expect(elig.adsaResult(input).eligible).toBe(false);
     });
 
-    test('Eligibile when disabled, blind, or deaf', () => {
+    test('Eligible when disabled, blind, or deaf', () => {
       input.existingSsiMe = true;
       input.usesGuideDog = true;
       check(elig.adsaResult, input).isEligibleIf('disabled').is(true);
@@ -171,10 +235,39 @@ describe('Program eligibility', () => {
       check(elig.adsaResult, input).isEligibleIf('existingSsdiMe').is(true);
       check(elig.adsaResult, input).isEligibleIf('existingIhssMe').is(true);
       check(elig.adsaResult, input).isEligibleIf('existingCapiMe').is(true);
-      check(elig.adsaResult, input).isEligibleIf(mockSsiResult).returns(eligible);
-      check(elig.adsaResult, input).isEligibleIf(mockSsdiResult).returns(eligible);
-      check(elig.adsaResult, input).isEligibleIf(mockIhssResult).returns(eligible);
-      check(elig.adsaResult, input).isEligibleIf(mockCapiResult).returns(eligible);
+
+      expect(elig.adsaResult(input).eligible).not.toBe(true);
+      let mergedInput = makeSsiEligible(input);
+      expect(elig.ssiResult(mergedInput).eligible).toBe(true);
+      expect(elig.adsaResult(mergedInput).eligible).toBe(true);
+
+      expect(elig.adsaResult(input).eligible).not.toBe(true);
+      mergedInput = makeIhssEligible(input);
+      expect(elig.ihssResult(mergedInput).eligible).toBe(true);
+      expect(elig.adsaResult(mergedInput).eligible).toBe(true);
+
+      expect(elig.adsaResult(input).eligible).not.toBe(true);
+      mergedInput = makeCapiEligible(input);
+      expect(elig.capiResult(mergedInput).eligible).toBe(true);
+      expect(elig.adsaResult(mergedInput).eligible).toBe(true);
+    });
+  });
+
+  describe('CAPI Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      expect(elig.capiResult(makeCapiEligible(input)).eligible).toBe(true);
+    });
+  });
+
+  describe('IHSS Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      expect(elig.ihssResult(makeIhssEligible(input)).eligible).toBe(true);
+    });
+  });
+
+  describe('SSI Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      expect(elig.ssiResult(makeSsiEligible(input)).eligible).toBe(true);
     });
   });
 });

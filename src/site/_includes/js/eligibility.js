@@ -6,6 +6,12 @@ function hasNulls(...values) {
   return values.some(v => v === null || Number.isNaN(v));
 }
 
+function throwIfUndefined(...values) {
+  if (values.some(v => v === undefined)) {
+    throw new Error('A logic input value was undefined');
+  }
+}
+
 // Custom boolean "or" logic that propagates null values.  Rather than
 // coercing a null value into false, null values are retained.  If the
 // result of this operation is not determined, e.g. or(false, null) then
@@ -16,6 +22,7 @@ function hasNulls(...values) {
 // null or false = null
 // null or null = null
 function or(...stmts) {
+  throwIfUndefined(...stmts);
   // Convert all values that are not null to booleans
   stmts = stmts.map(s => s === null ? null : !!s);
   // The result is determined only if at least one statement is true or
@@ -39,6 +46,7 @@ function or(...stmts) {
 // null and false = false
 // null and null = null
 function and(...stmts) {
+  throwIfUndefined(...stmts);
   // Convert all values that are not null to booleans
   stmts = stmts.map(s => s === null ? null : !!s);
   // The result is determined only if at least one statement is false or
@@ -61,6 +69,7 @@ function and(...stmts) {
 // not false = true
 // not null = null
 function not(stmt) {
+  throwIfUndefined(stmt);
   if (stmt === null) {
     return null;
   }
@@ -70,6 +79,7 @@ function not(stmt) {
 // Custom equality operator that returns null if either operand is null.
 // Otherwise, returns the boolean result of a == b.
 function eq(a, b) {
+  throwIfUndefined(a, b);
   if (hasNulls(a, b)) {
     return null;
   }
@@ -79,6 +89,7 @@ function eq(a, b) {
 // Custom inequality operator that returns null if either operand is null.
 // Otherwise, returns the boolean result of a != b.
 function ne(a, b) {
+  throwIfUndefined(a, b);
   if (hasNulls(a, b)) {
     return null;
   }
@@ -88,6 +99,7 @@ function ne(a, b) {
 // Custom less-than operator that returns null if either operand is null.
 // Otherwise, returns the boolean result of a < b.
 function lt(a, b) {
+  throwIfUndefined(a, b);
   if (hasNulls(a, b)) {
     return null;
   }
@@ -97,6 +109,7 @@ function lt(a, b) {
 // Custom greater-than operator that returns null if either operand is null.
 // Otherwise returns the boolean result of a > b.
 function gt(a, b) {
+  throwIfUndefined(a, b);
   if (hasNulls(a, b)) {
     return null;
   }
@@ -106,6 +119,7 @@ function gt(a, b) {
 // Custom less-than-equal-to operator that returns null if either operand
 // is null. Otherwise returns the boolean result of a <= b.
 function le(a, b) {
+  throwIfUndefined(a, b);
   if (hasNulls(a, b)) {
     return null;
   }
@@ -115,6 +129,7 @@ function le(a, b) {
 // Custom greater-than-equal-to operator that returns null if either operand
 // is null. Otherwise returns the boolean result of a >= b.
 function ge(a, b) {
+  throwIfUndefined(a, b);
   if (hasNulls(a, b)) {
     return null;
   }
@@ -1521,7 +1536,7 @@ function gaResult(input) {
     new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
   program.addCondition(
     new EligCondition('U.S. citizen or qualified immigrant', meetsImmigrationReq));
-    
+
   return program.getResult();
 }
 
