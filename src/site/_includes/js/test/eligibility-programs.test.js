@@ -1,7 +1,5 @@
 const elig = require('../eligibility');
 
-const eligible = {eligible: true};
-
 function isEligibleIf(target) {
   this.target = target;
   this.expected = true;
@@ -107,69 +105,76 @@ describe('MonthlyIncomeLimit', () => {
   });
 });
 
-describe('ADSA Program', () => {
-  let input;
-  let mockSsiResult;
-  let mockSsdiResult;
-  let mockIhssResult;
-  let mockCapiResult;
+describe('Program eligibility', () => {
+  let eligible;
   beforeEach(() => {
-    input = {
-      disabled: false,
-      blind: false,
-      deaf: false,
-      usesGuideDog: false,
-      existingSsiMe: false,
-      existingSsdiMe: false,
-      existingIhssMe: false,
-      existingCapiMe: false,
-    };
-    mockSsiResult = jest.spyOn(elig, 'ssiResult');
-    mockSsdiResult = jest.spyOn(elig, 'ssdiResult');
-    mockIhssResult = jest.spyOn(elig, 'ihssResult');
-    mockCapiResult = jest.spyOn(elig, 'capiResult');
-    mockSsiResult.mockName('mockSsiResult');
-    mockSsdiResult.mockName('mockSsdiResult');
-    mockIhssResult.mockName('mockIhssResult');
-    mockCapiResult.mockName('mockCapiResult');
-    mockSsiResult.mockReturnValue({eligible: false});
-    mockSsdiResult.mockReturnValue({eligible: false});
-    mockIhssResult.mockReturnValue({eligible: false});
-    mockCapiResult.mockReturnValue({eligible: false});
+    eligible = {eligible: true};
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
+  describe('ADSA Program', () => {
+    let input;
+    let mockSsiResult;
+    let mockSsdiResult;
+    let mockIhssResult;
+    let mockCapiResult;
+    beforeEach(() => {
+      input = {
+        disabled: false,
+        blind: false,
+        deaf: false,
+        usesGuideDog: false,
+        existingSsiMe: false,
+        existingSsdiMe: false,
+        existingIhssMe: false,
+        existingCapiMe: false,
+      };
+      mockSsiResult = jest.spyOn(elig, 'ssiResult');
+      mockSsdiResult = jest.spyOn(elig, 'ssdiResult');
+      mockIhssResult = jest.spyOn(elig, 'ihssResult');
+      mockCapiResult = jest.spyOn(elig, 'capiResult');
+      mockSsiResult.mockName('mockSsiResult');
+      mockSsdiResult.mockName('mockSsdiResult');
+      mockIhssResult.mockName('mockIhssResult');
+      mockCapiResult.mockName('mockCapiResult');
+      mockSsiResult.mockReturnValue({eligible: false});
+      mockSsdiResult.mockReturnValue({eligible: false});
+      mockIhssResult.mockReturnValue({eligible: false});
+      mockCapiResult.mockReturnValue({eligible: false});
+    });
 
-  test('Not eligible with default input', () => {
-    expect(elig.adsaResult(input).eligible).toBe(false);
-  });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
 
-  test('Eligibile when disabled, blind, or deaf', () => {
-    input.existingSsiMe = true;
-    input.usesGuideDog = true;
-    check(elig.adsaResult, input).isEligibleIf('disabled').is(true);
-    check(elig.adsaResult, input).isEligibleIf('blind').is(true);
-    check(elig.adsaResult, input).isEligibleIf('deaf').is(true);
-  });
+    test('Not eligible with default input', () => {
+      expect(elig.adsaResult(input).eligible).toBe(false);
+    });
 
-  test('Eligible when using a guide dog', () => {
-    input.existingSsiMe = true;
-    input.blind = true;
-    check(elig.adsaResult, input).isEligibleIf('usesGuideDog').is(true);
-  });
+    test('Eligibile when disabled, blind, or deaf', () => {
+      input.existingSsiMe = true;
+      input.usesGuideDog = true;
+      check(elig.adsaResult, input).isEligibleIf('disabled').is(true);
+      check(elig.adsaResult, input).isEligibleIf('blind').is(true);
+      check(elig.adsaResult, input).isEligibleIf('deaf').is(true);
+    });
 
-  test('Eligible with existing assistance', () => {
-    input.blind = true;
-    input.usesGuideDog = true;
-    check(elig.adsaResult, input).isEligibleIf('existingSsiMe').is(true);
-    check(elig.adsaResult, input).isEligibleIf('existingSsdiMe').is(true);
-    check(elig.adsaResult, input).isEligibleIf('existingIhssMe').is(true);
-    check(elig.adsaResult, input).isEligibleIf('existingCapiMe').is(true);
-    check(elig.adsaResult, input).isEligibleIf(mockSsiResult).returns(eligible);
-    check(elig.adsaResult, input).isEligibleIf(mockSsdiResult).returns(eligible);
-    check(elig.adsaResult, input).isEligibleIf(mockIhssResult).returns(eligible);
-    check(elig.adsaResult, input).isEligibleIf(mockCapiResult).returns(eligible);
+    test('Eligible when using a guide dog', () => {
+      input.existingSsiMe = true;
+      input.blind = true;
+      check(elig.adsaResult, input).isEligibleIf('usesGuideDog').is(true);
+    });
+
+    test('Eligible with existing assistance', () => {
+      input.blind = true;
+      input.usesGuideDog = true;
+      check(elig.adsaResult, input).isEligibleIf('existingSsiMe').is(true);
+      check(elig.adsaResult, input).isEligibleIf('existingSsdiMe').is(true);
+      check(elig.adsaResult, input).isEligibleIf('existingIhssMe').is(true);
+      check(elig.adsaResult, input).isEligibleIf('existingCapiMe').is(true);
+      check(elig.adsaResult, input).isEligibleIf(mockSsiResult).returns(eligible);
+      check(elig.adsaResult, input).isEligibleIf(mockSsdiResult).returns(eligible);
+      check(elig.adsaResult, input).isEligibleIf(mockIhssResult).returns(eligible);
+      check(elig.adsaResult, input).isEligibleIf(mockCapiResult).returns(eligible);
+    });
   });
 });
