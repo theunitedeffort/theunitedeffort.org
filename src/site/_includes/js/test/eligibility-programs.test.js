@@ -234,6 +234,7 @@ describe('Program eligibility', () => {
       check(elig.adsaResult, input).isEligibleIf(capiMadeEligible);
       check(elig.adsaResult, input).isEligibleIf(ihssMadeEligible);
       check(elig.adsaResult, input).isEligibleIf(ssiMadeEligible);
+      // TODO: Add check for SSDI once ssdiResult() is implemented;
     });
   });
 
