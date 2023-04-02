@@ -1,5 +1,6 @@
 const elig = require('../eligibility');
 
+// TODO: Reset empty_input each time in case it changes in a test.
 const empty_input = {
   income: {
     valid: true,
