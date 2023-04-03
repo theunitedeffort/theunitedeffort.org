@@ -2388,9 +2388,12 @@ if (typeof module !== 'undefined' && module.exports) {
     totalResources,
     MonthlyIncomeLimit,
     adsaResult,
+    calfreshResult,
+    calworksResult,
+    capiResult,
+    gaResult,
+    ihssResult,
     ssiResult,
     ssdiResult,
-    ihssResult,
-    capiResult,
   };
 }

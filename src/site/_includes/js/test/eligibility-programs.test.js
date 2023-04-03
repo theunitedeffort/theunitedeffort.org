@@ -21,7 +21,9 @@ function is(value) {
   function msg(whichStr) {
     return (
       `Checking ${caller.program.name} with ${whichStr} value of ` +
-      `${caller.target}: ${caller.input[caller.target]})`
+      `${caller.target}: ${caller.input[caller.target]}\n` +
+      `${caller.program.name} returns:\n` +
+      `${JSON.stringify(caller.program(caller.input), null, 2)}`
     );
   }
   const initValue = this.input[this.target];
@@ -104,6 +106,22 @@ describe('Program eligibility', () => {
     return JSON.parse(JSON.stringify(original));
   }
 
+  function calfreshMadeEligible(baseInput) {
+    let modified = deepCopy(baseInput);
+    modified.income.valid = true;
+    modified._verifyFn = elig.calworksResult;
+    return modified;
+  }
+
+  function calworksMadeEligible(baseInput) {
+    let modified = deepCopy(baseInput);
+    modified.age = 20;
+    modified.pregnant = true;
+    modified.income.valid = true;
+    modified._verifyFn = elig.calworksResult;
+    return modified;
+  }
+
   function capiMadeEligible(baseInput) {
     let modified = deepCopy(baseInput);
     modified.notCitizen = true;
@@ -111,6 +129,14 @@ describe('Program eligibility', () => {
     modified.age = 99;
     modified.income.valid = true;
     modified._verifyFn = elig.capiResult;
+    return modified;
+  }
+
+  function gaMadeEligible(baseInput) {
+    let modified = deepCopy(baseInput);
+    modified.age = 99;
+    modified.income.valid = true;
+    modified._verifyFn = elig.gaResult;
     return modified;
   }
 
@@ -238,9 +264,79 @@ describe('Program eligibility', () => {
     });
   });
 
+  describe('CalFresh Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      expect(elig.calfreshResult(calfreshMadeEligible(input)).eligible).toBe(true);
+    });
+
+    test('Not eligible with default input', () => {
+      expect(elig.calfreshResult(input).eligible).not.toBe(true);
+    });
+
+    test('Eligible when U.S. citizen or qualified immigrant', () => {
+      input.income.valid = true;
+      input.notCitizen = true;
+      check(elig.calfreshResult, input)
+        .isEligibleIf('immigrationStatus').is('permanent_resident');
+      check(elig.calfreshResult, input)
+        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_gt5y');
+      check(elig.calfreshResult, input)
+        .isEligibleIf('notCitizen').is(false);
+    });
+
+    test('Eligible without waiting period when young qualified immigrant', () => {
+      input.income.valid = true;
+      input.notCitizen = true;
+      input.immigrationStatus = 'qualified_noncitizen_le5y';
+      check(elig.calfreshResult, input).isEligibleIf('age').is(17);
+    });
+
+    test('Eligible without waiting period when blind/disabled and receiving assistance', () => {
+      input.income.valid = true;
+      input.notCitizen = true;
+      input.immigrationStatus = 'qualified_noncitizen_le5y';
+      input.existingSsiMe = true;
+      check(elig.calfreshResult, input).isEligibleIf('blind').is(true);
+      check(elig.calfreshResult, input).isEligibleIf('disabled').is(true);
+
+      input.existingSsiMe = false;
+      input.blind = true;
+      check(elig.calfreshResult, input).isEligibleIf('existingSsiMe').is(true);
+      check(elig.calfreshResult, input).isEligibleIf('existingSsdiMe').is(true);
+      check(elig.calfreshResult, input).isEligibleIf('existingCapiMe').is(true);
+      check(elig.calfreshResult, input).isEligibleIf('existingMedicalMe').is(true);
+    });
+
+    test('Eligible categorically when receiving CalWORKS or GA', () => {
+      check(elig.calfreshResult, input).isEligibleIf('existingCalworksMe').is(true);
+      check(elig.calfreshResult, input).isEligibleIf('existingCalworksHousehold').is(true);
+      check(elig.calfreshResult, input).isEligibleIf('existingGaMe').is(true);
+      check(elig.calfreshResult, input).isEligibleIf('existingGaHousehold').is(true);
+
+      check(elig.calfreshResult, input).isEligibleIf(calworksMadeEligible);
+      check(elig.calfreshResult, input).isEligibleIf(gaMadeEligible);
+    });
+
+    test('Eligible when income is below modified categorically-eligible limit', () => {
+
+    })
+  });
+
+  describe('CalWORKS Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      expect(elig.calworksResult(calworksMadeEligible(input)).eligible).toBe(true);
+    });
+  });
+
   describe('CAPI Program', () => {
     test('Eligible with input for other program dependencies', () => {
       expect(elig.capiResult(capiMadeEligible(input)).eligible).toBe(true);
+    });
+  });
+
+  describe('GA Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      expect(elig.gaResult(gaMadeEligible(input)).eligible).toBe(true);
     });
   });
 
