@@ -1,3 +1,27 @@
+const constants = {
+  calfresh: {
+    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
+    // Section 2.1
+    FED_POVERTY_LEVEL: [
+      1133,
+      1526,
+      1920,
+      2313,
+      2706,
+      3100,
+      3493,
+      3886
+    ],
+    FED_POVERTY_LEVEL_ADDL_PERSON: 394,
+    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
+    // Section 11.8
+    GROSS_INCOME_LIMIT_MCE_FACTOR: 2.0,  // Times federal poverty limit
+    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap19.pdf
+    // Section 19.1.3
+    SELF_EMPLOYED_EXEMPT_FRACTION: 0.4,
+    SHORT_RESIDENCY_OK_BELOW_AGE: 18,
+  }
+}
 // This global variable holds the current state of the form navigation.
 let currentPage;
 
@@ -1101,29 +1125,13 @@ function adsaResult(input) {
 function calfreshResult(input) {
   // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
   // Section 2.1
-  const fedPovertyLevel = new MonthlyIncomeLimit([
-      1133,
-      1526,
-      1920,
-      2313,
-      2706,
-      3100,
-      3493,
-      3886
-    ],
-    394);
-
-  // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
-  // Section 11.8
-  const GROSS_INCOME_LIMIT_MCE_FACTOR = 2.0;  // Times federal poverty limit
-
-  // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap19.pdf
-  // Section 19.1.3
-  const SELF_EMPLOYED_EXEMPT_FRACTION = 0.4;
+  const fedPovertyLevel = new MonthlyIncomeLimit(
+    constants.calfresh.FED_POVERTY_LEVEL,
+    constants.calfresh.FED_POVERTY_LEVEL_ADDL_PERSON);
 
   const meetsShortResidencyReq = or(
     // TODO: add military connection.
-    lt(input.age, 18),
+    lt(input.age, constants.calfresh.SHORT_RESIDENCY_OK_BELOW_AGE),
     and(
       or(
         input.blind,
@@ -1170,12 +1178,12 @@ function calfreshResult(input) {
   // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf#page=7
   // Section 11.8.4
   //
-  const mceIncomeLimit = (GROSS_INCOME_LIMIT_MCE_FACTOR *
+  const mceIncomeLimit = (constants.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR *
     fedPovertyLevel.getLimit(input.householdSize));
   let nonExemptIncome = null;
   if (grossIncome(input) !== null) {
     nonExemptIncome = (grossIncome(input) -
-      SELF_EMPLOYED_EXEMPT_FRACTION *
+      constants.calfresh.SELF_EMPLOYED_EXEMPT_FRACTION *
       categoryTotal(input.income.selfEmployed));
   }
   const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
