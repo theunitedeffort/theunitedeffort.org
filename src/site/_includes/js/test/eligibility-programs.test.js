@@ -318,8 +318,15 @@ describe('Program eligibility', () => {
     });
 
     test('Eligible when income is below modified categorically-eligible limit', () => {
-
-    })
+      const testIncome = (
+        elig.cnst.calfresh.FED_POVERTY_LEVEL[0] *
+        elig.cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR);
+      input.income.valid = true;
+      input.income.wages[0][0] = testIncome + 1;
+      expect(elig.calfreshResult(input).eligible).not.toBe(true);
+      input.income.wages[0][0] = testIncome;
+      expect(elig.calfreshResult(input).eligible).toBe(true);
+    });
   });
 
   describe('CalWORKS Program', () => {
