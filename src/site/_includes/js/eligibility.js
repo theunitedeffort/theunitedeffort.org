@@ -104,9 +104,28 @@ const cnst = {
     NUM_OF_DEPENDENTS: 0,  // People
     MAX_RESOURCES: 500,  // USD
   },
-  noFeeId: {
-    // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
-    MIN_ELIGIBLE_AGE: 62,  // Years
+  housingChoice: {
+    // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
+    MIN_ELIGIBLE_AGE: 18,
+    // For income limits additional person calculations
+    // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+    INCOME_ROUND_UP_TO_NEAREST: 50,  // USD
+    BASE_HOUSEHOLD_SIZE: 4,  // People
+    FAMILY_SIZE_ADJ_8: 1.32,
+    INCREMENTAL_ADJ: 0.08,
+    // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
+    // See "very low income" here:
+    // https://www.huduser.gov/portal/datasets/il/il2022/2022summary.odn?states=6.0&data=2022&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2022&selection_type=county
+    ANNUAL_INCOME_LIMITS: [  // USD per month
+      59000,
+      67400,
+      75850,
+      84250,
+      91000,
+      97750,
+      104500,
+      111250,
+    ],
   },
   ihss: {
     // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
@@ -144,28 +163,9 @@ const cnst = {
     ],
     MONTHLY_INCOME_LIMIT_ADDL_PERSON: 155.78,  // USD per month
   },
-  housingChoice: {
-    // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
-    MIN_ELIGIBLE_AGE: 18,
-    // For income limits additional person calculations
-    // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
-    INCOME_ROUND_UP_TO_NEAREST: 50,  // USD
-    BASE_HOUSEHOLD_SIZE: 4,  // People
-    FAMILY_SIZE_ADJ_8: 1.32,
-    INCREMENTAL_ADJ: 0.08,
-    // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
-    // See "very low income" here:
-    // https://www.huduser.gov/portal/datasets/il/il2022/2022summary.odn?states=6.0&data=2022&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2022&selection_type=county
-    ANNUAL_INCOME_LIMITS: [  // USD per month
-      59000,
-      67400,
-      75850,
-      84250,
-      91000,
-      97750,
-      104500,
-      111250,
-    ],
+  noFeeId: {
+    // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
+    MIN_ELIGIBLE_AGE: 62,  // Years
   },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
@@ -227,7 +227,7 @@ const cnst = {
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
     CHILD_EXIT_AGE: 5,  // Birthday at which a child is ineligible.
   },
-}
+};
 
 // This global variable holds the current state of the form navigation.
 let currentPage;
@@ -1410,12 +1410,9 @@ function calfreshResult(input) {
 }
 
 function calworksResult(input) {
-  // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
-  // Section 1.2
   const mbsac = new MonthlyIncomeLimit(
     cnst.calworks.MBSAC,
     cnst.calworks.MBSAC_ADDL_PERSON);
-  // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
 
   const childSupportDisregards = [
     0,
