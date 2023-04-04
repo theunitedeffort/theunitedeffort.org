@@ -1,8 +1,8 @@
-const constants = {
+const cnst = {
   calfresh: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
     // Section 2.1
-    FED_POVERTY_LEVEL: [
+    FED_POVERTY_LEVEL: [  // USD per month
       1133,
       1526,
       1920,
@@ -10,18 +10,225 @@ const constants = {
       2706,
       3100,
       3493,
-      3886
+      3886,
     ],
-    FED_POVERTY_LEVEL_ADDL_PERSON: 394,
+    FED_POVERTY_LEVEL_ADDL_PERSON: 394,  // USD per month per person
     // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
     // Section 11.8
     GROSS_INCOME_LIMIT_MCE_FACTOR: 2.0,  // Times federal poverty limit
     // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap19.pdf
     // Section 19.1.3
     SELF_EMPLOYED_EXEMPT_FRACTION: 0.4,
-    SHORT_RESIDENCY_OK_BELOW_AGE: 18,
-  }
+    SHORT_RESIDENCY_OK_BELOW_AGE: 18,  // Years
+  },
+  calworks: {
+    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
+    // Section 1.2
+    MBSAC: [  // USD per month
+      807,
+      1324,
+      1641,
+      1947,
+      2221,
+      2499,
+      2746,
+      2988,
+      3242,
+      3519,
+    ],
+    MBSAC_ADDL_PERSON: 32,  // USD per month per person
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
+    // Section 14.1
+    BASE_RESOURCE_LIMIT: 10888,  // USD
+    DISABLED_ELDERLY_RESOURCE_LIMIT: 16333,  // USD
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap33.pdf
+    // Section 33.3
+    EMPLOYMENT_DISREGARD: 450,  // USD
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap31.pdf
+    // Section 31.6.1
+    SELF_EMPLOYED_DISREGARD_FRAC: 0.4,  // USD
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
+    // Section 27.9.3
+    ONE_CHILD_SUPPORT_DISREGARD: 100,  // USD
+    TWO_CHILD_SUPPORT_DISREGARD: 200,  // USD
+    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap13.pdf
+    // Section 13.1.1
+    MAX_CHILD_AGE: 18,  // Years
+  },
+  care: {
+    // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
+    ANNUAL_INCOME_LIMITS: [  // USD per year
+      36620,
+      36620,
+      46060,
+      55500,
+      64940,
+      74380,
+      83820,
+      93260,
+    ],
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 9440,  // USD per year per person
+  },
+  fera: {
+    // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
+    ANNUAL_INCOME_LIMITS: [  // USD per year
+      0,  // Min household size 3.
+      0,  // Min household size 3.
+      57575,
+      69375,
+      81175,
+      92975,
+      104775,
+      116575,
+    ],
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11800,  // USD per year per person
+    MIN_HOUSEHOLD_SIZE: 3,  // People
+  },
+  ga: {
+    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
+    // Section 4.2, UNSHARED Housing in section 4.2.1
+    MONTHLY_INCOME_LIMITS: [  // USD per month
+      343,
+      460,
+      576,
+      693,
+      810,
+      926,
+      1044,
+      1161,
+      1278,
+      1396,
+    ],
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 11,  // USD per month per person
+    MIN_ELIGIBLE_AGE: 18,  // Years
+    NUM_OF_DEPENDENTS: 0,  // People
+    MAX_RESOURCES: 500,  // USD
+  },
+  noFeeId: {
+    // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
+    MIN_ELIGIBLE_AGE: 62,  // Years
+  },
+  ihss: {
+    // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
+    MIN_ELDERLY_AGE: 65,  // Years
+  },
+  lifeline: {
+    // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
+    ANNUAL_INCOME_LIMITS: [  // USD per year
+      28700,
+      28700,
+      33300,
+      40600,
+    ],
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 7300,  // USD per year per person
+  },
+  liheap: {
+    // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
+    //
+    // LIHEAP income limits are set at 60% of State Median Income:
+    //   https://www.acf.hhs.gov/ocs/policy-guidance/liheap-im-2022-04-state-median-income-estimates-optional-use-ffy-2022-and
+    //
+    // Calculating income limit for various household sizes by multiplying the 4-person limit by various values:
+    //   https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf
+    MONTHLY_INCOME_LIMITS: [  // USD per month
+      2700.17,
+      3531.0,
+      4361.83,
+      5192.75,
+      6023.59,
+      6854.43,
+      7010.21,
+      7166.0,
+      7321.78,
+      7477.56,
+    ],
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 155.78,  // USD per month
+  },
+  housingChoice: {
+    // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
+    MIN_ELIGIBLE_AGE: 18,
+    // For income limits additional person calculations
+    // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+    INCOME_ROUND_UP_TO_NEAREST: 50,  // USD
+    BASE_HOUSEHOLD_SIZE: 4,  // People
+    FAMILY_SIZE_ADJ_8: 1.32,
+    INCREMENTAL_ADJ: 0.08,
+    // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
+    // See "very low income" here:
+    // https://www.huduser.gov/portal/datasets/il/il2022/2022summary.odn?states=6.0&data=2022&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2022&selection_type=county
+    ANNUAL_INCOME_LIMITS: [  // USD per month
+      59000,
+      67400,
+      75850,
+      84250,
+      91000,
+      97750,
+      104500,
+      111250,
+    ],
+  },
+  ssiCapi: {
+    // https://www.ssa.gov/oact/cola/sga.html
+    SGA_NON_BLIND: 1470,  // USD per month
+    SGA_BLIND: 2460,  // USD per month
+    // https://www.ssa.gov/pubs/EN-05-11125.pdf
+    // Note these max benefit amounts include the California state supplement.
+    // TODO: Handle other living categories (e.g. non-medical out-of-home care).
+    MAX_BENEFIT_NON_BLIND: 1133.73,  // USD per month
+    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1251.74,  // USD per month
+    MAX_BENEFIT_BLIND: 1211,  // USD per month
+    // https://www.ssa.gov/ssi/text-resources-ussi.htm
+    MAX_RESOURCES: 2000,  // USD
+    // https://www.ssa.gov/oact/cola/incomexcluded.html
+    MAX_UNEARNED_INCOME_EXCLUSION: 20,  // USD per month
+    MAX_EARNED_INCOME_EXCLUSION: 65,  // USD per month
+    EARNED_INCOME_EXCLUSION_FACTOR: 0.5,
+    // https://www.ssa.gov/ssi/text-eligibility-ussi.htm
+    MIN_ELDERLY_AGE: 65,  // Years
+  },
+  vaPension: {
+    // https://www.va.gov/pension/eligibility/
+    MIN_ELDERLY_AGE: 65,  // Years
+    MIN_EARLY_DUTY_DURATION: 90,  // days
+    MIN_LATE_DUTY_DURATION: 730,  // days
+    RECENT_DUTY_THRESHOLD: 730,  // days
+    EARLY_DUTY_BEFORE: '1980-09-08',  // YYYY-MM-DD
+    LATE_DUTY_AFTER: '1980-09-07',  // YYYY-MM-DD
+    OFFICER_DUTY_AFTER: '1981-10-16',  // YYYY-MM-DD
+    // https://www.va.gov/pension/veterans-pension-rates/
+    ANNUAL_NET_WORTH_LIMIT: 150538,  // USD per year
+    // https://www.va.gov/pension/eligibility/
+    // Each wartime period is defined as a two-element array.  First the
+    // start date, then the end date.  Dates are given as strings with the
+    // format YYYY-MM-DD.  An empty string is intepreted as "today"
+    WARTIMES: [
+      ['1916-05-09', '1917-04-05'],  // Mexican Border period
+      ['1917-04-05', '1918-11-11'],  // WWI
+      ['1941-12-07', '1946-12-31'],  // WWII
+      ['1950-06-27', '1955-01-31'],  // Korean conflict
+      ['1955-11-01', '1975-05-07'],  // Vietnam War, in Vietnam
+      ['1964-08-05', '1975-05-07'],  // Vietnam War, out of Vietnam
+      ['1990-08-02', ''],            // Gulf war, no end date yet.
+    ],
+  },
+  wic: {
+    // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
+    MONTHLY_INCOME_LIMITS: [  // USD per month
+      2096,
+      2823,
+      3551,
+      4279,
+      5006,
+      5734,
+      6462,
+      7189,
+    ],
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 728,  // USD per month per person
+    // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
+    CHILD_EXIT_AGE: 5,  // Birthday at which a child is ineligible.
+  },
 }
+
 // This global variable holds the current state of the form navigation.
 let currentPage;
 
@@ -1126,12 +1333,12 @@ function calfreshResult(input) {
   // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
   // Section 2.1
   const fedPovertyLevel = new MonthlyIncomeLimit(
-    constants.calfresh.FED_POVERTY_LEVEL,
-    constants.calfresh.FED_POVERTY_LEVEL_ADDL_PERSON);
+    cnst.calfresh.FED_POVERTY_LEVEL,
+    cnst.calfresh.FED_POVERTY_LEVEL_ADDL_PERSON);
 
   const meetsShortResidencyReq = or(
     // TODO: add military connection.
-    lt(input.age, constants.calfresh.SHORT_RESIDENCY_OK_BELOW_AGE),
+    lt(input.age, cnst.calfresh.SHORT_RESIDENCY_OK_BELOW_AGE),
     and(
       or(
         input.blind,
@@ -1178,12 +1385,12 @@ function calfreshResult(input) {
   // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf#page=7
   // Section 11.8.4
   //
-  const mceIncomeLimit = (constants.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR *
+  const mceIncomeLimit = (cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR *
     fedPovertyLevel.getLimit(input.householdSize));
   let nonExemptIncome = null;
   if (grossIncome(input) !== null) {
     nonExemptIncome = (grossIncome(input) -
-      constants.calfresh.SELF_EMPLOYED_EXEMPT_FRACTION *
+      cnst.calfresh.SELF_EMPLOYED_EXEMPT_FRACTION *
       categoryTotal(input.income.selfEmployed));
   }
   const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
@@ -1205,44 +1412,15 @@ function calfreshResult(input) {
 function calworksResult(input) {
   // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
   // Section 1.2
-  const mbsac = new MonthlyIncomeLimit([
-    807,
-    1324,
-    1641,
-    1947,
-    2221,
-    2499,
-    2746,
-    2988,
-    3242,
-    3519
-  ],
-  32);
+  const mbsac = new MonthlyIncomeLimit(
+    cnst.calworks.MBSAC,
+    cnst.calworks.MBSAC_ADDL_PERSON);
   // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
-  // Section 14.1
-  const BASE_RESOURCE_LIMIT = 10888;
-  const DISABLED_ELDERLY_RESOURCE_LIMIT = 16333;
 
-  // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap33.pdf
-  // Section 33.3
-  const EMPLOYMENT_DISREGARD = 450;
-
-  // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap31.pdf
-  // Section 31.6.1
-  const SELF_EMPLOYED_DISREGARD_FRAC = 0.4;
-
-  // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
-  // Section 27.9.3
-  const ONE_CHILD_SUPPORT_DISREGARD = 100;
-  const TWO_CHILD_SUPPORT_DISREGARD = 200;
   const childSupportDisregards = [
     0,
-    ONE_CHILD_SUPPORT_DISREGARD,
-    TWO_CHILD_SUPPORT_DISREGARD];
-
-  // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap13.pdf
-  // Section 13.1.1
-  MAX_CHILD_AGE = 18;
+    cnst.calworks.ONE_CHILD_SUPPORT_DISREGARD,
+    cnst.calworks.TWO_CHILD_SUPPORT_DISREGARD];
 
   const meetsImmigrationReq = or(
     not(input.notCitizen),
@@ -1252,11 +1430,11 @@ function calworksResult(input) {
       'qualified_noncitizen_le5y']));
 
   const meetsFamilyReq = or(
-    ...input.householdAges.map(a => le(a, MAX_CHILD_AGE)),
+    ...input.householdAges.map(a => le(a, cnst.calworks.MAX_CHILD_AGE)),
     // TODO: is this head of household check needed?  Could we just
     // check if _anyone_ is under 19?
     and(
-      le(input.age, MAX_CHILD_AGE),
+      le(input.age, cnst.calworks.MAX_CHILD_AGE),
       input.headOfHousehold),
     // TODO: Add check for other household members who are pregnant.
     input.pregnant
@@ -1271,10 +1449,11 @@ function calworksResult(input) {
   // than propagate null age values.
   // Note if the applicant is under 19, they do not count as a child for
   // child support income.
-  const numChildren = (
-    input.householdAges.filter(a => a <= MAX_CHILD_AGE).length);
+  const numChildren = (input.householdAges.filter(
+    a => a <= cnst.calworks.MAX_CHILD_AGE).length);
 
-  const maxEmploymentDisregard = numEmployed * EMPLOYMENT_DISREGARD;
+  const maxEmploymentDisregard = (
+    numEmployed * cnst.calworks.EMPLOYMENT_DISREGARD);
   const maxChildSupportDisregard = childSupportDisregards[
     Math.min(numChildren, childSupportDisregards.length - 1)];
   const wagesTotal = categoryTotal(input.income.wages);
@@ -1286,7 +1465,7 @@ function calworksResult(input) {
     nonExemptIncome = (grossIncome(input) -
       Math.min(wagesTotal, maxEmploymentDisregard) -
       Math.min(childSupportTotal, maxChildSupportDisregard) -
-      SELF_EMPLOYED_DISREGARD_FRAC *
+      cnst.calworks.SELF_EMPLOYED_DISREGARD_FRAC *
       categoryTotal(input.income.selfEmployed) - ssiIncomeTotal);
   }
 
@@ -1294,7 +1473,7 @@ function calworksResult(input) {
   const mbsacIncomeLimit = mbsac.getLimit(input.householdSize);
   const underIncomeLimit = le(nonExemptIncome, mbsacIncomeLimit);
 
-  let resourceLimit = BASE_RESOURCE_LIMIT;
+  let resourceLimit = cnst.calworks.BASE_RESOURCE_LIMIT;
   // TODO: If household ages are not specified, we may ok falling back to
   // BASE_RESOURCE_LIMIT.
   const hasElderlyOrDisabled = or(
@@ -1306,7 +1485,7 @@ function calworksResult(input) {
   if (hasElderlyOrDisabled === null) {
     resourceLimit = null;
   } else if (hasElderlyOrDisabled) {
-    resourceLimit = DISABLED_ELDERLY_RESOURCE_LIMIT;
+    resourceLimit = cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT;
   }
   const underResourceLimit = le(totalResources(input), resourceLimit);
 
@@ -1316,7 +1495,7 @@ function calworksResult(input) {
       meetsImmigrationReq));
   program.addCondition(
     new EligCondition(
-      `Household has a member who is pregnant or under ${MAX_CHILD_AGE + 1}`,
+      `Household has a member who is pregnant or under ${cnst.calworks.MAX_CHILD_AGE + 1}`,
       meetsFamilyReq));
   program.addCondition(
     new EligCondition(
@@ -1345,18 +1524,9 @@ function capiResult(input) {
 }
 
 function careIncomeLimit() {
-  // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-  const grossLimit = MonthlyIncomeLimit.fromAnnual([
-    36620,
-    36620,
-    46060,
-    55500,
-    64940,
-    74380,
-    83820,
-    93260
-  ],
-  9440);
+  const grossLimit = MonthlyIncomeLimit.fromAnnual(
+    cnst.care.ANNUAL_INCOME_LIMITS,
+    cnst.care.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
 
   return grossLimit;
 }
@@ -1410,20 +1580,9 @@ function careResult(input) {
 }
 
 function feraResult(input) {
-  // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-  const grossLimit = MonthlyIncomeLimit.fromAnnual([
-    0,  // Min household size 3.
-    0,  // Min household size 3.
-    57575,
-    69375,
-    81175,
-    92975,
-    104775,
-    116575
-  ],
-  11800);
-
-  const MIN_HOUSEHOLD_SIZE = 3;
+  const grossLimit = MonthlyIncomeLimit.fromAnnual(
+    cnst.fera.ANNUAL_INCOME_LIMITS,
+    cnst.fera.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
 
   const isHoused = isOneOf(input.housingSituation, [
     'housed',
@@ -1434,7 +1593,8 @@ function feraResult(input) {
   const incomeLimitFera = grossLimit.getLimit(input.householdSize);
   const underFeraIncomeLimit = le(grossIncome(input), incomeLimitFera);
 
-  const meetsHouseholdSizeReq = ge(input.householdSize, MIN_HOUSEHOLD_SIZE);
+  const meetsHouseholdSizeReq = ge(input.householdSize,
+    cnst.fera.MIN_HOUSEHOLD_SIZE);
 
   const program = new Program();
   program.addCondition(
@@ -1448,7 +1608,7 @@ function feraResult(input) {
     new EligCondition(`Gross income is under FERA program limit of ${usdLimit(incomeLimitFera)} per month`,
       underFeraIncomeLimit));
   program.addCondition(
-    new EligCondition(`Household has at least ${MIN_HOUSEHOLD_SIZE} people`,
+    new EligCondition(`Household has at least ${cnst.fera.MIN_HOUSEHOLD_SIZE} people`,
       meetsHouseholdSizeReq));
 
   return program.getResult();
@@ -1495,32 +1655,16 @@ function vaDisabilityCompResult(input) {
 //   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf (Section 5.1)
 //     Maximum age can be over 64 years with some conditions. May or may not need to implement this.
 function gaResult(input) {
-  //   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf (Section 4.2)
-  //     UNSHARED Housing in Section 4.2.1. max gross income cannot exceed max grant level, and max grant level changees with family size and living arrangement.
-  const grossLimit = new MonthlyIncomeLimit([
-    343,
-    460,
-    576,
-    693,
-    810,
-    926,
-    1044,
-    1161,
-    1278,
-    1396
-  ],
-  11);
+  const grossLimit = new MonthlyIncomeLimit(
+    cnst.ga.MONTHLY_INCOME_LIMITS,
+    cnst.ga.MONTHLY_INCOME_LIMIT_ADDL_PERSON);
 
-  const MIN_GA_ELIGIBLE_AGE = 18;  // Years
-  const NUM_OF_DEPENDENTS = 0;     // None
-  const MAX_RESOURCES = 500;       // USD Combined household assets
-
-  const meetsAgeReq = ge(input.age, MIN_GA_ELIGIBLE_AGE);
+  const meetsAgeReq = ge(input.age, cnst.ga.MIN_ELIGIBLE_AGE);
 
   const numDependents = input.householdDependents.filter(d => d).length;
-  const hasNoDependents = eq(numDependents, NUM_OF_DEPENDENTS);
+  const hasNoDependents = eq(numDependents, cnst.ga.NUM_OF_DEPENDENTS);
 
-  const underResourceLimit = le(totalResources(input), MAX_RESOURCES);
+  const underResourceLimit = le(totalResources(input), cnst.ga.MAX_RESOURCES);
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
@@ -1534,11 +1678,11 @@ function gaResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition(`Age ${MIN_GA_ELIGIBLE_AGE} or older`, meetsAgeReq));
+    new EligCondition(`Age ${cnst.ga.MIN_GA_ELIGIBLE_AGE} or older`, meetsAgeReq));
   program.addCondition(
-    new EligCondition(`Has ${NUM_OF_DEPENDENTS} dependent children`, hasNoDependents));
+    new EligCondition(`Has ${cnst.ga.NUM_OF_DEPENDENTS} dependent children`, hasNoDependents));
   program.addCondition(
-    new EligCondition(`Total value of assets is below ${usdLimit(MAX_RESOURCES)}`, underResourceLimit));
+    new EligCondition(`Total value of assets is below ${usdLimit(cnst.ga.MAX_RESOURCES)}`, underResourceLimit));
   program.addCondition(
     new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
   program.addCondition(
@@ -1548,21 +1692,18 @@ function gaResult(input) {
 }
 
 function noFeeIdResult(input) {
-  // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
-  const MIN_ELIGIBLE_AGE = 62;  // Years
-
   const isUnhoused = isOneOf(input.housingSituation, [
       'vehicle',
       'transitional',
       'hotel',
       'shelter',
       'no-stable-place']);
-  const meetsAgeReq = ge(input.age, MIN_ELIGIBLE_AGE);
+  const meetsAgeReq = ge(input.age, cnst.noFeeId.MIN_ELIGIBLE_AGE);
 
   const program = new Program();
   program.addConditionsOneOf([
     new EligCondition('Experiencing homelessness', isUnhoused),
-    new EligCondition(`Age ${MIN_ELIGIBLE_AGE} or older`, meetsAgeReq)
+    new EligCondition(`Age ${cnst.noFeeId.MIN_ELIGIBLE_AGE} or older`, meetsAgeReq)
   ]);
   return program.getResult();
 }
@@ -1597,11 +1738,8 @@ function reducedFeeIdResult(input) {
 }
 
 function ihssResult(input) {
-  // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
-  const MIN_ELDERLY_AGE = 65;
-
   const meetsDisabilityReq = or(
-    ge(input.age, MIN_ELDERLY_AGE),
+    ge(input.age, cnst.ihss.MIN_ELDERLY_AGE),
     input.blind,
     input.disabled);
 
@@ -1623,14 +1761,9 @@ function ihssResult(input) {
 }
 
 function lifelineResult(input) {
-  // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
-  const grossLimit = MonthlyIncomeLimit.fromAnnual([
-      28700,
-      28700,
-      33300,
-      40600,
-    ],
-    7300);
+  const grossLimit = MonthlyIncomeLimit.fromAnnual(
+    cnst.lifeline.ANNUAL_INCOME_LIMITS,
+    cnst.lifeline.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
 
   const underIncomeLimit = le(
     grossIncome(input), grossLimit.getLimit(input.householdSize));
@@ -1672,26 +1805,9 @@ function lifelineResult(input) {
 }
 
 function liheapResult(input) {
-  // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
-  //
-  // LIHEAP income limits are set at 60% of State Median Income:
-  //   https://www.acf.hhs.gov/ocs/policy-guidance/liheap-im-2022-04-state-median-income-estimates-optional-use-ffy-2022-and
-  //
-  // Calculating income limit for various household sizes by multiplying the 4-person limit by various values:
-  //   https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf
-  const grossLimit = new MonthlyIncomeLimit([
-    2700.17,
-    3531.0,
-    4361.83,
-    5192.75,
-    6023.59,
-    6854.43,
-    7010.21,
-    7166.0,
-    7321.78,
-    7477.56
-  ],
-  155.78);
+  const grossLimit = new MonthlyIncomeLimit(
+    cnst.liheap.MONTHLY_INCOME_LIMITS,
+    cnst.liheap.MONTHLY_INCOME_LIMIT_ADDL_PERSON);
 
   const isHoused = isOneOf(input.housingSituation, [
     'housed',
@@ -1720,41 +1836,18 @@ function vtaParatransitResult(input) {
 }
 
 function housingChoiceResult(input) {
-  // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
-  const MIN_ELIGIBLE_AGE = 18;
-
-  // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
-  const INCOME_ROUND_UP_TO_NEAREST = 50;
-  const BASE_HOUSEHOLD_SIZE = 4;
-  const FAMILY_SIZE_ADJ_8 = 1.32;
-  const INCREMENTAL_ADJ = 0.08;
-
-  // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
-  // See "very low income" here:
-  // https://www.huduser.gov/portal/datasets/il/il2022/2022summary.odn?states=6.0&data=2022&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2022&selection_type=county
-  const grossLimitInput = [
-    59000,
-    67400,
-    75850,
-    84250,
-    91000,
-    97750,
-    104500,
-    111250,
-  ];
-
   // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
   const extraCalc = function(numExtraPeople) {
-    const incomeLimit = (grossLimitInput[BASE_HOUSEHOLD_SIZE - 1] *
-      (FAMILY_SIZE_ADJ_8 + INCREMENTAL_ADJ * numExtraPeople));
-    const rounded = (INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
-      Math.trunc(incomeLimit) / INCOME_ROUND_UP_TO_NEAREST));
+    const incomeLimit = (grossLimitInput[cnst.housingChoice.BASE_HOUSEHOLD_SIZE - 1] *
+      (cnst.housingChoice.FAMILY_SIZE_ADJ_8 + cnst.housingChoice.INCREMENTAL_ADJ * numExtraPeople));
+    const rounded = (cnst.housingChoice.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
+      Math.trunc(incomeLimit) / cnst.housingChoice.INCOME_ROUND_UP_TO_NEAREST));
     // Return incremental change ("extra") from the max listed input value.
     return rounded - grossLimitInput[grossLimitInput.length - 1];
   }
 
   const grossLimit = MonthlyIncomeLimit.fromAnnual(
-    grossLimitInput,
+    cnst.housingChoice.ANNUAL_INCOME_LIMITS,
     extraCalc);
 
   // TODO: Collect data about whether _anyone_ in the household is
@@ -1768,14 +1861,14 @@ function housingChoiceResult(input) {
       'qualified_noncitizen_le5y']));
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
-  const meetsAgeReq = ge(input.age, MIN_ELIGIBLE_AGE);
+  const meetsAgeReq = ge(input.age, cnst.housingChoice.MIN_ELIGIBLE_AGE);
 
   const program = new Program();
   program.addCondition(
     new EligCondition('U.S. citizen or qualified immigrant',
       meetsImmigrationReq));
   program.addCondition(
-    new EligCondition(`Age ${MIN_ELIGIBLE_AGE} or older`, meetsAgeReq));
+    new EligCondition(`Age ${cnst.housingChoice.MIN_ELIGIBLE_AGE} or older`, meetsAgeReq));
   program.addCondition(
     new EligCondition(
       `Gross income is below ${usdLimit(incomeLimit)} per month`,
@@ -1784,28 +1877,6 @@ function housingChoiceResult(input) {
 }
 
 function ssiCapiBaseProgram(input) {
-  // https://www.ssa.gov/oact/cola/sga.html
-  const SGA_NON_BLIND = 1470;  // USD per month
-  const SGA_BLIND = 2460;  // USD per month
-
-  // https://www.ssa.gov/pubs/EN-05-11125.pdf
-  // Note these max benefit amounts include the California state supplement.
-  // TODO: Handle other living categories (e.g. non-medical out-of-home care).
-  const MAX_BENEFIT_NON_BLIND = 1133.73;  // USD per month
-  const MAX_BENEFIT_NON_BLIND_NO_KITCHEN = 1251.74;  // USD per month
-  const MAX_BENEFIT_BLIND = 1211;  // USD per month
-
-  // https://www.ssa.gov/ssi/text-resources-ussi.htm
-  const MAX_RESOURCES = 2000;  // USD
-
-  // https://www.ssa.gov/oact/cola/incomexcluded.html
-  const MAX_UNEARNED_INCOME_EXCLUSION = 20;  // USD per month
-  const MAX_EARNED_INCOME_EXCLUSION = 65;  // USD per month
-  const EARNED_INCOME_EXCLUSION_FACTOR = 0.5;
-
-  // https://www.ssa.gov/ssi/text-eligibility-ussi.htm
-  const MIN_ELDERLY_AGE = 65;  // Years
-
   // Note we are not checking if the user's disability is preventing them
   // from working, as that decision can be complex to make--better to just
   // assume they have trouble working to avoid screening someone out
@@ -1813,16 +1884,16 @@ function ssiCapiBaseProgram(input) {
   const meetsDisabilityReq = or(
     input.disabled,
     input.blind,
-    ge(input.age, MIN_ELDERLY_AGE));
+    ge(input.age, cnst.ssiCapi.MIN_ELDERLY_AGE));
 
-  const sgaLimit = input.blind ? SGA_BLIND : SGA_NON_BLIND;
-  let maxBenefit = MAX_BENEFIT_NON_BLIND;
+  const sgaLimit = input.blind ? cnst.ssiCapi.SGA_BLIND : cnst.ssiCapi.SGA_NON_BLIND;
+  let maxBenefit = cnst.ssiCapi.MAX_BENEFIT_NON_BLIND;
   if (input.blind) {
-    maxBenefit = MAX_BENEFIT_BLIND;
+    maxBenefit = cnst.ssiCapi.MAX_BENEFIT_BLIND;
   } else if (not(input.hasKitchen)) {
     // TODO: Update the form to always show the kitchen question regardless
     // of housing situation.
-    maxBenefit = MAX_BENEFIT_NON_BLIND_NO_KITCHEN;
+    maxBenefit = cnst.ssiCapi.MAX_BENEFIT_NON_BLIND_NO_KITCHEN;
   }
   // Note income and resources for only the user (applicant) are counted.
   // TODO: Apply deeming.
@@ -1831,22 +1902,22 @@ function ssiCapiBaseProgram(input) {
 
   // See https://www.ssa.gov/oact/cola/incomexcluded.html for calculation.
   const unearnedExclusion = Math.min(unearnedIncome,
-    MAX_UNEARNED_INCOME_EXCLUSION);
-  const countableEarnedIncome = Math.max(0, EARNED_INCOME_EXCLUSION_FACTOR * (
+    cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
+  const countableEarnedIncome = Math.max(0, cnst.ssiCapi.EARNED_INCOME_EXCLUSION_FACTOR * (
     earnedIncome -
-    MAX_EARNED_INCOME_EXCLUSION -
-    (MAX_UNEARNED_INCOME_EXCLUSION - unearnedExclusion)));
+    cnst.ssiCapi.MAX_EARNED_INCOME_EXCLUSION -
+    (cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION - unearnedExclusion)));
   const countableUnearnedIncome = unearnedIncome - unearnedExclusion;
   const countableIncome = countableEarnedIncome + countableUnearnedIncome;
 
   const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
   const underIncomeLimit = lt(countableIncome, maxBenefit);
   const underResourceLimit = le(
-    totalResources(input, 0), MAX_RESOURCES);
+    totalResources(input, 0), cnst.ssiCapi.MAX_RESOURCES);
 
   const program = new Program();
   program.addCondition(new EligCondition(
-    `Disabled, blind or age ${MIN_ELDERLY_AGE} or older`,
+    `Disabled, blind or age ${cnst.ssiCapi.MIN_ELDERLY_AGE} or older`,
     meetsDisabilityReq));
   program.addCondition(new EligCondition(
     `Income from employment is below ${usdLimit(sgaLimit)} per month`,
@@ -1855,7 +1926,7 @@ function ssiCapiBaseProgram(input) {
     `Total adjusted income is below ${usdLimit(maxBenefit)} per month`,
     underIncomeLimit));
   program.addCondition(new EligCondition(
-    `Total value of assets is below ${usdLimit(MAX_RESOURCES)}`,
+    `Total value of assets is below ${usdLimit(cnst.ssiCapi.MAX_RESOURCES)}`,
     underResourceLimit));
 
   return program;
@@ -1887,32 +1958,6 @@ function ssdiResult(input) {
 }
 
 function vaPensionResult(input) {
-  // https://www.va.gov/pension/eligibility/
-  const MIN_ELDERLY_AGE = 65;  // Years
-  const MIN_EARLY_DUTY_DURATION = 90;  // days
-  const MIN_LATE_DUTY_DURATION = 730;  // days
-  const RECENT_DUTY_THRESHOLD = 730;  // days
-  const EARLY_DUTY_BEFORE = '1980-09-08';  // YYYY-MM-DD
-  const LATE_DUTY_AFTER = '1980-09-07';  // YYYY-MM-DD
-  const OFFICER_DUTY_AFTER = '1981-10-16';  // YYYY-MM-DD
-
-  // https://www.va.gov/pension/veterans-pension-rates/
-  const ANNUAL_NET_WORTH_LIMIT = 150538;  // USD per year
-
-  // https://www.va.gov/pension/eligibility/
-  // Each wartime period is defined as a two-element array.  First the
-  // start date, then the end date.  Dates are given as strings with the
-  // format YYYY-MM-DD.  An empty string is intepreted as "today"
-  const WARTIMES_INPUT = [
-    ['1916-05-09', '1917-04-05'],  // Mexican Border period
-    ['1917-04-05', '1918-11-11'],  // WWI
-    ['1941-12-07', '1946-12-31'],  // WWII
-    ['1950-06-27', '1955-01-31'],  // Korean conflict
-    ['1955-11-01', '1975-05-07'],  // Vietnam War, in Vietnam
-    ['1964-08-05', '1975-05-07'],  // Vietnam War, out of Vietnam
-    ['1990-08-02', ''],            // Gulf war, no end date yet.
-  ];
-
   function dateOrToday(inputStr) {
     if (inputStr) {
       return new Date(dateStrToLocal(inputStr));
@@ -1933,7 +1978,7 @@ function vaPensionResult(input) {
       ));
   }
 
-  const wartimes = WARTIMES_INPUT.map(
+  const wartimes = cnst.vaPension.WARTIMES.map(
     p => ({start: dateOrToday(p[0]), end: dateOrToday(p[1])}));
 
   const meetsDischargeReq = and(
@@ -1941,7 +1986,7 @@ function vaPensionResult(input) {
     ne(input.dischargeStatus, 'oth'),
     ne(input.dischargeStatus, 'bad-conduct'));
 
-  const meetsAgeReq = ge(input.age, MIN_ELDERLY_AGE);
+  const meetsAgeReq = ge(input.age, cnst.vaPension.MIN_ELDERLY_AGE);
   const isProgramQualified = or(
     input.existingSsiMe,
     input.existingSsiHousehold,
@@ -1961,7 +2006,7 @@ function vaPensionResult(input) {
       other => and(
         eq(other.type, 'active-duty'),
         lt(other.end, duty.start),
-        lt(getNumberOfDays(other.end, duty.start), RECENT_DUTY_THRESHOLD)));
+        lt(getNumberOfDays(other.end, duty.start), cnst.vaPension.RECENT_DUTY_THRESHOLD)));
     const hasRecentPriorActiveDuty = or(...isRecentPriorActiveDuty);
 
     // https://www.va.gov/pension/eligibility/
@@ -1969,21 +2014,21 @@ function vaPensionResult(input) {
       or(
         and(
           eq(duty.type, 'active-duty'),
-          lt(duty.start, new Date(dateStrToLocal(EARLY_DUTY_BEFORE))),
-          ge(duration, MIN_EARLY_DUTY_DURATION),
+          lt(duty.start, new Date(dateStrToLocal(cnst.vaPension.EARLY_DUTY_BEFORE))),
+          ge(duration, cnst.vaPension.MIN_EARLY_DUTY_DURATION),
           isDuringWartime),
         and(
           eq(duty.type, 'active-duty'),
           input.enlisted,
-          gt(duty.start, new Date(dateStrToLocal(LATE_DUTY_AFTER))),
+          gt(duty.start, new Date(dateStrToLocal(cnst.vaPension.LATE_DUTY_AFTER))),
           or(
-            ge(duration, MIN_LATE_DUTY_DURATION),
+            ge(duration, cnst.vaPension.MIN_LATE_DUTY_DURATION),
             isOneOf('mil-svc-duration', 'full-dur-yes')),
           isDuringWartime),
         and(
           eq(duty.type, 'active-duty'),
           input.officer,
-          gt(duty.start, new Date(dateStrToLocal(OFFICER_DUTY_AFTER))),
+          gt(duty.start, new Date(dateStrToLocal(cnst.vaPension.OFFICER_DUTY_AFTER))),
           not(hasRecentPriorActiveDuty))));
   }
 
@@ -2006,7 +2051,7 @@ function vaPensionResult(input) {
   }
   const underNetWorthLimit = le(
     yearlyIncome + totalResources(input, assetIdxs),
-    ANNUAL_NET_WORTH_LIMIT);
+    cnst.vaPension.ANNUAL_NET_WORTH_LIMIT);
 
   const meetsAnyServiceReq = or(...meetsServiceReq);
 
@@ -2017,31 +2062,19 @@ function vaPensionResult(input) {
       meetsDischargeReq));
   program.addCondition(new EligCondition('Meets specific duty type and duration <a href="https://www.va.gov/pension/eligibility/" target="_blank" rel="noopener">requirements</a>',
     meetsAnyServiceReq));
-  program.addCondition(new EligCondition(`Gross income and assets combined are below ${usdLimit(ANNUAL_NET_WORTH_LIMIT)} per year`, underNetWorthLimit));
+  program.addCondition(new EligCondition(`Gross income and assets combined are below ${usdLimit(cnst.vaPension.ANNUAL_NET_WORTH_LIMIT)} per year`, underNetWorthLimit));
   program.addConditionsOneOf([
     new EligCondition('Disabled', input.disabled),
-    new EligCondition(`Age ${MIN_ELDERLY_AGE} or older`, meetsAgeReq),
+    new EligCondition(`Age ${cnst.vaPension.MIN_ELDERLY_AGE} or older`, meetsAgeReq),
     new EligCondition('Receives or is eligible for SSI or SSDI', isProgramQualified)
   ]);
   return program.getResult();
 }
 
 function wicResult(input) {
-  // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
-  const grossLimit = new MonthlyIncomeLimit([
-    2096,
-    2823,
-    3551,
-    4279,
-    5006,
-    5734,
-    6462,
-    7189
-  ],
-  728);
-
-  // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
-  const CHILD_EXIT_AGE = 5;  // Birthday at which a child is ineligible.
+  const grossLimit = new MonthlyIncomeLimit(
+    cnst.wic.MONTHLY_INCOME_LIMITS,
+    cnst.wic.MONTHLY_INCOME_LIMIT_ADDL_PERSON);
 
   // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
   const hasPregnant = or(
@@ -2050,7 +2083,7 @@ function wicResult(input) {
   const hasBreastfeeding = or(
     input.feeding,
     ...input.householdFeeding);
-  const hasChild = or(...input.householdAges.map(a => lt(a, CHILD_EXIT_AGE)));
+  const hasChild = or(...input.householdAges.map(a => lt(a, cnst.wic.CHILD_EXIT_AGE)));
 
   // Rather than null, if unborn-children is left empty, numUnborn == 0.
   const numUnborn = Number(input.unbornChildren);
@@ -2083,7 +2116,7 @@ function wicResult(input) {
       'Household includes a person breastfeeding an infant under 1 year old',
       hasBreastfeeding),
     new EligCondition(
-      `Household includes a child under the age of ${CHILD_EXIT_AGE}`,
+      `Household includes a child under the age of ${cnst.wic.CHILD_EXIT_AGE}`,
       hasChild)]);
   return program.getResult();
 }
