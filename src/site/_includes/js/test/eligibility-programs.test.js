@@ -1,5 +1,9 @@
 const elig = require('../eligibility');
 
+function verifyOverlay(modifiedInput) {
+  expect(modifiedInput._verifyFn(modifiedInput).eligible).toBe(true);
+}
+
 function isEligibleIf(target) {
   this.target = target;
   if (typeof this.target === 'function') {
@@ -9,7 +13,7 @@ function isEligibleIf(target) {
       `eligible`
     );
     expect(this.program(this.input).eligible, msg).not.toBe(true);
-    expect(mergedInput._verifyFn(mergedInput).eligible, msg).toBe(true);
+    verifyOverlay(mergedInput);
     expect(this.program(mergedInput).eligible, msg).toBe(true);
     return;
   }
@@ -109,7 +113,7 @@ describe('Program eligibility', () => {
   function calfreshMadeEligible(baseInput) {
     let modified = deepCopy(baseInput);
     modified.income.valid = true;
-    modified._verifyFn = elig.calworksResult;
+    modified._verifyFn = elig.calfreshResult;
     return modified;
   }
 
@@ -272,7 +276,7 @@ describe('Program eligibility', () => {
         elig.cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR);
     })
     test('Eligible with input for other program dependencies', () => {
-      expect(elig.calfreshResult(calfreshMadeEligible(input)).eligible).toBe(true);
+      verifyOverlay(calfreshMadeEligible(input));
     });
 
     test('Not eligible with default input', () => {
@@ -363,31 +367,31 @@ describe('Program eligibility', () => {
 
   describe('CalWORKS Program', () => {
     test('Eligible with input for other program dependencies', () => {
-      expect(elig.calworksResult(calworksMadeEligible(input)).eligible).toBe(true);
+      verifyOverlay(calworksMadeEligible(input));
     });
   });
 
   describe('CAPI Program', () => {
     test('Eligible with input for other program dependencies', () => {
-      expect(elig.capiResult(capiMadeEligible(input)).eligible).toBe(true);
+      verifyOverlay(capiMadeEligible(input));
     });
   });
 
   describe('GA Program', () => {
     test('Eligible with input for other program dependencies', () => {
-      expect(elig.gaResult(gaMadeEligible(input)).eligible).toBe(true);
+      verifyOverlay(gaMadeEligible(input));
     });
   });
 
   describe('IHSS Program', () => {
     test('Eligible with input for other program dependencies', () => {
-      expect(elig.ihssResult(ihssMadeEligible(input)).eligible).toBe(true);
+      verifyOverlay(ihssMadeEligible(input));
     });
   });
 
   describe('SSI Program', () => {
     test('Eligible with input for other program dependencies', () => {
-      expect(elig.ssiResult(ssiMadeEligible(input)).eligible).toBe(true);
+      verifyOverlay(ssiMadeEligible(input));
     });
   });
 });
