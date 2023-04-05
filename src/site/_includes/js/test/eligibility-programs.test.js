@@ -298,7 +298,8 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.notCitizen = true;
       input.immigrationStatus = 'qualified_noncitizen_le5y';
-      check(elig.calfreshResult, input).isEligibleIf('age').is(17);
+      check(elig.calfreshResult, input).isEligibleIf('age')
+        .is(elig.cnst.calfresh.SHORT_RESIDENCY_OK_BELOW_AGE - 1);
     });
 
     test('Eligible without waiting period when blind/disabled and receiving assistance', () => {
