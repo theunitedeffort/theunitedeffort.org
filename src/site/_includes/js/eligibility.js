@@ -1387,12 +1387,9 @@ function calfreshResult(input) {
   //
   const mceIncomeLimit = (cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR *
     fedPovertyLevel.getLimit(input.householdSize));
-  let nonExemptIncome = null;
-  if (grossIncome(input) !== null) {
-    nonExemptIncome = (grossIncome(input) -
-      cnst.calfresh.SELF_EMPLOYED_EXEMPT_FRACTION *
-      categoryTotal(input.income.selfEmployed));
-  }
+  const nonExemptIncome = (grossIncome(input) -
+    cnst.calfresh.SELF_EMPLOYED_EXEMPT_FRACTION *
+    categoryTotal(input.income.selfEmployed));
   const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
 
   const program = new Program();
@@ -2388,9 +2385,12 @@ if (typeof module !== 'undefined' && module.exports) {
     totalResources,
     MonthlyIncomeLimit,
     adsaResult,
+    calfreshResult,
+    calworksResult,
+    capiResult,
+    gaResult,
+    ihssResult,
     ssiResult,
     ssdiResult,
-    ihssResult,
-    capiResult,
   };
 }
