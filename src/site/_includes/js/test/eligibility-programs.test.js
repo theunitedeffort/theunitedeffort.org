@@ -265,6 +265,12 @@ describe('Program eligibility', () => {
   });
 
   describe('CalFresh Program', () => {
+    let expectedIncomeLimit;
+    beforeEach(() => {
+      expectedIncomeLimit = (
+        elig.cnst.calfresh.FED_POVERTY_LEVEL[0] *
+        elig.cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR);
+    })
     test('Eligible with input for other program dependencies', () => {
       expect(elig.calfreshResult(calfreshMadeEligible(input)).eligible).toBe(true);
     });
@@ -317,15 +323,41 @@ describe('Program eligibility', () => {
       check(elig.calfreshResult, input).isEligibleIf(gaMadeEligible);
     });
 
+    // TODO: consider breaking adjusted gross income calculations out of their
+    // respective program result functions for easier testing of this
+    // potentially complex aspect of program eligibility.  (Across the board,
+    // not just for CalFresh)
     test('Eligible when income is below modified categorically-eligible limit', () => {
-      const testIncome = (
-        elig.cnst.calfresh.FED_POVERTY_LEVEL[0] *
-        elig.cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR);
+      const testIncome = expectedIncomeLimit;
       input.income.valid = true;
       input.income.wages[0][0] = testIncome + 1;
       expect(elig.calfreshResult(input).eligible).not.toBe(true);
       input.income.wages[0][0] = testIncome;
       expect(elig.calfreshResult(input).eligible).toBe(true);
+    });
+
+    test('Eligible with higher self-employed income due to exemptions', () => {
+      // Raise gross income above the income limit value.
+      const testIncome = expectedIncomeLimit /
+        (1 - elig.cnst.calfresh.SELF_EMPLOYED_EXEMPT_FRACTION);
+      input.income.valid = true;
+      // Adjusted income should be over the limit if all income is from wages.
+      input.income.wages[0][0] = testIncome;
+      expect(elig.calfreshResult(input).eligible).not.toBe(true);
+      // Adjusted income should be at the limit when all income is from
+      // self-employment.
+      input.income.wages[0][0] = 0;
+      input.income.selfEmployed[0][0] = testIncome + 1;
+      expect(elig.calfreshResult(input).eligible).not.toBe(true);
+      input.income.selfEmployed[0][0] = testIncome;
+      expect(elig.calfreshResult(input).eligible).toBe(true);
+    });
+
+    test('Unknown result for invalid income with no categorical eligibility', () => {
+      input.income.valid = true;
+      expect(elig.calfreshResult(input).eligible).toBe(true);
+      input.income.valid = false;
+      expect(elig.calfreshResult(input).eligible).toBe(null);
     });
   });
 
