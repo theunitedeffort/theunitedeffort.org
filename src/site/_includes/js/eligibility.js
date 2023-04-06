@@ -73,8 +73,8 @@ const cnst = {
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     ANNUAL_INCOME_LIMITS: [  // USD per year
-      0,  // Min household size 3.
-      0,  // Min household size 3.
+      57575,  // Min household size 3.
+      57575,  // Min household size 3.
       57575,
       69375,
       81175,
@@ -2389,6 +2389,7 @@ if (typeof module !== 'undefined' && module.exports) {
     calfreshResult,
     calworksResult,
     capiResult,
+    feraResult,
     gaResult,
     ihssResult,
     ssiResult,
