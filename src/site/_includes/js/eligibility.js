@@ -41,6 +41,7 @@ const cnst = {
     // Section 14.1
     BASE_RESOURCE_LIMIT: 10888,  // USD
     DISABLED_ELDERLY_RESOURCE_LIMIT: 16333,  // USD
+    MIN_ELDERLY_AGE: 60,  // Years
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap33.pdf
     // Section 33.3
     EMPLOYMENT_DISREGARD: 450,  // USD
@@ -1430,8 +1431,8 @@ function calworksResult(input) {
     and(
       le(input.age, cnst.calworks.MAX_CHILD_AGE),
       input.headOfHousehold),
-    // TODO: Add check for other household members who are pregnant.
-    input.pregnant
+    input.pregnant,
+    ...input.householdPregnant,
   );
 
   // This employment array includes the user (idx 0) and the user's household.
@@ -1471,8 +1472,8 @@ function calworksResult(input) {
   // TODO: If household ages are not specified, we may ok falling back to
   // BASE_RESOURCE_LIMIT.
   const hasElderlyOrDisabled = or(
-    ...input.householdAges.map(a => ge(a, 60)),
-    ge(input.age, 60),
+    ...input.householdAges.map(a => ge(a, cnst.calworks.MIN_ELDERLY_AGE)),
+    ge(input.age, cnst.calworks.MIN_ELDERLY_AGE),
     ...input.householdDisabled,
     // TODO: Determine if blind or deaf is considered "disabled" here.
     input.disabled)

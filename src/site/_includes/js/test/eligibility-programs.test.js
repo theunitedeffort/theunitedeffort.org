@@ -370,6 +370,57 @@ describe('Program eligibility', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(calworksMadeEligible(input));
     });
+
+    test('Not eligible with default input', () => {
+      expect(elig.calworksResult(input).eligible).not.toBe(true);
+    });
+
+    test('Eligible when U.S. citizen or qualified immigrant', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
+      input.pregnant = true;
+      input.notCitizen = true;
+      check(elig.calworksResult, input)
+        .isEligibleIf('immigrationStatus').is('permanent_resident');
+      check(elig.calworksResult, input)
+        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_gt5y');
+      check(elig.calworksResult, input)
+        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_le5y');
+      check(elig.calworksResult, input)
+        .isEligibleIf('notCitizen').is(false);
+    });
+
+    test('Eligible when pregnant', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
+      check(elig.calworksResult, input).isEligibleIf('pregnant').is(true);
+    });
+
+    test('Eligible when household contains a pregnant person', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
+      input.householdSize = 2;
+      input.householdPregnant = [false];
+      check(elig.calworksResult, input)
+        .isEligibleIf('householdPregnant').is([true]);
+    });
+
+    test('Eligible when household includes a child', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
+      input.householdSize = 2;
+      input.householdAges = [elig.cnst.calworks.MAX_CHILD_AGE + 1];
+      check(elig.calworksResult, input)
+        .isEligibleIf('householdAges').is([elig.cnst.calworks.MAX_CHILD_AGE]);
+    });
+
+    test('Eligible when main caretaker is young', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.calworks.MAX_CHILD_AGE;
+      check(elig.calworksResult, input).isEligibleIf('headOfHousehold').is(true);
+    });
+
+    // TODO: Add income and resources tests.
   });
 
   describe('CAPI Program', () => {
