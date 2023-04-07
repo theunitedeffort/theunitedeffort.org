@@ -1609,7 +1609,8 @@ function feraResult(input) {
   return program.getResult();
 }
 
-function vaDisabilityCompResult(input) {
+function vaDisabilityResult(input) {
+  // https://www.va.gov/disability/eligibility/
   const meetsDutyReq = or(
     ...input.dutyPeriods.map(d => eq(d.type, 'active-duty')),
     ...input.dutyPeriods.map(d => eq(d.type, 'active-training')),
@@ -2394,5 +2395,6 @@ if (typeof module !== 'undefined' && module.exports) {
     ihssResult,
     ssiResult,
     ssdiResult,
+    vaDisabilityResult,
   };
 }

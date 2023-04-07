@@ -31,6 +31,8 @@ function setValue(input, target, value) {
 
 function isEligibleIf(target) {
   this.target = target;
+  this.expected = true;
+  // Special handling for testing with input overlays.
   if (typeof this.target === 'function') {
     let mergedInput = this.target(this.input);
     const msg = (
@@ -43,22 +45,28 @@ function isEligibleIf(target) {
     return;
   }
   return this;
-};
+}
+
+function isNotEligibleIf(target) {
+  this.target = target;
+  this.expected = false;
+  return this;
+}
 
 function is(value) {
   const caller = this;
   function msg(whichStr) {
     return (
       `Checking ${caller.program.name} with ${whichStr} value of ` +
-      `${caller.target}: ${getValue(caller.input, caller.target)}\n` +
+      `${caller.target}: ${JSON.stringify(getValue(caller.input, caller.target))}\n` +
       `${caller.program.name} returns:\n` +
       `${JSON.stringify(caller.program(caller.input), null, 2)}`
     );
   }
   const initValue = getValue(this.input, this.target);
-  expect(this.program(this.input).eligible, msg('initial')).not.toBe(true);
+  expect(this.program(this.input).eligible, msg('initial')).not.toBe(this.expected);
   setValue(this.input, this.target, value);
-  expect(this.program(this.input).eligible, msg('modified')).toBe(true);
+  expect(this.program(this.input).eligible, msg('modified')).toBe(this.expected);
   setValue(this.input, this.target, initValue);
 };
 
@@ -67,6 +75,7 @@ function check(program, input) {
     program,
     input,
     isEligibleIf,
+    isNotEligibleIf,
     is,
   };
 };
@@ -585,6 +594,73 @@ describe('Program eligibility', () => {
   describe('SSI Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(ssiMadeEligible(input));
+    });
+  });
+
+  describe('VA Disability Program', () => {
+
+    test('Not eligible with default input', () => {
+      expect(elig.vaDisabilityResult(input).eligible).not.toBe(true);
+    });
+
+    test('Eligible when a veteran', () => {
+      input.disabled = true;
+      input.militaryDisabled = true;
+      input.dischargeStatus = 'honorable';
+      input.dutyPeriods = [{type: 'active-duty'}];
+      check(elig.vaDisabilityResult, input).isEligibleIf('veteran').is(true);
+    });
+
+    test('Eligible with active duty, active duty for training, or inactive duty training service', () => {
+      input.veteran = true;
+      input.disabled = true;
+      input.militaryDisabled = true;
+      input.dischargeStatus = 'honorable';
+      input.dutyPeriods = [
+        {type: 'reserve-duty'},
+        {type: 'guard-duty'},
+      ];
+      check(elig.vaDisabilityResult, input)
+        .isEligibleIf('dutyPeriods').is([
+          {type: 'reserve-duty'},
+          {type: 'active-duty'},
+        ]);
+      check(elig.vaDisabilityResult, input)
+        .isEligibleIf('dutyPeriods').is([
+          {type: 'active-training'},
+          {type: 'guard-duty'},
+        ]);
+      check(elig.vaDisabilityResult, input)
+        .isEligibleIf('dutyPeriods').is([
+          {type: 'inactive-training'},
+        ]);
+    });
+
+    test('Eligible when disabled related to military', () => {
+      input.veteran = true;
+      input.dischargeStatus = 'honorable';
+      input.dutyPeriods = [{type: 'active-duty'}];
+      input.militaryDisabled = true;
+      check(elig.vaDisabilityResult, input).isEligibleIf('disabled').is(true);
+
+      input.militaryDisabled = false;
+      input.disabled = true;
+      check(elig.vaDisabilityResult, input)
+        .isEligibleIf('militaryDisabled').is(true);
+    });
+
+    test('Not eligible with other-than-honorable, bad conduct, or dishonorable discharge', () => {
+      input.veteran = true;
+      input.dischargeStatus = 'honorable';
+      input.dutyPeriods = [{type: 'active-duty'}];
+      input.militaryDisabled = true;
+      input.disabled = true;
+      check(elig.vaDisabilityResult, input)
+        .isNotEligibleIf('dischargeStatus').is('oth');
+      check(elig.vaDisabilityResult, input)
+        .isNotEligibleIf('dischargeStatus').is('dishonorable');
+      check(elig.vaDisabilityResult, input)
+        .isNotEligibleIf('dischargeStatus').is('bad-conduct');
     });
   });
 });
