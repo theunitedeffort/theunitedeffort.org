@@ -4,6 +4,8 @@ function verifyOverlay(modifiedInput) {
   expect(modifiedInput._verifyFn(modifiedInput).eligible).toBe(true);
 }
 
+// Gets a value from the test input object via property name string.
+// Nested properties are accepted for target, e.g. "input.wages"
 function getValue(input, target) {
   let obj = input;
   const keys = target.split('.');
@@ -13,6 +15,8 @@ function getValue(input, target) {
   return obj;
 }
 
+// Sets a value in the test input object via property name string.
+// Nested properties are accepted for target, e.g. "input.wages"
 function setValue(input, target, value) {
   let obj = input;
   const keys = target.split('.');
@@ -407,6 +411,8 @@ describe('Program eligibility', () => {
       input.income.wages = [[testIncome + 1]];
       check(elig.calfreshResult, input)
         .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.calfreshResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
     });
 
     test('Eligible with higher self-employed income due to exemptions', () => {
