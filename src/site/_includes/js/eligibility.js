@@ -1616,10 +1616,11 @@ function vaDisabilityResult(input) {
     ...input.dutyPeriods.map(d => eq(d.type, 'active-training')),
     ...input.dutyPeriods.map(d => eq(d.type, 'inactive-training')));
 
-  const meetsDischargeReq = and(
-    ne(input.dischargeStatus, 'dishonorable'),
-    ne(input.dischargeStatus, 'oth'),
-    ne(input.dischargeStatus, 'bad-conduct'));
+  const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
+    'dishonorable',
+    'oth',
+    'bad-conduct',
+  ]));
 
   const isServiceDisabled = and(
     input.disabled,
@@ -1635,7 +1636,7 @@ function vaDisabilityResult(input) {
       'Served on active duty, active duty for training, or inactive duty training',
       meetsDutyReq));
   program.addCondition(
-    new EligCondition('Discharged honorably or under honorable conditions',
+    new EligCondition('Discharge status that is not dishonorable, bad conduct, or other-than-honorable',
       meetsDischargeReq));
   return program.getResult();
 }
