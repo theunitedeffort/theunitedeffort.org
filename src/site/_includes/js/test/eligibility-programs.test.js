@@ -4,6 +4,31 @@ function verifyOverlay(modifiedInput) {
   expect(modifiedInput._verifyFn(modifiedInput).eligible).toBe(true);
 }
 
+// Gets a value from the test input object via property name string.
+// Nested properties are accepted for target, e.g. "input.wages"
+function getValue(input, target) {
+  let obj = input;
+  const keys = target.split('.');
+  for (const key of keys) {
+    obj = obj[key];
+  }
+  return obj;
+}
+
+// Sets a value in the test input object via property name string.
+// Nested properties are accepted for target, e.g. "input.wages"
+function setValue(input, target, value) {
+  let obj = input;
+  const keys = target.split('.');
+  for (let i = 0; i < keys.length; i++) {
+    if (i == (keys.length - 1)) {
+      obj[keys[i]] = value;
+    } else {
+      obj = obj[keys[i]];
+    }
+  }
+}
+
 function isEligibleIf(target) {
   this.target = target;
   if (typeof this.target === 'function') {
@@ -25,16 +50,16 @@ function is(value) {
   function msg(whichStr) {
     return (
       `Checking ${caller.program.name} with ${whichStr} value of ` +
-      `${caller.target}: ${caller.input[caller.target]}\n` +
+      `${caller.target}: ${getValue(caller.input, caller.target)}\n` +
       `${caller.program.name} returns:\n` +
       `${JSON.stringify(caller.program(caller.input), null, 2)}`
     );
   }
-  const initValue = this.input[this.target];
+  const initValue = getValue(this.input, this.target);
   expect(this.program(this.input).eligible, msg('initial')).not.toBe(true);
-  this.input[this.target] = value;
+  setValue(this.input, this.target, value);
   expect(this.program(this.input).eligible, msg('modified')).toBe(true);
-  this.input[this.target] = initValue;
+  setValue(this.input, this.target, initValue);
 };
 
 function check(program, input) {
@@ -45,6 +70,54 @@ function check(program, input) {
     is,
   };
 };
+
+describe('Helper getValue', () => {
+  test('Gets value of a property in a simple object', () => {
+    const testObj = {firstName: 'Ada', lastName: 'Lovelace'};
+    expect(getValue(testObj, 'firstName')).toBe('Ada');
+    expect(getValue(testObj, 'lastName')).toBe('Lovelace');
+  });
+
+  test('Gets value of a nested property', () => {
+    const testObj = {
+      income: {
+        valid: true,
+        wages: [[200]],
+        deeper: {
+          val: 1
+        }
+      }
+    };
+    expect(getValue(testObj, 'income.valid')).toBe(true);
+    expect(getValue(testObj, 'income.wages')).toEqual([[200]]);
+    expect(getValue(testObj, 'income.deeper.val')).toBe(1);
+  });
+});
+
+describe('Helper setValue', () => {
+  test('Sets value of a property in a simple object', () => {
+    const testObj = {firstName: 'Ada', lastName: 'Lovelace'};
+    setValue(testObj, 'firstName', 'Fred');
+    expect(testObj.firstName).toBe('Fred');
+  });
+
+  test('Sets value of a nested property', () => {
+    const testObj = {
+      income: {
+        valid: true,
+        wages: [[200]],
+        deeper: {
+          val: 1
+        }
+      }
+    };
+    setValue(testObj, 'income.wages', [[140]]);
+    expect(testObj.income.wages).toEqual([[140]]);
+    setValue(testObj, 'income.deeper.val', 42);
+    expect(testObj.income.deeper.val).toBe(42);
+  });
+});
+
 
 describe('MonthlyIncomeLimit', () => {
   let monthlyValues;
@@ -332,13 +405,14 @@ describe('Program eligibility', () => {
     // respective program result functions for easier testing of this
     // potentially complex aspect of program eligibility.  (Across the board,
     // not just for CalFresh)
-    test('Eligible when income is below modified categorically-eligible limit', () => {
+    test('Eligible when income is at or below modified categorically-eligible limit', () => {
       const testIncome = expectedIncomeLimit;
       input.income.valid = true;
-      input.income.wages[0][0] = testIncome + 1;
-      expect(elig.calfreshResult(input).eligible).not.toBe(true);
-      input.income.wages[0][0] = testIncome;
-      expect(elig.calfreshResult(input).eligible).toBe(true);
+      input.income.wages = [[testIncome + 1]];
+      check(elig.calfreshResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.calfreshResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
     });
 
     test('Eligible with higher self-employed income due to exemptions', () => {
@@ -347,15 +421,13 @@ describe('Program eligibility', () => {
         (1 - elig.cnst.calfresh.SELF_EMPLOYED_EXEMPT_FRACTION);
       input.income.valid = true;
       // Adjusted income should be over the limit if all income is from wages.
-      input.income.wages[0][0] = testIncome;
+      input.income.wages = [[testIncome]];
       expect(elig.calfreshResult(input).eligible).not.toBe(true);
-      // Adjusted income should be at the limit when all income is from
-      // self-employment.
-      input.income.wages[0][0] = 0;
-      input.income.selfEmployed[0][0] = testIncome + 1;
-      expect(elig.calfreshResult(input).eligible).not.toBe(true);
-      input.income.selfEmployed[0][0] = testIncome;
-      expect(elig.calfreshResult(input).eligible).toBe(true);
+      // Adjusted income should be ok when all income is from self-employment.
+      input.income.wages = [[0]];
+      input.income.selfEmployed = [[testIncome + 1]];
+      check(elig.calfreshResult, input)
+        .isEligibleIf('income.selfEmployed').is([[testIncome]]);
     });
 
     test('Unknown result for invalid income with no categorical eligibility', () => {
@@ -426,6 +498,75 @@ describe('Program eligibility', () => {
   describe('CAPI Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(capiMadeEligible(input));
+    });
+  });
+
+  describe('FERA Program', () => {
+    let expectedLowIncomeLimit;
+    beforeEach(() => {
+      const incomeIdx = elig.cnst.fera.MIN_HOUSEHOLD_SIZE - 1;
+      expectedLowIncomeLimit = (
+        elig.cnst.care.ANNUAL_INCOME_LIMITS[incomeIdx] / 12);
+    })
+
+    test('Not eligible with default input', () => {
+      expect(elig.calworksResult(input).eligible).not.toBe(true);
+    });
+
+    test('Eligible for households that are large enough', () => {
+      input.income.valid = true;
+      input.income.wages = [[expectedLowIncomeLimit + 1]];
+      input.housingSituation = 'housed';
+      input.paysUtilities = true;
+      // Start with a household that's too small.
+      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE - 1;
+      // Then ensure a result of eligible when the household size is increased.
+      check(elig.feraResult, input)
+        .isEligibleIf('householdSize').is(elig.cnst.fera.MIN_HOUSEHOLD_SIZE);
+    });
+
+    test('Eligible when paying utilities', () => {
+      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
+      input.income.valid = true;
+      input.income.wages = [[expectedLowIncomeLimit + 1]];
+      input.housingSituation = 'housed';
+      check(elig.feraResult, input).isEligibleIf('paysUtilities').is(true);
+    });
+
+    test('Eligible when housed', () => {
+      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
+      input.income.valid = true;
+      input.income.wages = [[expectedLowIncomeLimit + 1]];
+      input.paysUtilities = true;
+      input.housingSituation = 'no-stable-place';
+      check(elig.feraResult, input)
+        .isEligibleIf('housingSituation').is('housed');
+      check(elig.feraResult, input)
+        .isEligibleIf('housingSituation').is('unlisted-stable-place');
+    });
+
+    test('Eligible when income is above CARE limit', () => {
+      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
+      input.income.valid = true;
+      input.housingSituation = 'housed';
+      input.paysUtilities = true;
+      input.income.wages = [[expectedLowIncomeLimit]];
+      check(elig.feraResult, input)
+        .isEligibleIf('income.wages').is([[expectedLowIncomeLimit + 1]]);
+    });
+
+    test('Eligible when income is at or below FERA limit', () => {
+      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
+      const testIncome = (
+        elig.cnst.fera.ANNUAL_INCOME_LIMITS[input.householdSize - 1] / 12);
+      input.income.valid = true;
+      input.housingSituation = 'housed';
+      input.paysUtilities = true;
+      input.income.wages = [[testIncome + 1]];
+      check(elig.feraResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+    check(elig.feraResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
     });
   });
 
