@@ -639,6 +639,31 @@ describe('Program eligibility', () => {
     });
   });
 
+  describe('No Fee ID Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.noFeeIdResult(input).eligible).not.toBe(true);
+    });
+
+    test('Eligible when elderly', () => {
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('age').is(elig.cnst.noFeeId.MIN_ELIGIBLE_AGE);
+    });
+
+    test('Eligible when unhoused', () => {
+      input.housingSituation = 'housed';
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('vehicle');
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('transitional');
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('hotel');
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('shelter');
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('no-stable-place');
+    });
+  });
+
   describe('SSI Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(ssiMadeEligible(input));
@@ -646,7 +671,6 @@ describe('Program eligibility', () => {
   });
 
   describe('VA Disability Program', () => {
-
     test('Not eligible with default input', () => {
       expect(elig.vaDisabilityResult(input).eligible).not.toBe(true);
     });
