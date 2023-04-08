@@ -53,22 +53,62 @@ function isNotEligibleIf(target) {
   return this;
 }
 
-function is(value) {
-  const caller = this;
-  function msg(whichStr) {
-    return (
-      `Checking ${caller.program.name} with ${whichStr} value of ` +
-      `${caller.target}: ${JSON.stringify(getValue(caller.input, caller.target))}\n` +
-      `${caller.program.name} returns:\n` +
-      `${JSON.stringify(caller.program(caller.input), null, 2)}`
+function msg(ctx, whichStr) {
+  return (
+      `Checking ${ctx.program.name} with ${whichStr} value of ` +
+      `${ctx.target}: ${JSON.stringify(getValue(ctx.input, ctx.target))}\n` +
+      `${ctx.program.name} returns:\n` +
+      `${JSON.stringify(ctx.program(ctx.input), null, 2)}`
     );
-  }
+}
+
+function is(value) {
   const initValue = getValue(this.input, this.target);
-  expect(this.program(this.input).eligible, msg('initial')).not.toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'initial')).not.toBe(this.expected);
   setValue(this.input, this.target, value);
-  expect(this.program(this.input).eligible, msg('modified')).toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'modified')).toBe(this.expected);
   setValue(this.input, this.target, initValue);
 };
+
+function isAtLeast(value) {
+  const initValue = getValue(this.input, this.target);
+  setValue(this.input, this.target, value - 1);
+  expect(this.program(this.input).eligible, msg(this, 'lower')).not.toBe(this.expected);
+  setValue(this.input, this.target, value);
+  expect(this.program(this.input).eligible, msg(this, 'given')).toBe(this.expected);
+  setValue(this.input, this.target, value + 1);
+  expect(this.program(this.input).eligible, msg(this, 'higher')).toBe(this.expected);
+  setValue(this.input, this.target, initValue);
+}
+
+function isAtMost(value) {
+  const initValue = getValue(this.input, this.target);
+  setValue(this.input, this.target, value + 1);
+  expect(this.program(this.input).eligible, msg(this, 'higher')).not.toBe(this.expected);
+  setValue(this.input, this.target, value);
+  expect(this.program(this.input).eligible, msg(this, 'given')).toBe(this.expected);
+  setValue(this.input, this.target, value - 1);
+  expect(this.program(this.input).eligible, msg(this, 'lower')).toBe(this.expected);
+  setValue(this.input, this.target, initValue);
+}
+
+function isOver(value) {
+  const initValue = getValue(this.input, this.target);
+  setValue(this.input, this.target, value);
+  expect(this.program(this.input).eligible, msg(this, 'given')).not.toBe(this.expected);
+  setValue(this.input, this.target, value + 1);
+  expect(this.program(this.input).eligible, msg(this, 'higher')).toBe(this.expected);
+  setValue(this.input, this.target, initValue);
+}
+
+function isUnder(value) {
+  const initValue = getValue(this.input, this.target);
+  setValue(this.input, this.target, value);
+  expect(this.program(this.input).eligible, msg(this, 'given')).not.toBe(this.expected);
+  setValue(this.input, this.target, value - 1);
+  expect(this.program(this.input).eligible, msg(this, 'lower')).toBe(this.expected);
+  setValue(this.input, this.target, initValue);
+}
 
 function check(program, input) {
   return {
@@ -77,6 +117,10 @@ function check(program, input) {
     isEligibleIf,
     isNotEligibleIf,
     is,
+    isAtLeast,
+    isAtMost,
+    isUnder,
+    isOver,
   };
 };
 
@@ -381,7 +425,7 @@ describe('Program eligibility', () => {
       input.notCitizen = true;
       input.immigrationStatus = 'qualified_noncitizen_le5y';
       check(elig.calfreshResult, input).isEligibleIf('age')
-        .is(elig.cnst.calfresh.SHORT_RESIDENCY_OK_BELOW_AGE - 1);
+        .isUnder(elig.cnst.calfresh.SHORT_RESIDENCY_OK_BELOW_AGE);
     });
 
     test('Eligible without waiting period when blind/disabled and receiving assistance', () => {
@@ -590,15 +634,16 @@ describe('Program eligibility', () => {
 
     test('Requires applicant to be older than a minimum age', () => {
       input.income.valid = true;
-      input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE - 1;
-      check(elig.gaResult, input).isEligibleIf('age').is(elig.cnst.ga.MIN_ELIGIBLE_AGE);
+      check(elig.gaResult, input).isEligibleIf('age')
+        .isAtLeast(elig.cnst.ga.MIN_ELIGIBLE_AGE);
     });
 
     test('Requires no dependent children', () => {
       input.income.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
       input.householdDependents = [false, true];
-      check(elig.gaResult, input).isEligibleIf('householdDependents').is([false, false]);
+      check(elig.gaResult, input)
+        .isEligibleIf('householdDependents').is([false, false]);
     });
 
     test('Requires income at or below income limit', () => {
@@ -606,16 +651,20 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
       input.income.wages = [[testIncome + 1]];
-      check(elig.gaResult, input).isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.gaResult, input).isEligibleIf('income.wages').is([[testIncome - 1]]);
+      check(elig.gaResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.gaResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
     });
 
     test('Requires assets at or below resource limit', () => {
       input.income.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
       input.assets = [[elig.cnst.ga.MAX_RESOURCES + 1]];
-      check(elig.gaResult, input).isEligibleIf('assets').is([[elig.cnst.ga.MAX_RESOURCES]]);
-      check(elig.gaResult, input).isEligibleIf('assets').is([[elig.cnst.ga.MAX_RESOURCES - 1]]);
+      check(elig.gaResult, input)
+        .isEligibleIf('assets').is([[elig.cnst.ga.MAX_RESOURCES]]);
+      check(elig.gaResult, input)
+        .isEligibleIf('assets').is([[elig.cnst.ga.MAX_RESOURCES - 1]]);
     });
 
     test('Requires U.S. citizenship or qualified immigration status', () => {
@@ -639,6 +688,32 @@ describe('Program eligibility', () => {
     });
   });
 
+  describe('No Fee ID Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.noFeeIdResult(input).eligible).not.toBe(true);
+    });
+
+    test('Eligible when elderly', () => {
+      check(elig.noFeeIdResult, input).isEligibleIf('age')
+        .isAtLeast(elig.cnst.noFeeId.MIN_ELIGIBLE_AGE);
+    });
+
+    test('Eligible when unhoused', () => {
+      input.housingSituation = 'housed';
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('vehicle');
+      input.housingSituation = 'unlisted-stable-place';
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('transitional');
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('hotel');
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('shelter');
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('no-stable-place');
+    });
+  });
+
   describe('SSI Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(ssiMadeEligible(input));
@@ -646,7 +721,6 @@ describe('Program eligibility', () => {
   });
 
   describe('VA Disability Program', () => {
-
     test('Not eligible with default input', () => {
       expect(elig.vaDisabilityResult(input).eligible).not.toBe(true);
     });
