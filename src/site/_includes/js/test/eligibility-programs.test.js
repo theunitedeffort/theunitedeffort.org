@@ -686,6 +686,44 @@ describe('Program eligibility', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(ihssMadeEligible(input));
     });
+
+    test('Not eligible with default input', () => {
+      expect(elig.ihssResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires Medi-Cal', () => {
+      input.blind = true;
+      input.housingSituation = 'housed';
+      check(elig.ihssResult, input).isEligibleIf('existingMedicalMe').is(true);
+    });
+
+    test('Requires living at home', () => {
+      input.blind = true;
+      input.existingMedicalMe = true;
+      check(elig.ihssResult, input)
+        .isEligibleIf('housingSituation').is('housed');
+      check(elig.ihssResult, input)
+        .isEligibleIf('housingSituation').is('unlisted-stable-place');
+    });
+
+    test('Eligible when disabled', () => {
+      input.existingMedicalMe = true;
+      input.housingSituation = 'housed'
+      check(elig.ihssResult, input).isEligibleIf('disabled').is(true);
+    });
+
+    test('Eligible when blind', () => {
+      input.existingMedicalMe = true;
+      input.housingSituation = 'housed'
+      check(elig.ihssResult, input).isEligibleIf('blind').is(true);
+    });
+
+    test('Eligible when elderly', () => {
+      input.existingMedicalMe = true;
+      input.housingSituation = 'housed'
+      check(elig.ihssResult, input)
+        .isEligibleIf('age').isAtLeast(elig.cnst.ihss.MIN_ELDERLY_AGE);
+    });
   });
 
   describe('No Fee ID Program', () => {
