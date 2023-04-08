@@ -645,6 +645,7 @@ describe('Program eligibility', () => {
     });
 
     test('Eligible when elderly', () => {
+      input.age = elig.cnst.noFeeId.MIN_ELIGIBLE_AGE - 1
       check(elig.noFeeIdResult, input)
         .isEligibleIf('age').is(elig.cnst.noFeeId.MIN_ELIGIBLE_AGE);
     });
@@ -653,6 +654,7 @@ describe('Program eligibility', () => {
       input.housingSituation = 'housed';
       check(elig.noFeeIdResult, input)
         .isEligibleIf('housingSituation').is('vehicle');
+      input.housingSituation = 'unlisted-stable-place';
       check(elig.noFeeIdResult, input)
         .isEligibleIf('housingSituation').is('transitional');
       check(elig.noFeeIdResult, input)
