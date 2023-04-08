@@ -101,8 +101,12 @@ const cnst = {
       1396,
     ],
     MONTHLY_INCOME_LIMIT_ADDL_PERSON: 11,  // USD per month per person
+    // https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap02.pdf
+    // Section 2.3.2
     MIN_ELIGIBLE_AGE: 18,  // Years
     NUM_OF_DEPENDENTS: 0,  // People
+    // https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap08.pdf
+    // Section 8.1.5
     MAX_RESOURCES: 500,  // USD
   },
   housingChoice: {
@@ -1675,7 +1679,7 @@ function gaResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition(`Age ${cnst.ga.MIN_GA_ELIGIBLE_AGE} or older`, meetsAgeReq));
+    new EligCondition(`Age ${cnst.ga.MIN_ELIGIBLE_AGE} or older`, meetsAgeReq));
   program.addCondition(
     new EligCondition(`Has ${cnst.ga.NUM_OF_DEPENDENTS} dependent children`, hasNoDependents));
   program.addCondition(
