@@ -321,7 +321,7 @@ describe('Program eligibility', () => {
       expect(elig.adsaResult(input).eligible).toBe(false);
     });
 
-    test('Eligible when disabled, blind, or deaf', () => {
+    test('Requires disability, blindness, or deafness', () => {
       input.existingSsiMe = true;
       input.usesGuideDog = true;
       check(elig.adsaResult, input).isEligibleIf('disabled').is(true);
@@ -329,13 +329,13 @@ describe('Program eligibility', () => {
       check(elig.adsaResult, input).isEligibleIf('deaf').is(true);
     });
 
-    test('Eligible when using a guide dog', () => {
+    test('Requires use of a guide dog', () => {
       input.existingSsiMe = true;
       input.blind = true;
       check(elig.adsaResult, input).isEligibleIf('usesGuideDog').is(true);
     });
 
-    test('Eligible with existing assistance', () => {
+    test('Requires certain existing assistance', () => {
       input.blind = true;
       input.usesGuideDog = true;
       check(elig.adsaResult, input).isEligibleIf('existingSsiMe').is(true);
@@ -365,7 +365,7 @@ describe('Program eligibility', () => {
       expect(elig.calfreshResult(input).eligible).not.toBe(true);
     });
 
-    test('Eligible when U.S. citizen or qualified immigrant', () => {
+    test('Requires when U.S. citizenship or qualified immigration status', () => {
       input.income.valid = true;
       input.notCitizen = true;
       check(elig.calfreshResult, input)
@@ -414,7 +414,7 @@ describe('Program eligibility', () => {
     // respective program result functions for easier testing of this
     // potentially complex aspect of program eligibility.  (Across the board,
     // not just for CalFresh)
-    test('Eligible when income is at or below modified categorically-eligible limit', () => {
+    test('Eligible when wage income is at or below modified categorically-eligible limit', () => {
       const testIncome = expectedIncomeLimit;
       input.income.valid = true;
       input.income.wages = [[testIncome + 1]];
@@ -456,7 +456,7 @@ describe('Program eligibility', () => {
       expect(elig.calworksResult(input).eligible).not.toBe(true);
     });
 
-    test('Eligible when U.S. citizen or qualified immigrant', () => {
+    test('Requires U.S. citizenship or qualified immigration status', () => {
       input.income.valid = true;
       input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
       input.pregnant = true;
@@ -522,7 +522,7 @@ describe('Program eligibility', () => {
       expect(elig.calworksResult(input).eligible).not.toBe(true);
     });
 
-    test('Eligible for households that are large enough', () => {
+    test('Requires minimum household size', () => {
       input.income.valid = true;
       input.income.wages = [[expectedLowIncomeLimit + 1]];
       input.housingSituation = 'housed';
@@ -534,7 +534,7 @@ describe('Program eligibility', () => {
         .isEligibleIf('householdSize').is(elig.cnst.fera.MIN_HOUSEHOLD_SIZE);
     });
 
-    test('Eligible when paying utilities', () => {
+    test('Requires utility bill payment', () => {
       input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       input.income.valid = true;
       input.income.wages = [[expectedLowIncomeLimit + 1]];
@@ -542,7 +542,7 @@ describe('Program eligibility', () => {
       check(elig.feraResult, input).isEligibleIf('paysUtilities').is(true);
     });
 
-    test('Eligible when housed', () => {
+    test('Requires being housed', () => {
       input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       input.income.valid = true;
       input.income.wages = [[expectedLowIncomeLimit + 1]];
@@ -554,7 +554,7 @@ describe('Program eligibility', () => {
         .isEligibleIf('housingSituation').is('unlisted-stable-place');
     });
 
-    test('Eligible when income is above CARE limit', () => {
+    test('Requires income above CARE limit', () => {
       input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       input.income.valid = true;
       input.housingSituation = 'housed';
@@ -564,7 +564,7 @@ describe('Program eligibility', () => {
         .isEligibleIf('income.wages').is([[expectedLowIncomeLimit + 1]]);
     });
 
-    test('Eligible when income is at or below FERA limit', () => {
+    test('Requires income at or below FERA limit', () => {
       input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       const testIncome = (
         elig.cnst.fera.ANNUAL_INCOME_LIMITS[input.householdSize - 1] / 12);
@@ -582,6 +582,54 @@ describe('Program eligibility', () => {
   describe('GA Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(gaMadeEligible(input));
+    });
+
+    test('Not eligible with default input', () => {
+      expect(elig.gaResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires applicant to be older than a minimum age', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE - 1;
+      check(elig.gaResult, input).isEligibleIf('age').is(elig.cnst.ga.MIN_ELIGIBLE_AGE);
+    });
+
+    test('Requires no dependent children', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
+      input.householdDependents = [false, true];
+      check(elig.gaResult, input).isEligibleIf('householdDependents').is([false, false]);
+    });
+
+    test('Requires income at or below income limit', () => {
+      const testIncome = elig.cnst.ga.MONTHLY_INCOME_LIMITS[0];
+      input.income.valid = true;
+      input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
+      input.income.wages = [[testIncome + 1]];
+      check(elig.gaResult, input).isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.gaResult, input).isEligibleIf('income.wages').is([[testIncome - 1]]);
+    });
+
+    test('Requires assets at or below resource limit', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
+      input.assets = [[elig.cnst.ga.MAX_RESOURCES + 1]];
+      check(elig.gaResult, input).isEligibleIf('assets').is([[elig.cnst.ga.MAX_RESOURCES]]);
+      check(elig.gaResult, input).isEligibleIf('assets').is([[elig.cnst.ga.MAX_RESOURCES - 1]]);
+    });
+
+    test('Requires U.S. citizenship or qualified immigration status', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
+      input.notCitizen = true;
+      check(elig.gaResult, input)
+        .isEligibleIf('immigrationStatus').is('permanent_resident');
+      check(elig.gaResult, input)
+        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_gt5y');
+      check(elig.gaResult, input)
+        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_le5y');
+      check(elig.gaResult, input)
+        .isEligibleIf('notCitizen').is(false);
     });
   });
 
@@ -603,7 +651,7 @@ describe('Program eligibility', () => {
       expect(elig.vaDisabilityResult(input).eligible).not.toBe(true);
     });
 
-    test('Eligible when a veteran', () => {
+    test('Requires veteran status', () => {
       input.disabled = true;
       input.militaryDisabled = true;
       input.dischargeStatus = 'honorable';
@@ -611,7 +659,7 @@ describe('Program eligibility', () => {
       check(elig.vaDisabilityResult, input).isEligibleIf('veteran').is(true);
     });
 
-    test('Eligible with active duty, active duty for training, or inactive duty training service', () => {
+    test('Requires active duty, active duty for training, or inactive duty training service', () => {
       input.veteran = true;
       input.disabled = true;
       input.militaryDisabled = true;
@@ -636,7 +684,7 @@ describe('Program eligibility', () => {
         ]);
     });
 
-    test('Eligible when disabled related to military', () => {
+    test('Requires disability related to military service', () => {
       input.veteran = true;
       input.dischargeStatus = 'honorable';
       input.dutyPeriods = [{type: 'active-duty'}];
@@ -649,7 +697,7 @@ describe('Program eligibility', () => {
         .isEligibleIf('militaryDisabled').is(true);
     });
 
-    test('Not eligible with other-than-honorable, bad conduct, or dishonorable discharge', () => {
+    test('Requires discharge that is not other-than-honorable, bad conduct, or dishonorable', () => {
       input.veteran = true;
       input.dischargeStatus = 'honorable';
       input.dutyPeriods = [{type: 'active-duty'}];
