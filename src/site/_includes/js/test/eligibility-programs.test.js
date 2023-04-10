@@ -849,4 +849,15 @@ describe('Program eligibility', () => {
         .isNotEligibleIf('dischargeStatus').is('bad-conduct');
     });
   });
+
+  describe('VTA Paratransit Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.vtaParatransitResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires disability', () => {
+      check(elig.vtaParatransitResult, input).isEligibleIf('disabled').is(true);
+    });
+  });
+
 });
