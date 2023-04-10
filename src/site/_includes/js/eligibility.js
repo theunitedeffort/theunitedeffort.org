@@ -2406,6 +2406,7 @@ if (typeof module !== 'undefined' && module.exports) {
     noFeeIdResult,
     ssiResult,
     ssdiResult,
+    upliftResult,
     vaDisabilityResult,
     vtaParatransitResult,
   };

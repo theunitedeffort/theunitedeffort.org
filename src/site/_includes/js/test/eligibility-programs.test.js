@@ -850,6 +850,33 @@ describe('Program eligibility', () => {
     });
   });
 
+  describe('UPLIFT Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.upliftResult(input).eligible).not.toBe(true);
+    });
+
+    test('Eligible when unhoused', () => {
+      input.housingSituation = 'housed';
+      check(elig.upliftResult, input)
+        .isEligibleIf('housingSituation').is('vehicle');
+      input.housingSituation = 'unlisted-stable-place';
+      check(elig.upliftResult, input)
+        .isEligibleIf('housingSituation').is('transitional');
+      check(elig.upliftResult, input)
+        .isEligibleIf('housingSituation').is('hotel');
+      check(elig.upliftResult, input)
+        .isEligibleIf('housingSituation').is('shelter');
+      check(elig.upliftResult, input)
+        .isEligibleIf('housingSituation').is('no-stable-place');
+    });
+
+    test('Eligible when at risk of homelessness', () => {
+      input.housingSituation = 'housed';
+      check(elig.upliftResult, input)
+        .isEligibleIf('homelessRisk').is(true);
+    });
+  });
+
   describe('VA Disability Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.vaDisabilityResult(input).eligible).not.toBe(true);
