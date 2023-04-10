@@ -239,6 +239,8 @@ describe('Program eligibility', () => {
   function calfreshMadeEligible(baseInput) {
     let modified = deepCopy(baseInput);
     modified.income.valid = true;
+    modified.income.wages = [[elig.cnst.calfresh.FED_POVERTY_LEVEL[0] *
+      elig.cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR]];
     modified._verifyFn = elig.calfreshResult;
     return modified;
   }
@@ -248,6 +250,7 @@ describe('Program eligibility', () => {
     modified.age = 20;
     modified.pregnant = true;
     modified.income.valid = true;
+    modified.income.wages = [[elig.cnst.calworks.MBSAC[0]]];
     modified._verifyFn = elig.calworksResult;
     return modified;
   }
@@ -258,6 +261,7 @@ describe('Program eligibility', () => {
     modified.immigrationStatus = 'prucol';
     modified.age = 99;
     modified.income.valid = true;
+    modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
     modified._verifyFn = elig.capiResult;
     return modified;
   }
@@ -266,6 +270,7 @@ describe('Program eligibility', () => {
     let modified = deepCopy(baseInput);
     modified.age = 99;
     modified.income.valid = true;
+    modified.income.wages = [[elig.cnst.ga.MONTHLY_INCOME_LIMITS[0]]];
     modified._verifyFn = elig.gaResult;
     return modified;
   }
@@ -279,11 +284,30 @@ describe('Program eligibility', () => {
     return modified;
   }
 
+  function liheapMadeEligible(baseInput) {
+    let modified = deepCopy(baseInput);
+    modified.housingSituation = 'housed';
+    modified.income.valid = true;
+    modified.income.wages = [[elig.cnst.liheap.MONTHLY_INCOME_LIMITS[0]]];
+    modified._verifyFn = elig.liheapResult;
+    return modified;
+  }
+
   function ssiMadeEligible(baseInput) {
     let modified = deepCopy(baseInput);
     modified.age = 99;
     modified.income.valid = true;
+    modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
     modified._verifyFn = elig.ssiResult;
+    return modified;
+  }
+
+  function wicMadeEligible(baseInput) {
+    let modified = deepCopy(baseInput);
+    modified.pregnant = true;
+    modified.income.valid = true;
+    modified._verifyFn = elig.wicResult;
+    modified.income.wages = [[elig.cnst.wic.MONTHLY_INCOME_LIMITS[0]]];
     return modified;
   }
 
@@ -554,13 +578,77 @@ describe('Program eligibility', () => {
     });
   });
 
+  describe('CARE Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.careResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires utility bill payment', () => {
+      input.income.valid = true;
+      input.housingSituation = 'housed';
+      check(elig.careResult, input).isEligibleIf('paysUtilities').is(true);
+    });
+
+    test('Requires being housed', () => {
+      input.income.valid = true;
+      input.paysUtilities = true;
+      input.housingSituation = 'no-stable-place';
+      check(elig.careResult, input)
+        .isEligibleIf('housingSituation').is('housed');
+      check(elig.careResult, input)
+        .isEligibleIf('housingSituation').is('unlisted-stable-place');
+    });
+
+    test('Eligible when gross income is at or below the limit', () => {
+      const testIncome = elig.cnst.care.ANNUAL_INCOME_LIMITS[0] / 12;
+      input.income.valid = true;
+      input.housingSituation = 'housed';
+      input.paysUtilities = true;
+      input.income.wages = [[testIncome + 1]];
+      check(elig.careResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.careResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+    });
+
+    test('Eligible when receiving certain existing assistance', () => {
+      input.income.valid = false;
+      input.paysUtilities = true;
+      input.housingSituation = 'housed';
+      input.paysUtilities = true;
+
+      check(elig.careResult, input).isEligibleIf('existingMedicalMe').is(true);
+      check(elig.careResult, input).isEligibleIf('existingMedicalHousehold').is(true);
+      check(elig.careResult, input).isEligibleIf('existingWicMe').is(true);
+      check(elig.careResult, input).isEligibleIf('existingWicHousehold').is(true);
+      check(elig.careResult, input).isEligibleIf('existingNslpMe').is(true);
+      check(elig.careResult, input).isEligibleIf('existingNslpHousehold').is(true);
+      check(elig.careResult, input).isEligibleIf('existingCalfreshMe').is(true);
+      check(elig.careResult, input).isEligibleIf('existingCalfreshHousehold').is(true);
+      check(elig.careResult, input).isEligibleIf('existingCfapMe').is(true);
+      check(elig.careResult, input).isEligibleIf('existingCfapHousehold').is(true);
+      check(elig.careResult, input).isEligibleIf('existingLiheapMe').is(true);
+      check(elig.careResult, input).isEligibleIf('existingLiheapHousehold').is(true);
+      check(elig.careResult, input).isEligibleIf('existingSsiMe').is(true);
+      check(elig.careResult, input).isEligibleIf('existingSsiHousehold').is(true);
+      check(elig.careResult, input).isEligibleIf('existingCalworksMe').is(true);
+      check(elig.careResult, input).isEligibleIf('existingCalworksHousehold').is(true);
+
+      check(elig.careResult, input).isEligibleIf(wicMadeEligible);
+      check(elig.careResult, input).isEligibleIf(calfreshMadeEligible);
+      check(elig.careResult, input).isEligibleIf(liheapMadeEligible);
+      check(elig.careResult, input).isEligibleIf(ssiMadeEligible);
+      check(elig.careResult, input).isEligibleIf(calworksMadeEligible);
+    });
+  });
+
   describe('FERA Program', () => {
     let expectedLowIncomeLimit;
     beforeEach(() => {
       const incomeIdx = elig.cnst.fera.MIN_HOUSEHOLD_SIZE - 1;
       expectedLowIncomeLimit = (
         elig.cnst.care.ANNUAL_INCOME_LIMITS[incomeIdx] / 12);
-    })
+    });
 
     test('Not eligible with default input', () => {
       expect(elig.calworksResult(input).eligible).not.toBe(true);
@@ -793,6 +881,10 @@ describe('Program eligibility', () => {
   });
 
   describe('LIHEAP Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      verifyOverlay(liheapMadeEligible(input));
+    });
+
     test('Not eligible with default input', () => {
       expect(elig.liheapResult(input).eligible).not.toBe(true);
     });
@@ -950,6 +1042,16 @@ describe('Program eligibility', () => {
 
     test('Requires disability', () => {
       check(elig.vtaParatransitResult, input).isEligibleIf('disabled').is(true);
+    });
+  });
+
+  describe('WIC Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      verifyOverlay(wicMadeEligible(input));
+    });
+
+    test('Not eligible with default input', () => {
+      expect(elig.wicResult(input).eligible).not.toBe(true);
     });
   });
 

@@ -1540,7 +1540,9 @@ function careResult(input) {
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
   const isCategoricallyEligible = or(
-    // TODO: add remaining assistance programs that help qualify.
+    // TODO: add remaining assistance programs that help qualify:
+    //   Healthy Families A & B
+    //   Tribal programs?
     input.existingSsiMe,
     input.existingSsiHousehold,
     input.existingLiheapMe,
@@ -1557,6 +1559,7 @@ function careResult(input) {
     input.existingCfapHousehold,
     input.existingNslpMe,
     input.existingNslpHousehold,
+    // TODO: Add Medi-Cal eligibility check here once supported.
     ssiResult(input).eligible,
     liheapResult(input).eligible,
     wicResult(input).eligible,
@@ -2398,6 +2401,7 @@ if (typeof module !== 'undefined' && module.exports) {
     calfreshResult,
     calworksResult,
     capiResult,
+    careResult,
     feraResult,
     gaResult,
     housingChoiceResult,
@@ -2409,5 +2413,6 @@ if (typeof module !== 'undefined' && module.exports) {
     upliftResult,
     vaDisabilityResult,
     vtaParatransitResult,
+    wicResult,
   };
 }
