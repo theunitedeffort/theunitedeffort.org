@@ -682,6 +682,72 @@ describe('Program eligibility', () => {
     });
   });
 
+  describe('Housing Choice Voucher Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.housingChoiceResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires applicant to be older than a minimum age', () => {
+      input.income.valid = true;
+      check(elig.housingChoiceResult, input).isEligibleIf('age')
+        .isAtLeast(elig.cnst.housingChoice.MIN_ELIGIBLE_AGE);
+    });
+
+    test('Requires U.S. citizenship or qualified immigration status', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
+      input.notCitizen = true;
+      check(elig.housingChoiceResult, input)
+        .isEligibleIf('immigrationStatus').is('permanent_resident');
+      check(elig.housingChoiceResult, input)
+        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_gt5y');
+      check(elig.housingChoiceResult, input)
+        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_le5y');
+      check(elig.housingChoiceResult, input)
+        .isEligibleIf('notCitizen').is(false);
+    });
+
+    test('Requires gross income at or below income limit', () => {
+      const testIncome = elig.cnst.housingChoice.ANNUAL_INCOME_LIMITS[0] / 12;
+      input.income.valid = true;
+      input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
+      input.income.wages = [[testIncome + 1]];
+      check(elig.housingChoiceResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.housingChoiceResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+    });
+
+    // This program has a particularly complex income limit calculation for
+    // household sizes above the maximum size listed in the limit table.  This
+    // Test ensures the calculation was done correctly by checking against the
+    // values given by the HUD income limit calculator.
+    test('Extended income limit is computed correctly', () => {
+      // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+      const expectedAnnualLimitNinePpl = 117950;
+      const expectedAnnualLimitTwentyFivePpl = 225800;
+
+      input.income.valid = true;
+      input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
+
+      input.householdSize = 9;
+      let testIncome = expectedAnnualLimitNinePpl / 12;
+      input.income.wages = [[testIncome + 1]];
+      check(elig.housingChoiceResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.housingChoiceResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+
+      input.householdSize = 25;
+      testIncome = expectedAnnualLimitTwentyFivePpl / 12;
+      input.income.wages = [[testIncome + 1]];
+      check(elig.housingChoiceResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.housingChoiceResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+    });
+  });
+
   describe('IHSS Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(ihssMadeEligible(input));

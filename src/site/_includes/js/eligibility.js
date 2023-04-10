@@ -1839,12 +1839,15 @@ function vtaParatransitResult(input) {
 function housingChoiceResult(input) {
   // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
   const extraCalc = function(numExtraPeople) {
-    const incomeLimit = (grossLimitInput[cnst.housingChoice.BASE_HOUSEHOLD_SIZE - 1] *
-      (cnst.housingChoice.FAMILY_SIZE_ADJ_8 + cnst.housingChoice.INCREMENTAL_ADJ * numExtraPeople));
+    const limits = cnst.housingChoice.ANNUAL_INCOME_LIMITS;
+    const baseLimit = limits[cnst.housingChoice.BASE_HOUSEHOLD_SIZE - 1];
+    const adjustment = (cnst.housingChoice.FAMILY_SIZE_ADJ_8 +
+      cnst.housingChoice.INCREMENTAL_ADJ * numExtraPeople);
+    const incomeLimit = baseLimit * adjustment;
     const rounded = (cnst.housingChoice.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
       Math.trunc(incomeLimit) / cnst.housingChoice.INCOME_ROUND_UP_TO_NEAREST));
     // Return incremental change ("extra") from the max listed input value.
-    return rounded - grossLimitInput[grossLimitInput.length - 1];
+    return rounded - limits[limits.length - 1];
   }
 
   const grossLimit = MonthlyIncomeLimit.fromAnnual(
@@ -2397,6 +2400,7 @@ if (typeof module !== 'undefined' && module.exports) {
     capiResult,
     feraResult,
     gaResult,
+    housingChoiceResult,
     ihssResult,
     liheapResult,
     noFeeIdResult,
