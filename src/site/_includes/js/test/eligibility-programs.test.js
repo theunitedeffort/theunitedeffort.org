@@ -726,6 +726,32 @@ describe('Program eligibility', () => {
     });
   });
 
+  describe('LIHEAP Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.liheapResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires being housed', () => {
+      input.income.valid = true;
+      input.housingSituation = 'no-stable-place';
+      check(elig.liheapResult, input)
+        .isEligibleIf('housingSituation').is('housed');
+      check(elig.liheapResult, input)
+        .isEligibleIf('housingSituation').is('unlisted-stable-place');
+    });
+
+    test('Requires gross income at or below limit', () => {
+      const testIncome = elig.cnst.liheap.MONTHLY_INCOME_LIMITS[0];
+      input.income.valid = true;
+      input.housingSituation = 'housed';
+      input.income.wages = [[testIncome + 1]];
+      check(elig.liheapResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.liheapResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+    });
+  });
+
   describe('No Fee ID Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.noFeeIdResult(input).eligible).not.toBe(true);
