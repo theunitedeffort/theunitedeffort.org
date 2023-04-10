@@ -2403,5 +2403,6 @@ if (typeof module !== 'undefined' && module.exports) {
     ssiResult,
     ssdiResult,
     vaDisabilityResult,
+    vtaParatransitResult,
   };
 }
