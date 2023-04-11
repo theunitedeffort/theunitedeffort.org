@@ -613,7 +613,6 @@ describe('Program eligibility', () => {
 
     test('Eligible when receiving certain existing assistance', () => {
       input.income.valid = false;
-      input.paysUtilities = true;
       input.housingSituation = 'housed';
       input.paysUtilities = true;
 
@@ -877,6 +876,61 @@ describe('Program eligibility', () => {
       input.housingSituation = 'housed'
       check(elig.ihssResult, input)
         .isEligibleIf('age').isAtLeast(elig.cnst.ihss.MIN_ELDERLY_AGE);
+    });
+  });
+
+  describe('Lifeline Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.lifelineResult(input).eligible).not.toBe(true);
+    });
+
+    test('Eligible when gross income is at or below the limit', () => {
+      const testIncome = elig.cnst.lifeline.ANNUAL_INCOME_LIMITS[0] / 12;
+      input.income.valid = true;
+      input.income.wages = [[testIncome + 1]];
+      check(elig.lifelineResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+    });
+
+    test('Eligible when receiving certain existing assistance', () => {
+      input.income.valid = false;
+
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingMedicalMe').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingMedicalHousehold').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingLiheapMe').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingLiheapHousehold').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingSsiMe').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingSsiHousehold').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingCalfreshMe').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingCalfreshHousehold').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingWicMe').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingWicHousehold').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingNslpMe').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingNslpHousehold').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingCalworksMe').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingCalworksHousehold').is(true);
+
+      check(elig.lifelineResult, input).isEligibleIf(liheapMadeEligible);
+      check(elig.lifelineResult, input).isEligibleIf(ssiMadeEligible);
+      check(elig.lifelineResult, input).isEligibleIf(calfreshMadeEligible);
+      check(elig.lifelineResult, input).isEligibleIf(wicMadeEligible);
+      check(elig.lifelineResult, input).isEligibleIf(calworksMadeEligible);
     });
   });
 
