@@ -1555,6 +1555,7 @@ function careResult(input) {
     input.existingCalfreshHousehold,
     input.existingMedicalMe,
     input.existingMedicalHousehold,
+    // TODO: Does CFAP count here?
     input.existingCfapMe,
     input.existingCfapHousehold,
     input.existingNslpMe,
@@ -1780,6 +1781,7 @@ function lifelineResult(input) {
     input.existingSsiMe,
     input.existingSsiHousehold,
     // TODO: add Section 8.
+    // TODO: add CFAP?
     input.existingCalfreshMe,
     input.existingCalfreshHousehold,
     input.existingWicMe,
@@ -2406,6 +2408,7 @@ if (typeof module !== 'undefined' && module.exports) {
     gaResult,
     housingChoiceResult,
     ihssResult,
+    lifelineResult,
     liheapResult,
     noFeeIdResult,
     ssiResult,
