@@ -994,6 +994,52 @@ describe('Program eligibility', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(ssiMadeEligible(input));
     });
+
+    test('Not eligible with default input', () => {
+      expect(elig.ssiResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires applicant to be disabled, blind, or elderly', () => {
+      input.income.valid = true;
+      check(elig.ssiResult, input).isEligibleIf('disabled').is(true);
+      check(elig.ssiResult, input).isEligibleIf('blind').is(true);
+      check(elig.ssiResult, input)
+        .isEligibleIf('age').isAtLeast(elig.cnst.ssiCapi.MIN_ELDERLY_AGE);
+    });
+
+    test('Requires no substantial gainful activity', () => {
+      let testIncome = elig.cnst.ssiCapi.SGA_NON_BLIND;
+      input.income.valid = true;
+      input.disabled = true;
+      input.income.wages = [[testIncome + 1]];
+      // SGA should only count earned income.
+      input.income.unemployment = [[1]];
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+
+      testIncome = elig.cnst.ssiCapi.SGA_BLIND;
+      input.blind = true;
+      input.income.wages = [[testIncome + 1]];
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+    });
+
+    test('Requires assets at or below resource limit', () => {
+      const testAssets = elig.cnst.ssiCapi.MAX_RESOURCES
+      input.income.valid = true;
+      input.disabled = true;
+      input.assets = [[testAssets + 1]];
+      check(elig.ssiResult, input)
+        .isEligibleIf('assets').is([[testAssets]]);
+      check(elig.ssiResult, input)
+        .isEligibleIf('assets').is([[testAssets - 1]]);
+    });
+
+    test.todo('Requires adjusted income below maximum benefit amount');
   });
 
   describe('UPLIFT Program', () => {
