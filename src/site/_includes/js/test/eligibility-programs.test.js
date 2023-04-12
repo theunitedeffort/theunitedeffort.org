@@ -62,6 +62,15 @@ function msg(ctx, whichStr) {
     );
 }
 
+// A bit of a hack to allow for easier income value perturbations in
+// isAtLeast, isAtMost, isOver, and isUnder.
+function incomeSafeVal(target, value) {
+  if (target.includes('income') || target.includes('assets')) {
+    return [[value]];
+  }
+  return value;
+}
+
 function is(value) {
   const initValue = getValue(this.input, this.target);
   expect(this.program(this.input).eligible, msg(this, 'initial')).not.toBe(this.expected);
@@ -72,40 +81,40 @@ function is(value) {
 
 function isAtLeast(value) {
   const initValue = getValue(this.input, this.target);
-  setValue(this.input, this.target, value - 1);
+  setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
   expect(this.program(this.input).eligible, msg(this, 'lower')).not.toBe(this.expected);
-  setValue(this.input, this.target, value);
+  setValue(this.input, this.target, incomeSafeVal(this.target, value));
   expect(this.program(this.input).eligible, msg(this, 'given')).toBe(this.expected);
-  setValue(this.input, this.target, value + 1);
+  setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
   expect(this.program(this.input).eligible, msg(this, 'higher')).toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
 function isAtMost(value) {
   const initValue = getValue(this.input, this.target);
-  setValue(this.input, this.target, value + 1);
+  setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
   expect(this.program(this.input).eligible, msg(this, 'higher')).not.toBe(this.expected);
-  setValue(this.input, this.target, value);
+  setValue(this.input, this.target, incomeSafeVal(this.target, value));
   expect(this.program(this.input).eligible, msg(this, 'given')).toBe(this.expected);
-  setValue(this.input, this.target, value - 1);
+  setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
   expect(this.program(this.input).eligible, msg(this, 'lower')).toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
 function isOver(value) {
   const initValue = getValue(this.input, this.target);
-  setValue(this.input, this.target, value);
+  setValue(this.input, this.target, incomeSafeVal(this.target, value));
   expect(this.program(this.input).eligible, msg(this, 'given')).not.toBe(this.expected);
-  setValue(this.input, this.target, value + 1);
+  setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
   expect(this.program(this.input).eligible, msg(this, 'higher')).toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
 function isUnder(value) {
   const initValue = getValue(this.input, this.target);
-  setValue(this.input, this.target, value);
+  setValue(this.input, this.target, incomeSafeVal(this.target, value));
   expect(this.program(this.input).eligible, msg(this, 'given')).not.toBe(this.expected);
-  setValue(this.input, this.target, value - 1);
+  setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
   expect(this.program(this.input).eligible, msg(this, 'lower')).toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
@@ -168,6 +177,23 @@ describe('Helper setValue', () => {
     expect(testObj.income.wages).toEqual([[140]]);
     setValue(testObj, 'income.deeper.val', 42);
     expect(testObj.income.deeper.val).toBe(42);
+  });
+});
+
+describe('Helper incomeSafeVal', () => {
+  test('Returns unchanged value in the general case', () => {
+    expect(incomeSafeVal('age', 42)).toBe(42);
+    expect(incomeSafeVal('property', 'hello')).toBe('hello');
+    expect(incomeSafeVal('example', [1, 2, 3])).toEqual([1, 2, 3]);
+  });
+
+  test('Returns value in a nested list for income', () => {
+    expect(incomeSafeVal('income.wages', 42)).toEqual([[42]]);
+    expect(incomeSafeVal('income.unemployment', 100)).toEqual([[100]]);
+  });
+
+  test('Returns value in a nested list for assets', () => {
+    expect(incomeSafeVal('assets', 99)).toEqual([[99]]);
   });
 });
 
@@ -485,11 +511,8 @@ describe('Program eligibility', () => {
     test('Eligible when wage income is at or below modified categorically-eligible limit', () => {
       const testIncome = expectedIncomeLimit;
       input.income.valid = true;
-      input.income.wages = [[testIncome + 1]];
       check(elig.calfreshResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.calfreshResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(testIncome);
     });
 
     test('Eligible with higher self-employed income due to exemptions', () => {
@@ -502,9 +525,8 @@ describe('Program eligibility', () => {
       expect(elig.calfreshResult(input).eligible).not.toBe(true);
       // Adjusted income should be ok when all income is from self-employment.
       input.income.wages = [[0]];
-      input.income.selfEmployed = [[testIncome + 1]];
       check(elig.calfreshResult, input)
-        .isEligibleIf('income.selfEmployed').is([[testIncome]]);
+        .isEligibleIf('income.selfEmployed').isAtMost(testIncome);
     });
 
     test('Unknown result for invalid income with no categorical eligibility', () => {
@@ -604,11 +626,8 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.housingSituation = 'housed';
       input.paysUtilities = true;
-      input.income.wages = [[testIncome + 1]];
       check(elig.careResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.careResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(testIncome);
     });
 
     test('Eligible when receiving certain existing assistance', () => {
@@ -702,11 +721,8 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.housingSituation = 'housed';
       input.paysUtilities = true;
-      input.income.wages = [[testIncome + 1]];
       check(elig.feraResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-    check(elig.feraResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(testIncome);
     });
   });
 
@@ -734,24 +750,18 @@ describe('Program eligibility', () => {
     });
 
     test('Requires income at or below income limit', () => {
-      const testIncome = elig.cnst.ga.MONTHLY_INCOME_LIMITS[0];
+      const maxIncome = elig.cnst.ga.MONTHLY_INCOME_LIMITS[0];
       input.income.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
-      input.income.wages = [[testIncome + 1]];
       check(elig.gaResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.gaResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(maxIncome);
     });
 
     test('Requires assets at or below resource limit', () => {
       input.income.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
-      input.assets = [[elig.cnst.ga.MAX_RESOURCES + 1]];
       check(elig.gaResult, input)
-        .isEligibleIf('assets').is([[elig.cnst.ga.MAX_RESOURCES]]);
-      check(elig.gaResult, input)
-        .isEligibleIf('assets').is([[elig.cnst.ga.MAX_RESOURCES - 1]]);
+        .isEligibleIf('assets').isAtMost(elig.cnst.ga.MAX_RESOURCES);
     });
 
     test('Requires U.S. citizenship or qualified immigration status', () => {
@@ -795,14 +805,11 @@ describe('Program eligibility', () => {
     });
 
     test('Requires gross income at or below income limit', () => {
-      const testIncome = elig.cnst.housingChoice.ANNUAL_INCOME_LIMITS[0] / 12;
+      const maxIncome = elig.cnst.housingChoice.ANNUAL_INCOME_LIMITS[0] / 12;
       input.income.valid = true;
       input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
-      input.income.wages = [[testIncome + 1]];
       check(elig.housingChoiceResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.housingChoiceResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(maxIncome);
     });
 
     // This program has a particularly complex income limit calculation for
@@ -818,20 +825,14 @@ describe('Program eligibility', () => {
       input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
 
       input.householdSize = 9;
-      let testIncome = expectedAnnualLimitNinePpl / 12;
-      input.income.wages = [[testIncome + 1]];
+      let maxIncome = expectedAnnualLimitNinePpl / 12;
       check(elig.housingChoiceResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.housingChoiceResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(maxIncome);
 
       input.householdSize = 25;
-      testIncome = expectedAnnualLimitTwentyFivePpl / 12;
-      input.income.wages = [[testIncome + 1]];
+      maxIncome = expectedAnnualLimitTwentyFivePpl / 12;
       check(elig.housingChoiceResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.housingChoiceResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(maxIncome);
     });
   });
 
@@ -885,13 +886,10 @@ describe('Program eligibility', () => {
     });
 
     test('Eligible when gross income is at or below the limit', () => {
-      const testIncome = elig.cnst.lifeline.ANNUAL_INCOME_LIMITS[0] / 12;
+      const maxIncome = elig.cnst.lifeline.ANNUAL_INCOME_LIMITS[0] / 12;
       input.income.valid = true;
-      input.income.wages = [[testIncome + 1]];
       check(elig.lifelineResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.lifelineResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(maxIncome);
     });
 
     test('Eligible when receiving certain existing assistance', () => {
@@ -953,14 +951,11 @@ describe('Program eligibility', () => {
     });
 
     test('Requires gross income at or below limit', () => {
-      const testIncome = elig.cnst.liheap.MONTHLY_INCOME_LIMITS[0];
+      const maxIncome = elig.cnst.liheap.MONTHLY_INCOME_LIMITS[0];
       input.income.valid = true;
       input.housingSituation = 'housed';
-      input.income.wages = [[testIncome + 1]];
       check(elig.liheapResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.liheapResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(maxIncome);
     });
   });
 
@@ -1032,24 +1027,18 @@ describe('Program eligibility', () => {
     });
 
     test('Requires no substantial gainful activity for blind or disabled applicants', () => {
-      let testIncome = elig.cnst.ssiCapi.SGA_NON_BLIND;
+      let sgaLimit = elig.cnst.ssiCapi.SGA_NON_BLIND;
       input.income.valid = true;
       input.disabled = true;
-      input.income.wages = [[testIncome + 1]];
       // SGA should only count earned income.
       input.income.unemployment = [[1]];
       check(elig.ssiResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.ssiResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(sgaLimit);
 
-      testIncome = elig.cnst.ssiCapi.SGA_BLIND;
+      sgaLimit = elig.cnst.ssiCapi.SGA_BLIND;
       input.blind = true;
-      input.income.wages = [[testIncome + 1]];
       check(elig.ssiResult, input)
-        .isEligibleIf('income.wages').is([[testIncome]]);
-      check(elig.ssiResult, input)
-        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+        .isEligibleIf('income.wages').isAtMost(sgaLimit);
     });
 
     test('Substantial gainful activity test not applied for non-disabled and non-blind applicants', () => {
@@ -1074,27 +1063,24 @@ describe('Program eligibility', () => {
 
       // Non-blind with a kitchen
       input.hasKitchen = true;
-      let testIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND +
+      let maxIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND +
         elig.cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
-      input.income.unemployment = [[testIncome]];
       check(elig.ssiResult, input)
-        .isEligibleIf('income.unemployment').is([[testIncome - 1]]);
+        .isEligibleIf('income.unemployment').isUnder(maxIncome);
 
       // Non-blind without a kitchen
       input.hasKitchen = false;
-      testIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND_NO_KITCHEN +
+      maxIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND_NO_KITCHEN +
         elig.cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
-      input.income.unemployment = [[testIncome]];
       check(elig.ssiResult, input)
-        .isEligibleIf('income.unemployment').is([[testIncome - 1]]);
+        .isEligibleIf('income.unemployment').isUnder(maxIncome);
 
       // Blind
       input.blind = true;
-      testIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_BLIND +
+      maxIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_BLIND +
         elig.cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
-      input.income.unemployment = [[testIncome]];
       check(elig.ssiResult, input)
-        .isEligibleIf('income.unemployment').is([[testIncome - 1]]);
+        .isEligibleIf('income.unemployment').isUnder(maxIncome);
     });
 
   });
