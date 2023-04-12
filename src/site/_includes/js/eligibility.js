@@ -1885,6 +1885,18 @@ function housingChoiceResult(input) {
   return program.getResult();
 }
 
+function ssiCapiAdjustedIncome(earnedIncome, unearnedIncome) {
+  // See https://www.ssa.gov/oact/cola/incomexcluded.html for calculation.
+  const unearnedExclusion = Math.min(unearnedIncome,
+    cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
+  const countableEarnedIncome = Math.max(0, cnst.ssiCapi.EARNED_INCOME_EXCLUSION_FACTOR * (
+    earnedIncome -
+    cnst.ssiCapi.MAX_EARNED_INCOME_EXCLUSION -
+    (cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION - unearnedExclusion)));
+  const countableUnearnedIncome = unearnedIncome - unearnedExclusion;
+  return countableEarnedIncome + countableUnearnedIncome;
+}
+
 function ssiCapiBaseProgram(input) {
   // Note we are not checking if the user's disability is preventing them
   // from working, as that decision can be complex to make--better to just
@@ -1908,29 +1920,25 @@ function ssiCapiBaseProgram(input) {
   // TODO: Apply deeming.
   const earnedIncome = totalEarnedIncome(input, 0);
   const unearnedIncome = totalUnearnedIncome(input, 0);
-
-  // See https://www.ssa.gov/oact/cola/incomexcluded.html for calculation.
-  const unearnedExclusion = Math.min(unearnedIncome,
-    cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
-  const countableEarnedIncome = Math.max(0, cnst.ssiCapi.EARNED_INCOME_EXCLUSION_FACTOR * (
-    earnedIncome -
-    cnst.ssiCapi.MAX_EARNED_INCOME_EXCLUSION -
-    (cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION - unearnedExclusion)));
-  const countableUnearnedIncome = unearnedIncome - unearnedExclusion;
-  const countableIncome = countableEarnedIncome + countableUnearnedIncome;
+  const countableIncome = ssiCapiAdjustedIncome(earnedIncome, unearnedIncome);
 
   const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
   const underIncomeLimit = lt(countableIncome, maxBenefit);
-  const underResourceLimit = le(
+  const underResourceLimit = lt(
     totalResources(input, 0), cnst.ssiCapi.MAX_RESOURCES);
 
   const program = new Program();
   program.addCondition(new EligCondition(
     `Disabled, blind or age ${cnst.ssiCapi.MIN_ELDERLY_AGE} or older`,
     meetsDisabilityReq));
-  program.addCondition(new EligCondition(
-    `Income from employment is below ${usdLimit(sgaLimit)} per month`,
-    noSubstantialGainfulActivity));
+  // Substantial gainful activity test is only applied to disabled or blind
+  // applicants.
+  // https://www.ssa.gov/ssi/text-disable-ussi.htm
+  if (or(input.disabled, input.blind)) {
+    program.addCondition(new EligCondition(
+      `Income from employment is below ${usdLimit(sgaLimit)} per month`,
+      noSubstantialGainfulActivity));
+  }
   program.addCondition(new EligCondition(
     `Total adjusted income is below ${usdLimit(maxBenefit)} per month`,
     underIncomeLimit));
@@ -2411,6 +2419,7 @@ if (typeof module !== 'undefined' && module.exports) {
     lifelineResult,
     liheapResult,
     noFeeIdResult,
+    ssiCapiAdjustedIncome,
     ssiResult,
     ssdiResult,
     upliftResult,

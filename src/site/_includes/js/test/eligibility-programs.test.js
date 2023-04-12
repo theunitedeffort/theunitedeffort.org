@@ -990,10 +990,113 @@ describe('Program eligibility', () => {
     });
   });
 
+  describe('SSI/CAPI adjusted income calcuation', () => {
+    test('Works with only unearned income', () => {
+      // First $20 of unearned income is excluded.
+      expect(elig.ssiCapiAdjustedIncome(0, 100)).toBe(80);
+      expect(elig.ssiCapiAdjustedIncome(0, 20)).toBe(0);
+      expect(elig.ssiCapiAdjustedIncome(0, 10)).toBe(0);
+    });
+
+    test('Works with only earned income', () => {
+      // First $65 of earned income is excluded, plus any remaining of the
+      // $20 unearned income exclusion.  The remainder is then cut in half.
+      expect(elig.ssiCapiAdjustedIncome(185, 0)).toBe(50);
+      expect(elig.ssiCapiAdjustedIncome(85, 0)).toBe(0);
+      expect(elig.ssiCapiAdjustedIncome(10, 0)).toBe(0);
+    });
+
+    test('Works with both unearned income and earned income', () => {
+      expect(elig.ssiCapiAdjustedIncome(165, 120)).toBe(150);
+      expect(elig.ssiCapiAdjustedIncome(170, 15)).toBe(50);
+      expect(elig.ssiCapiAdjustedIncome(65, 20)).toBe(0);
+      expect(elig.ssiCapiAdjustedIncome(10, 5)).toBe(0);
+    });
+  });
+
   describe('SSI Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(ssiMadeEligible(input));
     });
+
+    test('Not eligible with default input', () => {
+      expect(elig.ssiResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires applicant to be disabled, blind, or elderly', () => {
+      input.income.valid = true;
+      check(elig.ssiResult, input).isEligibleIf('disabled').is(true);
+      check(elig.ssiResult, input).isEligibleIf('blind').is(true);
+      check(elig.ssiResult, input)
+        .isEligibleIf('age').isAtLeast(elig.cnst.ssiCapi.MIN_ELDERLY_AGE);
+    });
+
+    test('Requires no substantial gainful activity for blind or disabled applicants', () => {
+      let testIncome = elig.cnst.ssiCapi.SGA_NON_BLIND;
+      input.income.valid = true;
+      input.disabled = true;
+      input.income.wages = [[testIncome + 1]];
+      // SGA should only count earned income.
+      input.income.unemployment = [[1]];
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+
+      testIncome = elig.cnst.ssiCapi.SGA_BLIND;
+      input.blind = true;
+      input.income.wages = [[testIncome + 1]];
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.wages').is([[testIncome]]);
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.wages').is([[testIncome - 1]]);
+    });
+
+    test('Substantial gainful activity test not applied for non-disabled and non-blind applicants', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.ssiCapi.MIN_ELDERLY_AGE;
+      input.income.wages = [[elig.cnst.ssiCapi.SGA_NON_BLIND + 1]];
+      expect(elig.ssiResult(input).eligible).toBe(true);
+    });
+
+    test('Requires assets below resource limit', () => {
+      const testAssets = elig.cnst.ssiCapi.MAX_RESOURCES
+      input.income.valid = true;
+      input.disabled = true;
+      input.assets = [[testAssets]];
+      check(elig.ssiResult, input)
+        .isEligibleIf('assets').is([[testAssets - 1]]);
+    });
+
+    test('Requires adjusted income below maximum benefit amount', () => {
+      input.income.valid = true;
+      input.disabled = true;
+
+      // Non-blind with a kitchen
+      input.hasKitchen = true;
+      let testIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND +
+        elig.cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
+      input.income.unemployment = [[testIncome]];
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.unemployment').is([[testIncome - 1]]);
+
+      // Non-blind without a kitchen
+      input.hasKitchen = false;
+      testIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND_NO_KITCHEN +
+        elig.cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
+      input.income.unemployment = [[testIncome]];
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.unemployment').is([[testIncome - 1]]);
+
+      // Blind
+      input.blind = true;
+      testIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_BLIND +
+        elig.cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
+      input.income.unemployment = [[testIncome]];
+      check(elig.ssiResult, input)
+        .isEligibleIf('income.unemployment').is([[testIncome - 1]]);
+    });
+
   });
 
   describe('UPLIFT Program', () => {
