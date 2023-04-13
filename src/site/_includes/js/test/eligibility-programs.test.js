@@ -1196,6 +1196,70 @@ describe('Program eligibility', () => {
     test('Not eligible with default input', () => {
       expect(elig.wicResult(input).eligible).not.toBe(true);
     });
+
+    test('Eligible when gross income is at or below the income limit', () => {
+      input.income.valid = true;
+      input.pregnant = true;
+      // Force ineligibility for CalFresh to explicitly test gross income only.
+      input.notCitizen = true;
+      input.immigrationStatus = 'qualified_noncitizen_le5y';
+      check(elig.wicResult, input).isEligibleIf('income.wages')
+        .isAtMost(elig.cnst.wic.MONTHLY_INCOME_LIMITS[0]);
+    });
+
+    test('Eligible when receiving specific existing assistance', () => {
+      input.income.valid = false;
+      input.pregnant = true;
+      check(elig.wicResult, input)
+        .isEligibleIf('existingMedicalMe').is(true);
+      check(elig.wicResult, input)
+        .isEligibleIf('existingMedicalHousehold').is(true);
+      check(elig.wicResult, input)
+        .isEligibleIf('existingCalworksMe').is(true);
+      check(elig.wicResult, input)
+        .isEligibleIf('existingCalworksHousehold').is(true);
+      check(elig.wicResult, input)
+        .isEligibleIf('existingCalfreshMe').is(true);
+      check(elig.wicResult, input)
+        .isEligibleIf('existingCalfreshHousehold').is(true);
+
+      check(elig.wicResult, input).isEligibleIf(calworksMadeEligible);
+      check(elig.wicResult, input).isEligibleIf(calfreshMadeEligible);
+    });
+
+    test('Household size includes expected babies', () =>{
+      input.income.valid = true;
+      input.pregnant = true;
+      input.unbornChildren = 1;
+      // Force ineligibility for CalFresh to explicitly test gross income only.
+      input.notCitizen = true;
+      input.immigrationStatus = 'qualified_noncitizen_le5y';
+      check(elig.wicResult, input).isEligibleIf('income.wages')
+        .isAtMost(elig.cnst.wic.MONTHLY_INCOME_LIMITS[1]);
+    });
+
+    test('Eligible when anyone in the household is pregnant or was pregnant in the last 6 months', () => {
+      input.income.valid = true;
+      input.householdPregnant = [false, false];
+      check(elig.wicResult, input).isEligibleIf('pregnant').is(true);
+      check(elig.wicResult, input)
+        .isEligibleIf('householdPregnant').is([true, false]);
+    });
+
+    test('Eligible when anyone in the household is breastfeeding a baby under 1 year old', () => {
+      input.income.valid = true;
+      input.householdFeeding = [false, false]
+      check(elig.wicResult, input).isEligibleIf('feeding').is(true);
+      check(elig.wicResult, input)
+        .isEligibleIf('householdFeeding').is([true, false]);
+    });
+
+    test('Eligible when the household includes a child or baby', () => {
+      input.income.valid = true;
+      input.householdAges = [elig.cnst.wic.CHILD_EXIT_AGE, 99];
+      check(elig.wicResult, input).isEligibleIf('householdAges')
+        .is([elig.cnst.wic.CHILD_EXIT_AGE - 1, 99]);
+    });
   });
 
 });
