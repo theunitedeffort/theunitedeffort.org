@@ -1800,8 +1800,8 @@ function lifelineResult(input) {
     cnst.lifeline.ANNUAL_INCOME_LIMITS,
     cnst.lifeline.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
 
-  const underIncomeLimit = le(
-    grossIncome(input), grossLimit.getLimit(input.householdSize));
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
   const isProgramQualified = or(
     input.existingMedicalMe,
@@ -1829,14 +1829,14 @@ function lifelineResult(input) {
     calworksResult(input).eligible,
     vaPensionResult(input).eligible);
 
-  const eligible = or(
-    isProgramQualified,
-    underIncomeLimit);
-
   const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', eligible));
+  program.addConditionsOneOf([
+    new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`,
+      underIncomeLimit),
+    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, NSLP or VA Pension',
+      isProgramQualified),
+  ]);
+
   return program.getResult();
 }
 
