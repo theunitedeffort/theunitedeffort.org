@@ -1803,7 +1803,7 @@ function lifelineResult(input) {
   program.addConditionsOneOf([
     new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
-    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal or NSLP',
+    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, NSLP or VA Pension',
       isProgramQualified),
   ]);
 
