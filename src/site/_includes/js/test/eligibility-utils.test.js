@@ -100,6 +100,22 @@ describe('getNumberOfDays', () => {
   });
 });
 
+describe('dateOrToday', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test("Returns today's date for empty input", () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2000-01-01T00:00'));
+    expect(elig.dateOrToday('').getTime()).toBe(946713600000);
+  });
+
+  test('Converts a date string to a Date', () => {
+    expect(elig.dateOrToday('1975-08-20').getTime()).toBe(177750000000);
+  });
+});
+
 describe('Null-passing OR', () => {
   test('Combines boolean inputs', () => {
     expect(elig.or(true, true)).toBe(true);

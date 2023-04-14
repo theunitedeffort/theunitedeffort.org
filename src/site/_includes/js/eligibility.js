@@ -437,6 +437,20 @@ function formatUsDate(date) {
   return `${date1.getMonth() + 1}/${date1.getDate()}/${date1.getFullYear()}`;
 }
 
+// Converts a date string to a Date or returns a Date corresponding to today if
+// the input string is empty.
+function dateOrToday(inputStr) {
+  if (inputStr) {
+    return new Date(dateStrToLocal(inputStr));
+  }
+  let today = new Date();
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
+  return today;
+}
+
 // Shows or hides the element 'elem' via a class name.
 function setElementVisibility(elem, makeVisible) {
   if (elem) {
@@ -1975,17 +1989,6 @@ function ssdiResult(input) {
 }
 
 function vaPensionResult(input) {
-  function dateOrToday(inputStr) {
-    if (inputStr) {
-      return new Date(dateStrToLocal(inputStr));
-    }
-    let today = new Date();
-    today.setHours(0);
-    today.setMinutes(0);
-    today.setSeconds(0);
-    today.setMilliseconds(0);
-    return today;
-  }
 
   function withinWartime(start, end) {
     return or(
@@ -2399,6 +2402,7 @@ if (typeof module !== 'undefined' && module.exports) {
     dateStrToLocal,
     getNumberOfDays,
     formatUsDate,
+    dateOrToday,
     indexOfAll,
     isOneOf,
     categoryTotal,
