@@ -116,6 +116,28 @@ describe('dateOrToday', () => {
   });
 });
 
+describe('withinInterval', () => {
+  let intervals;
+  beforeEach(() => {
+    intervals = [
+      {start: new Date('1970-01-01'), end: new Date('1970-12-01')},
+      {start: new Date('2001-01-01'), end: new Date('2020-01-01')},
+    ];
+  });
+
+  test('Returns null for null start or end parameter', () => {
+    const testDate = new Date('1999-12-31');
+    expect(elig.withinInterval(testDate, null, intervals)).toBe(null);
+    expect(elig.withinInterval(null, testDate, intervals)).toBe(null);
+  });
+
+  test('Returns true for a period overlapping a given interval', () => {
+    let start = new Date('1969-01-01');
+    let end = new Date('1970-02-01');
+    expect(elig.withinInterval(start, end, intervals)).toBe(true);
+  });
+});
+
 describe('Null-passing OR', () => {
   test('Combines boolean inputs', () => {
     expect(elig.or(true, true)).toBe(true);

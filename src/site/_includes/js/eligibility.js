@@ -451,6 +451,22 @@ function dateOrToday(inputStr) {
   return today;
 }
 
+// Returns true if the time period defined by 'start' and 'end' overlaps at
+// least one interval in the list of 'intervals'.
+//
+// The 'intervals' parameter should be a list of objects with 'start' and 'end'
+// properties. All 'start' and 'end' (input parameters and object properties)
+// should be Dates.
+//
+// This function will return null if the 'start' or 'end' is null.
+function withinInterval(start, end, intervals) {
+  return or(
+    ...intervals.map(w => or(
+      and(ge(start, w.start), lt(start, w.end)),
+      and(gt(end, w.start), le(end, w.end)))
+    ));
+}
+
 // Shows or hides the element 'elem' via a class name.
 function setElementVisibility(elem, makeVisible) {
   if (elem) {
@@ -1989,15 +2005,6 @@ function ssdiResult(input) {
 }
 
 function vaPensionResult(input) {
-
-  function withinWartime(start, end) {
-    return or(
-      ...wartimes.map(w => or(
-        and(ge(start, w.start), lt(start, w.end)),
-        and(gt(end, w.start), le(end, w.end)))
-      ));
-  }
-
   const wartimes = cnst.vaPension.WARTIMES.map(
     p => ({start: dateOrToday(p[0]), end: dateOrToday(p[1])}));
 
@@ -2403,6 +2410,7 @@ if (typeof module !== 'undefined' && module.exports) {
     getNumberOfDays,
     formatUsDate,
     dateOrToday,
+    withinInterval,
     indexOfAll,
     isOneOf,
     categoryTotal,
