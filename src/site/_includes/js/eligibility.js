@@ -461,9 +461,9 @@ function dateOrToday(inputStr) {
 // This function will return null if the 'start' or 'end' is null.
 function withinInterval(start, end, intervals) {
   return or(
-    ...intervals.map(w => or(
-      and(ge(start, w.start), lt(start, w.end)),
-      and(gt(end, w.start), le(end, w.end)))
+    ...intervals.map(i => and(
+      lt(start, i.end),
+      gt(end, i.start))
     ));
 }
 
@@ -2025,7 +2025,7 @@ function vaPensionResult(input) {
   const meetsServiceReq = [];
   for (const duty of input.dutyPeriods) {
     const duration = getNumberOfDays(duty.start, duty.end);
-    const isDuringWartime = withinWartime(duty.start, duty.end);
+    const isDuringWartime = withinInterval(duty.start, duty.end, wartimes);
     const otherDutyPeriods = input.dutyPeriods.filter(p => p !== duty);
     // TODO: does "active duty" include active duty for training and
     // inactive duty for training? https://www.va.gov/pension/eligibility/
