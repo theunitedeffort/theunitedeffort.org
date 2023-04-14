@@ -106,13 +106,16 @@ describe('dateOrToday', () => {
   });
 
   test("Returns today's date for empty input", () => {
+    const now = new Date('2000-01-01T00:00');
     jest.useFakeTimers();
-    jest.setSystemTime(new Date('2000-01-01T00:00'));
-    expect(elig.dateOrToday('').getTime()).toBe(946713600000);
+    jest.setSystemTime(now);
+    expect(elig.dateOrToday('').getTime()).toBe(now.getTime());
   });
 
   test('Converts a date string to a Date', () => {
-    expect(elig.dateOrToday('1975-08-20').getTime()).toBe(177750000000);
+    const expectedDate = new Date('1975-08-20T00:00');
+    expect(
+      elig.dateOrToday('1975-08-20').getTime()).toBe(expectedDate.getTime());
   });
 });
 
