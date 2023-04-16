@@ -462,8 +462,8 @@ function dateOrToday(inputStr) {
 function withinInterval(start, end, intervals) {
   return or(
     ...intervals.map(i => and(
-      lt(start, i.end),
-      gt(end, i.start))
+      le(start, i.end),
+      ge(end, i.start))
     ));
 }
 
@@ -2008,10 +2008,11 @@ function vaPensionResult(input) {
   const wartimes = cnst.vaPension.WARTIMES.map(
     p => ({start: dateOrToday(p[0]), end: dateOrToday(p[1])}));
 
-  const meetsDischargeReq = and(
-    ne(input.dischargeStatus, 'dishonorable'),
-    ne(input.dischargeStatus, 'oth'),
-    ne(input.dischargeStatus, 'bad-conduct'));
+  const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
+    'dishonorable',
+    'oth',
+    'bad-conduct',
+  ]));
 
   const meetsAgeReq = ge(input.age, cnst.vaPension.MIN_ELDERLY_AGE);
   const isProgramQualified = or(
@@ -2026,6 +2027,7 @@ function vaPensionResult(input) {
   for (const duty of input.dutyPeriods) {
     const duration = getNumberOfDays(duty.start, duty.end);
     const isDuringWartime = withinInterval(duty.start, duty.end, wartimes);
+    // TODO: test thie prior active duty logic.
     const otherDutyPeriods = input.dutyPeriods.filter(p => p !== duty);
     // TODO: does "active duty" include active duty for training and
     // inactive duty for training? https://www.va.gov/pension/eligibility/
@@ -2436,6 +2438,7 @@ if (typeof module !== 'undefined' && module.exports) {
     ssdiResult,
     upliftResult,
     vaDisabilityResult,
+    vaPensionResult,
     vtaParatransitResult,
     wicResult,
   };

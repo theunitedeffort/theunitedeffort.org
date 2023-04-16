@@ -164,6 +164,18 @@ describe('withinInterval', () => {
     expect(elig.withinInterval(start, end, intervals)).toBe(true);
   });
 
+  test('Returns true for a period overlapping the start date of an interval', () => {
+    const start = new Date('1969-01-01');
+    const end = new Date(intervals[0].start);
+    expect(elig.withinInterval(start, end, intervals)).toBe(true);
+  });
+
+  test('Returns true for a period overlapping the end date of an interval', () => {
+    const start = new Date(intervals[0].end);
+    const end = new Date('1970-12-31');
+    expect(elig.withinInterval(start, end, intervals)).toBe(true);
+  });
+
   test('Returns false for a period not overlapping any intervals', () => {
     let start = new Date('2023-01-01');
     let end = new Date('2023-07-01');
