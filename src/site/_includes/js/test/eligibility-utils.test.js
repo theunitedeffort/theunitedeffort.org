@@ -90,13 +90,23 @@ describe('getNumberOfDays', () => {
       new Date('1999-12-31'), new Date('2000-01-01'))).toBe(1);
   });
 
-  test('Counts partial days as full days in date difference', () => {
+  test('Does not count partial days in date difference', () => {
     expect(elig.getNumberOfDays(
-      '1980-05-15T03:45', '1980-05-15T03:59')).toBe(1);
+      '1980-05-15T00:00', '1980-05-16T12:59')).toBe(1);
   });
 
   test('Will return NaN when given a NaN input', () => {
     expect(elig.getNumberOfDays(NaN, '2012-12-21')).toBe(NaN);
+  });
+
+  test('Handles transition off of daylight savings time', () => {
+    expect(elig.getNumberOfDays('1950-09-23T00:00', '1950-09-24T00:00')).toBe(1);
+    expect(elig.getNumberOfDays('1950-09-23T00:00', '1950-09-25T00:00')).toBe(2);
+  });
+
+  test('Handles transition on to daylight savings time', () => {
+    expect(elig.getNumberOfDays('1950-04-29T00:00', '1950-04-30T00:00')).toBe(1);
+    expect(elig.getNumberOfDays('1950-04-29T00:00', '1950-05-01T00:00')).toBe(2);
   });
 });
 

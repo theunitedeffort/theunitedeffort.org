@@ -417,19 +417,25 @@ function dateStrToLocal(dateStr) {
   return `${dateStr}T00:00`;
 }
 
-function getNumberOfDays(startDate, endDate) {
+function getNumberOfDays(start, end) {
   // One day in milliseconds.
   const ONE_DAY = 1000 * 60 * 60 * 24;
 
   // Create new dates from the input values in case either is NaN.
-  const date1 = new Date(startDate);
-  const date2 = new Date(endDate);
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  // Make everything UTC because there is no daylight savings time in UTC (one
+  // day is *always* ONE_DAY milliseconds)
+  const startUtc = Date.UTC(
+    startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const endUtc = Date.UTC(
+    endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
 
   // Time difference between two dates.
-  const difference = date2.getTime() - date1.getTime();
+  const difference = endUtc - startUtc;
 
   // Number of days between two dates.
-  return Math.ceil(difference / ONE_DAY);
+  return difference / ONE_DAY;
 }
 
 function formatUsDate(date) {
