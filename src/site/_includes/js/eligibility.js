@@ -2052,12 +2052,13 @@ function vaPensionResult(input) {
           gt(duty.start, new Date(dateStrToLocal(cnst.vaPension.LATE_DUTY_AFTER))),
           or(
             ge(duration, cnst.vaPension.MIN_LATE_DUTY_DURATION),
-            isOneOf('mil-svc-duration', 'full-dur-yes')),
+            input.servedFullDuration),
           isDuringWartime),
         and(
           eq(duty.type, 'active-duty'),
           input.officer,
           gt(duty.start, new Date(dateStrToLocal(cnst.vaPension.OFFICER_DUTY_AFTER))),
+          ge(duration, cnst.vaPension.MIN_LATE_DUTY_DURATION),
           not(hasRecentPriorActiveDuty))));
   }
 
@@ -2233,6 +2234,7 @@ function buildInputObj() {
     dischargeStatus: getValueOrNull('your-discharge-status'),
     enlisted: getValueOrNull('enlisted'),
     officer: getValueOrNull('officer'),
+    servedFullDuration: getValueOrNull('full-dur-yes'),
     dutyPeriods: [],
     income: {},
     assets: getIncomeValues(document.getElementById('page-income-assets')),

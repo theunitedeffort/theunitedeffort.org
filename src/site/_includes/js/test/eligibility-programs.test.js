@@ -335,7 +335,7 @@ describe('Program eligibility', () => {
     modified.dutyPeriods = [{
       type: 'active-duty',
       start: new Date('1981-10-17T00:00'),
-      end: new Date('1981-10-18T00:00')
+      end: new Date('1983-10-17T00:00')
     }];
     modified._verifyFn = elig.vaPensionResult;
     return modified;
@@ -379,6 +379,7 @@ describe('Program eligibility', () => {
       dischargeStatus: null,
       enlisted: false,
       officer: false,
+      servedFullDuration: false,
       dutyPeriods: [],
       income: {
         valid: false,
@@ -1202,7 +1203,7 @@ describe('Program eligibility', () => {
       validDutyPeriod = {
         type: 'active-duty',
         start: new Date('1981-10-17T00:00'),
-        end: new Date('1981-10-18T00:00')
+        end: new Date('1983-10-17T00:00'),
       };
     });
 
@@ -1272,18 +1273,18 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [{
         type: 'active-duty',
         start: new Date('1950-06-30T00:00'),
-        end: new Date('1950-09-26T00:00'),  // 89 day duration (incl. start)
+        end: new Date('1950-09-27T00:00'),  // 89 day duration
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
         start: input.dutyPeriods[0].start,
-        end: new Date('1950-09-27T00:00'),  // 90 day duration (incl. start)
+        end: new Date('1950-09-28T00:00'),  // 90 day duration
       }]);
 
       // During wartime, duration long enough, start date too late
       input.dutyPeriods = [{
         type: 'active-duty',
-        start: new Date('1980-09-08T00:00'),
+        start: new Date('1980-09-08T00:00'),  // Too late
         end: new Date('2000-01-01T00:00'),
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
@@ -1296,7 +1297,7 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [{
         type: 'active-duty',
         start: new Date('1980-09-07T00:00'),
-        end: new Date('1990-08-01T00:00'),
+        end: new Date('1990-08-01T00:00'),  // Just before Gulf War
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
@@ -1306,7 +1307,7 @@ describe('Program eligibility', () => {
 
       // Wrong duty type
       input.dutyPeriods = [{
-        type: 'reserve-duty',
+        type: 'reserve-duty',  // Invalid duty type
         start: new Date('1950-01-01T00:00'),
         end: new Date('1980-09-07T00:00'),
       }];
@@ -1323,14 +1324,90 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.dischargeStatus = 'honorable';
       input.enlisted = true;
+
+      // During wartime, late enough start date, duration too short
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1990-08-03T00:00'),
+        end: new Date('1992-08-01T00:00'),  // 729 days
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: input.dutyPeriods[0].start,
+        end: new Date('1992-08-02T00:00'),  // 730 days, note leap year.
+      }]);
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('servedFullDuration').is(true);
+
+      // During wartime, duration long enough, start date too early
+      // input.dutyPeriods = [{
+      //   type: 'active-duty',
+      //   start: new Date('1980-09-07T00:00'),  // Too early
+      //   end: new Date('1990-08-03T00:00'),
+      // }];
+      // A typical check() will not work here because if only the start date is
+      // too early, then the applicant will _still_ be eligible thanks to the
+      // other pre-Sept 8, 1980 rules.  So we just verify the applicant is
+      // eligible with the later start date of Sept 8, 1980.
       input.dutyPeriods = [{
         type: 'active-duty',
         start: new Date('1980-09-08T00:00'),
-        end: new Date('1982-09-08T00:00'),
+        end: new Date('1990-08-03T00:00'),
       }];
+      expect(elig.vaPensionResult(input).eligible).toBe(true);
+
+      // Duration long enough, late enough start date, not during wartime
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1980-09-08T00:00'),
+        end: new Date('1990-08-01T00:00'),  // Just before Gulf War
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: input.dutyPeriods[0].start,
+        end: new Date('1990-08-02T00:00'),
+      }]);
+
+      // Wrong duty type
+      input.dutyPeriods = [{
+        type: 'reserve-duty',
+        start: new Date('1980-09-08T00:00'),
+        end: new Date('1990-08-02T00:00'),
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: 'active-duty',
+        start: input.dutyPeriods[0].start,
+        end: input.dutyPeriods[0].end,
+      }]);
+
+      // Not enlisted
+      input.enlisted = false;
+      input.dutyPeriods[0].type = 'active-duty';
+      check(elig.vaPensionResult, input).isEligibleIf('enlisted').is(true);
+    });
+
+    test('Eligible when an officer on active duty after Oct 16, 1981 with no previous active duty for 24 months', () => {
+      input.veteran = true;
+      input.disabled = true;
+      input.income.valid = true;
+      input.dischargeStatus = 'honorable';
+      input.officer = true;
+
+      // Late enough start date, duration too short
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1981-10-17T00:00'),
+        end: new Date('1981-10-16T00:00'),  // 729 days
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: input.dutyPeriods[0].start,
+        end: new Date('1983-10-17T00:00'),  // 730 days
+      }]);
+
+      // Duration long enough, start date too early
 
     });
-    test.todo('Eligible when an officer on active duty after Oct 16, 1981 with no previous active duty for 24 months');
 
     test('Requires applicant be disabled, elderly, or receiving SSI or SSDI', () => {
       input.veteran = true;
