@@ -133,6 +133,20 @@ function check(program, input) {
   };
 };
 
+function plusDays(date, numDays) {
+  var newDate = new Date(date)
+  newDate.setDate(date.getDate() + numDays);
+  return newDate;
+}
+
+function dayBefore(date) {
+  return plusDays(date, -1);
+}
+
+function dayAfter(date) {
+  return plusDays(date, 1);
+}
+
 describe('Helper getValue', () => {
   test('Gets value of a property in a simple object', () => {
     const testObj = {firstName: 'Ada', lastName: 'Lovelace'};
@@ -1278,7 +1292,7 @@ describe('Program eligibility', () => {
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
         start: input.dutyPeriods[0].start,
-        end: new Date('1950-09-28T00:00'),  // 90 day duration
+        end: dayAfter(input.dutyPeriods[0].end),
       }]);
 
       // During wartime, duration long enough, start date too late
@@ -1289,7 +1303,7 @@ describe('Program eligibility', () => {
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
-        start: new Date('1980-09-07T00:00'),
+        start: dayBefore(input.dutyPeriods[0].start),
         end: input.dutyPeriods[0].end,
       }]);
 
@@ -1302,7 +1316,7 @@ describe('Program eligibility', () => {
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
         start: input.dutyPeriods[0].start,
-        end: new Date('1990-08-02T00:00'),
+        end: dayAfter(input.dutyPeriods[0].end),
       }]);
 
       // Wrong duty type
@@ -1329,12 +1343,12 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [{
         type: 'active-duty',
         start: new Date('1990-08-03T00:00'),
-        end: new Date('1992-08-01T00:00'),  // 729 days
+        end: new Date('1992-08-01T00:00'),  // 729 days, note leap year
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
         start: input.dutyPeriods[0].start,
-        end: new Date('1992-08-02T00:00'),  // 730 days, note leap year.
+        end: dayAfter(input.dutyPeriods[0].end),
       }]);
       check(elig.vaPensionResult, input)
         .isEligibleIf('servedFullDuration').is(true);
@@ -1365,7 +1379,7 @@ describe('Program eligibility', () => {
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
         start: input.dutyPeriods[0].start,
-        end: new Date('1990-08-02T00:00'),
+        end: dayAfter(input.dutyPeriods[0].end),
       }]);
 
       // Wrong duty type
@@ -1397,16 +1411,72 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [{
         type: 'active-duty',
         start: new Date('1981-10-17T00:00'),
-        end: new Date('1981-10-16T00:00'),  // 729 days
+        end: new Date('1983-10-16T00:00'),  // 729 days
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
         start: input.dutyPeriods[0].start,
-        end: new Date('1983-10-17T00:00'),  // 730 days
+        end: dayAfter(input.dutyPeriods[0].end),
       }]);
 
       // Duration long enough, start date too early
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1981-10-16T00:00'),  // Too early
+        end: new Date('1983-10-31T00:00'),
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: dayAfter(input.dutyPeriods[0].start),
+        end: input.dutyPeriods[0].end,
+      }]);
 
+      // Has prior active duty within last 24 months
+      input.dutyPeriods = [
+        {
+          type: 'active-duty',
+          start: new Date('1979-01-01T00:00'),
+          end: new Date('1979-10-19T00:00'),  // 729 days till next active duty
+        },
+        {
+          type: 'active-duty',
+          start: new Date('1981-10-17T00:00'),
+          end: new Date('1983-10-31T00:00'),
+        },
+      ];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([
+        {
+          type: input.dutyPeriods[0].type,
+          start: input.dutyPeriods[0].start,
+          end: dayBefore(input.dutyPeriods[0].end),
+        },
+        structuredClone(input.dutyPeriods[1]),
+      ]);
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([
+        {
+          type: 'reserve-duty',
+          start: input.dutyPeriods[0].start,
+          end: input.dutyPeriods[0].end,
+        },
+        structuredClone(input.dutyPeriods[1]),
+      ]);
+
+      // Wrong duty type
+      input.dutyPeriods = [{
+        type: 'reserve-duty',
+        start: new Date('1981-10-17T00:00'),
+        end: new Date('1983-10-31T00:00'),
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: 'active-duty',
+        start: input.dutyPeriods[0].start,
+        end: input.dutyPeriods[0].end,
+      }]);
+
+      // Not an officer
+      input.officer = false;
+      input.dutyPeriods[0].type = 'active-duty';
+      check(elig.vaPensionResult, input).isEligibleIf('officer').is(true);
     });
 
     test('Requires applicant be disabled, elderly, or receiving SSI or SSDI', () => {
