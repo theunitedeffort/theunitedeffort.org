@@ -2033,7 +2033,7 @@ function vaPensionResult(input) {
   for (const duty of input.dutyPeriods) {
     const duration = getNumberOfDays(duty.start, duty.end);
     const isDuringWartime = withinInterval(duty.start, duty.end, wartimes);
-    // TODO: test thie prior active duty logic.
+    // TODO: test this prior active duty logic.
     const otherDutyPeriods = input.dutyPeriods.filter(p => p !== duty);
     // TODO: does "active duty" include active duty for training and
     // inactive duty for training? https://www.va.gov/pension/eligibility/
