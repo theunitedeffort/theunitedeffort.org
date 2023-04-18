@@ -417,19 +417,25 @@ function dateStrToLocal(dateStr) {
   return `${dateStr}T00:00`;
 }
 
-function getNumberOfDays(startDate, endDate) {
+function getNumberOfDays(start, end) {
   // One day in milliseconds.
   const ONE_DAY = 1000 * 60 * 60 * 24;
 
   // Create new dates from the input values in case either is NaN.
-  const date1 = new Date(startDate);
-  const date2 = new Date(endDate);
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  // Make everything UTC because there is no daylight savings time in UTC (one
+  // day is *always* ONE_DAY milliseconds)
+  const startUtc = Date.UTC(
+    startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const endUtc = Date.UTC(
+    endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
 
   // Time difference between two dates.
-  const difference = date2.getTime() - date1.getTime();
+  const difference = endUtc - startUtc;
 
   // Number of days between two dates.
-  return Math.ceil(difference / ONE_DAY);
+  return difference / ONE_DAY;
 }
 
 function formatUsDate(date) {
@@ -1800,8 +1806,8 @@ function lifelineResult(input) {
     cnst.lifeline.ANNUAL_INCOME_LIMITS,
     cnst.lifeline.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
 
-  const underIncomeLimit = le(
-    grossIncome(input), grossLimit.getLimit(input.householdSize));
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
   const isProgramQualified = or(
     input.existingMedicalMe,
@@ -1829,14 +1835,14 @@ function lifelineResult(input) {
     calworksResult(input).eligible,
     vaPensionResult(input).eligible);
 
-  const eligible = or(
-    isProgramQualified,
-    underIncomeLimit);
-
   const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', eligible));
+  program.addConditionsOneOf([
+    new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`,
+      underIncomeLimit),
+    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, NSLP or VA Pension',
+      isProgramQualified),
+  ]);
+
   return program.getResult();
 }
 
