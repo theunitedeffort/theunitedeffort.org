@@ -133,6 +133,20 @@ function check(program, input) {
   };
 };
 
+function plusDays(date, numDays) {
+  var newDate = new Date(date)
+  newDate.setDate(date.getDate() + numDays);
+  return newDate;
+}
+
+function dayBefore(date) {
+  return plusDays(date, -1);
+}
+
+function dayAfter(date) {
+  return plusDays(date, 1);
+}
+
 describe('Helper getValue', () => {
   test('Gets value of a property in a simple object', () => {
     const testObj = {firstName: 'Ada', lastName: 'Lovelace'};
@@ -258,12 +272,8 @@ describe('MonthlyIncomeLimit', () => {
 describe('Program eligibility', () => {
   let input;
 
-  function deepCopy(original) {
-    return JSON.parse(JSON.stringify(original));
-  }
-
   function calfreshMadeEligible(baseInput) {
-    let modified = deepCopy(baseInput);
+    let modified = structuredClone(baseInput);
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.calfresh.FED_POVERTY_LEVEL[0] *
       elig.cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR]];
@@ -272,7 +282,7 @@ describe('Program eligibility', () => {
   }
 
   function calworksMadeEligible(baseInput) {
-    let modified = deepCopy(baseInput);
+    let modified = structuredClone(baseInput);
     modified.age = 20;
     modified.pregnant = true;
     modified.income.valid = true;
@@ -282,7 +292,7 @@ describe('Program eligibility', () => {
   }
 
   function capiMadeEligible(baseInput) {
-    let modified = deepCopy(baseInput);
+    let modified = structuredClone(baseInput);
     modified.notCitizen = true;
     modified.immigrationStatus = 'prucol';
     modified.age = 99;
@@ -293,7 +303,7 @@ describe('Program eligibility', () => {
   }
 
   function gaMadeEligible(baseInput) {
-    let modified = deepCopy(baseInput);
+    let modified = structuredClone(baseInput);
     modified.age = 99;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ga.MONTHLY_INCOME_LIMITS[0]]];
@@ -302,7 +312,7 @@ describe('Program eligibility', () => {
   }
 
   function ihssMadeEligible(baseInput) {
-    let modified = deepCopy(baseInput);
+    let modified = structuredClone(baseInput);
     modified.age = 99;
     modified.housingSituation = 'housed';
     modified.existingMedicalMe = true;
@@ -311,7 +321,7 @@ describe('Program eligibility', () => {
   }
 
   function liheapMadeEligible(baseInput) {
-    let modified = deepCopy(baseInput);
+    let modified = structuredClone(baseInput);
     modified.housingSituation = 'housed';
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.liheap.MONTHLY_INCOME_LIMITS[0]]];
@@ -320,7 +330,7 @@ describe('Program eligibility', () => {
   }
 
   function ssiMadeEligible(baseInput) {
-    let modified = deepCopy(baseInput);
+    let modified = structuredClone(baseInput);
     modified.age = 99;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
@@ -328,8 +338,25 @@ describe('Program eligibility', () => {
     return modified;
   }
 
+  function vaPensionMadeEligible(baseInput) {
+    let modified = structuredClone(baseInput);
+    modified.veteran = true;
+    modified.dischargeStatus = 'honorable';
+    modified.disabled = true;
+    modified.income.valid = true;
+    modified.income.wages = [[elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12]];
+    modified.officer = true;
+    modified.dutyPeriods = [{
+      type: 'active-duty',
+      start: new Date('1981-10-17T00:00'),
+      end: new Date('1983-10-17T00:00')
+    }];
+    modified._verifyFn = elig.vaPensionResult;
+    return modified;
+  }
+
   function wicMadeEligible(baseInput) {
-    let modified = deepCopy(baseInput);
+    let modified = structuredClone(baseInput);
     modified.pregnant = true;
     modified.income.valid = true;
     modified._verifyFn = elig.wicResult;
@@ -366,6 +393,7 @@ describe('Program eligibility', () => {
       dischargeStatus: null,
       enlisted: false,
       officer: false,
+      servedFullDuration: false,
       dutyPeriods: [],
       income: {
         valid: false,
@@ -923,12 +951,17 @@ describe('Program eligibility', () => {
         .isEligibleIf('existingCalworksMe').is(true);
       check(elig.lifelineResult, input)
         .isEligibleIf('existingCalworksHousehold').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingVaPensionMe').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingVaPensionHousehold').is(true);
 
       check(elig.lifelineResult, input).isEligibleIf(liheapMadeEligible);
       check(elig.lifelineResult, input).isEligibleIf(ssiMadeEligible);
       check(elig.lifelineResult, input).isEligibleIf(calfreshMadeEligible);
       check(elig.lifelineResult, input).isEligibleIf(wicMadeEligible);
       check(elig.lifelineResult, input).isEligibleIf(calworksMadeEligible);
+      check(elig.lifelineResult, input).isEligibleIf(vaPensionMadeEligible);
     });
   });
 
@@ -1175,6 +1208,334 @@ describe('Program eligibility', () => {
         .isNotEligibleIf('dischargeStatus').is('dishonorable');
       check(elig.vaDisabilityResult, input)
         .isNotEligibleIf('dischargeStatus').is('bad-conduct');
+    });
+  });
+
+  describe('VA Pension Program', () => {
+    let validDutyPeriod;
+    beforeEach(() => {
+      validDutyPeriod = {
+        type: 'active-duty',
+        start: new Date('1981-10-17T00:00'),
+        end: new Date('1983-10-17T00:00'),
+      };
+    });
+
+    test('Eligible with input for other program dependencies', () => {
+      verifyOverlay(vaPensionMadeEligible(input));
+    });
+
+    test('Not eligible with default input', () => {
+      expect(elig.vaPensionResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires veteran status', () => {
+      input.income.valid = true;
+      input.disabled = true;
+      input.officer = true;
+      input.dutyPeriods = [validDutyPeriod];
+      input.dischargeStatus = 'honorable';
+      check(elig.vaPensionResult, input).isEligibleIf('veteran').is(true);
+    });
+
+    test('Requires discharge that is not other-than-honorable, bad conduct, or dishonorable', () => {
+      input.income.valid = true;
+      input.veteran = true;
+      input.disabled = true;
+      input.officer = true;
+      input.dutyPeriods = [validDutyPeriod];
+      input.dischargeStatus = 'honorable';
+      check(elig.vaPensionResult, input)
+        .isNotEligibleIf('dischargeStatus').is('oth');
+      check(elig.vaPensionResult, input)
+        .isNotEligibleIf('dischargeStatus').is('dishonorable');
+      check(elig.vaPensionResult, input)
+        .isNotEligibleIf('dischargeStatus').is('bad-conduct');
+    });
+
+    test('Requires net worth to be at or below the limit', () => {
+      input.veteran = true;
+      input.disabled = true;
+      input.officer = true;
+      input.dutyPeriods = [validDutyPeriod];
+      input.dischargeStatus = 'honorable';
+      input.income.valid = true;
+      // All income, no assets
+      check(elig.vaPensionResult, input).isEligibleIf('income.wages')
+        .isAtMost(elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12);
+      // All assets, no income
+      check(elig.vaPensionResult, input).isEligibleIf('assets')
+        .isAtMost(elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT);
+      // Both assets and income
+      input.income.wages = [[
+        elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12 / 2]];
+      check(elig.vaPensionResult, input).isEligibleIf('assets')
+        .isAtMost(elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 2);
+      input.assets = [[
+        elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 2]];
+      check(elig.vaPensionResult, input).isEligibleIf('income.wages')
+        .isAtMost(elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12 / 2);
+    });
+
+    test('Spouse income and assets are included in net worth', () => {
+      const testIncome = elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12;
+      const testAssets = elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT;
+      input.veteran = true;
+      input.disabled = true;
+      input.officer = true;
+      input.dutyPeriods = [validDutyPeriod];
+      input.dischargeStatus = 'honorable';
+      input.income.valid = true;
+      input.householdSpouse = [true];  // One other household member: spouse
+      input.income.wages = [[], [testIncome + 1]];  // All income is from spouse
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('income.wages').is([[], [testIncome]]);
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('income.wages').is([[], [testIncome - 1]]);
+
+      input.income.wages = [[], []];
+      input.assets = [[], [testAssets + 1]];  // All assets are from spouse
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('assets').is([[], [testAssets]]);
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('assets').is([[], [testAssets - 1]]);
+    });
+
+    test('Dependent income is included in net worth, but not assets', () => {
+      const testIncome = elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12;
+      input.veteran = true;
+      input.disabled = true;
+      input.officer = true;
+      input.dutyPeriods = [validDutyPeriod];
+      input.dischargeStatus = 'honorable';
+      input.income.valid = true;
+      input.householdDependents = [true];  // One other household member: dependent
+      input.income.wages = [[], [testIncome + 1]];  // All income is from dependent
+      // Assets from dependent should not matter.
+      input.assets = [[], [elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT + 1]];
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('income.wages').is([[], [testIncome]]);
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('income.wages').is([[], [testIncome - 1]]);
+    });
+
+    test('Eligible when starting 90-day active duty before Sept 8, 1980 during wartime', () => {
+      input.veteran = true;
+      input.disabled = true;
+      input.income.valid = true;
+      input.dischargeStatus = 'honorable';
+
+      // During wartime, early enough start date, duty duration too short
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1950-06-30T00:00'),
+        end: new Date('1950-09-27T00:00'),  // 89 day duration
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: input.dutyPeriods[0].start,
+        end: dayAfter(input.dutyPeriods[0].end),
+      }]);
+
+      // During wartime, duration long enough, start date too late
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1980-09-08T00:00'),  // Too late
+        end: new Date('2000-01-01T00:00'),
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: dayBefore(input.dutyPeriods[0].start),
+        end: input.dutyPeriods[0].end,
+      }]);
+
+      // Duration long enough, early enough start date, not during wartime
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1980-09-07T00:00'),
+        end: new Date('1990-08-01T00:00'),  // Just before Gulf War
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: input.dutyPeriods[0].start,
+        end: dayAfter(input.dutyPeriods[0].end),
+      }]);
+
+      // Wrong duty type
+      input.dutyPeriods = [{
+        type: 'reserve-duty',  // Invalid duty type
+        start: new Date('1950-01-01T00:00'),
+        end: new Date('1980-09-07T00:00'),
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: 'active-duty',
+        start: input.dutyPeriods[0].start,
+        end: input.dutyPeriods[0].end,
+      }]);
+    });
+
+    test('Eligible when enlisted on active duty after Sept 7, 1980 for at least 24 months during wartime', () => {
+      input.veteran = true;
+      input.disabled = true;
+      input.income.valid = true;
+      input.dischargeStatus = 'honorable';
+      input.enlisted = true;
+
+      // During wartime, late enough start date, duration too short
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1990-08-03T00:00'),
+        end: new Date('1992-08-01T00:00'),  // 729 days, note leap year
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: input.dutyPeriods[0].start,
+        end: dayAfter(input.dutyPeriods[0].end),
+      }]);
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('servedFullDuration').is(true);
+
+      // During wartime, duration long enough, start date too early
+      // input.dutyPeriods = [{
+      //   type: 'active-duty',
+      //   start: new Date('1980-09-07T00:00'),  // Too early
+      //   end: new Date('1990-08-03T00:00'),
+      // }];
+      // A typical check() will not work here because if only the start date is
+      // too early, then the applicant will _still_ be eligible thanks to the
+      // other pre-Sept 8, 1980 rules.  So we just verify the applicant is
+      // eligible with the later start date of Sept 8, 1980.
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1980-09-08T00:00'),
+        end: new Date('1990-08-03T00:00'),
+      }];
+      expect(elig.vaPensionResult(input).eligible).toBe(true);
+
+      // Duration long enough, late enough start date, not during wartime
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1980-09-08T00:00'),
+        end: new Date('1990-08-01T00:00'),  // Just before Gulf War
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: input.dutyPeriods[0].start,
+        end: dayAfter(input.dutyPeriods[0].end),
+      }]);
+
+      // Wrong duty type
+      input.dutyPeriods = [{
+        type: 'reserve-duty',
+        start: new Date('1980-09-08T00:00'),
+        end: new Date('1990-08-02T00:00'),
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: 'active-duty',
+        start: input.dutyPeriods[0].start,
+        end: input.dutyPeriods[0].end,
+      }]);
+
+      // Not enlisted
+      input.enlisted = false;
+      input.dutyPeriods[0].type = 'active-duty';
+      check(elig.vaPensionResult, input).isEligibleIf('enlisted').is(true);
+    });
+
+    test('Eligible when an officer on active duty after Oct 16, 1981 with no previous active duty for 24 months', () => {
+      input.veteran = true;
+      input.disabled = true;
+      input.income.valid = true;
+      input.dischargeStatus = 'honorable';
+      input.officer = true;
+
+      // Late enough start date, duration too short
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1981-10-17T00:00'),
+        end: new Date('1983-10-16T00:00'),  // 729 days
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: input.dutyPeriods[0].start,
+        end: dayAfter(input.dutyPeriods[0].end),
+      }]);
+
+      // Duration long enough, start date too early
+      input.dutyPeriods = [{
+        type: 'active-duty',
+        start: new Date('1981-10-16T00:00'),  // Too early
+        end: new Date('1983-10-31T00:00'),
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: input.dutyPeriods[0].type,
+        start: dayAfter(input.dutyPeriods[0].start),
+        end: input.dutyPeriods[0].end,
+      }]);
+
+      // Has prior active duty within last 24 months
+      input.dutyPeriods = [
+        {
+          type: 'active-duty',
+          start: new Date('1979-01-01T00:00'),
+          end: new Date('1979-10-19T00:00'),  // 729 days till next active duty
+        },
+        {
+          type: 'active-duty',
+          start: new Date('1981-10-17T00:00'),
+          end: new Date('1983-10-31T00:00'),
+        },
+      ];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([
+        {
+          type: input.dutyPeriods[0].type,
+          start: input.dutyPeriods[0].start,
+          end: dayBefore(input.dutyPeriods[0].end),
+        },
+        structuredClone(input.dutyPeriods[1]),
+      ]);
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([
+        {
+          type: 'reserve-duty',
+          start: input.dutyPeriods[0].start,
+          end: input.dutyPeriods[0].end,
+        },
+        structuredClone(input.dutyPeriods[1]),
+      ]);
+
+      // Wrong duty type
+      input.dutyPeriods = [{
+        type: 'reserve-duty',
+        start: new Date('1981-10-17T00:00'),
+        end: new Date('1983-10-31T00:00'),
+      }];
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: 'active-duty',
+        start: input.dutyPeriods[0].start,
+        end: input.dutyPeriods[0].end,
+      }]);
+
+      // Not an officer
+      input.officer = false;
+      input.dutyPeriods[0].type = 'active-duty';
+      check(elig.vaPensionResult, input).isEligibleIf('officer').is(true);
+    });
+
+    test('Requires applicant be disabled, elderly, or receiving SSI or SSDI', () => {
+      input.veteran = true;
+      input.income.valid = true;
+      input.officer = true;
+      input.dutyPeriods = [validDutyPeriod];
+      input.dischargeStatus = 'honorable';
+      check(elig.vaPensionResult, input).isEligibleIf('disabled').is(true);
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('age').isAtLeast(elig.cnst.vaPension.MIN_ELDERLY_AGE);
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('existingSsiMe').is(true);
+      check(elig.vaPensionResult, input)
+        .isEligibleIf('existingSsdiMe').is(true);
+      check(elig.vaPensionResult, input).isEligibleIf(ssiMadeEligible);
+      // TODO: add ssdiMadeEligible
     });
   });
 

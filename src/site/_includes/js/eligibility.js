@@ -468,8 +468,8 @@ function dateOrToday(inputStr) {
 function withinInterval(start, end, intervals) {
   return or(
     ...intervals.map(i => and(
-      lt(start, i.end),
-      gt(end, i.start))
+      le(start, i.end),
+      ge(end, i.start))
     ));
 }
 
@@ -2014,17 +2014,16 @@ function vaPensionResult(input) {
   const wartimes = cnst.vaPension.WARTIMES.map(
     p => ({start: dateOrToday(p[0]), end: dateOrToday(p[1])}));
 
-  const meetsDischargeReq = and(
-    ne(input.dischargeStatus, 'dishonorable'),
-    ne(input.dischargeStatus, 'oth'),
-    ne(input.dischargeStatus, 'bad-conduct'));
+  const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
+    'dishonorable',
+    'oth',
+    'bad-conduct',
+  ]));
 
   const meetsAgeReq = ge(input.age, cnst.vaPension.MIN_ELDERLY_AGE);
   const isProgramQualified = or(
     input.existingSsiMe,
-    input.existingSsiHousehold,
     input.existingSsdiMe,
-    input.existingSsdiHousehold,
     ssiResult(input).eligible,
     ssdiResult(input).eligible);
 
@@ -2032,6 +2031,7 @@ function vaPensionResult(input) {
   for (const duty of input.dutyPeriods) {
     const duration = getNumberOfDays(duty.start, duty.end);
     const isDuringWartime = withinInterval(duty.start, duty.end, wartimes);
+    // TODO: test this prior active duty logic.
     const otherDutyPeriods = input.dutyPeriods.filter(p => p !== duty);
     // TODO: does "active duty" include active duty for training and
     // inactive duty for training? https://www.va.gov/pension/eligibility/
@@ -2056,12 +2056,13 @@ function vaPensionResult(input) {
           gt(duty.start, new Date(dateStrToLocal(cnst.vaPension.LATE_DUTY_AFTER))),
           or(
             ge(duration, cnst.vaPension.MIN_LATE_DUTY_DURATION),
-            isOneOf('mil-svc-duration', 'full-dur-yes')),
+            input.servedFullDuration),
           isDuringWartime),
         and(
           eq(duty.type, 'active-duty'),
           input.officer,
           gt(duty.start, new Date(dateStrToLocal(cnst.vaPension.OFFICER_DUTY_AFTER))),
+          ge(duration, cnst.vaPension.MIN_LATE_DUTY_DURATION),
           not(hasRecentPriorActiveDuty))));
   }
 
@@ -2237,6 +2238,7 @@ function buildInputObj() {
     dischargeStatus: getValueOrNull('your-discharge-status'),
     enlisted: getValueOrNull('enlisted'),
     officer: getValueOrNull('officer'),
+    servedFullDuration: getValueOrNull('full-dur-yes'),
     dutyPeriods: [],
     income: {},
     assets: getIncomeValues(document.getElementById('page-income-assets')),
@@ -2442,6 +2444,7 @@ if (typeof module !== 'undefined' && module.exports) {
     ssdiResult,
     upliftResult,
     vaDisabilityResult,
+    vaPensionResult,
     vtaParatransitResult,
     wicResult,
   };
