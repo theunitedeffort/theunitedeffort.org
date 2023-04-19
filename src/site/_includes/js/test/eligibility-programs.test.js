@@ -487,7 +487,7 @@ describe('Program eligibility', () => {
       expect(elig.calfreshResult(input).eligible).not.toBe(true);
     });
 
-    test('Requires when U.S. citizenship or qualified immigration status', () => {
+    test('Requires U.S. citizenship or qualified immigration status', () => {
       input.income.valid = true;
       input.notCitizen = true;
       check(elig.calfreshResult, input)
@@ -625,6 +625,22 @@ describe('Program eligibility', () => {
   describe('CAPI Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(capiMadeEligible(input));
+    });
+
+    test('Not eligible with default input', () => {
+      expect(elig.capiResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires valid immigration status', () => {
+      input.income.valid = true;
+      input.disabled = true;
+      input.notCitizen = true;
+      check(elig.capiResult, input)
+        .isEligibleIf('immigrationStatus').is('prucol');
+
+      input.immigrationStatus = 'prucol';
+      check(elig.capiResult, input)
+        .isNotEligibleIf('notCitizen').is(false);
     });
   });
 
@@ -1042,20 +1058,23 @@ describe('Program eligibility', () => {
     });
   });
 
-  describe('SSI Program', () => {
-    test('Eligible with input for other program dependencies', () => {
-      verifyOverlay(ssiMadeEligible(input));
-    });
-
-    test('Not eligible with default input', () => {
-      expect(elig.ssiResult(input).eligible).not.toBe(true);
+  // SSI and CAPI have the same basic eligibility requirements except for
+  // immigration, so re-use the test code for each program.
+  describe.each([
+    [elig.ssiResult, false, null],
+    [elig.capiResult, true, 'prucol']
+  ])('SSI and CAPI Programs (%p)', (resultFn,
+      defaultNotCitizen, defaultImmigrationStatus) => {
+    beforeEach(() => {
+      input.notCitizen = defaultNotCitizen;
+      input.immigrationStatus = defaultImmigrationStatus;
     });
 
     test('Requires applicant to be disabled, blind, or elderly', () => {
       input.income.valid = true;
-      check(elig.ssiResult, input).isEligibleIf('disabled').is(true);
-      check(elig.ssiResult, input).isEligibleIf('blind').is(true);
-      check(elig.ssiResult, input)
+      check(resultFn, input).isEligibleIf('disabled').is(true);
+      check(resultFn, input).isEligibleIf('blind').is(true);
+      check(resultFn, input)
         .isEligibleIf('age').isAtLeast(elig.cnst.ssiCapi.MIN_ELDERLY_AGE);
     });
 
@@ -1065,12 +1084,12 @@ describe('Program eligibility', () => {
       input.disabled = true;
       // SGA should only count earned income.
       input.income.unemployment = [[1]];
-      check(elig.ssiResult, input)
+      check(resultFn, input)
         .isEligibleIf('income.wages').isAtMost(sgaLimit);
 
       sgaLimit = elig.cnst.ssiCapi.SGA_BLIND;
       input.blind = true;
-      check(elig.ssiResult, input)
+      check(resultFn, input)
         .isEligibleIf('income.wages').isAtMost(sgaLimit);
     });
 
@@ -1078,7 +1097,7 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.age = elig.cnst.ssiCapi.MIN_ELDERLY_AGE;
       input.income.wages = [[elig.cnst.ssiCapi.SGA_NON_BLIND + 1]];
-      expect(elig.ssiResult(input).eligible).toBe(true);
+      expect(resultFn(input).eligible).toBe(true);
     });
 
     test('Requires assets below resource limit', () => {
@@ -1086,7 +1105,7 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.disabled = true;
       input.assets = [[testAssets]];
-      check(elig.ssiResult, input)
+      check(resultFn, input)
         .isEligibleIf('assets').is([[testAssets - 1]]);
     });
 
@@ -1098,24 +1117,46 @@ describe('Program eligibility', () => {
       input.hasKitchen = true;
       let maxIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND +
         elig.cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
-      check(elig.ssiResult, input)
+      check(resultFn, input)
         .isEligibleIf('income.unemployment').isUnder(maxIncome);
 
       // Non-blind without a kitchen
       input.hasKitchen = false;
       maxIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND_NO_KITCHEN +
         elig.cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
-      check(elig.ssiResult, input)
+      check(resultFn, input)
         .isEligibleIf('income.unemployment').isUnder(maxIncome);
 
       // Blind
       input.blind = true;
       maxIncome = (elig.cnst.ssiCapi.MAX_BENEFIT_BLIND +
         elig.cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
-      check(elig.ssiResult, input)
+      check(resultFn, input)
         .isEligibleIf('income.unemployment').isUnder(maxIncome);
     });
+  });
 
+  describe('SSI Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      verifyOverlay(ssiMadeEligible(input));
+    });
+
+    test('Not eligible with default input', () => {
+      expect(elig.ssiResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires U.S. citizenship or qualified immigration status', () => {
+      input.income.valid = true;
+      input.disabled = true;
+      input.notCitizen = true;
+      check(elig.ssiResult, input)
+        .isEligibleIf('immigrationStatus').is('permanent_resident');
+      check(elig.ssiResult, input)
+        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_gt5y');
+      check(elig.ssiResult, input)
+        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_le5y');
+      check(elig.ssiResult, input).isEligibleIf('notCitizen').is(false);
+    });
   });
 
   describe('UPLIFT Program', () => {
