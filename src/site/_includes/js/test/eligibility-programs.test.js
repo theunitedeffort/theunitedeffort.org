@@ -627,6 +627,10 @@ describe('Program eligibility', () => {
       verifyOverlay(capiMadeEligible(input));
     });
 
+    test('Not eligible with default input', () => {
+      expect(elig.capiResult(input).eligible).not.toBe(true);
+    });
+
     test('Requires valid immigration status', () => {
       input.income.valid = true;
       input.disabled = true;
@@ -1066,10 +1070,6 @@ describe('Program eligibility', () => {
       input.immigrationStatus = defaultImmigrationStatus;
     });
 
-    test('Not eligible with default input', () => {
-      expect(resultFn(input).eligible).not.toBe(true);
-    });
-
     test('Requires applicant to be disabled, blind, or elderly', () => {
       input.income.valid = true;
       check(resultFn, input).isEligibleIf('disabled').is(true);
@@ -1139,6 +1139,10 @@ describe('Program eligibility', () => {
   describe('SSI Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(ssiMadeEligible(input));
+    });
+
+    test('Not eligible with default input', () => {
+      expect(elig.ssiResult(input).eligible).not.toBe(true);
     });
 
     test('Requires U.S. citizenship or qualified immigration status', () => {
