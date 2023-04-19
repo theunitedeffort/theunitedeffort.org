@@ -2023,9 +2023,7 @@ function vaPensionResult(input) {
   const meetsAgeReq = ge(input.age, cnst.vaPension.MIN_ELDERLY_AGE);
   const isProgramQualified = or(
     input.existingSsiMe,
-    input.existingSsiHousehold,
     input.existingSsdiMe,
-    input.existingSsdiHousehold,
     ssiResult(input).eligible,
     ssdiResult(input).eligible);
 
