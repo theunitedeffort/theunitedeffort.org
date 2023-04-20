@@ -100,6 +100,83 @@ describe('getNumberOfDays', () => {
   });
 });
 
+describe('dateOrToday', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test("Returns today's date for empty input", () => {
+    const now = new Date('2000-01-01T00:00');
+    jest.useFakeTimers();
+    jest.setSystemTime(now);
+    expect(elig.dateOrToday('').getTime()).toBe(now.getTime());
+  });
+
+  test('Converts a date string to a Date', () => {
+    const expectedDate = new Date('1975-08-20T00:00');
+    expect(
+      elig.dateOrToday('1975-08-20').getTime()).toBe(expectedDate.getTime());
+  });
+});
+
+describe('withinInterval', () => {
+  let intervals;
+  beforeEach(() => {
+    intervals = [
+      {start: new Date('1970-01-01'), end: new Date('1970-12-01')},
+      {start: new Date('2001-01-01'), end: new Date('2020-01-01')},
+    ];
+  });
+
+  test('Returns null for null start or end parameter', () => {
+    const testDate = new Date('1999-12-31');
+    expect(elig.withinInterval(testDate, null, intervals)).toBe(null);
+    expect(elig.withinInterval(null, testDate, intervals)).toBe(null);
+  });
+
+  test('Returns true for a period ending within one interval', () => {
+    const start = new Date('1969-01-01');
+    const end = new Date('1970-02-01');
+    expect(elig.withinInterval(start, end, intervals)).toBe(true);
+  });
+
+  test('Returns true for a period starting within one interval', () => {
+    const start = new Date('2002-01-01');
+    const end = new Date('2023-01-01');
+    expect(elig.withinInterval(start, end, intervals)).toBe(true);
+  });
+
+  test('Returns true for a period fully overlapping one interval', () => {
+    const start = new Date('1969-01-01');
+    const end = new Date('1970-12-31');
+    expect(elig.withinInterval(start, end, intervals)).toBe(true);
+  });
+
+  test('Returns true for a period fully overlapping multiple intervals', () => {
+    const start = new Date('1969-01-01');
+    const end = new Date('2023-01-01');
+    expect(elig.withinInterval(start, end, intervals)).toBe(true);
+  });
+
+  test('Returns true for a period fully within one intervals', () => {
+    const start = new Date('1970-03-01');
+    const end = new Date('1970-04-01');
+    expect(elig.withinInterval(start, end, intervals)).toBe(true);
+  });
+
+  test('Returns false for a period not overlapping any intervals', () => {
+    let start = new Date('2023-01-01');
+    let end = new Date('2023-07-01');
+    expect(elig.withinInterval(start, end, intervals)).toBe(false);
+    start = new Date('1989-01-01');
+    end = new Date('1989-03-01');
+    expect(elig.withinInterval(start, end, intervals)).toBe(false);
+    start = new Date('1969-01-01');
+    end = new Date('1969-03-01');
+    expect(elig.withinInterval(start, end, intervals)).toBe(false);
+  });
+});
+
 describe('Null-passing OR', () => {
   test('Combines boolean inputs', () => {
     expect(elig.or(true, true)).toBe(true);

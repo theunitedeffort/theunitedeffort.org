@@ -437,6 +437,36 @@ function formatUsDate(date) {
   return `${date1.getMonth() + 1}/${date1.getDate()}/${date1.getFullYear()}`;
 }
 
+// Converts a date string to a Date or returns a Date corresponding to today if
+// the input string is empty.
+function dateOrToday(inputStr) {
+  if (inputStr) {
+    return new Date(dateStrToLocal(inputStr));
+  }
+  let today = new Date();
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
+  return today;
+}
+
+// Returns true if the time period defined by 'start' and 'end' overlaps at
+// least one interval in the list of 'intervals'.
+//
+// The 'intervals' parameter should be a list of objects with 'start' and 'end'
+// properties. All 'start' and 'end' (input parameters and object properties)
+// should be Dates.
+//
+// This function will return null if the 'start' or 'end' is null.
+function withinInterval(start, end, intervals) {
+  return or(
+    ...intervals.map(i => and(
+      lt(start, i.end),
+      gt(end, i.start))
+    ));
+}
+
 // Shows or hides the element 'elem' via a class name.
 function setElementVisibility(elem, makeVisible) {
   if (elem) {
@@ -1975,26 +2005,6 @@ function ssdiResult(input) {
 }
 
 function vaPensionResult(input) {
-  function dateOrToday(inputStr) {
-    if (inputStr) {
-      return new Date(dateStrToLocal(inputStr));
-    }
-    let today = new Date();
-    today.setHours(0);
-    today.setMinutes(0);
-    today.setSeconds(0);
-    today.setMilliseconds(0);
-    return today;
-  }
-
-  function withinWartime(start, end) {
-    return or(
-      ...wartimes.map(w => or(
-        and(ge(start, w.start), lt(start, w.end)),
-        and(gt(end, w.start), le(end, w.end)))
-      ));
-  }
-
   const wartimes = cnst.vaPension.WARTIMES.map(
     p => ({start: dateOrToday(p[0]), end: dateOrToday(p[1])}));
 
@@ -2015,7 +2025,7 @@ function vaPensionResult(input) {
   const meetsServiceReq = [];
   for (const duty of input.dutyPeriods) {
     const duration = getNumberOfDays(duty.start, duty.end);
-    const isDuringWartime = withinWartime(duty.start, duty.end);
+    const isDuringWartime = withinInterval(duty.start, duty.end, wartimes);
     const otherDutyPeriods = input.dutyPeriods.filter(p => p !== duty);
     // TODO: does "active duty" include active duty for training and
     // inactive duty for training? https://www.va.gov/pension/eligibility/
@@ -2399,6 +2409,8 @@ if (typeof module !== 'undefined' && module.exports) {
     dateStrToLocal,
     getNumberOfDays,
     formatUsDate,
+    dateOrToday,
+    withinInterval,
     indexOfAll,
     isOneOf,
     categoryTotal,
