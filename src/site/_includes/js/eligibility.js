@@ -196,10 +196,8 @@ const cnst = {
     MIN_ELDERLY_AGE: 65,  // Years
     MIN_EARLY_DUTY_DURATION: 90,  // days
     MIN_LATE_DUTY_DURATION: 730,  // days
-    RECENT_DUTY_THRESHOLD: 730,  // days
     EARLY_DUTY_BEFORE: '1980-09-08',  // YYYY-MM-DD
     LATE_DUTY_AFTER: '1980-09-07',  // YYYY-MM-DD
-    OFFICER_DUTY_AFTER: '1981-10-16',  // YYYY-MM-DD
     // https://www.va.gov/pension/veterans-pension-rates/
     ANNUAL_NET_WORTH_LIMIT: 150538,  // USD per year
     // https://www.va.gov/pension/eligibility/
@@ -2031,39 +2029,26 @@ function vaPensionResult(input) {
   for (const duty of input.dutyPeriods) {
     const duration = getNumberOfDays(duty.start, duty.end);
     const isDuringWartime = withinInterval(duty.start, duty.end, wartimes);
-    // TODO: test this prior active duty logic.
-    const otherDutyPeriods = input.dutyPeriods.filter(p => p !== duty);
-    // TODO: does "active duty" include active duty for training and
-    // inactive duty for training? https://www.va.gov/pension/eligibility/
-    const isRecentPriorActiveDuty = otherDutyPeriods.map(
-      other => and(
-        eq(other.type, 'active-duty'),
-        lt(other.end, duty.start),
-        lt(getNumberOfDays(other.end, duty.start), cnst.vaPension.RECENT_DUTY_THRESHOLD)));
-    const hasRecentPriorActiveDuty = or(...isRecentPriorActiveDuty);
 
     // https://www.va.gov/pension/eligibility/
+    // The service requirements have been simplified here to ignore officer vs
+    // enlisted.  This should err on the side of eligibility while avoiding
+    // complex legal distinctions and minutae.
+    // Despite language to the contrary on the va.gov eligibility webpage,
+    // it seems that pension is available *only* to wartime veterans.
     meetsServiceReq.push(
-      or(
-        and(
-          eq(duty.type, 'active-duty'),
-          lt(duty.start, new Date(dateStrToLocal(cnst.vaPension.EARLY_DUTY_BEFORE))),
-          ge(duration, cnst.vaPension.MIN_EARLY_DUTY_DURATION),
-          isDuringWartime),
-        and(
-          eq(duty.type, 'active-duty'),
-          input.enlisted,
-          gt(duty.start, new Date(dateStrToLocal(cnst.vaPension.LATE_DUTY_AFTER))),
-          or(
-            ge(duration, cnst.vaPension.MIN_LATE_DUTY_DURATION),
-            input.servedFullDuration),
-          isDuringWartime),
-        and(
-          eq(duty.type, 'active-duty'),
-          input.officer,
-          gt(duty.start, new Date(dateStrToLocal(cnst.vaPension.OFFICER_DUTY_AFTER))),
-          ge(duration, cnst.vaPension.MIN_LATE_DUTY_DURATION),
-          not(hasRecentPriorActiveDuty))));
+      and(
+        isDuringWartime,
+        eq(duty.type, 'active-duty'),
+        or(
+          and(
+            lt(duty.start, new Date(dateStrToLocal(cnst.vaPension.EARLY_DUTY_BEFORE))),
+            ge(duration, cnst.vaPension.MIN_EARLY_DUTY_DURATION)),
+          and(
+            gt(duty.start, new Date(dateStrToLocal(cnst.vaPension.LATE_DUTY_AFTER))),
+            or(
+              ge(duration, cnst.vaPension.MIN_LATE_DUTY_DURATION),
+              input.servedFullDuration)))));
   }
 
   // Add offset of 1 for user (index 0).
@@ -2078,6 +2063,8 @@ function vaPensionResult(input) {
   // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFR093085c1bf84bc2/section-3.274#p-3.274(c)(1)
   assetIdxs = [...new Set([0, ...spouseIdx])];
 
+  // TODO: Add income test (MAPR)
+  // https://www.va.gov/pension/veterans-pension-rates/
   let yearlyIncome = null;
   const monthlyIncome = grossIncome(input, incomeIdxs);
   if (monthlyIncome !== null) {
@@ -2236,8 +2223,6 @@ function buildInputObj() {
     usesGuideDog: getValueOrNull('dis_guide_yes'),
     militaryDisabled: getValueOrNull('dis_military_yes'),
     dischargeStatus: getValueOrNull('your-discharge-status'),
-    enlisted: getValueOrNull('enlisted'),
-    officer: getValueOrNull('officer'),
     servedFullDuration: getValueOrNull('full-dur-yes'),
     dutyPeriods: [],
     income: {},
