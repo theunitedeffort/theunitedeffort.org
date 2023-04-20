@@ -1772,6 +1772,7 @@ function reducedFeeIdResult(input) {
   return program.getResult();
 }
 
+/*
 function ihssResult(input) {
   const meetsDisabilityReq = or(
     ge(input.age, cnst.ihss.MIN_ELDERLY_AGE),
@@ -1792,6 +1793,31 @@ function ihssResult(input) {
   // TODO: Replace this single example condition with a set of simplified
   // conditions describing the separate eligibility requirements.
   program.addCondition(new EligCondition('Example', eligible));
+  return program.getResult();
+}
+*/
+
+function ihssResult(input) {
+  const meetsDisabilityReq = or(
+    ge(input.age, cnst.ihss.MIN_ELDERLY_AGE),
+    input.blind,
+    input.disabled);
+
+  const meetsHousedReq = isOneOf(input.housingSituation, [
+    'housed',
+    'unlisted-stable-place']);
+
+  const program = new Program();
+  program.addCondition(
+    new EligCondition(`Disabled, blind or age ${cnst.ssiCapi.MIN_ELDERLY_AGE} or older`, meetsDisabilityReq));
+
+  program.addCondition(
+    new EligCondition('Is housed', meetsHousedReq));
+
+  // TODO: Add medicalResult(input).eligible once we can screen for Medi-Cal.
+  program.addCondition(
+    new EligCondition('Receives Medi-Cal', input.existingMedicalMe));
+
   return program.getResult();
 }
 
