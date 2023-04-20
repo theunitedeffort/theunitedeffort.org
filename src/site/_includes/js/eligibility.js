@@ -196,10 +196,8 @@ const cnst = {
     MIN_ELDERLY_AGE: 65,  // Years
     MIN_EARLY_DUTY_DURATION: 90,  // days
     MIN_LATE_DUTY_DURATION: 730,  // days
-    RECENT_DUTY_THRESHOLD: 730,  // days
     EARLY_DUTY_BEFORE: '1980-09-08',  // YYYY-MM-DD
     LATE_DUTY_AFTER: '1980-09-07',  // YYYY-MM-DD
-    OFFICER_DUTY_AFTER: '1981-10-16',  // YYYY-MM-DD
     // https://www.va.gov/pension/veterans-pension-rates/
     ANNUAL_NET_WORTH_LIMIT: 150538,  // USD per year
     // https://www.va.gov/pension/eligibility/
