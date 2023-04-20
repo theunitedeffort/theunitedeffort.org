@@ -198,9 +198,6 @@ const cnst = {
     MIN_LATE_DUTY_DURATION: 730,  // days
     EARLY_DUTY_BEFORE: '1980-09-08',  // YYYY-MM-DD
     LATE_DUTY_AFTER: '1980-09-07',  // YYYY-MM-DD
-    // https://www.va.gov/pension/veterans-pension-rates/
-    ANNUAL_NET_WORTH_LIMIT: 150538,  // USD per year
-    // https://www.va.gov/pension/eligibility/
     // Each wartime period is defined as a two-element array.  First the
     // start date, then the end date.  Dates are given as strings with the
     // format YYYY-MM-DD.  An empty string is intepreted as "today"
@@ -213,6 +210,14 @@ const cnst = {
       ['1964-08-05', '1975-05-07'],  // Vietnam War, out of Vietnam
       ['1990-08-02', ''],            // Gulf war, no end date yet.
     ],
+    // https://www.va.gov/pension/veterans-pension-rates/
+    ANNUAL_NET_WORTH_LIMIT: 150538,  // USD per year
+    ANNUAL_INCOME_LIMITS: [  // USD per year
+      16037,
+      21001,
+    ],
+    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2743,  // USD per year
+    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 13850,  // USD per year
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
@@ -2009,6 +2014,10 @@ function ssdiResult(input) {
 }
 
 function vaPensionResult(input) {
+  const mapr = MonthlyIncomeLimit.fromAnnual(
+    cnst.vaPension.ANNUAL_INCOME_LIMITS,
+    cnst.vaPension.ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT);
+
   const wartimes = cnst.vaPension.WARTIMES.map(
     p => ({start: dateOrToday(p[0]), end: dateOrToday(p[1])}));
 
@@ -2056,7 +2065,9 @@ function vaPensionResult(input) {
   const dependentIdxs = indexOfAll(input.householdDependents, true).map(i => i + 1);
 
   // Use a Set to remove any duplicate indices.
-  // Annual income includes the claimant, the spouse, and dependents.
+  // Annual income includes the claimant, the spouse, and dependents, though
+  // much of a child's income can be excluded
+  // https://www.ecfr.gov/current/title-38/chapter-I/part-3#p-3.272(j)
   // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFRf5fe31f49d4f511/section-3.23#p-3.23(d)(4)
   incomeIdxs = [...new Set([0, ...spouseIdx, ...dependentIdxs])];
   // Assets include the claimant and the spouse.
@@ -2065,14 +2076,20 @@ function vaPensionResult(input) {
 
   // TODO: Add income test (MAPR)
   // https://www.va.gov/pension/veterans-pension-rates/
-  let yearlyIncome = null;
-  const monthlyIncome = grossIncome(input, incomeIdxs);
-  if (monthlyIncome !== null) {
-    yearlyIncome = 12 * monthlyIncome;
+  // Note alternate household size definition.
+  const maxAnnualPensionRate = mapr.getLimit(incomeIdxs.length);
+  let monthlyCountableIncome = grossIncome(input, incomeIdxs);
+  // Exclude the wages from each dependent child (up to a maximum).
+  for (const dependentIdx of dependentIdxs) {
+    monthlyCountableIncome -= min(
+      totalEarnedIncome(input, dependentIdx),
+      cnst.vaPension.MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION);
   }
+  const yearlyIncome = 12 * monthlyCountableIncome;
   const underNetWorthLimit = le(
     yearlyIncome + totalResources(input, assetIdxs),
     cnst.vaPension.ANNUAL_NET_WORTH_LIMIT);
+  const underMaprLimit = le(monthlyCountableIncome, maxAnnualPensionRate);
 
   const meetsAnyServiceReq = or(...meetsServiceReq);
 
@@ -2083,7 +2100,8 @@ function vaPensionResult(input) {
       meetsDischargeReq));
   program.addCondition(new EligCondition('Meets specific duty type and duration <a href="https://www.va.gov/pension/eligibility/" target="_blank" rel="noopener">requirements</a>',
     meetsAnyServiceReq));
-  program.addCondition(new EligCondition(`Gross income and assets combined are below ${usdLimit(cnst.vaPension.ANNUAL_NET_WORTH_LIMIT)} per year`, underNetWorthLimit));
+  program.addCondition(new EligCondition(`Adjusted income is below ${usdLimit(maxAnnualPensionRate)} per month`, underMaprLimit));
+  program.addCondition(new EligCondition(`Adjusted income and assets combined are below ${usdLimit(cnst.vaPension.ANNUAL_NET_WORTH_LIMIT)} per year`, underNetWorthLimit));
   program.addConditionsOneOf([
     new EligCondition('Disabled', input.disabled),
     new EligCondition(`Age ${cnst.vaPension.MIN_ELDERLY_AGE} or older`, meetsAgeReq),
