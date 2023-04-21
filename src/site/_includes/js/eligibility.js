@@ -1786,16 +1786,15 @@ function ihssResult(input) {
     'housed',
     'unlisted-stable-place']);
 
-  const eligible = and(
-    meetsDisabilityReq,
-    meetsHousedReq,
-    // TODO: Add medicalResult(input).eligible once we can screen for Medi-Cal.
-    input.existingMedicalMe);
-
   const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', eligible));
+  program.addCondition(
+    new EligCondition(`Disabled, blind or age ${cnst.ihss.MIN_ELDERLY_AGE} or older`, meetsDisabilityReq));
+  program.addCondition(
+    new EligCondition('Is housed', meetsHousedReq));
+  // TODO: Add medicalResult(input).eligible once we can screen for Medi-Cal.
+  program.addCondition(
+    new EligCondition('Receives Medi-Cal', input.existingMedicalMe));
+
   return program.getResult();
 }
 
