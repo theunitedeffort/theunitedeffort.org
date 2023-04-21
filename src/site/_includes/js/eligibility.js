@@ -1784,7 +1784,7 @@ function ihssResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition(`Disabled, blind or age ${cnst.ssiCapi.MIN_ELDERLY_AGE} or older`, meetsDisabilityReq));
+    new EligCondition(`Disabled, blind or age ${cnst.ihss.MIN_ELDERLY_AGE} or older`, meetsDisabilityReq));
   program.addCondition(
     new EligCondition('Is housed', meetsHousedReq));
   // TODO: Add medicalResult(input).eligible once we can screen for Medi-Cal.
