@@ -2101,7 +2101,7 @@ function vaPensionResult(input) {
   program.addCondition(new EligCondition('Meets specific duty type and duration <a href="https://www.va.gov/pension/eligibility/" target="_blank" rel="noopener">requirements</a>',
     meetsAnyServiceReq));
   program.addCondition(new EligCondition(`Adjusted income is below ${usdLimit(maxAnnualPensionRate)} per month`, underMaprLimit));
-  program.addCondition(new EligCondition(`Adjusted income and assets combined are below ${usdLimit(cnst.vaPension.ANNUAL_NET_WORTH_LIMIT)} per year`, underNetWorthLimit));
+  program.addCondition(new EligCondition(`Adjusted yearly income and assets combined are below ${usdLimit(cnst.vaPension.ANNUAL_NET_WORTH_LIMIT)}`, underNetWorthLimit));
   program.addConditionsOneOf([
     new EligCondition('Disabled', input.disabled),
     new EligCondition(`Age ${cnst.vaPension.MIN_ELDERLY_AGE} or older`, meetsAgeReq),
