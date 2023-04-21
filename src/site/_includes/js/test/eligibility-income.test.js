@@ -39,6 +39,11 @@ describe('categoryTotal', () => {
     expect(elig.categoryTotal(income, [1, 2])).toBe(90);
     expect(elig.categoryTotal(income, null)).toBe(100);
   });
+
+  test('Out of bounds indices are ignored', () => {
+    expect(elig.categoryTotal([[10], [20], [30]], 3)).toBe(0);
+    expect(elig.categoryTotal([[]], 0)).toBe(0);
+  });
 });
 
 describe('totalEarnedIncome', () => {
