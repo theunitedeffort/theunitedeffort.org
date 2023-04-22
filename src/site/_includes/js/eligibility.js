@@ -212,6 +212,8 @@ const cnst = {
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
     ANNUAL_NET_WORTH_LIMIT: 150538,  // USD per year
+    // TODO: Somehow handle higher income limits for housebound and
+    // aid & attendance disabilities
     ANNUAL_INCOME_LIMITS: [  // USD per year
       16037,
       21001,
