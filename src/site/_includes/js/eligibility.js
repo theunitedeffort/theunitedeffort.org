@@ -198,9 +198,6 @@ const cnst = {
     MIN_LATE_DUTY_DURATION: 730,  // days
     EARLY_DUTY_BEFORE: '1980-09-08',  // YYYY-MM-DD
     LATE_DUTY_AFTER: '1980-09-07',  // YYYY-MM-DD
-    // https://www.va.gov/pension/veterans-pension-rates/
-    ANNUAL_NET_WORTH_LIMIT: 150538,  // USD per year
-    // https://www.va.gov/pension/eligibility/
     // Each wartime period is defined as a two-element array.  First the
     // start date, then the end date.  Dates are given as strings with the
     // format YYYY-MM-DD.  An empty string is intepreted as "today"
@@ -213,6 +210,16 @@ const cnst = {
       ['1964-08-05', '1975-05-07'],  // Vietnam War, out of Vietnam
       ['1990-08-02', ''],            // Gulf war, no end date yet.
     ],
+    // https://www.va.gov/pension/veterans-pension-rates/
+    ANNUAL_NET_WORTH_LIMIT: 150538,  // USD per year
+    // TODO: Somehow handle higher income limits for housebound and
+    // aid & attendance disabilities
+    ANNUAL_INCOME_LIMITS: [  // USD per year
+      16037,
+      21001,
+    ],
+    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2743,  // USD per year
+    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 13850,  // USD per year
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
@@ -2007,7 +2014,64 @@ function ssdiResult(input) {
   return program.getResult();
 }
 
+// Returns a list of indices that can be used to extract income and assets for
+// a spouse, or an empty list if no spouse exists.
+function spouseIndices(input) {
+  // Add offset of 1 for user (index 0).
+  return indexOfAll(input.householdSpouse, true).map(i => i + 1);
+}
+
+// Returns a list of indices that can be used to extract income and assets for
+// any dependents, or an empty list if no dependents exist.
+function dependentIndices(input) {
+  // Add offset of 1 for user (index 0).
+  return indexOfAll(input.householdDependents, true).map(i => i + 1);
+}
+
+// Computes the countable income for VA Pension eligiblility.
+function vaPensionCountableIncome(input) {
+  // Annual income includes the claimant, the spouse, and dependents, though
+  // much of a child's income can be excluded
+  // https://www.ecfr.gov/current/title-38/chapter-I/part-3#p-3.272(j)
+  // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFRf5fe31f49d4f511/section-3.23#p-3.23(d)(4)
+  const dependentIdxs = dependentIndices(input);
+  // Use a Set to remove any duplicate indices.
+  const incomeIdxs = [...new Set([0, ...(spouseIndices(input)), ...dependentIdxs])];
+  // https://www.va.gov/pension/veterans-pension-rates/
+  let countableIncome = grossIncome(input, incomeIdxs);
+  // Exclude the wages from each dependent child (up to a maximum).
+  for (const dependentIdx of dependentIdxs) {
+    countableIncome -= Math.min(
+      totalEarnedIncome(input, dependentIdx),
+      cnst.vaPension.MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION / 12);
+  }
+  return countableIncome;
+}
+
+// Computes the net worth for VA Pension eligibility.
+function vaPensionNetWorth(input, countableIncome) {
+  // Assets include the claimant and the spouse.
+  // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFR093085c1bf84bc2/section-3.274#p-3.274(c)(1)
+  const assetIdxs = [0].concat(spouseIndices(input));
+  // Note income is converted to an annual amount here.
+  return 12 * countableIncome + totalResources(input, assetIdxs);
+}
+
+// Computes the household size for use with the VA Pension income limit.
+function vaPensionHouseholdSize(input) {
+  const spouseAndDependents = new Set([
+    ...spouseIndices(input),
+    ...dependentIndices(input),
+  ]);
+  // Include the user, so add 1 to the number of other household members.
+  return 1 + spouseAndDependents.size;
+}
+
 function vaPensionResult(input) {
+  const mapr = MonthlyIncomeLimit.fromAnnual(
+    cnst.vaPension.ANNUAL_INCOME_LIMITS,
+    cnst.vaPension.ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT);
+
   const wartimes = cnst.vaPension.WARTIMES.map(
     p => ({start: dateOrToday(p[0]), end: dateOrToday(p[1])}));
 
@@ -2018,6 +2082,7 @@ function vaPensionResult(input) {
   ]));
 
   const meetsAgeReq = ge(input.age, cnst.vaPension.MIN_ELDERLY_AGE);
+
   const isProgramQualified = or(
     input.existingSsiMe,
     input.existingSsdiMe,
@@ -2028,7 +2093,6 @@ function vaPensionResult(input) {
   for (const duty of input.dutyPeriods) {
     const duration = getNumberOfDays(duty.start, duty.end);
     const isDuringWartime = withinInterval(duty.start, duty.end, wartimes);
-
     // https://www.va.gov/pension/eligibility/
     // The service requirements have been simplified here to ignore officer vs
     // enlisted.  This should err on the side of eligibility while avoiding
@@ -2050,28 +2114,15 @@ function vaPensionResult(input) {
               input.servedFullDuration)))));
   }
 
-  // Add offset of 1 for user (index 0).
-  const spouseIdx = indexOfAll(input.householdSpouse, true).map(i => i + 1);
-  const dependentIdxs = indexOfAll(input.householdDependents, true).map(i => i + 1);
-
-  // Use a Set to remove any duplicate indices.
-  // Annual income includes the claimant, the spouse, and dependents.
-  // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFRf5fe31f49d4f511/section-3.23#p-3.23(d)(4)
-  incomeIdxs = [...new Set([0, ...spouseIdx, ...dependentIdxs])];
-  // Assets include the claimant and the spouse.
-  // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFR093085c1bf84bc2/section-3.274#p-3.274(c)(1)
-  assetIdxs = [...new Set([0, ...spouseIdx])];
-
-  // TODO: Add income test (MAPR)
   // https://www.va.gov/pension/veterans-pension-rates/
-  let yearlyIncome = null;
-  const monthlyIncome = grossIncome(input, incomeIdxs);
-  if (monthlyIncome !== null) {
-    yearlyIncome = 12 * monthlyIncome;
-  }
+  // Note alternate household size definition.
+  householdSize = vaPensionHouseholdSize(input);
+  const maxPayment = mapr.getLimit(householdSize);
+  const countableIncome = vaPensionCountableIncome(input);
   const underNetWorthLimit = le(
-    yearlyIncome + totalResources(input, assetIdxs),
+    vaPensionNetWorth(input, countableIncome),
     cnst.vaPension.ANNUAL_NET_WORTH_LIMIT);
+  const underMaprLimit = le(countableIncome, maxPayment);
 
   const meetsAnyServiceReq = or(...meetsServiceReq);
 
@@ -2082,7 +2133,8 @@ function vaPensionResult(input) {
       meetsDischargeReq));
   program.addCondition(new EligCondition('Meets specific duty type and duration <a href="https://www.va.gov/pension/eligibility/" target="_blank" rel="noopener">requirements</a>',
     meetsAnyServiceReq));
-  program.addCondition(new EligCondition(`Gross income and assets combined are below ${usdLimit(cnst.vaPension.ANNUAL_NET_WORTH_LIMIT)} per year`, underNetWorthLimit));
+  program.addCondition(new EligCondition(`Adjusted income is below ${usdLimit(maxPayment)} per month`, underMaprLimit));
+  program.addCondition(new EligCondition(`Adjusted yearly income and assets combined are below ${usdLimit(cnst.vaPension.ANNUAL_NET_WORTH_LIMIT)}`, underNetWorthLimit));
   program.addConditionsOneOf([
     new EligCondition('Disabled', input.disabled),
     new EligCondition(`Age ${cnst.vaPension.MIN_ELDERLY_AGE} or older`, meetsAgeReq),
@@ -2428,6 +2480,9 @@ if (typeof module !== 'undefined' && module.exports) {
     ssdiResult,
     upliftResult,
     vaDisabilityResult,
+    vaPensionCountableIncome,
+    vaPensionHouseholdSize,
+    vaPensionNetWorth,
     vaPensionResult,
     vtaParatransitResult,
     wicResult,
