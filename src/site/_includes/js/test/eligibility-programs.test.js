@@ -345,8 +345,8 @@ describe('Program eligibility', () => {
     modified.disabled = true;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.vaPension.ANNUAL_INCOME_LIMITS[0] / 12]];
-    modified.assets = [[(elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT -
-        elig.cnst.vaPension.ANNUAL_INCOME_LIMITS[0]) / 12]];
+    modified.assets = [[elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT -
+        12 * modified.income.wages[0][0]]];
     modified.dutyPeriods = [{
       type: 'active-duty',
       start: new Date('1955-11-01T00:00'),
@@ -1294,16 +1294,17 @@ describe('Program eligibility', () => {
       });
 
       test('Includes income from dependents over a threshold', () => {
-        input.householdSpouse = [false, false, false];
-        input.householdDependents = [true, true, false];
+        input.householdSpouse = [false, false, false, false];
+        input.householdDependents = [true, true, true, false];
         input.income.valid = true;
         input.income.wages = [
           [100],
           [elig.cnst.vaPension.MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION / 12 + 200],
+          [elig.cnst.vaPension.MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION / 12 + 300],
           [elig.cnst.vaPension.MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION / 12],
           [999],
         ];
-        expect(elig.vaPensionCountableIncome(input)).toBe(300);
+        expect(elig.vaPensionCountableIncome(input)).toBeCloseTo(600, 3);
       });
 
       test('Does not double count income from a dependent spouse', () => {
