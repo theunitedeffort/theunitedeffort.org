@@ -1318,6 +1318,26 @@ describe('Program eligibility', () => {
       });
     });
 
+    describe('Net worth', () => {
+      test('Sums yearly income and total assets', () => {
+        const monthlyIncome = 10;
+        input.assets = [[1000, 1000]];
+        expect(elig.vaPensionNetWorth(input, monthlyIncome)).toBe(2120);
+      });
+
+      test('Includes assets from spouse', () => {
+        input.householdSpouse = [true, false];
+        input.assets = [[100], [200], [899]];
+        expect(elig.vaPensionNetWorth(input, 0)).toBe(300);
+      });
+
+      test('Does not include assets from dependents', () => {
+        input.householdDependents = [true];
+        input.assets = [[100], [300]];
+        expect(elig.vaPensionNetWorth(input, 0)).toBe(100);
+      });
+    });
+
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(vaPensionMadeEligible(input));
     });
@@ -1358,67 +1378,20 @@ describe('Program eligibility', () => {
         .isAtMost(elig.cnst.vaPension.ANNUAL_INCOME_LIMITS[0] / 12);
     });
 
-    test.skip('Requires net worth to be at or below the limit', () => {
+    test('Requires net worth to be at or below the limit', () => {
       input.veteran = true;
       input.disabled = true;
       input.dutyPeriods = [validDutyPeriod];
       input.dischargeStatus = 'honorable';
       input.income.valid = true;
-      // All income, no assets
-      check(elig.vaPensionResult, input).isEligibleIf('income.wages')
-        .isAtMost(elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12);
       // All assets, no income
       check(elig.vaPensionResult, input).isEligibleIf('assets')
         .isAtMost(elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT);
-      // Both assets and income
-      input.income.wages = [[
-        elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12 / 2]];
-      check(elig.vaPensionResult, input).isEligibleIf('assets')
-        .isAtMost(elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 2);
-      input.assets = [[
-        elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 2]];
-      check(elig.vaPensionResult, input).isEligibleIf('income.wages')
-        .isAtMost(elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12 / 2);
-    });
 
-    test.skip('Spouse income and assets are included in net worth', () => {
-      const testIncome = elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12;
-      const testAssets = elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT;
-      input.veteran = true;
-      input.disabled = true;
-      input.dutyPeriods = [validDutyPeriod];
-      input.dischargeStatus = 'honorable';
-      input.income.valid = true;
-      input.householdSpouse = [true];  // One other household member: spouse
-      input.income.wages = [[], [testIncome + 1]];  // All income is from spouse
+      input.assets = [[elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT]];
+      // Adding some income here should put the net worth over the limit.
       check(elig.vaPensionResult, input)
-        .isEligibleIf('income.wages').is([[], [testIncome]]);
-      check(elig.vaPensionResult, input)
-        .isEligibleIf('income.wages').is([[], [testIncome - 1]]);
-
-      input.income.wages = [[], []];
-      input.assets = [[], [testAssets + 1]];  // All assets are from spouse
-      check(elig.vaPensionResult, input)
-        .isEligibleIf('assets').is([[], [testAssets]]);
-      check(elig.vaPensionResult, input)
-        .isEligibleIf('assets').is([[], [testAssets - 1]]);
-    });
-
-    test.skip('Dependent income is included in net worth, but not assets', () => {
-      const testIncome = elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT / 12;
-      input.veteran = true;
-      input.disabled = true;
-      input.dutyPeriods = [validDutyPeriod];
-      input.dischargeStatus = 'honorable';
-      input.income.valid = true;
-      input.householdDependents = [true];  // One other household member: dependent
-      input.income.wages = [[], [testIncome + 1]];  // All income is from dependent
-      // Assets from dependent should not matter.
-      input.assets = [[], [elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT + 1]];
-      check(elig.vaPensionResult, input)
-        .isEligibleIf('income.wages').is([[], [testIncome]]);
-      check(elig.vaPensionResult, input)
-        .isEligibleIf('income.wages').is([[], [testIncome - 1]]);
+        .isNotEligibleIf('income.wages').is([[1]]);
     });
 
     test('Eligible when starting 90-day active duty before Sept 8, 1980, serving during wartime', () => {
