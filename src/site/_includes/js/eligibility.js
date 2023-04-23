@@ -1872,13 +1872,11 @@ function liheapResult(input) {
 }
 
 function vtaParatransitResult(input) {
-  // TODO: Determine if blindness should be included here.
-  const eligible = input.disabled;
-
   const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', eligible));
+  // TODO: Determine if blindness should be included here.
+  program.addCondition(
+    new EligCondition('Disabled', input.disabled));
+
   return program.getResult();
 }
 
