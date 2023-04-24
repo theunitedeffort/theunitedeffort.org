@@ -283,10 +283,10 @@ describe('Program eligibility', () => {
 
   function calworksMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
-    modified.age = 20;
     modified.pregnant = true;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.calworks.MBSAC[0]]];
+    modified.assets = [[elig.cnst.calworks.BASE_RESOURCE_LIMIT]];
     modified._verifyFn = elig.calworksResult;
     return modified;
   }
@@ -565,6 +565,36 @@ describe('Program eligibility', () => {
   });
 
   describe('CalWORKS Program', () => {
+    describe('Adjusted income calculation', () => {
+      test('Disregards 40% of self-employment income', () => {
+        input.income.valid = true;
+        input.income.selfEmployed = [[100]];
+        expect(elig.calworksAdjustedIncome(input)).toBe(60);
+      });
+
+      test('Disregards $450 of total wage income for each employed person', () => {
+        input.income.valid = true;
+        // Single employed person
+        input.householdSize = 1;
+        input.income.unemployment = [[9]];
+        input.income.wages = [[100]];
+        expect(elig.calworksAdjustedIncome(input)).toBe(9);
+        input.income.wages = [[500]];
+        expect(elig.calworksAdjustedIncome(input)).toBe(59);
+        // Multiple employed people
+        input.householdSize = 2;
+        input.income.unemployment = [[], []];
+        input.income.wages = [[100], [500]];
+        expect(elig.calworksAdjustedIncome(input)).toBe(0);
+        input.income.wages = [[500], [500]];
+        expect(elig.calworksAdjustedIncome(input)).toBe(100);
+        input.income.wages = [[1], [1899]];
+        expect(elig.calworksAdjustedIncome(input)).toBe(1000);
+      });
+      test.todo('Disregards a portion of child support income');
+      test.todo('Disregards SSI and CAPI payments from income');
+      test.todo('Returns NaN if income data is not valid');
+    });
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(calworksMadeEligible(input));
     });
@@ -575,7 +605,6 @@ describe('Program eligibility', () => {
 
     test('Requires U.S. citizenship or qualified immigration status', () => {
       input.income.valid = true;
-      input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
       input.pregnant = true;
       input.notCitizen = true;
       check(elig.calworksResult, input)
@@ -590,13 +619,11 @@ describe('Program eligibility', () => {
 
     test('Eligible when pregnant', () => {
       input.income.valid = true;
-      input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
       check(elig.calworksResult, input).isEligibleIf('pregnant').is(true);
     });
 
     test('Eligible when household contains a pregnant person', () => {
       input.income.valid = true;
-      input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
       input.householdSize = 2;
       input.householdPregnant = [false];
       check(elig.calworksResult, input)
@@ -605,7 +632,6 @@ describe('Program eligibility', () => {
 
     test('Eligible when household includes a child', () => {
       input.income.valid = true;
-      input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
       input.householdSize = 2;
       input.householdAges = [elig.cnst.calworks.MAX_CHILD_AGE + 1];
       check(elig.calworksResult, input)
@@ -618,7 +644,51 @@ describe('Program eligibility', () => {
       check(elig.calworksResult, input).isEligibleIf('headOfHousehold').is(true);
     });
 
-    // TODO: Add income and resources tests.
+    test('Requires adjusted income to be at or below Minimum Basic Standard for Adequate Care', () => {
+      input.pregnant = true;
+      input.income.valid = true;
+      // Note part of income from employment is disregarded, so use unemployment
+      // income for this test.
+      check(elig.calworksResult, input).isEligibleIf('income.unemployment')
+        .isAtMost(elig.cnst.calworks.MBSAC[0]);
+    });
+
+    test('Requires assets to be at or below the limit', () => {
+      input.pregnant = true;
+      input.income.valid = true;
+      input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
+      input.householdSize = 2;
+      // Elderly household member
+      input.householdAges = [elig.cnst.calworks.MIN_ELDERLY_AGE];
+      input.householdDisabled = [false];
+      check(elig.calworksResult, input).isEligibleIf('assets')
+        .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
+      // Disabled household member
+      input.householdAges = [elig.cnst.calworks.MIN_ELDERLY_AGE - 1];
+      input.householdDisabled = [true];
+      check(elig.calworksResult, input).isEligibleIf('assets')
+        .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
+      // No elderly or disabled member
+      input.householdAges = [elig.cnst.calworks.MIN_ELDERLY_AGE - 1];
+      input.householdDisabled = [false];
+      check(elig.calworksResult, input).isEligibleIf('assets')
+        .isAtMost(elig.cnst.calworks.BASE_RESOURCE_LIMIT);
+      // Elderly applicant
+      input.age = elig.cnst.calworks.MIN_ELDERLY_AGE;
+      check(elig.calworksResult, input).isEligibleIf('assets')
+        .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
+      // Disabled applicant
+      input.disabled = true;
+      check(elig.calworksResult, input).isEligibleIf('assets')
+        .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
+      // Unknown ages
+      input.householdAges = [null];
+      input.age = null;
+      input.disabled = false;
+      check(elig.calworksResult, input).isEligibleIf('assets')
+        .isAtMost(elig.cnst.calworks.BASE_RESOURCE_LIMIT);
+    });
+
   });
 
   describe('CAPI Program', () => {
@@ -1055,6 +1125,8 @@ describe('Program eligibility', () => {
       expect(elig.ssiCapiAdjustedIncome(65, 20)).toBe(0);
       expect(elig.ssiCapiAdjustedIncome(10, 5)).toBe(0);
     });
+
+    test.todo('Returns NaN for invalid (NaN) inputs');
   });
 
   // SSI and CAPI have the same basic eligibility requirements except for

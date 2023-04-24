@@ -44,14 +44,14 @@ const cnst = {
     MIN_ELDERLY_AGE: 60,  // Years
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap33.pdf
     // Section 33.3
-    EMPLOYMENT_DISREGARD: 450,  // USD
+    EMPLOYMENT_DISREGARD: 450,  // USD per month
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap31.pdf
     // Section 31.6.1
-    SELF_EMPLOYED_DISREGARD_FRAC: 0.4,  // USD
+    SELF_EMPLOYED_DISREGARD_FRAC: 0.4,
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
     // Section 27.9.3
-    ONE_CHILD_SUPPORT_DISREGARD: 100,  // USD
-    TWO_CHILD_SUPPORT_DISREGARD: 200,  // USD
+    ONE_CHILD_SUPPORT_DISREGARD: 100,  // USD per month
+    TWO_CHILD_SUPPORT_DISREGARD: 200,  // USD per month
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap13.pdf
     // Section 13.1.1
     MAX_CHILD_AGE: 18,  // Years
@@ -1452,15 +1452,49 @@ function calfreshResult(input) {
   return program.getResult();
 }
 
-function calworksResult(input) {
-  const mbsac = new MonthlyIncomeLimit(
-    cnst.calworks.MBSAC,
-    cnst.calworks.MBSAC_ADDL_PERSON);
-
+function calworksAdjustedIncome(input) {
   const childSupportDisregards = [
     0,
     cnst.calworks.ONE_CHILD_SUPPORT_DISREGARD,
     cnst.calworks.TWO_CHILD_SUPPORT_DISREGARD];
+
+  // This employment array includes the user (idx 0) and the user's household.
+  const employed = [...Array(input.householdSize).keys()].map(
+    i => categoryTotal(input.income.wages, i) > 0);
+  const numEmployed = employed.filter(e => e).length;
+
+  // If household ages are not given, simply don't take the disregards rather
+  // than propagate null age values.
+  // Note if the applicant is under 19, they do not count as a child for
+  // child support income.
+  const numChildren = (input.householdAges.filter(
+    a => a <= cnst.calworks.MAX_CHILD_AGE).length);
+
+  const maxEmploymentDisregard = (
+    numEmployed * cnst.calworks.EMPLOYMENT_DISREGARD);
+  const maxChildSupportDisregard = childSupportDisregards[
+    Math.min(numChildren, childSupportDisregards.length - 1)];
+  const wagesTotal = categoryTotal(input.income.wages);
+  const childSupportTotal = categoryTotal(input.income.childSupport);
+  // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
+  // Section 27.1
+  const ssiIncomeTotal = input.ssiIncome.reduce(add, 0);
+
+  let nonExemptIncome = null;
+  if (grossIncome(input) !== null) {
+    nonExemptIncome = (grossIncome(input) -
+      Math.min(wagesTotal, maxEmploymentDisregard) -
+      Math.min(childSupportTotal, maxChildSupportDisregard) -
+      cnst.calworks.SELF_EMPLOYED_DISREGARD_FRAC *
+      categoryTotal(input.income.selfEmployed) - ssiIncomeTotal);
+  }
+  return nonExemptIncome;
+}
+
+function calworksResult(input) {
+  const mbsac = new MonthlyIncomeLimit(
+    cnst.calworks.MBSAC,
+    cnst.calworks.MBSAC_ADDL_PERSON);
 
   const meetsImmigrationReq = or(
     not(input.notCitizen),
@@ -1480,51 +1514,22 @@ function calworksResult(input) {
     ...input.householdPregnant,
   );
 
-  // This employment array includes the user (idx 0) and the user's household.
-  const employed = [...Array(input.householdSize).keys()].map(
-    i => totalEarnedIncome(input, i) > 0);
-  const numEmployed = employed.filter(e => e).length;
-
-  // If household ages are not given, simply don't take the disregards rather
-  // than propagate null age values.
-  // Note if the applicant is under 19, they do not count as a child for
-  // child support income.
-  const numChildren = (input.householdAges.filter(
-    a => a <= cnst.calworks.MAX_CHILD_AGE).length);
-
-  const maxEmploymentDisregard = (
-    numEmployed * cnst.calworks.EMPLOYMENT_DISREGARD);
-  const maxChildSupportDisregard = childSupportDisregards[
-    Math.min(numChildren, childSupportDisregards.length - 1)];
-  const wagesTotal = categoryTotal(input.income.wages);
-  const childSupportTotal = categoryTotal(input.income.childSupport);
-  const ssiIncomeTotal = input.ssiIncome.reduce(add, 0);
-
-  let nonExemptIncome = null;
-  if (grossIncome(input) !== null) {
-    nonExemptIncome = (grossIncome(input) -
-      Math.min(wagesTotal, maxEmploymentDisregard) -
-      Math.min(childSupportTotal, maxChildSupportDisregard) -
-      cnst.calworks.SELF_EMPLOYED_DISREGARD_FRAC *
-      categoryTotal(input.income.selfEmployed) - ssiIncomeTotal);
-  }
-
+  const nonExemptIncome = calworksAdjustedIncome(input);
   // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
+  // TODO: Add in special needs to income limit.
   const mbsacIncomeLimit = mbsac.getLimit(input.householdSize);
   const underIncomeLimit = le(nonExemptIncome, mbsacIncomeLimit);
 
   let resourceLimit = cnst.calworks.BASE_RESOURCE_LIMIT;
-  // TODO: If household ages are not specified, we may ok falling back to
-  // BASE_RESOURCE_LIMIT.
   const hasElderlyOrDisabled = or(
     ...input.householdAges.map(a => ge(a, cnst.calworks.MIN_ELDERLY_AGE)),
     ge(input.age, cnst.calworks.MIN_ELDERLY_AGE),
     ...input.householdDisabled,
     // TODO: Determine if blind or deaf is considered "disabled" here.
     input.disabled)
-  if (hasElderlyOrDisabled === null) {
-    resourceLimit = null;
-  } else if (hasElderlyOrDisabled) {
+  // If household ages are not specified, we are ok falling back to
+  // BASE_RESOURCE_LIMIT.
+  if (hasElderlyOrDisabled) {
     resourceLimit = cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT;
   }
   const underResourceLimit = le(totalResources(input), resourceLimit);
@@ -2465,6 +2470,7 @@ if (typeof module !== 'undefined' && module.exports) {
     MonthlyIncomeLimit,
     adsaResult,
     calfreshResult,
+    calworksAdjustedIncome,
     calworksResult,
     capiResult,
     careResult,
