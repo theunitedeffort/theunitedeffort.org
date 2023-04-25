@@ -582,19 +582,74 @@ describe('Program eligibility', () => {
         input.income.wages = [[500]];
         expect(elig.calworksAdjustedIncome(input)).toBe(59);
         // Multiple employed people
-        input.householdSize = 2;
-        input.income.unemployment = [[], []];
-        input.income.wages = [[100], [500]];
+        input.householdSize = 3;
+        input.income.unemployment = [[], [], []];
+        input.income.wages = [[100], [], [500]];
         expect(elig.calworksAdjustedIncome(input)).toBe(0);
-        input.income.wages = [[500], [500]];
+        input.income.wages = [[500], [], [500]];
         expect(elig.calworksAdjustedIncome(input)).toBe(100);
-        input.income.wages = [[1], [1899]];
+        input.income.wages = [[1], [], [1899]];
         expect(elig.calworksAdjustedIncome(input)).toBe(1000);
       });
-      test.todo('Disregards a portion of child support income');
-      test.todo('Disregards SSI and CAPI payments from income');
-      test.todo('Returns NaN if income data is not valid');
+
+      test('Disregards a portion of child support income', () => {
+        input.income.valid = true;
+        // Disregard up to $100 for one child
+        input.householdSize = 2;
+        input.householdAges = [35, elig.cnst.calworks.MAX_CHILD_AGE];
+        input.income.childSupport = [[50], []];
+        expect(elig.calworksAdjustedIncome(input)).toBe(0);
+        input.income.childSupport = [[100], []];
+        expect(elig.calworksAdjustedIncome(input)).toBe(0);
+        input.income.childSupport = [[200], []];
+        expect(elig.calworksAdjustedIncome(input)).toBe(100);
+        // Disregard up to $200 for two or more children
+        input.householdSize = 3;
+        input.householdAges = [35, elig.cnst.calworks.MAX_CHILD_AGE,
+          elig.cnst.calworks.MAX_CHILD_AGE];
+        input.income.childSupport = [[100], [], []];
+        expect(elig.calworksAdjustedIncome(input)).toBe(0);
+        input.income.childSupport = [[200], [], []];
+        expect(elig.calworksAdjustedIncome(input)).toBe(0);
+        input.income.childSupport = [[300], [], []];
+        expect(elig.calworksAdjustedIncome(input)).toBe(100);
+        input.householdSize = 4;
+        input.householdAges = [35, elig.cnst.calworks.MAX_CHILD_AGE,
+          elig.cnst.calworks.MAX_CHILD_AGE, elig.cnst.calworks.MAX_CHILD_AGE];
+        expect(elig.calworksAdjustedIncome(input)).toBe(100);
+      });
+
+      test('No child support disregard for null ages', () => {
+        const supportPayment = 500;
+        input.income.valid = true;
+        input.householdSize = 2;
+        input.income.childSupport = [[supportPayment], []];
+        expect(elig.calworksAdjustedIncome(input)).toBe(supportPayment);
+      });
+
+      test('No child support disregard for household with no children', () => {
+        const supportPayment = 500;
+        input.income.valid = true;
+        input.householdSize = 2;
+        input.householdAges = [35, elig.cnst.calworks.MAX_CHILD_AGE + 1];
+        input.income.childSupport = [[supportPayment], []];
+        expect(elig.calworksAdjustedIncome(input)).toBe(supportPayment);
+      });
+
+      test('Disregards SSI and CAPI payments from income', () => {
+        input.income.valid = true;
+        input.income.disability = [[500, 200, 300]];
+        input.householdSize = 1;
+        input.ssiIncome = [500, 300];
+        expect(elig.calworksAdjustedIncome(input)).toBe(200);
+      });
+
+      test('Returns NaN if income data is not valid', () => {
+        input.income.valid = false;
+        expect(elig.calworksAdjustedIncome(input)).toBe(NaN);
+      });
     });
+
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(calworksMadeEligible(input));
     });
