@@ -1459,8 +1459,10 @@ function calworksAdjustedIncome(input) {
     cnst.calworks.TWO_CHILD_SUPPORT_DISREGARD];
 
   // This employment array includes the user (idx 0) and the user's household.
+  // Self-employed counts as employed.
+  // https://www.cdss.ca.gov/cdssweb/entres/forms/english/cw29.pdf
   const employed = [...Array(input.householdSize).keys()].map(
-    i => categoryTotal(input.income.wages, i) > 0);
+    i => totalEarnedIncome(input, i) > 0);
   const numEmployed = employed.filter(e => e).length;
 
   // If household ages are not given, simply don't take the disregards rather
@@ -1474,14 +1476,16 @@ function calworksAdjustedIncome(input) {
     numEmployed * cnst.calworks.EMPLOYMENT_DISREGARD);
   const maxChildSupportDisregard = childSupportDisregards[
     Math.min(numChildren, childSupportDisregards.length - 1)];
-  const wagesTotal = categoryTotal(input.income.wages);
+  const netEarned = (categoryTotal(input.income.wages) +
+      (1 - cnst.calworks.SELF_EMPLOYED_DISREGARD_FRAC) *
+      categoryTotal(input.income.selfEmployed));
   const childSupportTotal = categoryTotal(input.income.childSupport);
   // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
   // Section 27.1
   const ssiIncomeTotal = input.ssiIncome.reduce(add, 0);
 
   return (grossIncome(input) -
-      Math.min(wagesTotal, maxEmploymentDisregard) -
+      Math.min(netEarned, maxEmploymentDisregard) -
       Math.min(childSupportTotal, maxChildSupportDisregard) -
       cnst.calworks.SELF_EMPLOYED_DISREGARD_FRAC *
       categoryTotal(input.income.selfEmployed) - ssiIncomeTotal);

@@ -568,22 +568,29 @@ describe('Program eligibility', () => {
     describe('Adjusted income calculation', () => {
       test('Disregards 40% of self-employment income', () => {
         input.income.valid = true;
-        input.income.selfEmployed = [[100]];
-        expect(elig.calworksAdjustedIncome(input)).toBe(60);
+        input.income.selfEmployed = [[1000]];
+        // The other employment disregard also applies to self-employment income
+        expect(elig.calworksAdjustedIncome(input))
+          .toBe(600 - elig.cnst.calworks.EMPLOYMENT_DISREGARD);
       });
 
-      test('Disregards $450 of total wage income for each employed person', () => {
+      test('Disregards $450 of total earned income for each employed person', () => {
         input.income.valid = true;
         // Single employed person
         input.householdSize = 1;
         input.income.unemployment = [[9]];
         input.income.wages = [[100]];
         expect(elig.calworksAdjustedIncome(input)).toBe(9);
-        input.income.wages = [[500]];
-        expect(elig.calworksAdjustedIncome(input)).toBe(59);
-        // Multiple employed people
+        input.income.wages = [[600]];
+        expect(elig.calworksAdjustedIncome(input)).toBe(159);
+        input.income.wages = [[]];
+        input.income.selfEmployed = [[1000]];
+        // The other 40% self-employment disregard also applies here.
+        expect(elig.calworksAdjustedIncome(input)).toBe(159);
+        // Two employed people
         input.householdSize = 3;
         input.income.unemployment = [[], [], []];
+        input.income.selfEmployed = [[], [], []];
         input.income.wages = [[100], [], [500]];
         expect(elig.calworksAdjustedIncome(input)).toBe(0);
         input.income.wages = [[500], [], [500]];
