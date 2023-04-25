@@ -1460,7 +1460,7 @@ function calworksAdjustedIncome(input) {
 
   // This employment array includes the user (idx 0) and the user's household.
   // Self-employed counts as employed.
-  // https://www.cdss.ca.gov/cdssweb/entres/forms/english/cw29.pdf
+  // https://www.cdss.ca.gov/Portals/9/Additional-Resources/Forms-and-Brochures/2020/A-D/CW29.pdf?ver=2021-11-19-150846-840
   const employed = [...Array(input.householdSize).keys()].map(
     i => totalEarnedIncome(input, i) > 0);
   const numEmployed = employed.filter(e => e).length;
@@ -1484,6 +1484,8 @@ function calworksAdjustedIncome(input) {
   // Section 27.1
   const ssiIncomeTotal = input.ssiIncome.reduce(add, 0);
 
+  // TODO: remove the SSI income subtraction?
+  // https://www.cdss.ca.gov/Portals/9/Additional-Resources/Forms-and-Brochures/2020/A-D/CW29.pdf?ver=2021-11-19-150846-840
   return (grossIncome(input) -
       Math.min(netEarned, maxEmploymentDisregard) -
       Math.min(childSupportTotal, maxChildSupportDisregard) -
