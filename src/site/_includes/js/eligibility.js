@@ -1862,29 +1862,28 @@ function liheapResult(input) {
     cnst.liheap.MONTHLY_INCOME_LIMITS,
     cnst.liheap.MONTHLY_INCOME_LIMIT_ADDL_PERSON);
 
-  const isHoused = isOneOf(input.housingSituation, [
+  const meetsHousedReq = isOneOf(input.housingSituation, [
     'housed',
     'unlisted-stable-place']);
-
-  const eligible = and(
-    isHoused,
-    le(grossIncome(input), grossLimit.getLimit(input.householdSize)));
+									
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
   const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', eligible));
+  program.addCondition(
+    new EligCondition('Is housed', meetsHousedReq));
+  program.addCondition(
+    new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
+
   return program.getResult();
 }
 
 function vtaParatransitResult(input) {
-  // TODO: Determine if blindness should be included here.
-  const eligible = input.disabled;
-
   const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', eligible));
+  // TODO: Determine if blindness should be included here.
+  program.addCondition(
+    new EligCondition('Disabled', input.disabled));
+
   return program.getResult();
 }
 
