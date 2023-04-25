@@ -1480,15 +1480,11 @@ function calworksAdjustedIncome(input) {
   // Section 27.1
   const ssiIncomeTotal = input.ssiIncome.reduce(add, 0);
 
-  let nonExemptIncome = null;
-  if (grossIncome(input) !== null) {
-    nonExemptIncome = (grossIncome(input) -
+  return (grossIncome(input) -
       Math.min(wagesTotal, maxEmploymentDisregard) -
       Math.min(childSupportTotal, maxChildSupportDisregard) -
       cnst.calworks.SELF_EMPLOYED_DISREGARD_FRAC *
       categoryTotal(input.income.selfEmployed) - ssiIncomeTotal);
-  }
-  return nonExemptIncome;
 }
 
 function calworksResult(input) {
