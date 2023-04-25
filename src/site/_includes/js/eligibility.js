@@ -2200,19 +2200,18 @@ function wicResult(input) {
 }
 
 function upliftResult(input) {
-  const eligible = or(
-    isOneOf(input.housingSituation, [
-      'vehicle',
-      'transitional',
-      'hotel',
-      'shelter',
-      'no-stable-place']),
-    input.homelessRisk);
+  const isUnhoused = isOneOf(input.housingSituation, [
+    'vehicle',
+    'transitional',
+    'hotel',
+    'shelter',
+    'no-stable-place']);
 
   const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', eligible));
+  program.addConditionsOneOf([
+    new EligCondition('Experiencing homelessness', isUnhoused),
+    new EligCondition(`At risk of losing housing`, input.homelessRisk)
+  ]);
   return program.getResult();
 }
 
