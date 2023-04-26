@@ -53,6 +53,12 @@ function isNotEligibleIf(target) {
   return this;
 }
 
+function isUnknownIf(target) {
+  this.target = target;
+  this.expected = null;
+  return this;
+}
+
 function msg(ctx, whichStr) {
   return (
       `Checking ${ctx.program.name} with ${whichStr} value of ` +
@@ -125,6 +131,7 @@ function check(program, input) {
     input,
     isEligibleIf,
     isNotEligibleIf,
+    isUnknownIf,
     is,
     isAtLeast,
     isAtMost,
@@ -492,33 +499,10 @@ describe('Program eligibility', () => {
       check(elig.calfreshResult, input)
         .isEligibleIf('immigrationStatus').is('permanent_resident');
       check(elig.calfreshResult, input)
-        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_gt5y');
-      check(elig.calfreshResult, input)
         .isEligibleIf('notCitizen').is(false);
-    });
-
-    test('Eligible without waiting period when young qualified immigrant', () => {
-      input.income.valid = true;
-      input.notCitizen = true;
-      input.immigrationStatus = 'qualified_noncitizen_le5y';
-      check(elig.calfreshResult, input).isEligibleIf('age')
-        .isUnder(elig.cnst.calfresh.SHORT_RESIDENCY_OK_BELOW_AGE);
-    });
-
-    test('Eligible without waiting period when blind/disabled and receiving assistance', () => {
-      input.income.valid = true;
-      input.notCitizen = true;
-      input.immigrationStatus = 'qualified_noncitizen_le5y';
-      input.existingSsiMe = true;
-      check(elig.calfreshResult, input).isEligibleIf('blind').is(true);
-      check(elig.calfreshResult, input).isEligibleIf('disabled').is(true);
-
-      input.existingSsiMe = false;
-      input.blind = true;
-      check(elig.calfreshResult, input).isEligibleIf('existingSsiMe').is(true);
-      check(elig.calfreshResult, input).isEligibleIf('existingSsdiMe').is(true);
-      check(elig.calfreshResult, input).isEligibleIf('existingCapiMe').is(true);
-      check(elig.calfreshResult, input).isEligibleIf('existingMedicalMe').is(true);
+      input.immigrationStatus = 'permanent_resident';
+      check(elig.calfreshResult, input)
+        .isNotEligibleIf('immigrationStatus').is('live_temporarily');
     });
 
     test('Eligible categorically when receiving CalWORKS or GA', () => {
@@ -558,9 +542,32 @@ describe('Program eligibility', () => {
 
     test('Unknown result for invalid income with no categorical eligibility', () => {
       input.income.valid = true;
-      expect(elig.calfreshResult(input).eligible).toBe(true);
-      input.income.valid = false;
-      expect(elig.calfreshResult(input).eligible).toBe(null);
+      check(elig.calfreshResult, input).isUnknownIf('income.valid').is(false);
+    });
+
+    test('Unknown result for catch-all immigration status', () => {
+      input.income.valid = true;
+      input.notCitizen = true;
+      input.immigrationStatus = 'permanent_resident';
+      check(elig.calfreshResult, input)
+        .isUnknownIf('immigrationStatus').is('long_term');
+      check(elig.calfreshResult, input)
+        .isUnknownIf('immigrationStatus').is('none_describe');
+    });
+
+    test('Too complex flag for catch-all immigration status', () => {
+      expect(elig.calfreshResult(input).flags)
+        .not.toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
+      input.notCitizen = true;
+      input.immigrationStatus = 'permanent_resident';
+      expect(elig.calfreshResult(input).flags)
+        .not.toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
+      input.immigrationStatus = 'long_term';
+      expect(elig.calfreshResult(input).flags)
+        .toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
+      input.notCitizen = false;
+      expect(elig.calfreshResult(input).flags)
+        .not.toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
     });
   });
 

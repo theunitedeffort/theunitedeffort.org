@@ -19,7 +19,6 @@ const cnst = {
     // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap19.pdf
     // Section 19.1.3
     SELF_EMPLOYED_EXEMPT_FRACTION: 0.4,
-    SHORT_RESIDENCY_OK_BELOW_AGE: 18,  // Years
   },
   calworks: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
@@ -1281,10 +1280,17 @@ class MonthlyIncomeLimit {
 
 // Flags that can be associated with a Program to alter the display
 // of that Program's eligibility result to the user.
-const Flags = Object.freeze({
-  TOO_COMPLEX: Symbol("too_complex"),
-  NEAR_INCOME_LIMIT: Symbol("near_income_limit")
-})
+const FlagCodes = {
+  UNKNOWN: 0,
+  NEAR_INCOME_LIMIT: 1,
+  TOO_COMPLEX: 2,
+  TOO_COMPLEX_IMMIGRATION: 3,
+};
+
+// function EligFlag(code, msg='') {
+//   this.code = code;
+//   this.msg = msg;
+// }
 
 // A single eligibility condition that can be displayed to the user.  Note
 // an EligCondition will often be a combination of a few conditional
@@ -1303,7 +1309,7 @@ function EligCondition(desc, met) {
 
 // A program to be checked for eligibility.
 // 'logic' contains the list of EligConditions used to assess eligibility.
-// 'flags' is a list of Flags relvant to the eligibility assessment.
+// 'flags' is a list of EligFlags relvant to the eligibility assessment.
 function Program() {
   this.conditions = [];
   this.flags = [];
@@ -1318,6 +1324,10 @@ function Program() {
   // all other previously added conditions.
   this.addConditionsOneOf = function(conditions) {
     this.conditions.push([].concat(conditions));
+  }
+
+  this.addFlag = function(code) {
+    this.flags.push(code);
   }
 
   // Evaluates the entire set of conditions, returning true, false, or null.
@@ -1389,32 +1399,15 @@ function calfreshResult(input) {
     cnst.calfresh.FED_POVERTY_LEVEL,
     cnst.calfresh.FED_POVERTY_LEVEL_ADDL_PERSON);
 
-  const meetsShortResidencyReq = or(
-    // TODO: add military connection.
-    lt(input.age, cnst.calfresh.SHORT_RESIDENCY_OK_BELOW_AGE),
-    and(
-      or(
-        input.blind,
-        input.disabled),
-      or(
-        input.existingSsiMe,
-        input.existingSsdiMe,
-        input.existingCapiMe,
-        input.existingMedicalMe)));
-
+  let validImmigrationStatus = null;
+  if (input.immigrationStatus == 'permanent_resident') {
+    validImmigrationStatus = true;
+  } else if (input.immigrationStatus == 'live_temporarily') {
+    validImmigrationStatus = false;
+  }
   const meetsImmigrationReq = or(
     not(input.notCitizen),
-    isOneOf(input.immigrationStatus, [
-      'permanent_resident',
-      'qualified_noncitizen_gt5y']),
-    // TODO: Decide how to handle immigration status: Could mark CFAP
-    // eligible for anyone not a citizen and not a permanent resident? See
-    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap31.pdf
-    // and
-    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap14.pdf#page=13
-    and(
-      eq(input.immigrationStatus, 'qualified_noncitizen_le5y'),
-      meetsShortResidencyReq));
+    validImmigrationStatus);
 
   // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
   // TODO: Determine if _every_ household member is eligible for Calworks
@@ -1456,6 +1449,11 @@ function calfreshResult(input) {
     new EligCondition('Receives or is eligible for CalWORKS or GA',
       isCategoricallyEligible),
   ]);
+  if (meetsImmigrationReq !== true &&
+      input.immigrationStatus &&
+      validImmigrationStatus === null) {
+    program.addFlag(FlagCodes.TOO_COMPLEX_IMMIGRATION);
+  }
   return program.getResult();
 }
 
@@ -2450,6 +2448,7 @@ function init() {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     cnst,
+    FlagCodes,
     hasNulls,
     add,
     or,
