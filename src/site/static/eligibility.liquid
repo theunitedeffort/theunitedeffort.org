@@ -110,20 +110,19 @@ pageClass: "page-public-assistance"
             <label for="dis_guide_no">No</label>
           </li>
         </ul>
-        {% comment %}
-        TODO: Only show this section if the user is a veteran.
-        {% endcomment %}
-        <p>Is your disability related to your military service?</p>
-        <ul id="military-related" class="yes-no">
-          <li>
-            <input type="radio" id="dis_military_yes" name="disability_details3" />
-            <label for="dis_military_yes">Yes</label>
-          </li>
-          <li>
-            <input type="radio" id="dis_military_no" name="disability_details3"/>
-            <label for="dis_military_no">No</label>
-          </li>
-        </ul>
+        <div id="military-disability-wrapper" class="hidden">
+          <p>Is your disability related to your military service?</p>
+          <ul id="military-related" class="yes-no">
+            <li>
+              <input type="radio" id="dis_military_yes" name="disability_details3" />
+              <label for="dis_military_yes">Yes</label>
+            </li>
+            <li>
+              <input type="radio" id="dis_military_no" name="disability_details3"/>
+              <label for="dis_military_no">No</label>
+            </li>
+          </ul>
+        </div>
       </div>
     {% endeligPage %}
 
