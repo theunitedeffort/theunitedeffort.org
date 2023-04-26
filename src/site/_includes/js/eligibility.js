@@ -1024,6 +1024,13 @@ function customPageLinking(pageById) {
 
   pageById["page-head-of-household"].next = function() {
     if (document.getElementById("disabled").checked || document.getElementById("blind").checked || document.getElementById("deaf").checked) {
+      const militaryQuestion = document.getElementById(
+        "military-disability-wrapper");
+      if (document.getElementById("veteran").checked) {
+        militaryQuestion.classList.remove("hidden");
+      } else {
+        militaryQuestion.classList.add("hidden");
+      }
       return pageById["page-disability-details"];
     }
     return pageById["page-disability-details"].next();
