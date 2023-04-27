@@ -301,7 +301,7 @@ describe('Program eligibility', () => {
   function capiMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
     modified.notCitizen = true;
-    modified.immigrationStatus = 'prucol';
+    modified.immigrationStatus = 'TESTONLY';
     modified.age = 99;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
@@ -370,6 +370,42 @@ describe('Program eligibility', () => {
     modified._verifyFn = elig.wicResult;
     modified.income.wages = [[elig.cnst.wic.MONTHLY_INCOME_LIMITS[0]]];
     return modified;
+  }
+
+  function testImmigration(setupFn, resultFn, testCases) {
+    testCases = testCases || [
+      {immStatus: 'permanent_resident', expectedElig: true, flagExpected: false},
+      {immStatus: 'long_term', expectedElig: null, flagExpected: true},
+      {immStatus: 'live_temporarily', expectedElig: false, flagExpected: false},
+      {immStatus: 'none_describe', expectedElig: null, flagExpected: true},
+    ]
+    describe.each(testCases)('Immigration status "$immStatus"', ({immStatus, expectedElig, flagExpected}) => {
+      beforeEach(() => {
+        setupFn();
+      })
+      test(`Eligibility result is ${expectedElig}`, () => {
+        input.notCitizen = true;
+        input.immigrationStatus = immStatus;
+        expect(resultFn(input).eligible).toBe(expectedElig);
+      });
+
+      test(`${flagExpected ? 'Has' : 'Does not have'} complex immigration flag`, () => {
+        input.notCitizen = true;
+        input.immigrationStatus = immStatus;
+        let expectResult = expect(resultFn(input).flags);
+        if (!flagExpected) {
+          expectResult = expectResult.not;
+        }
+        expectResult.toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
+      });
+
+      test('Complex immigration flag not present for citizens', () => {
+        input.notCitizen = false;
+        input.immigrationStatus = immStatus;
+        expect(resultFn(input).flags)
+          .not.toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
+      });
+    });
   }
 
   beforeEach(() => {
@@ -493,16 +529,11 @@ describe('Program eligibility', () => {
       expect(elig.calfreshResult(input).eligible).not.toBe(true);
     });
 
-    test('Requires U.S. citizenship or qualified immigration status', () => {
+    test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.notCitizen = true;
       check(elig.calfreshResult, input)
-        .isEligibleIf('immigrationStatus').is('permanent_resident');
-      check(elig.calfreshResult, input)
         .isEligibleIf('notCitizen').is(false);
-      input.immigrationStatus = 'permanent_resident';
-      check(elig.calfreshResult, input)
-        .isNotEligibleIf('immigrationStatus').is('live_temporarily');
     });
 
     test('Eligible categorically when receiving CalWORKS or GA', () => {
@@ -545,30 +576,11 @@ describe('Program eligibility', () => {
       check(elig.calfreshResult, input).isUnknownIf('income.valid').is(false);
     });
 
-    test('Unknown result for catch-all immigration status', () => {
-      input.income.valid = true;
-      input.notCitizen = true;
-      input.immigrationStatus = 'permanent_resident';
-      check(elig.calfreshResult, input)
-        .isUnknownIf('immigrationStatus').is('long_term');
-      check(elig.calfreshResult, input)
-        .isUnknownIf('immigrationStatus').is('none_describe');
-    });
-
-    test('Too complex flag for catch-all immigration status', () => {
-      expect(elig.calfreshResult(input).flags)
-        .not.toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
-      input.notCitizen = true;
-      input.immigrationStatus = 'permanent_resident';
-      expect(elig.calfreshResult(input).flags)
-        .not.toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
-      input.immigrationStatus = 'long_term';
-      expect(elig.calfreshResult(input).flags)
-        .toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
-      input.notCitizen = false;
-      expect(elig.calfreshResult(input).flags)
-        .not.toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
-    });
+    testImmigration(() => {
+        input.income.valid = true;
+      },
+      elig.calfreshResult
+    );
   });
 
   describe('CalWORKS Program', () => {
@@ -672,19 +684,20 @@ describe('Program eligibility', () => {
       expect(elig.calworksResult(input).eligible).not.toBe(true);
     });
 
-    test('Requires U.S. citizenship or qualified immigration status', () => {
+    test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.pregnant = true;
       input.notCitizen = true;
       check(elig.calworksResult, input)
-        .isEligibleIf('immigrationStatus').is('permanent_resident');
-      check(elig.calworksResult, input)
-        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_gt5y');
-      check(elig.calworksResult, input)
-        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_le5y');
-      check(elig.calworksResult, input)
         .isEligibleIf('notCitizen').is(false);
     });
+
+    testImmigration(() => {
+        input.income.valid = true;
+        input.pregnant = true;
+      },
+      elig.calworksResult
+    );
 
     test('Eligible when pregnant', () => {
       input.income.valid = true;
@@ -774,9 +787,9 @@ describe('Program eligibility', () => {
       input.disabled = true;
       input.notCitizen = true;
       check(elig.capiResult, input)
-        .isEligibleIf('immigrationStatus').is('prucol');
+        .isEligibleIf('immigrationStatus').is('TESTONLY');
 
-      input.immigrationStatus = 'prucol';
+      input.immigrationStatus = 'TESTONLY';
       check(elig.capiResult, input)
         .isNotEligibleIf('notCitizen').is(false);
     });
@@ -946,19 +959,20 @@ describe('Program eligibility', () => {
         .isEligibleIf('assets').isAtMost(elig.cnst.ga.MAX_RESOURCES);
     });
 
-    test('Requires U.S. citizenship or qualified immigration status', () => {
+    test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
       input.notCitizen = true;
       check(elig.gaResult, input)
-        .isEligibleIf('immigrationStatus').is('permanent_resident');
-      check(elig.gaResult, input)
-        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_gt5y');
-      check(elig.gaResult, input)
-        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_le5y');
-      check(elig.gaResult, input)
         .isEligibleIf('notCitizen').is(false);
     });
+
+    testImmigration(() => {
+        input.income.valid = true;
+        input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
+      },
+      elig.gaResult
+    );
   });
 
   describe('Housing Choice Voucher Program', () => {
@@ -972,19 +986,20 @@ describe('Program eligibility', () => {
         .isAtLeast(elig.cnst.housingChoice.MIN_ELIGIBLE_AGE);
     });
 
-    test('Requires U.S. citizenship or qualified immigration status', () => {
+    test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
       input.notCitizen = true;
       check(elig.housingChoiceResult, input)
-        .isEligibleIf('immigrationStatus').is('permanent_resident');
-      check(elig.housingChoiceResult, input)
-        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_gt5y');
-      check(elig.housingChoiceResult, input)
-        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_le5y');
-      check(elig.housingChoiceResult, input)
         .isEligibleIf('notCitizen').is(false);
     });
+
+    testImmigration(() => {
+        input.income.valid = true;
+        input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
+      },
+      elig.housingChoiceResult
+    );
 
     test('Requires gross income at or below income limit', () => {
       const maxIncome = elig.cnst.housingChoice.ANNUAL_INCOME_LIMITS[0] / 12;
@@ -1202,7 +1217,7 @@ describe('Program eligibility', () => {
   // immigration, so re-use the test code for each program.
   describe.each([
     [elig.ssiResult, false, null],
-    [elig.capiResult, true, 'prucol']
+    [elig.capiResult, true, 'TESTONLY']
   ])('SSI and CAPI Programs (%p)', (resultFn,
       defaultNotCitizen, defaultImmigrationStatus) => {
     beforeEach(() => {
@@ -1285,18 +1300,19 @@ describe('Program eligibility', () => {
       expect(elig.ssiResult(input).eligible).not.toBe(true);
     });
 
-    test('Requires U.S. citizenship or qualified immigration status', () => {
+    test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.disabled = true;
       input.notCitizen = true;
-      check(elig.ssiResult, input)
-        .isEligibleIf('immigrationStatus').is('permanent_resident');
-      check(elig.ssiResult, input)
-        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_gt5y');
-      check(elig.ssiResult, input)
-        .isEligibleIf('immigrationStatus').is('qualified_noncitizen_le5y');
       check(elig.ssiResult, input).isEligibleIf('notCitizen').is(false);
     });
+
+    testImmigration(() => {
+        input.income.valid = true;
+        input.disabled = true;
+      },
+      elig.ssiResult
+    );
   });
 
   describe('UPLIFT Program', () => {

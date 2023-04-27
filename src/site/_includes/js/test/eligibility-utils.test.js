@@ -31,6 +31,8 @@ describe('isOneOf', () => {
     const allowedOptions = ['apple', 'orange', 'banana'];
     expect(elig.isOneOf('banana', allowedOptions)).toBe(true);
     expect(elig.isOneOf('kiwi', allowedOptions)).toBe(false);
+    expect(elig.isOneOf('apple', allowedOptions[0])).toBe(true);
+    expect(elig.isOneOf('orange', allowedOptions[0])).toBe(false);
   });
 
   test('Returns null for null search value', () => {
