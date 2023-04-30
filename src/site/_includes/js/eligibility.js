@@ -1297,13 +1297,8 @@ const FlagCodes = {
   UNKNOWN: 0,
   NEAR_INCOME_LIMIT: 1,
   TOO_COMPLEX: 2,
-  TOO_COMPLEX_IMMIGRATION: 3,
+  COMPLEX_IMMIGRATION: 3,
 };
-
-// function EligFlag(code, msg='') {
-//   this.code = code;
-//   this.msg = msg;
-// }
 
 // A single eligibility condition that can be displayed to the user.  Note
 // an EligCondition will often be a combination of a few conditional
@@ -1322,7 +1317,7 @@ function EligCondition(desc, met) {
 
 // A program to be checked for eligibility.
 // 'logic' contains the list of EligConditions used to assess eligibility.
-// 'flags' is a list of EligFlags relvant to the eligibility assessment.
+// 'flags' is a list of FlagCodes relvant to the eligibility assessment.
 function Program() {
   this.conditions = [];
   this.flags = [];
@@ -1461,7 +1456,7 @@ function calfreshResult(input) {
   if (meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
-    program.addFlag(FlagCodes.TOO_COMPLEX_IMMIGRATION);
+    program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
 }
@@ -1568,18 +1563,22 @@ function calworksResult(input) {
   if (meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
-    program.addFlag(FlagCodes.TOO_COMPLEX_IMMIGRATION);
+    program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
 }
 
 function capiResult(input) {
   // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
-  const eligibleImmigStatus = immigrationEligible(input, 'TESTONLY');
-  // TODO: Can we _ever_ recommend CAPI eligibility given complex immigration rules?
+  // Note that we basically default to an eligible determination for all
+  // immigrants that are not explicitly temporarily living in the country.
+  const eligibleImmigStatus = immigrationEligible(input, [
+    'permanent_resident',
+    'long_term',
+    'none_describe'], 'live_temporarily');
   const meetsImmigrationReq = and(
     input.notCitizen,
-    // TODO: Handle certain qualified aliens per Section 6.4 of
+    // TODO: (?) Handle certain qualified aliens per Section 6.4 of
     // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
     eligibleImmigStatus);
 
@@ -1587,10 +1586,11 @@ function capiResult(input) {
   program.addCondition(new EligCondition(
     'Meets expanded immigration status <a href="https://ca.db101.org/ca/programs/income_support/capi/program2b.htm" target="_blank" rel="noopener">requirements</a>',
     meetsImmigrationReq));
-  if (meetsImmigrationReq === null &&
-      input.immigrationStatus &&
-      eligibleImmigStatus === null) {
-    program.addFlag(FlagCodes.TOO_COMPLEX_IMMIGRATION);
+  // For this program in particular, we show the complex immigration flag
+  // even if we suggest eligibility, since applicants must be immigrants
+  // in the first place to even be eligible.
+  if (meetsImmigrationReq) {
+    program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
 }
@@ -1766,7 +1766,7 @@ function gaResult(input) {
   if (meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
-    program.addFlag(FlagCodes.TOO_COMPLEX_IMMIGRATION);
+    program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
 }
@@ -1957,7 +1957,7 @@ function housingChoiceResult(input) {
   if (meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
-    program.addFlag(FlagCodes.TOO_COMPLEX_IMMIGRATION);
+    program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
 }
@@ -2040,7 +2040,7 @@ function ssiResult(input) {
   if (meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
-    program.addFlag(FlagCodes.TOO_COMPLEX_IMMIGRATION);
+    program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
 }

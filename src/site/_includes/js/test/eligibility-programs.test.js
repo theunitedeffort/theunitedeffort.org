@@ -301,7 +301,7 @@ describe('Program eligibility', () => {
   function capiMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
     modified.notCitizen = true;
-    modified.immigrationStatus = 'TESTONLY';
+    modified.immigrationStatus = 'long_term';
     modified.age = 99;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
@@ -373,13 +373,13 @@ describe('Program eligibility', () => {
   }
 
   function testImmigration(setupFn, resultFn, testCases) {
-    testCases = testCases || [
+    const cases = testCases || [
       {immStatus: 'permanent_resident', expectedElig: true, flagExpected: false},
       {immStatus: 'long_term', expectedElig: null, flagExpected: true},
       {immStatus: 'live_temporarily', expectedElig: false, flagExpected: false},
       {immStatus: 'none_describe', expectedElig: null, flagExpected: true},
     ]
-    describe.each(testCases)('Immigration status "$immStatus"', ({immStatus, expectedElig, flagExpected}) => {
+    describe.each(cases)('Immigration status "$immStatus"', ({immStatus, expectedElig, flagExpected}) => {
       beforeEach(() => {
         setupFn();
       })
@@ -396,14 +396,14 @@ describe('Program eligibility', () => {
         if (!flagExpected) {
           expectResult = expectResult.not;
         }
-        expectResult.toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
+        expectResult.toContain(elig.FlagCodes.COMPLEX_IMMIGRATION);
       });
 
       test('Complex immigration flag not present for citizens', () => {
         input.notCitizen = false;
         input.immigrationStatus = immStatus;
         expect(resultFn(input).flags)
-          .not.toContain(elig.FlagCodes.TOO_COMPLEX_IMMIGRATION);
+          .not.toContain(elig.FlagCodes.COMPLEX_IMMIGRATION);
       });
     });
   }
@@ -786,13 +786,20 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.disabled = true;
       input.notCitizen = true;
-      check(elig.capiResult, input)
-        .isEligibleIf('immigrationStatus').is('TESTONLY');
-
-      input.immigrationStatus = 'TESTONLY';
+      input.immigrationStatus = 'long_term';
       check(elig.capiResult, input)
         .isNotEligibleIf('notCitizen').is(false);
     });
+
+    testImmigration(() => {
+        input.income.valid = true;
+        input.disabled = true;
+      }, elig.capiResult, [
+        {immStatus: 'permanent_resident', expectedElig: true, flagExpected: true},
+        {immStatus: 'long_term', expectedElig: true, flagExpected: true},
+        {immStatus: 'live_temporarily', expectedElig: false, flagExpected: false},
+        {immStatus: 'none_describe', expectedElig: true, flagExpected: true},
+      ]);
   });
 
   describe('CARE Program', () => {
@@ -1217,7 +1224,7 @@ describe('Program eligibility', () => {
   // immigration, so re-use the test code for each program.
   describe.each([
     [elig.ssiResult, false, null],
-    [elig.capiResult, true, 'TESTONLY']
+    [elig.capiResult, true, 'long_term']
   ])('SSI and CAPI Programs (%p)', (resultFn,
       defaultNotCitizen, defaultImmigrationStatus) => {
     beforeEach(() => {
