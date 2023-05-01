@@ -370,6 +370,7 @@ module.exports = function(eleventyConfig) {
     return `
       <li id="program-${id}" data-eligibility="${toCamelCase(id)}Result">
         <h4>${title}</h4>
+        <ul class="elig_flags"></ul>
         <p>${content}</p>
         ${links.join("")}
         <h5>Eligibility Requirements</h5>
