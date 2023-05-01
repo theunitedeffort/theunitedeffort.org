@@ -405,6 +405,15 @@ describe('Program eligibility', () => {
         expect(resultFn(input).flags)
           .not.toContain(elig.FlagCodes.COMPLEX_IMMIGRATION);
       });
+
+      test('Complex immigration flag not present for an ineligible result', () => {
+        input.notCitizen = true;
+        input.immigrationStatus = immStatus;
+        input.income.wages = [[1e6]];
+        expect(resultFn(input).eligible).toBe(false);
+        expect(resultFn(input).flags)
+          .not.toContain(elig.FlagCodes.COMPLEX_IMMIGRATION);
+      });
     });
   }
 

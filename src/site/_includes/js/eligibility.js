@@ -1453,7 +1453,8 @@ function calfreshResult(input) {
     new EligCondition('Receives or is eligible for CalWORKS or GA',
       isCategoricallyEligible),
   ]);
-  if (meetsImmigrationReq === null &&
+  if (program.evaluate() !== false &&
+      meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
@@ -1560,8 +1561,8 @@ function calworksResult(input) {
     new EligCondition(
       `Total value of assets is below ${usdLimit(resourceLimit)}`,
       underResourceLimit));
-  // TODO: Only show the flag if the result is true or null.
-  if (meetsImmigrationReq === null &&
+  if (program.evaluate() !== false &&
+      meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
@@ -1590,7 +1591,8 @@ function capiResult(input) {
   // For this program in particular, we show the complex immigration flag
   // even if we suggest eligibility, since applicants must be immigrants
   // in the first place to even be eligible.
-  if (meetsImmigrationReq) {
+  if (program.evaluate() !== false &&
+      meetsImmigrationReq) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
@@ -1764,7 +1766,8 @@ function gaResult(input) {
     new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
   program.addCondition(
     new EligCondition('U.S. citizen or qualified immigrant', meetsImmigrationReq));
-  if (meetsImmigrationReq === null &&
+  if (program.evaluate() !== false &&
+      meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
@@ -1955,7 +1958,8 @@ function housingChoiceResult(input) {
     new EligCondition(
       `Gross income is below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit));
-  if (meetsImmigrationReq === null &&
+  if (program.evaluate() !== false &&
+      meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
@@ -2038,7 +2042,8 @@ function ssiResult(input) {
   program.addCondition(new EligCondition(
     'U.S. citizen or qualified immigrant',
     meetsImmigrationReq));
-  if (meetsImmigrationReq === null &&
+  if (program.evaluate() !== false &&
+      meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
