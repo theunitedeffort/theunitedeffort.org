@@ -2428,13 +2428,8 @@ function computeEligibility() {
       let flagMsg = '';
       switch (flag) {
         case FlagCodes.COMPLEX_IMMIGRATION:
-          // TODO: make suggestion to apply more direct and clear
-          // TODO: adjust the wording so it's less of a blame on the user.  e.g.
-          //   This tool is not able to determine if you are a qualified immigrant for this program
-          //   The United Effort Organization is not able...
-          //   The eligibility rules for immigrants are too complex for this tool to make a recommendation
-          //   The immigrant eligibility rules are complex.  Consider applying for this program.
-          flagMsg = 'The immigrant eligibility rules for this program are complex.  Consider applying or contacting the program provider.';
+          flagMsg = 'The immigrant eligibility rules for this program are ' +
+            'complex.  Consider applying or contacting the program provider.';
           break;
       }
       if (flagMsg) {
