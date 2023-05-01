@@ -1560,6 +1560,7 @@ function calworksResult(input) {
     new EligCondition(
       `Total value of assets is below ${usdLimit(resourceLimit)}`,
       underResourceLimit));
+  // TODO: Only show the flag if the result is true or null.
   if (meetsImmigrationReq === null &&
       input.immigrationStatus &&
       eligibleImmigStatus === null) {
@@ -2380,26 +2381,30 @@ function computeEligibility() {
   const eligibleList = document.querySelector('.programs__eligible > ul');
   const ineligibleList = document.querySelector('.programs__ineligible > ul');
   const unknownList = document.querySelector('.programs__unknown > ul');
-  for (program of allPrograms) {
+  for (const program of allPrograms) {
     const result = window[program.dataset.eligibility](input);
     const conditionList = program.querySelector('.elig_conditions');
-    // Reset the program's displayed conditions.
+    const flagList = program.querySelector('.elig_flags');
+    // Reset the program's displayed conditions and flags.
     while (conditionList.firstChild) {
       conditionList.removeChild(conditionList.firstChild);
     }
+    while (flagList.firstChild) {
+      flagList.removeChild(flagList.firstChild);
+    }
     // Render each program's conditions.
-    for (condition of result.conditions) {
+    for (const condition of result.conditions) {
       const listItem = document.createElement('li');
       if (condition instanceof Array) {
         // For nested lists of conditions, first create a
         // HTML list item to act as a heading for the grouping.
         const combinedMet = or(...condition.map(c => c.met));
-        listItem.textContent = "One of:";
+        listItem.textContent = 'One of:';
         addConditionIcon(listItem, combinedMet);
         conditionList.appendChild(listItem);
         // Then, create a list to sit under that heading.
         const subList = document.createElement('ul');
-        for (conditionPart of condition) {
+        for (const conditionPart of condition) {
           const subListItem = document.createElement('li');
           subListItem.innerHTML = conditionPart.desc;
           // If the combined group is met, we only notate the components
@@ -2416,6 +2421,22 @@ function computeEligibility() {
         listItem.innerHTML = condition.desc;
         addConditionIcon(listItem, condition.met);
         conditionList.appendChild(listItem);
+      }
+    }
+    // Render each program's flags.
+    for (const flag of result.flags) {
+      let flagMsg = '';
+      switch (flag) {
+        case FlagCodes.COMPLEX_IMMIGRATION:
+          flagMsg = 'The immigrant eligibility rules for this program are ' +
+            'complex.  Consider applying or contacting the program provider.';
+          break;
+      }
+      if (flagMsg) {
+        const flagItem = document.createElement('li');
+        flagItem.classList.add('note');
+        flagItem.textContent = flagMsg;
+        flagList.appendChild(flagItem);
       }
     }
     if (result.eligible === null) {
