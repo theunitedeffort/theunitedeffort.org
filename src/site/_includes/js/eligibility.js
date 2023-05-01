@@ -1298,6 +1298,7 @@ const FlagCodes = {
   NEAR_INCOME_LIMIT: 1,
   TOO_COMPLEX: 2,
   COMPLEX_IMMIGRATION: 3,
+  MORE_INFO_NEEDED: 4,
 };
 
 // A single eligibility condition that can be displayed to the user.  Note
@@ -1397,6 +1398,9 @@ function adsaResult(input) {
   program.addCondition(
     new EligCondition('Receives or is eligible for SSI, SSDI, IHSS, or CAPI',
       isProgramQualified));
+  if (program.evaluate() == null) {
+    program.addFlag(FlagCodes.MORE_INFO_NEEDED);
+  }
   return program.getResult();
 }
 
@@ -1453,11 +1457,19 @@ function calfreshResult(input) {
     new EligCondition('Receives or is eligible for CalWORKS or GA',
       isCategoricallyEligible),
   ]);
-  if (program.evaluate() !== false &&
-      meetsImmigrationReq === null &&
-      input.immigrationStatus &&
-      eligibleImmigStatus === null) {
-    program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
+
+  if (program.evaluate() !== false) {
+    if (underIncomeLimit == null &&
+        isCategoricallyEligible == null ||
+        (meetsImmigrationReq === null &&
+         !input.immigrationStatus)) {
+      program.addFlag(FlagCodes.MORE_INFO_NEEDED);
+    }
+    else if (meetsImmigrationReq === null &&
+        input.immigrationStatus &&
+        eligibleImmigStatus === null) {
+      program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
+    }
   }
   return program.getResult();
 }
@@ -2432,10 +2444,13 @@ function computeEligibility() {
     for (const flag of result.flags) {
       let flagMsg = '';
       switch (flag) {
-        case FlagCodes.COMPLEX_IMMIGRATION:
-          flagMsg = 'The immigrant eligibility rules for this program are ' +
-            'complex.  Consider applying or contacting the program provider.';
-          break;
+      case FlagCodes.MORE_INFO_NEEDED:
+        flagMsg = 'We need more information from you to make an eligibility recommendation.  You can revisit any form section to provide additional information.';
+        break;
+      case FlagCodes.COMPLEX_IMMIGRATION:
+        flagMsg = 'The immigrant eligibility rules for this program are ' +
+          'complex.  Consider applying or contacting the program provider.';
+        break;
       }
       if (flagMsg) {
         const flagItem = document.createElement('li');
