@@ -498,6 +498,7 @@ describe('Program eligibility', () => {
     };
   });
 
+  // TODO: add tests for MORE_INFO_NEEDED flag for all programs.
   describe('ADSA Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.adsaResult(input).eligible).toBe(false);
