@@ -80,18 +80,9 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
 
     {% eligPage "head-of-household" %}
-      <p>Are you the head of your household?</p>
       <div>
-        <ul id="yourself-head-household" class="yes-no">
-          <li>
-            <input type="radio" id="headhh_yes" name="head_household" />
-            <label for="headhh_yes">Yes</label>
-          </li>
-          <li>
-            <input type="radio" id="headhh_no" name="head_household" />
-            <label for="headhh_no">No</label>
-          </li>
-        </ul>
+        <p>Are you the head of your household?</p>
+        {% yesNo "head-household" %}
       </div>
     {% endeligPage %}
 
@@ -100,28 +91,10 @@ pageClass: "page-public-assistance"
 
       <div>
         <p>Do you use a guide, signal or service dog?</p>
-        <ul id="use-guide" class="yes-no">
-          <LI>
-            <input type="radio" id="dis_guide_yes" name="disability_details2" />
-            <label for="dis_guide_yes">Yes</label>
-          </LI>
-          <li>
-            <input type="radio" id="dis_guide_no" name="disability_details2" />
-            <label for="dis_guide_no">No</label>
-          </li>
-        </ul>
+        {% yesNo "use-guide-dog" %}
         <div id="military-disability-wrapper" class="hidden">
           <p>Is your disability related to your military service?</p>
-          <ul id="military-related" class="yes-no">
-            <li>
-              <input type="radio" id="dis_military_yes" name="disability_details3" />
-              <label for="dis_military_yes">Yes</label>
-            </li>
-            <li>
-              <input type="radio" id="dis_military_no" name="disability_details3"/>
-              <label for="dis_military_no">No</label>
-            </li>
-          </ul>
+          {% yesNo "dis-military" %}
         </div>
       </div>
     {% endeligPage %}
