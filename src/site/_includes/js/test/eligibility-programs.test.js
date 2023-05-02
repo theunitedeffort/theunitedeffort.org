@@ -375,9 +375,9 @@ describe('Program eligibility', () => {
   function testImmigration(setupFn, resultFn, testCases) {
     const cases = testCases || [
       {immStatus: 'permanent_resident', expectedElig: true, flagExpected: false},
-      {immStatus: 'long_term', expectedElig: null, flagExpected: true},
+      {immStatus: 'long_term', expectedElig: true, flagExpected: true},
       {immStatus: 'live_temporarily', expectedElig: false, flagExpected: false},
-      {immStatus: 'none_describe', expectedElig: null, flagExpected: true},
+      {immStatus: 'none_describe', expectedElig: true, flagExpected: true},
     ]
     describe.each(cases)('Immigration status "$immStatus"', ({immStatus, expectedElig, flagExpected}) => {
       beforeEach(() => {
@@ -411,6 +411,15 @@ describe('Program eligibility', () => {
         input.immigrationStatus = immStatus;
         input.income.wages = [[1e6]];
         expect(resultFn(input).eligible).toBe(false);
+        expect(resultFn(input).flags)
+          .not.toContain(elig.FlagCodes.COMPLEX_IMMIGRATION);
+      });
+
+      test('Complex immigration flag not present for an unknown result', () => {
+        input.notCitizen = true;
+        input.immigrationStatus = immStatus;
+        input.income.valid = false;
+        expect(resultFn(input).eligible).toBe(expectedElig ? null : false);
         expect(resultFn(input).flags)
           .not.toContain(elig.FlagCodes.COMPLEX_IMMIGRATION);
       });
