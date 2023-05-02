@@ -1302,7 +1302,7 @@ class MonthlyIncomeLimit {
 // Flags that can be associated with a Program to alter the display
 // of that Program's eligibility result to the user.
 const FlagCodes = {
-  UNKNOWN: 0,
+  NONE: 0,
   NEAR_INCOME_LIMIT: 1,
   TOO_COMPLEX: 2,
   COMPLEX_IMMIGRATION: 3,
@@ -1318,9 +1318,10 @@ const FlagCodes = {
 //   const condition = new EligCondition(
 //     "Disabled, blind, or 65+ years old",
 //     or(isDisabled, isBlind, ge(age, 65)));
-function EligCondition(desc, met) {
+function EligCondition(desc, met, hasNullReason=false) {
   this.desc = desc;
   this.met = met;
+  this.hasNullReason = hasNullReason;
 }
 
 // A program to be checked for eligibility.
@@ -1359,6 +1360,13 @@ function Program() {
       }
     }
     return and(...values);
+  }
+
+  this.hasMissingData = function() {
+    // If the program still returns null after removing the EligConditions
+    // that are known to be null for some other reason, then we conclude
+    // the program conditions must have data missing.
+
   }
 
   // Returns a result object containing the eligibility determination,
@@ -1430,7 +1438,7 @@ function calfreshResult(input) {
     calworksResult(input).eligible,
     gaResult(input).eligible);
 
-  // Note: Nearly all users will be considered "modified cagegorically
+  // Note: Nearly all users will be considered "modified categorically
   // eligible", meaning the MCE income limit factor is used and resources
   // are not checked.
   // TODO: Handle edge cases where the user is not MCE.
@@ -1449,9 +1457,21 @@ function calfreshResult(input) {
   const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
 
   const program = new Program();
+  // if there is missing info, always show MORE_INFO_NEEDED only.
+  // how to determine if there is missing info?
+  //  - the result will be null
+  //  - when conditions marked as null for some other reason are omitted,
+  //    the result is still null
+  // TODO: add a nullReason parameter to addCondition to mark if a condition
+  // is null for some reason other than missing info.
+  const complexImmigration = (
+    meetsImmigrationReq === null &&
+    input.immigrationStatus &&
+    eligibleImmigStatus === null);
+
   program.addCondition(
     new EligCondition('U.S. citizen or qualified immigrant',
-      meetsImmigrationReq));
+      meetsImmigrationReq, complexImmigration));
   program.addConditionsOneOf([
     new EligCondition(
       `Adjusted income is below ${usdLimit(mceIncomeLimit)} per month`,
@@ -1889,7 +1909,7 @@ function liheapResult(input) {
   const meetsHousedReq = isOneOf(input.housingSituation, [
     'housed',
     'unlisted-stable-place']);
-									
+
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
