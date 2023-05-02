@@ -1238,17 +1238,25 @@ function totalResources(input, hhMemberIdx=null) {
   return categoryTotal(input.assets, hhMemberIdx);
 }
 
-// Returns true, false, or null depending on the selected immigration status.
-// If the immigration status is in 'allowedList', the immigration status is
-// deemed eligible.  If the status is in the 'disallowedList', it is deemed
-// not eligible.  Any other selection results in unknown eligibility (null).
-function immigrationEligible(input, allowedList, disallowedList) {
-  if (allowedList && isOneOf(input.immigrationStatus, allowedList)) {
-    return true;
-  } else if (disallowedList && isOneOf(input.immigrationStatus, disallowedList)) {
-    return false;
-  }
-  return null;
+// Returns true if the immigration status is valid for assistance, false
+// if not, and null if unknown.
+// This is purposefully broad so as to not screen out immigrants with
+// potentially nuanced immigration statuses.
+function validImmigration(input) {
+  return isOneOf(input.immigrationStatus, [
+    'permanent_resident',
+    'long_term',
+    'none_describe',
+  ]);
+}
+
+// Returns true if the immigration status is considered complex enough for a
+// Program flag.
+function complexImmigration(input,
+    complexOptions=['long_term', 'none_describe']) {
+  return (
+    input.notCitizen &&
+    complexOptions.includes(input.immigrationStatus));
 }
 
 class MonthlyIncomeLimit {
@@ -1407,11 +1415,9 @@ function calfreshResult(input) {
     cnst.calfresh.FED_POVERTY_LEVEL,
     cnst.calfresh.FED_POVERTY_LEVEL_ADDL_PERSON);
 
-  const eligibleImmigStatus = immigrationEligible(
-    input, 'permanent_resident', 'live_temporarily');
   const meetsImmigrationReq = or(
     not(input.notCitizen),
-    eligibleImmigStatus);
+    validImmigration(input));
 
   // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
   // TODO: Determine if _every_ household member is eligible for Calworks
@@ -1453,10 +1459,8 @@ function calfreshResult(input) {
     new EligCondition('Receives or is eligible for CalWORKS or GA',
       isCategoricallyEligible),
   ]);
-  if (program.evaluate() !== false &&
-      meetsImmigrationReq === null &&
-      input.immigrationStatus &&
-      eligibleImmigStatus === null) {
+
+  if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
@@ -1508,11 +1512,9 @@ function calworksResult(input) {
     cnst.calworks.MBSAC,
     cnst.calworks.MBSAC_ADDL_PERSON);
 
-  const eligibleImmigStatus = immigrationEligible(
-    input, 'permanent_resident', 'live_temporarily');
   const meetsImmigrationReq = or(
     not(input.notCitizen),
-    eligibleImmigStatus);
+    validImmigration(input));
 
   const meetsFamilyReq = or(
     ...input.householdAges.map(a => le(a, cnst.calworks.MAX_CHILD_AGE)),
@@ -1561,10 +1563,7 @@ function calworksResult(input) {
     new EligCondition(
       `Total value of assets is below ${usdLimit(resourceLimit)}`,
       underResourceLimit));
-  if (program.evaluate() !== false &&
-      meetsImmigrationReq === null &&
-      input.immigrationStatus &&
-      eligibleImmigStatus === null) {
+  if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
@@ -1574,15 +1573,11 @@ function capiResult(input) {
   // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
   // Note that we basically default to an eligible determination for all
   // immigrants that are not explicitly temporarily living in the country.
-  const eligibleImmigStatus = immigrationEligible(input, [
-    'permanent_resident',
-    'long_term',
-    'none_describe'], 'live_temporarily');
   const meetsImmigrationReq = and(
     input.notCitizen,
     // TODO: (?) Handle certain qualified aliens per Section 6.4 of
     // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
-    eligibleImmigStatus);
+    validImmigration(input));
 
   const program = ssiCapiBaseProgram(input);
   program.addCondition(new EligCondition(
@@ -1591,8 +1586,11 @@ function capiResult(input) {
   // For this program in particular, we show the complex immigration flag
   // even if we suggest eligibility, since applicants must be immigrants
   // in the first place to even be eligible.
-  if (program.evaluate() !== false &&
-      meetsImmigrationReq) {
+  if (program.evaluate() &&
+      complexImmigration(input, [
+        'permanent_resident',
+        'long_term',
+        'none_describe'])) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
@@ -1749,11 +1747,9 @@ function gaResult(input) {
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
-  const eligibleImmigStatus = immigrationEligible(
-    input, 'permanent_resident', 'live_temporarily');
   const meetsImmigrationReq = or(
     not(input.notCitizen),
-    eligibleImmigStatus);
+    validImmigration(input));
 
   const program = new Program();
   program.addCondition(
@@ -1766,10 +1762,7 @@ function gaResult(input) {
     new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
   program.addCondition(
     new EligCondition('U.S. citizen or qualified immigrant', meetsImmigrationReq));
-  if (program.evaluate() !== false &&
-      meetsImmigrationReq === null &&
-      input.immigrationStatus &&
-      eligibleImmigStatus === null) {
+  if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
@@ -1939,11 +1932,9 @@ function housingChoiceResult(input) {
   // TODO: Collect data about whether _anyone_ in the household is
   // a citizen or qualified nonresident.
   // https://www.ecfr.gov/current/title-24/subtitle-A/part-5/subpart-E/section-5.516#p-5.516(b)
-  const eligibleImmigStatus = immigrationEligible(
-    input, 'permanent_resident', 'live_temporarily');
   const meetsImmigrationReq = or(
     not(input.notCitizen),
-    eligibleImmigStatus);
+    validImmigration(input));
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
   const meetsAgeReq = ge(input.age, cnst.housingChoice.MIN_ELIGIBLE_AGE);
@@ -1958,10 +1949,7 @@ function housingChoiceResult(input) {
     new EligCondition(
       `Gross income is below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit));
-  if (program.evaluate() !== false &&
-      meetsImmigrationReq === null &&
-      input.immigrationStatus &&
-      eligibleImmigStatus === null) {
+  if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
@@ -2032,20 +2020,15 @@ function ssiCapiBaseProgram(input) {
 }
 
 function ssiResult(input) {
-  const eligibleImmigStatus = immigrationEligible(
-    input, 'permanent_resident', 'live_temporarily');
   const meetsImmigrationReq = or(
     not(input.notCitizen),
-    eligibleImmigStatus);
+    validImmigration(input));
 
   const program = ssiCapiBaseProgram(input);
   program.addCondition(new EligCondition(
     'U.S. citizen or qualified immigrant',
     meetsImmigrationReq));
-  if (program.evaluate() !== false &&
-      meetsImmigrationReq === null &&
-      input.immigrationStatus &&
-      eligibleImmigStatus === null) {
+  if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
   return program.getResult();
@@ -2434,7 +2417,7 @@ function computeEligibility() {
       switch (flag) {
         case FlagCodes.COMPLEX_IMMIGRATION:
           flagMsg = 'The immigrant eligibility rules for this program are ' +
-            'complex.  Consider applying or contacting the program provider.';
+            'complex, and not all immigrants are eligible.';
           break;
       }
       if (flagMsg) {
