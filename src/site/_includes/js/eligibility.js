@@ -980,6 +980,8 @@ function initUi() {
   buildStepIndicator();
   // All pages and sections are initially hidden by default.
   showFirstPage();
+  // Reset the auto-scroll that occurs after showFirstPage().
+  window.scrollTo(0, 0);
   const fieldListAddButtons = document.querySelectorAll(
     'button.field_list_add');
   for (const button of fieldListAddButtons) {
