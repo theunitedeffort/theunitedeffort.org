@@ -1261,7 +1261,7 @@ function complexImmigration(input,
     complexOptions.includes(input.immigrationStatus));
 }
 
-class MonthlyIncomeLimit {
+class MonthlyIncomeLimits {
   // If 'addlPersonExtra' is a number, that much will be added to the
   // last limit in 'limits' for each person over the last limit.  If it is
   // a function, the function should take a single parameter--the number of
@@ -1279,7 +1279,7 @@ class MonthlyIncomeLimit {
     } else {
       extra = addlPersonExtra / 12;
     }
-    return new MonthlyIncomeLimit(
+    return new MonthlyIncomeLimits(
       limits.map(l => l / 12), extra);
   }
 
@@ -1418,7 +1418,7 @@ function adsaResult(input) {
 function calfreshResult(input) {
   // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
   // Section 2.1
-  const fedPovertyLevel = new MonthlyIncomeLimit(
+  const fedPovertyLevel = new MonthlyIncomeLimits(
     cnst.calfresh.FED_POVERTY_LEVEL,
     cnst.calfresh.FED_POVERTY_LEVEL_ADDL_PERSON);
 
@@ -1515,7 +1515,7 @@ function calworksAdjustedIncome(input) {
 }
 
 function calworksResult(input) {
-  const mbsac = new MonthlyIncomeLimit(
+  const mbsac = new MonthlyIncomeLimits(
     cnst.calworks.MBSAC,
     cnst.calworks.MBSAC_ADDL_PERSON);
 
@@ -1604,7 +1604,7 @@ function capiResult(input) {
 }
 
 function careIncomeLimit() {
-  const grossLimit = MonthlyIncomeLimit.fromAnnual(
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
     cnst.care.ANNUAL_INCOME_LIMITS,
     cnst.care.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
 
@@ -1664,7 +1664,7 @@ function careResult(input) {
 }
 
 function feraResult(input) {
-  const grossLimit = MonthlyIncomeLimit.fromAnnual(
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
     cnst.fera.ANNUAL_INCOME_LIMITS,
     cnst.fera.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
 
@@ -1741,7 +1741,7 @@ function vaDisabilityResult(input) {
 //   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf (Section 5.1)
 //     Maximum age can be over 64 years with some conditions. May or may not need to implement this.
 function gaResult(input) {
-  const grossLimit = new MonthlyIncomeLimit(
+  const grossLimit = new MonthlyIncomeLimits(
     cnst.ga.MONTHLY_INCOME_LIMITS,
     cnst.ga.MONTHLY_INCOME_LIMIT_ADDL_PERSON);
 
@@ -1844,7 +1844,7 @@ function ihssResult(input) {
 }
 
 function lifelineResult(input) {
-  const grossLimit = MonthlyIncomeLimit.fromAnnual(
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
     cnst.lifeline.ANNUAL_INCOME_LIMITS,
     cnst.lifeline.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
 
@@ -1889,7 +1889,7 @@ function lifelineResult(input) {
 }
 
 function liheapResult(input) {
-  const grossLimit = new MonthlyIncomeLimit(
+  const grossLimit = new MonthlyIncomeLimits(
     cnst.liheap.MONTHLY_INCOME_LIMITS,
     cnst.liheap.MONTHLY_INCOME_LIMIT_ADDL_PERSON);
 
@@ -1932,7 +1932,7 @@ function housingChoiceResult(input) {
     return rounded - limits[limits.length - 1];
   }
 
-  const grossLimit = MonthlyIncomeLimit.fromAnnual(
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
     cnst.housingChoice.ANNUAL_INCOME_LIMITS,
     extraCalc);
 
@@ -2105,7 +2105,7 @@ function vaPensionHouseholdSize(input) {
 }
 
 function vaPensionResult(input) {
-  const mapr = MonthlyIncomeLimit.fromAnnual(
+  const mapr = MonthlyIncomeLimits.fromAnnual(
     cnst.vaPension.ANNUAL_INCOME_LIMITS,
     cnst.vaPension.ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT);
 
@@ -2181,7 +2181,7 @@ function vaPensionResult(input) {
 }
 
 function wicResult(input) {
-  const grossLimit = new MonthlyIncomeLimit(
+  const grossLimit = new MonthlyIncomeLimits(
     cnst.wic.MONTHLY_INCOME_LIMITS,
     cnst.wic.MONTHLY_INCOME_LIMIT_ADDL_PERSON);
 
@@ -2529,7 +2529,7 @@ if (typeof module !== 'undefined' && module.exports) {
     totalUnearnedIncome,
     grossIncome,
     totalResources,
-    MonthlyIncomeLimit,
+    MonthlyIncomeLimits,
     adsaResult,
     calfreshResult,
     calworksAdjustedIncome,

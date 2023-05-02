@@ -219,7 +219,7 @@ describe('Helper incomeSafeVal', () => {
 });
 
 
-describe('MonthlyIncomeLimit', () => {
+describe('MonthlyIncomeLimits', () => {
   let monthlyValues;
   let annualValues;
   beforeEach(() => {
@@ -236,40 +236,40 @@ describe('MonthlyIncomeLimit', () => {
   });
 
   test('Computes limit from static list', () => {
-    const limits = new elig.MonthlyIncomeLimit(monthlyValues, 1);
+    const limits = new elig.MonthlyIncomeLimits(monthlyValues, 1);
     expect(limits.getLimit(1)).toBe(100);
     expect(limits.getLimit(2)).toBe(200);
     expect(limits.getLimit(3)).toBe(300);
   });
 
   test('Computes limit outside provided household size range', () => {
-    const limits = new elig.MonthlyIncomeLimit(monthlyValues, 1);
+    const limits = new elig.MonthlyIncomeLimits(monthlyValues, 1);
     expect(limits.getLimit(4)).toBe(301);
     expect(limits.getLimit(6)).toBe(303);
   });
 
   test('Computes limit outside household size range with custom function', () => {
-    const limits = new elig.MonthlyIncomeLimit(monthlyValues,
+    const limits = new elig.MonthlyIncomeLimits(monthlyValues,
       (numExtraPeople) => 10 + numExtraPeople);
     expect(limits.getLimit(4)).toBe(311);
     expect(limits.getLimit(6)).toBe(313);
   });
 
   test('Computes monthly limit from provided annual limits', () => {
-    const limits = elig.MonthlyIncomeLimit.fromAnnual(annualValues, 12);
+    const limits = elig.MonthlyIncomeLimits.fromAnnual(annualValues, 12);
     expect(limits.getLimit(1)).toBe(1000);
     expect(limits.getLimit(2)).toBe(2000);
     expect(limits.getLimit(3)).toBe(3000);
   });
 
   test('Computes monthly limit from annual limits outside provided household size range', () => {
-    const limits = elig.MonthlyIncomeLimit.fromAnnual(annualValues, 12);
+    const limits = elig.MonthlyIncomeLimits.fromAnnual(annualValues, 12);
     expect(limits.getLimit(4)).toBe(3001);
     expect(limits.getLimit(6)).toBe(3003);
   });
 
   test('Computes monthly limit from annual limits outside provided household size range with custom fuction', () => {
-    const limits = elig.MonthlyIncomeLimit.fromAnnual(annualValues,
+    const limits = elig.MonthlyIncomeLimits.fromAnnual(annualValues,
       (numExtraPeople) => 12 * 2 * numExtraPeople);
     expect(limits.getLimit(4)).toBe(3002);
     expect(limits.getLimit(6)).toBe(3006);
