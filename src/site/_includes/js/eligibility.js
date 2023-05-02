@@ -1306,6 +1306,7 @@ const FlagCodes = {
   NEAR_INCOME_LIMIT: 1,
   TOO_COMPLEX: 2,
   COMPLEX_IMMIGRATION: 3,
+  MORE_INFO_NEEDED: 4,
 };
 
 // A single eligibility condition that can be displayed to the user.  Note
@@ -1365,8 +1366,12 @@ function Program() {
   // the list of conditions used to make that determination, and
   // any relevant flags.
   this.getResult = function() {
+    const evaluation = this.evaluate();
+    if (evaluation == null) {
+      this.addFlag(FlagCodes.MORE_INFO_NEEDED);
+    }
     return {
-      'eligible': this.evaluate(),
+      'eligible': evaluation,
       'conditions': this.conditions,
       'flags': this.flags
     };
@@ -2415,17 +2420,27 @@ function computeEligibility() {
     for (const flag of result.flags) {
       let flagMsg = '';
       switch (flag) {
-        case FlagCodes.COMPLEX_IMMIGRATION:
-          flagMsg = 'The immigrant eligibility rules for this program are ' +
+      case FlagCodes.MORE_INFO_NEEDED:
+        flagMsg = 'We need more information from you to make an eligibility ' +
+        'recommendation. ' +
+        '<button type="button" class="link back_to_form" data-section-id="section-yourself">' +
+        'Go back to the form</button>';
+        break;
+      case FlagCodes.COMPLEX_IMMIGRATION:
+        flagMsg = 'The immigrant eligibility rules for this program are ' +
             'complex, and not all immigrants are eligible.';
-          break;
+        break;
       }
       if (flagMsg) {
         const flagItem = document.createElement('li');
         flagItem.classList.add('note');
-        flagItem.textContent = flagMsg;
+        flagItem.innerHTML = flagMsg;
         flagList.appendChild(flagItem);
       }
+    }
+    const revisitButtons = document.querySelectorAll('button.back_to_form');
+    for (const button of revisitButtons) {
+      button.addEventListener('click', toSection);
     }
     if (result.eligible === null) {
       unknownList.appendChild(program);
