@@ -2289,7 +2289,7 @@ function buildInputObj() {
     veteran: getValueOrNull('veteran'),
     pregnant: getValueOrNull('pregnant'),
     feeding: getValueOrNull('feeding'),
-    headOfHousehold: getValueOrNull('headhh_yes'),
+    headOfHousehold: getValueOrNull('head-household-yes'),
     // TODO: Perhaps make a list of household member objects.
     householdAges: getValuesOrNulls('hh-member-age'),
     householdDisabled: getValuesOrNulls('hh-member-disabled'),
@@ -2305,10 +2305,10 @@ function buildInputObj() {
     // defaulting to "no".
     paysUtilities: getValueOrNull('pay-utilities-yes'),
     hasKitchen: getValueOrNull('has-kitchen-yes'),
-    homelessRisk: getValueOrNull('risk_homeless_yes'),
+    homelessRisk: getValueOrNull('risk-homeless-yes'),
     immigrationStatus: getValueOrNull('immig_status'),
-    usesGuideDog: getValueOrNull('dis_guide_yes'),
-    militaryDisabled: getValueOrNull('dis_military_yes'),
+    usesGuideDog: getValueOrNull('use-guide-dog-yes'),
+    militaryDisabled: getValueOrNull('dis-military-yes'),
     dischargeStatus: getValueOrNull('your-discharge-status'),
     servedFullDuration: getValueOrNull('full-dur-yes'),
     dutyPeriods: [],
