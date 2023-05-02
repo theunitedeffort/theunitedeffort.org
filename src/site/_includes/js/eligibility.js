@@ -1257,7 +1257,7 @@ function validImmigration(input) {
 function complexImmigration(input,
     complexOptions=['long_term', 'none_describe']) {
   return (
-    input.notCitizen &&
+    !input.citizen &&
     complexOptions.includes(input.immigrationStatus));
 }
 
@@ -1423,7 +1423,7 @@ function calfreshResult(input) {
     cnst.calfresh.FED_POVERTY_LEVEL_ADDL_PERSON);
 
   const meetsImmigrationReq = or(
-    not(input.notCitizen),
+    input.citizen,
     validImmigration(input));
 
   // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
@@ -1520,7 +1520,7 @@ function calworksResult(input) {
     cnst.calworks.MBSAC_ADDL_PERSON);
 
   const meetsImmigrationReq = or(
-    not(input.notCitizen),
+    input.citizen,
     validImmigration(input));
 
   const meetsFamilyReq = or(
@@ -1581,7 +1581,7 @@ function capiResult(input) {
   // Note that we basically default to an eligible determination for all
   // immigrants that are not explicitly temporarily living in the country.
   const meetsImmigrationReq = and(
-    input.notCitizen,
+    not(input.citizen),
     // TODO: (?) Handle certain qualified aliens per Section 6.4 of
     // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
     validImmigration(input));
@@ -1755,7 +1755,7 @@ function gaResult(input) {
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
   const meetsImmigrationReq = or(
-    not(input.notCitizen),
+    input.citizen,
     validImmigration(input));
 
   const program = new Program();
@@ -1940,7 +1940,7 @@ function housingChoiceResult(input) {
   // a citizen or qualified nonresident.
   // https://www.ecfr.gov/current/title-24/subtitle-A/part-5/subpart-E/section-5.516#p-5.516(b)
   const meetsImmigrationReq = or(
-    not(input.notCitizen),
+    input.citizen,
     validImmigration(input));
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
@@ -2028,7 +2028,7 @@ function ssiCapiBaseProgram(input) {
 
 function ssiResult(input) {
   const meetsImmigrationReq = or(
-    not(input.notCitizen),
+    input.citizen,
     validImmigration(input));
 
   const program = ssiCapiBaseProgram(input);
@@ -2282,7 +2282,7 @@ function buildInputObj() {
 
   let inputData = {
     age: getValueOrNull('age'),
-    notCitizen: getValueOrNull('not-citizen'),
+    citizen: not(getValueOrNull('not-citizen')),
     disabled: getValueOrNull('disabled'),
     blind: getValueOrNull('blind'),
     deaf: getValueOrNull('deaf'),
