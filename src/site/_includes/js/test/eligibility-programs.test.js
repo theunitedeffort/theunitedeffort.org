@@ -300,7 +300,7 @@ describe('Program eligibility', () => {
 
   function capiMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
-    modified.notCitizen = true;
+    modified.citizen = false;
     modified.immigrationStatus = 'long_term';
     modified.age = 99;
     modified.income.valid = true;
@@ -384,13 +384,13 @@ describe('Program eligibility', () => {
         setupFn();
       })
       test(`Eligibility result is ${expectedElig}`, () => {
-        input.notCitizen = true;
+        input.citizen = false;
         input.immigrationStatus = immStatus;
         expect(resultFn(input).eligible).toBe(expectedElig);
       });
 
       test(`${flagExpected ? 'Has' : 'Does not have'} complex immigration flag`, () => {
-        input.notCitizen = true;
+        input.citizen = false;
         input.immigrationStatus = immStatus;
         let expectResult = expect(resultFn(input).flags);
         if (!flagExpected) {
@@ -400,14 +400,14 @@ describe('Program eligibility', () => {
       });
 
       test('Complex immigration flag not present for citizens', () => {
-        input.notCitizen = false;
+        input.citizen = true;
         input.immigrationStatus = immStatus;
         expect(resultFn(input).flags)
           .not.toContain(elig.FlagCodes.COMPLEX_IMMIGRATION);
       });
 
       test('Complex immigration flag not present for an ineligible result', () => {
-        input.notCitizen = true;
+        input.citizen = false;
         input.immigrationStatus = immStatus;
         input.income.wages = [[1e6]];
         expect(resultFn(input).eligible).toBe(false);
@@ -416,7 +416,7 @@ describe('Program eligibility', () => {
       });
 
       test('Complex immigration flag not present for an unknown result', () => {
-        input.notCitizen = true;
+        input.citizen = false;
         input.immigrationStatus = immStatus;
         input.income.valid = false;
         expect(resultFn(input).eligible).toBe(expectedElig ? null : false);
@@ -429,7 +429,7 @@ describe('Program eligibility', () => {
   beforeEach(() => {
     input = {
       age: null,
-      notCitizen: false,
+      citizen: true,
       disabled: false,
       blind: false,
       deaf: false,
@@ -550,9 +550,9 @@ describe('Program eligibility', () => {
 
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
-      input.notCitizen = true;
+      input.citizen = false;
       check(elig.calfreshResult, input)
-        .isEligibleIf('notCitizen').is(false);
+        .isEligibleIf('citizen').is(true);
     });
 
     test('Eligible categorically when receiving CalWORKS or GA', () => {
@@ -706,9 +706,9 @@ describe('Program eligibility', () => {
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.pregnant = true;
-      input.notCitizen = true;
+      input.citizen = false;
       check(elig.calworksResult, input)
-        .isEligibleIf('notCitizen').is(false);
+        .isEligibleIf('citizen').is(true);
     });
 
     testImmigration(() => {
@@ -804,10 +804,10 @@ describe('Program eligibility', () => {
     test('Requires valid immigration status', () => {
       input.income.valid = true;
       input.disabled = true;
-      input.notCitizen = true;
+      input.citizen = false;
       input.immigrationStatus = 'long_term';
       check(elig.capiResult, input)
-        .isNotEligibleIf('notCitizen').is(false);
+        .isNotEligibleIf('citizen').is(true);
     });
 
     testImmigration(() => {
@@ -988,9 +988,9 @@ describe('Program eligibility', () => {
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
-      input.notCitizen = true;
+      input.citizen = false;
       check(elig.gaResult, input)
-        .isEligibleIf('notCitizen').is(false);
+        .isEligibleIf('citizen').is(true);
     });
 
     testImmigration(() => {
@@ -1015,9 +1015,9 @@ describe('Program eligibility', () => {
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
-      input.notCitizen = true;
+      input.citizen = false;
       check(elig.housingChoiceResult, input)
-        .isEligibleIf('notCitizen').is(false);
+        .isEligibleIf('citizen').is(true);
     });
 
     testImmigration(() => {
@@ -1242,12 +1242,12 @@ describe('Program eligibility', () => {
   // SSI and CAPI have the same basic eligibility requirements except for
   // immigration, so re-use the test code for each program.
   describe.each([
-    [elig.ssiResult, false, null],
-    [elig.capiResult, true, 'long_term']
+    [elig.ssiResult, true, null],
+    [elig.capiResult, false, 'long_term']
   ])('SSI and CAPI Programs (%p)', (resultFn,
-      defaultNotCitizen, defaultImmigrationStatus) => {
+      defaultCitizen, defaultImmigrationStatus) => {
     beforeEach(() => {
-      input.notCitizen = defaultNotCitizen;
+      input.citizen = defaultCitizen;
       input.immigrationStatus = defaultImmigrationStatus;
     });
 
@@ -1329,8 +1329,8 @@ describe('Program eligibility', () => {
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.disabled = true;
-      input.notCitizen = true;
-      check(elig.ssiResult, input).isEligibleIf('notCitizen').is(false);
+      input.citizen = false;
+      check(elig.ssiResult, input).isEligibleIf('citizen').is(true);
     });
 
     testImmigration(() => {
@@ -1735,7 +1735,7 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.pregnant = true;
       // Force ineligibility for CalFresh to explicitly test gross income only.
-      input.notCitizen = true;
+      input.citizen = false;
       input.immigrationStatus = 'qualified_noncitizen_le5y';
       check(elig.wicResult, input).isEligibleIf('income.wages')
         .isAtMost(elig.cnst.wic.MONTHLY_INCOME_LIMITS[0]);
@@ -1766,7 +1766,7 @@ describe('Program eligibility', () => {
       input.pregnant = true;
       input.unbornChildren = 1;
       // Force ineligibility for CalFresh to explicitly test gross income only.
-      input.notCitizen = true;
+      input.citizen = false;
       input.immigrationStatus = 'qualified_noncitizen_le5y';
       check(elig.wicResult, input).isEligibleIf('income.wages')
         .isAtMost(elig.cnst.wic.MONTHLY_INCOME_LIMITS[1]);
