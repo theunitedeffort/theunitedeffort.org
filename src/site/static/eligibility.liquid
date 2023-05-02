@@ -311,38 +311,11 @@ pageClass: "page-public-assistance"
     {% eligPage "household-housed" %}
       <div>
         <p>Does your household pay a gas or electric bill?</p>
-        <ul id="hh-pay-utilities" class="yes-no">
-          <li>
-            <input type="radio" id="pay-utilities-yes" name="housed_details1" value="Yes" />
-            <label for="pay-utilities-yes">Yes</label>
-          </li>
-          <li>
-            <input type="radio" id="pay-utilities-no" name="housed_details1" value="No" />
-            <label for="pay-utilities-no">No</label>
-          </li>
-        </ul>
+        {% yesNo "pay-utilities" %}
         <p>Do you have cooking facilities and a place to store food in your home?</p>
-        <ul id="hh-has-kitchen" class="yes-no">
-          <li>
-            <input type="radio" id="has-kitchen-yes" name="has-kitchen" value="Yes" />
-            <label for="has-kitchen-yes">Yes</label>
-          </li>
-          <li>
-            <input type="radio" id="has-kitchen-no" name="has-kitchen" value="No" />
-            <label for="has-kitchen-no">No</label>
-          </li>
-        </ul>
+        {% yesNo "has-kitchen" %}
         <p>Do you feel you are at risk of losing your home?</p>
-        <ul id="hh-risk-homeless" class="yes-no">
-          <li>
-            <input type="radio" id="risk_homeless_yes" name="housed_details2" value="Yes" />
-            <label for="risk_homeless_yes">Yes</label>
-          </li>
-          <li>
-            <input type="radio" id="risk_homeless_no" name="housed_details2" value="No" />
-            <label for="risk_homeless_no">No</label>
-          </li>
-        </ul>
+        {% yesNo "risk-homeless" %}
       </div>
     {% endeligPage %}
   {% endeligSection %}

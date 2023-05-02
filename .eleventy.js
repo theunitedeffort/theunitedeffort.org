@@ -462,6 +462,20 @@ module.exports = function(eleventyConfig) {
       </ul>`;
   });
 
+  eleventyConfig.addShortcode("yesNo", function(id) {
+    return `
+      <ul id="${id}" class="yes-no">
+        <li>
+          <input type="radio" id="${id}-yes" name="${id}" />
+          <label for="${id}-yes">Yes</label>
+        </li>
+        <li>
+          <input type="radio" id="${id}-no" name="${id}" />
+          <label for="${id}-no">No</label>
+        </li>
+      </ul>`;
+  });
+
   eleventyConfig.addPairedShortcode("option", function(labelText, id) {
     this.page.singleselectId = (this.page.singleselectId ||
       `singleselect-${Math.floor(Math.random() * 1000)}`);
