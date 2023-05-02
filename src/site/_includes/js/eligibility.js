@@ -2303,7 +2303,7 @@ function buildInputObj() {
     housingSituation: getValueOrNull('housing-situation'),
     // TODO: perhaps have the utilities check be null if unanswered instead of
     // defaulting to "no".
-    paysUtilities: getValueOrNull('pay-utilities-yes'),
+    paysUtilities: getValueOrNull('pay-utilities'),
     hasKitchen: getValueOrNull('has-kitchen-yes'),
     homelessRisk: getValueOrNull('risk-homeless-yes'),
     immigrationStatus: getValueOrNull('immig_status'),
