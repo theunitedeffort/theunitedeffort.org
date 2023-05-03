@@ -466,11 +466,11 @@ module.exports = function(eleventyConfig) {
     return `
       <ul id="${id}" class="yes-no">
         <li>
-          <input type="radio" id="${id}-yes" name="${id}" />
+          <input type="radio" id="${id}-yes" name="${id}" value="yes">
           <label for="${id}-yes">Yes</label>
         </li>
         <li>
-          <input type="radio" id="${id}-no" name="${id}" />
+          <input type="radio" id="${id}-no" name="${id}" value="no">
           <label for="${id}-no">No</label>
         </li>
       </ul>`;
