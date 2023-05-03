@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "jest": "^29.5.0",
+    "jest-environment-jsdom": "^29.5.0",
     "jest-expect-message": "^1.1.3"
   }
 }

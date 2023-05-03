@@ -1155,10 +1155,19 @@ function getValueOrNull(id) {
   let val;
   if (elem.type === 'checkbox' || elem.type === 'radio') {
     val = elem.checked;
-  } else if (elem.tagName.toLowerCase() === 'ul' &&
-      elem.classList.contains('singleselect')) {
+  } else if (elem.tagName.toLowerCase() === 'ul') {
     const selected = elem.querySelector('li>input:checked');
-    val = selected ? selected.id : null;
+    if (elem.classList.contains('singleselect')) {
+      val = selected ? selected.id : null;
+    } else if (elem.classList.contains('yes-no')) {
+      if (!selected) {
+        val = null;
+      } else if (selected.value == 'yes') {
+        val = true;
+      } else if (selected.value == 'no') {
+        val = false;
+      }
+    }
   } else {
     val = elem.value;
   }
@@ -2303,12 +2312,12 @@ function buildInputObj() {
     housingSituation: getValueOrNull('housing-situation'),
     // TODO: perhaps have the utilities check be null if unanswered instead of
     // defaulting to "no".
-    paysUtilities: getValueOrNull('pay-utilities-yes'),
+    paysUtilities: getValueOrNull('pay-utilities'),
     hasKitchen: getValueOrNull('has-kitchen-yes'),
-    homelessRisk: getValueOrNull('risk-homeless-yes'),
+    homelessRisk: getValueOrNull('risk-homeless'),
     immigrationStatus: getValueOrNull('immig_status'),
-    usesGuideDog: getValueOrNull('use-guide-dog-yes'),
-    militaryDisabled: getValueOrNull('dis-military-yes'),
+    usesGuideDog: getValueOrNull('use-guide-dog'),
+    militaryDisabled: getValueOrNull('dis-military'),
     dischargeStatus: getValueOrNull('your-discharge-status'),
     servedFullDuration: getValueOrNull('full-dur-yes'),
     dutyPeriods: [],
@@ -2554,5 +2563,6 @@ if (typeof module !== 'undefined' && module.exports) {
     vaPensionResult,
     vtaParatransitResult,
     wicResult,
+    getValueOrNull,
   };
 }
