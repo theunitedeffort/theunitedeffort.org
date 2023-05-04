@@ -1,14 +1,17 @@
+/**
+ * @jest-environment jsdom
+ */
+
 const fs = require('fs');
 const path = require('path');
-const {JSDOM} = require('jsdom');
 
+// It's possible I could use the JSDOM built-in to Jest, so long as I
+// read the HTML file first.  But what is the runScripts behavior?
 let eligScript;
+let html;
 beforeAll(() => {
-  eligScript = fs.readFileSync(
-  	path.resolve(__dirname, '../eligibility.js'), 'utf8');
-});
-
-beforeEach(async () => {
+	window.HTMLElement.prototype.scrollIntoView = jest.fn();
+	window.scrollTo = jest.fn();
 	// This is a bit of a hack to run the eligibility script in the loaded
 	// HTML document.  Loading the file as an external <script> as is done
 	// in production has proven to be difficult because:
@@ -22,46 +25,31 @@ beforeEach(async () => {
 	// create a JSDOM object from the url of that server.  We'd still have to
 	// make a custom JSDOM Resource Loader to avoid loading anything *except*
 	// the script we care about: eligibility.js
-	let dom = await JSDOM.fromFile('dist/public-assistance/eligibility/index.html', {
-    runScripts: "outside-only",
-  });
-  return new Promise((resolve) => {
-    dom.window.addEventListener("load", () => {
-    	document = dom.window.document;
-    	window = dom.window;
-    	// Mock any browser methods that are not implemented by JSDOM.
-    	window.HTMLElement.prototype.scrollIntoView = jest.fn();
-    	window.scrollTo = jest.fn();
+  eligScript = fs.readFileSync(
+  	path.resolve(__dirname, '../eligibility.js'), 'utf8');
+  // TODO: How to make this HTML file available to the CI workflow?
+  html = fs.readFileSync(
+    path.resolve(__dirname, '../../../../../dist/public-assistance/eligibility/index.html'), 'utf8');
+});
 
-			// const data = fs.readFileSync(path.resolve(__dirname, '../eligibility.js'), 'utf8');
-    	window.eval(eligScript);
-    	window.eval('init()');
-      resolve();
-    });
-  });
-	// console.log(__dirname);
-	// console.log(`file://${__dirname}../../../../dist/public-assistance/eligibility/index.html`);
-	// dom = await JSDOM.fromFile('dist/public-assistance/eligibility/index.html', {
-	// 	runScripts: 'dangerously',
-	// 	resources: 'usable',
-	// 	url: `file://${__dirname}/../../../../dist/public-assistance/eligibility/index.html`
-	// });
-	// document = dom.window.document;
+beforeEach(() => {
+  document.body.parentElement.innerHTML = html;
+	window.eval(eligScript);
+	// Note we have to call init() within an eval(), otherwise init() will
+	// run in the Node environment rather than the JSDOM environment, and things
+	// like DocumentFragment (and other browser/DOM stuff) will not be defined.
+	window.eval('init()');
 });
 
 test('Example', () => {
-
-	// This does not work because top level stuff like DocumentFragment is not
-	// defined when the init() is called out of the scope of window.  It's trying
-	// to run DocumentFragment (e.g.) in the node env.
-	//
-	// window.HTMLElement.prototype.scrollIntoView = jest.fn();
-	// window.scrollTo = jest.fn();
-	// elig.init();
-
 	expect(document.querySelectorAll('[id^=hh-member-name]').length).toBe(0);
 	const button = document.getElementById('page-household-members')
 	  .querySelector('.field_list_add');
 	button.click();
 	expect(document.querySelectorAll('[id^=hh-member-name]').length).toBe(1);
+});
+
+test('buildInputObj gets all data with no errors', () => {
+  const input = window.eval('buildInputObj()');
+  // Just make sure there is no error for now.
 });
