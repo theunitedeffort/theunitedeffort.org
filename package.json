@@ -6,9 +6,8 @@
   "scripts": {
     "build": "eleventy",
     "dev": "eleventy --watch --serve",
-    "test": "jest",
-    "copy": "cpy src/site/static/eligibility.liquid src/site/_includes/*.liquid test",
-    "testBuild": "eleventy --input=test/src/site --output=test/dist"
+    "setup-tests": "eleventy --config=eleventy-test-config.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",

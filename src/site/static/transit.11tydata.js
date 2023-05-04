@@ -30,9 +30,6 @@ const fetchTransitData = async(operator_id) => {
 }
 
 module.exports = async function() {
-  if (process.env.SITE_CONTEXT == 'test') {
-    return {transitData: []}
-  }
   const [vta_transit, mvgo_transit] = await Promise.all(
     [fetchTransitData("SC"), fetchTransitData("MV")]);
   

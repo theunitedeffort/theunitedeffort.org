@@ -29,7 +29,7 @@ beforeAll(() => {
   	path.resolve(__dirname, '../eligibility.js'), 'utf8');
   // TODO: How to make this HTML file available to the CI workflow?
   html = fs.readFileSync(
-    path.resolve(__dirname, '../../../../../dist/public-assistance/eligibility/index.html'), 'utf8');
+    path.resolve(__dirname, '../../../../../test/dist/public-assistance/eligibility/index.html'), 'utf8');
 });
 
 beforeEach(() => {

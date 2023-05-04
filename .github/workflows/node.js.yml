@@ -31,6 +31,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run copy
-    - run: npm run testBuild
+    - run: npm run setup-tests
     - run: npm test

@@ -1,8 +1,6 @@
 const { AssetCache } = require("@11ty/eleventy-fetch");
 const Airtable = require('airtable');
-if (process.env.SITE_CONTEXT != 'test') {
-  const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
-}
+const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 // Lookup data for this item from the Airtable API
 const fetchDataFromAirtable = async() => {

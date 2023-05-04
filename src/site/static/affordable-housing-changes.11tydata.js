@@ -1,8 +1,6 @@
 const { AssetCache } = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
-if (process.env.SITE_CONTEXT != 'test') {
-  var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
-}
+var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const HOUSING_DATABASE_SCHEMA_TABLE = "tblfRhO6C1Pi0Ljwc";
 
