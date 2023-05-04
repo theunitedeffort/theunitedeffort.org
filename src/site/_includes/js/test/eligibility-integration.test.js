@@ -5,8 +5,6 @@
 const fs = require('fs');
 const path = require('path');
 
-// It's possible I could use the JSDOM built-in to Jest, so long as I
-// read the HTML file first.  But what is the runScripts behavior?
 let eligScript;
 let html;
 beforeAll(() => {
@@ -27,7 +25,6 @@ beforeAll(() => {
 	// the script we care about: eligibility.js
   eligScript = fs.readFileSync(
   	path.resolve(__dirname, '../eligibility.js'), 'utf8');
-  // TODO: How to make this HTML file available to the CI workflow?
   html = fs.readFileSync(
     path.resolve(__dirname, '../../../../../test/dist/public-assistance/eligibility/index.html'), 'utf8');
 });
