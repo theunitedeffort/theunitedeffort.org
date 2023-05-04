@@ -38,10 +38,13 @@ beforeEach(() => {
 	// Note we have to call init() within an eval(), otherwise init() will
 	// run in the Node environment rather than the JSDOM environment, and things
 	// like DocumentFragment (and other browser/DOM stuff) will not be defined.
-	window.eval('init()');
+	// The call to init() will not be required by all tests (and none of the tests
+	// currently written here), so we may want to move it to a describe.beforeAll
+	// window.eval('init()');
 });
 
 test('Example', () => {
+	window.eval('init()');
 	expect(document.querySelectorAll('[id^=hh-member-name]').length).toBe(0);
 	const button = document.getElementById('page-household-members')
 	  .querySelector('.field_list_add');
