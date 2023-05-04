@@ -2,7 +2,6 @@ const { AssetCache } = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
-
 const UNITS_TABLE = "tblRtXBod9CC0mivK";
 const HOUSING_DATABASE_TABLE = "tbl8LUgXQoTYEw2Yh";
 const HIGH_CAPACITY_UNIT = 4;  // Bedrooms
@@ -221,7 +220,7 @@ const filterOptions = (housing) => {
 // having a unique list of FilterCheckboxes encompassing all the values
 // available in the Airtable data at that time.
 module.exports = async function() {
-
+  
   const asset = new AssetCache("affordable_housing_data");
   // This cache duration will only be used at build time.
   let cacheDuration = "1h";

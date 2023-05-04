@@ -2,6 +2,7 @@ const { AssetCache } = require("@11ty/eleventy-fetch");
 var Airtable = require('airtable');
 var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
+
 const fetchSection = (id) => {
   const table = base("tblAkC6dlPJc4o0Je"); // sections table
   return table.find(id).then(record => {

@@ -9,9 +9,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  SITE_CONTEXT: test
-
 jobs:
   tests:
     name: Tests
@@ -31,5 +28,4 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run setup-tests
     - run: npm test
