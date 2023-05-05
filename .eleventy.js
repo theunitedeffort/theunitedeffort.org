@@ -6,7 +6,8 @@ const EleventyFetch = require("@11ty/eleventy-fetch");
 
 
 module.exports = function(eleventyConfig) {
-  eleventyConfig.addPlugin(require("./eleventy-base-config.js"));
+  // Pull in custom filters and shortcodes.
+  eleventyConfig.addPlugin(require("./src/config/eleventy-base-config.js"));
 
   // Pass through static assets and client-side js files.
   eleventyConfig.addPassthroughCopy({ "src/assets": "/" });

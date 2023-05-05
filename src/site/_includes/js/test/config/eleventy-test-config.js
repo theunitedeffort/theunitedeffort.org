@@ -1,5 +1,7 @@
 module.exports = function(eleventyConfig) {
-  eleventyConfig.addPlugin(require("./eleventy-base-config.js"));
+  // Pull in custom filters and shortcodes.
+  eleventyConfig.addPlugin(
+    require("../../../../../config/eleventy-base-config.js"));
 
   return {
     dir: {
