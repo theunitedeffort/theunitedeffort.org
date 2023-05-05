@@ -5,6 +5,19 @@
 const fs = require('fs');
 const path = require('path');
 
+function setYesNo(id, value) {
+  if (value === true) {
+    document.getElementById(`${id}-yes`).checked = true;
+    document.getElementById(`${id}-no`).checked = false;
+  } else if (value == false) {
+    document.getElementById(`${id}-yes`).checked = true;
+    document.getElementById(`${id}-no`).checked = false;
+  } else {
+    document.getElementById(`${id}-yes`).checked = false;
+    document.getElementById(`${id}-no`).checked = false;
+  }
+}
+
 let eligScript;
 let html;
 beforeAll(() => {
@@ -49,7 +62,33 @@ test('Example', () => {
   expect(document.querySelectorAll('[id^=hh-member-name]').length).toBe(1);
 });
 
-test('buildInputObj gets all data with no errors', () => {
+test('buildInputObj gets all data from page elements', () => {
+  window.eval('init()');
+  const expected = {
+    age: "42",
+    citizen: false,
+    disabled: true,
+    blind: true,
+    deaf: true,
+    veteran: true,
+    pregnant: true,
+    feeding: true,
+    headOfHousehold: true,
+    householdAges: [16, 18],
+    householdDisabled: [true, false],
+    paysUtilities: null,
+  }
+  document.getElementById('age').value = expected.age;
+  document.getElementById('not-citizen').checked = !expected.citizen;
+  document.getElementById('disabled').checked = expected.disabled;
+  document.getElementById('blind').checked = expected.blind;
+  document.getElementById('deaf').checked = expected.deaf;
+  document.getElementById('veteran').checked = expected.veteran;
+  document.getElementById('pregnant').checked = expected.pregnant;
+  document.getElementById('feeding').checked = expected.feeding;
+  setYesNo('head-household', expected.headOfHousehold);
+  setYesNo('pay-utilities', expected.paysUtilities);
+
   const input = window.eval('buildInputObj()');
-  // Just make sure there is no error for now.
+  expect(input).toEqual(expected);
 });
