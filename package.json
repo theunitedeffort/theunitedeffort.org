@@ -6,7 +6,7 @@
   "scripts": {
     "build": "eleventy",
     "dev": "eleventy --watch --serve",
-    "test": "jest"
+    "test": "eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest"
   },
   "keywords": [],
   "author": "",
