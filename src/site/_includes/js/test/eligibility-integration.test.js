@@ -30,6 +30,30 @@ function addDutyPeriod() {
   button.click();
 }
 
+function addMoney(pageIdPrefix, type, valueArr) {
+  const buttons = document.querySelectorAll(
+    `#${pageIdPrefix}${type} .field_list_add`);
+  for (let memberIdx = 0; memberIdx < valueArr.length; memberIdx++) {
+    for (let entryIdx = 0; entryIdx < valueArr[memberIdx].length; entryIdx++) {
+      let memberId = '';
+      if (memberIdx > 0) {
+        memberId = `-member${memberIdx}`;
+      }
+      const fieldId = `income-${type}${memberId}-${entryIdx}`;
+      buttons[memberIdx].click();
+      document.getElementById(fieldId).value = valueArr[memberIdx][entryIdx];
+    }
+  }
+}
+
+function addIncome(type, valueArr) {
+  addMoney('page-income-details-', type, valueArr);
+}
+
+function addAssets(valueArr) {
+  addMoney('page-income-', 'assets', valueArr);
+}
+
 function getInput() {
   return window.eval('buildInputObj()');
 }
@@ -122,19 +146,7 @@ test.each([
   expect(getInput()).toHaveProperty('immigrationStatus', id);
 });
 
-test.each([
-  'honorable',
-  'general',
-  'oth',
-  'bad-conduct',
-  'dishonorable',
-])('Sets dischargeStatus with value of "%s"', (val) => {
-  document.getElementById('your-discharge-status').value = val;
-  expect(getInput()).toHaveProperty('dischargeStatus', val);
-});
-
 test('buildInputObj gets all data from page elements', () => {
-  let input;
   const dutyPeriodStartStrs = ['1960-01-25', ''];
   const dutyPeriodEndStrs = ['1961-12-31', ''];
   const expected = {
@@ -177,19 +189,19 @@ test('buildInputObj gets all data from page elements', () => {
       },
     ],
     income: {
-      valid: false,
-      wages: [[], [], []],
-      selfEmployed: [[], [], []],
-      disability: [[], [], []],
-      unemployment: [[], [], []],
-      retirement: [[], [], []],
-      veterans: [[], [], []],
-      workersComp: [[], [], []],
-      childSupport: [[], [], []],
-      other: [[], [], []],
+      valid: true,
+      wages: [[10, 50], [200], [3000]],
+      selfEmployed: [[11, 51], [210], [3100]],
+      disability: [[12, 52], [220], [3200]],
+      unemployment: [[13, 53], [230], [3300]],
+      retirement: [[14, 54], [240], [3400]],
+      veterans: [[15, 55], [250], [3500]],
+      workersComp: [[16, 56], [260], [3600]],
+      childSupport: [[17, 57], [270], [3700]],
+      other: [[18, 58], [280], [3800]],
     },
-    assets: [[], [], []],
-    ssiIncome: [],
+    assets: [[1000, 99], [2000], [3000]],
+    ssiIncome: [12, 220],
     existingCalfreshHousehold: true,
     existingCalfreshMe: true,
     existingCalworksHousehold: true,
@@ -310,6 +322,24 @@ test('buildInputObj gets all data from page elements', () => {
   document.getElementById('served-from-1').value = dutyPeriodStartStrs[1];
   document.getElementById('served-until-1').value = dutyPeriodEndStrs[1];
   expect(getInput().dutyPeriods).toEqual(expected.dutyPeriods);
+
+  addIncome('wages', expected.income.wages);
+  addIncome('self-employed', expected.income.selfEmployed);
+  addIncome('disability', expected.income.disability);
+  addIncome('unemployment', expected.income.unemployment);
+  addIncome('retirement', expected.income.retirement);
+  addIncome('veterans', expected.income.veterans);
+  addIncome('workers-comp', expected.income.workersComp);
+  addIncome('child-support', expected.income.childSupport);
+  addIncome('other', expected.income.other);
+  expect(getInput().income).toEqual(expected.income);
+
+  addAssets(expected.assets);
+  expect(getInput().assets).toEqual(expected.assets);
+
+  document.getElementById('income-disability-is-ssi-capi-0').checked = true;
+  document.getElementById('income-disability-is-ssi-capi-member1-0').checked = true;
+  expect(getInput().ssiIncome).toEqual(expected.ssiIncome);
 
   document.getElementById('existing-calfresh-household').checked = expected.existingCalfreshHousehold;
   expect(getInput().existingCalfreshHousehold).toBe(expected.existingCalfreshHousehold);
