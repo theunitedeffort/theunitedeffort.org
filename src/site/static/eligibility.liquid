@@ -351,7 +351,7 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
 
     {% eligPage "income-details-self-employed" %}
-      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employment"  %}
+      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employed"  %}
     {% endeligPage %}
 
     {% capture disabilityIncomeChecks %}
@@ -392,7 +392,7 @@ pageClass: "page-public-assistance"
       {% capture assetPreamble %}
         Enter the values of all assets or resources you and your household have.  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
       {% endcapture %}
-      {% render "eligibility-income-details" desc: "assets", heading: "Asset", id: "asset", preamble: assetPreamble, buttonText: "Add another asset", emptyButtonText: "Enter an asset for this person", entryLabel: "Value", sumDesc: "Combined household assets", sumUnit: " " %}
+      {% render "eligibility-income-details" desc: "assets", heading: "Asset", id: "assets", preamble: assetPreamble, buttonText: "Add another asset", emptyButtonText: "Enter an asset for this person", entryLabel: "Value", sumDesc: "Combined household assets", sumUnit: " " %}
     {% endeligPage %}
   {% endeligSection %}
 
