@@ -85,24 +85,8 @@ beforeAll(() => {
 beforeEach(() => {
   document.body.parentElement.innerHTML = html;
   window.eval(eligScript);
-  // Note we have to call init() within an eval(), otherwise init() will
-  // run in the Node environment rather than the JSDOM environment, and things
-  // like DocumentFragment (and other browser/DOM stuff) will not be defined.
-  // The call to init() will not be required by all tests (and none of the tests
-  // currently written here), so we may want to move it to a describe.beforeAll
-  // window.eval('init()');
 });
 
-test('Example', () => {
-  window.eval('init()');
-  expect(document.querySelectorAll('[id^=hh-member-name]').length).toBe(0);
-  const button = document.getElementById('page-household-members')
-    .querySelector('.field_list_add');
-  button.click();
-  expect(document.querySelectorAll('[id^=hh-member-name]').length).toBe(1);
-});
-
-// TODO: test out no income option.
 test.each([true, false, null])('Sets paysUtilities with value of %s', (val) => {
   setYesNo('pay-utilities', val);
   expect(getInput()).toHaveProperty('paysUtilities', val);
@@ -144,6 +128,12 @@ test.each([
 ])('Sets immigrationStatus with value of "%s"', (id) => {
   document.getElementById(id).checked = true;
   expect(getInput()).toHaveProperty('immigrationStatus', id);
+});
+
+test('Income is invalid with no entries unless no income is explicitly specified', () => {
+  expect(getInput().income.valid).toBe(false);
+  document.getElementById('income-has-none').checked = true;
+  expect(getInput().income.valid).toBe(true);
 });
 
 test('buildInputObj gets all data from page elements', () => {
@@ -230,6 +220,9 @@ test('buildInputObj gets all data from page elements', () => {
     existingWicMe: true,
   };
 
+  // Note we have to call init() within an eval(), otherwise init() will
+  // run in the Node environment rather than the JSDOM environment, and things
+  // like DocumentFragment (and other browser/DOM stuff) will not be defined.
   window.eval('init()');
   document.getElementById('age').value = expected.age;
   expect(getInput().age).toBe(expected.age);
