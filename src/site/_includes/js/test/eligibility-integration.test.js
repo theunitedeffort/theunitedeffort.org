@@ -78,13 +78,16 @@ test('Example', () => {
   expect(document.querySelectorAll('[id^=hh-member-name]').length).toBe(1);
 });
 
-// TODO: test out all yes/no/null options.
-// TODO: test all singleselect options.
 // TODO: test out no income option.
-// NOTE: Do we need to test each data item separately?  wrt. existing assistance,
-// testing all items at once means we can't detect a problem where a
-// checkbox state is stored twice.
-test('buildInputObj gets all data from page elements', () => {
+test.each([
+  {paysUtilities: true, homelessRisk: true, usesGuideDog: true, militaryDisabled: true, housingSituation: 'housed', immigrationStatus: 'permanent_resident', dischargeStatus: 'honorable'},
+  {paysUtilities: false, homelessRisk: false, usesGuideDog: false, militaryDisabled: false, housingSituation: 'vehicle', immigrationStatus: 'long_term', dischargeStatus: 'general'},
+  {paysUtilities: null, homelessRisk: null, usesGuideDog: null, militaryDisabled: null, housingSituation: 'transitional', immigrationStatus: 'live_temporarily', dischargeStatus: 'oth'},
+  {paysUtilities: null, homelessRisk: null, usesGuideDog: null, militaryDisabled: null, housingSituation: 'hotel', immigrationStatus: 'none_describe', dischargeStatus: 'bad-conduct'},
+  {paysUtilities: null, homelessRisk: null, usesGuideDog: null, militaryDisabled: null, housingSituation: 'shelter', immigrationStatus: null, dischargeStatus: 'dishonorable'},
+  {paysUtilities: null, homelessRisk: null, usesGuideDog: null, militaryDisabled: null, housingSituation: 'unlisted-stable-place', immigrationStatus: null, dischargeStatus: null},
+  {paysUtilities: null, homelessRisk: null, usesGuideDog: null, militaryDisabled: null, housingSituation: 'no-stable-place', immigrationStatus: null, dischargeStatus: null},
+])('buildInputObj gets all data from page elements', () => {
   let input;
   const dutyPeriodStartStrs = ['1960-01-25', ''];
   const dutyPeriodEndStrs = ['1961-12-31', ''];
