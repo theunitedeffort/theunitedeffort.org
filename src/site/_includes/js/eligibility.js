@@ -211,7 +211,7 @@ const cnst = {
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
     ANNUAL_NET_WORTH_LIMIT: 150538,  // USD per year
-    // TODO: Somehow handle higher income limits for housebound and
+    // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
     ANNUAL_INCOME_LIMITS: [  // USD per year
       16037,
@@ -592,7 +592,7 @@ function onChangeAge() {
 }
 
 function onChangeName() {
-  // TODO: Revert to placeholder if the name is deleted.
+  // TODO (#395): Revert to placeholder if the name is deleted.
   const item = this.closest('ul.dynamic_field_list>li');
   // Update the heading to the household member's name.
   item.querySelector('h4').textContent = this.value;
@@ -652,7 +652,7 @@ function addDynamicFieldListItem() {
     "ul.dynamic_field_list");
   const items = list.querySelectorAll("li");
   // Figure out the largest id index used so far.
-  // TODO: replace optional chaining operators.
+  // TODO (#396): replace optional chaining operators.
   const lastInput = items[items.length - 1]?.querySelector("input");
   let lastIdNumber = -1;
   if (lastInput) {
@@ -1244,7 +1244,7 @@ function grossIncome(input, hhMemberIdx=null) {
 }
 
 function totalResources(input, hhMemberIdx=null) {
-  // TODO: Add checkbox for users to explicitly specify they have zero
+  // TODO (#397): Add checkbox for users to explicitly specify they have zero
   // resources.
   return categoryTotal(input.assets, hhMemberIdx);
 }
@@ -1451,7 +1451,7 @@ function calfreshResult(input) {
   // are not checked.
   // TODO: Handle edge cases where the user is not MCE.
   //
-  // TODO: Run net income and resource checks for households containing
+  // TODO (#279): Run net income and resource checks for households containing
   // and elderly or disabled member in the event gross income is higher than
   // the MCE limit.
   // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf#page=7
@@ -1545,7 +1545,10 @@ function calworksResult(input) {
 
   const nonExemptIncome = calworksAdjustedIncome(input);
   // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
-  // TODO: Add in special needs to income limit.
+  // TODO: Add in special needs to income limit?
+  // https://www.cdss.ca.gov/cdssweb/entres/forms/english/cw29.pdf
+  // See also https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap35.pdf
+  // Section 35.5.1
   const mbsacIncomeLimit = mbsac.getLimit(input.householdSize);
   const underIncomeLimit = le(nonExemptIncome, mbsacIncomeLimit);
 
@@ -1630,7 +1633,7 @@ function careResult(input) {
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
   const isCategoricallyEligible = or(
-    // TODO: add remaining assistance programs that help qualify:
+    // TODO (#398): add remaining assistance programs that help qualify:
     //   Healthy Families A & B
     //   Tribal programs?
     input.existingSsiMe,
@@ -1867,7 +1870,7 @@ function lifelineResult(input) {
     input.existingLiheapHousehold,
     input.existingSsiMe,
     input.existingSsiHousehold,
-    // TODO: add Section 8.
+    // TODO (#399): add Section 8.
     // TODO: add CFAP?
     input.existingCalfreshMe,
     input.existingCalfreshHousehold,
@@ -2299,7 +2302,7 @@ function buildInputObj() {
     pregnant: getValueOrNull('pregnant'),
     feeding: getValueOrNull('feeding'),
     headOfHousehold: getValueOrNull('head-household-yes'),
-    // TODO: Perhaps make a list of household member objects.
+    // TODO (#400): Perhaps make a list of household member objects.
     householdAges: getValuesOrNulls('hh-member-age'),
     householdDisabled: getValuesOrNulls('hh-member-disabled'),
     householdPregnant: getValuesOrNulls('hh-member-pregnant'),
@@ -2310,8 +2313,6 @@ function buildInputObj() {
       "#page-household-members ul.dynamic_field_list>li").length,
     unbornChildren: getValueOrNull('unborn-children'),
     housingSituation: getValueOrNull('housing-situation'),
-    // TODO: perhaps have the utilities check be null if unanswered instead of
-    // defaulting to "no".
     paysUtilities: getValueOrNull('pay-utilities'),
     hasKitchen: getValueOrNull('has-kitchen-yes'),
     homelessRisk: getValueOrNull('risk-homeless'),
