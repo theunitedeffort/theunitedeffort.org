@@ -10,8 +10,8 @@ function setYesNo(id, value) {
     document.getElementById(`${id}-yes`).checked = true;
     document.getElementById(`${id}-no`).checked = false;
   } else if (value == false) {
-    document.getElementById(`${id}-yes`).checked = true;
-    document.getElementById(`${id}-no`).checked = false;
+    document.getElementById(`${id}-yes`).checked = false;
+    document.getElementById(`${id}-no`).checked = true;
   } else {
     document.getElementById(`${id}-yes`).checked = false;
     document.getElementById(`${id}-no`).checked = false;
@@ -79,15 +79,61 @@ test('Example', () => {
 });
 
 // TODO: test out no income option.
+test.each([true, false, null])('Sets paysUtilities with value of %s', (val) => {
+  setYesNo('pay-utilities', val);
+  expect(getInput()).toHaveProperty('paysUtilities', val);
+});
+
+test.each([true, false, null])('Sets homelessRisk with value of %s', (val) => {
+  setYesNo('risk-homeless', val);
+  expect(getInput()).toHaveProperty('homelessRisk', val);
+});
+
+test.each([true, false, null])('Sets usesGuideDog with value of %s', (val) => {
+  setYesNo('use-guide-dog', val);
+  expect(getInput()).toHaveProperty('usesGuideDog', val);
+});
+
+test.each([true, false, null])('Sets militaryDisabled with value of %s', (val) => {
+  setYesNo('dis-military', val);
+  expect(getInput()).toHaveProperty('militaryDisabled', val);
+});
+
 test.each([
-  {paysUtilities: true, homelessRisk: true, usesGuideDog: true, militaryDisabled: true, housingSituation: 'housed', immigrationStatus: 'permanent_resident', dischargeStatus: 'honorable'},
-  {paysUtilities: false, homelessRisk: false, usesGuideDog: false, militaryDisabled: false, housingSituation: 'vehicle', immigrationStatus: 'long_term', dischargeStatus: 'general'},
-  {paysUtilities: null, homelessRisk: null, usesGuideDog: null, militaryDisabled: null, housingSituation: 'transitional', immigrationStatus: 'live_temporarily', dischargeStatus: 'oth'},
-  {paysUtilities: null, homelessRisk: null, usesGuideDog: null, militaryDisabled: null, housingSituation: 'hotel', immigrationStatus: 'none_describe', dischargeStatus: 'bad-conduct'},
-  {paysUtilities: null, homelessRisk: null, usesGuideDog: null, militaryDisabled: null, housingSituation: 'shelter', immigrationStatus: null, dischargeStatus: 'dishonorable'},
-  {paysUtilities: null, homelessRisk: null, usesGuideDog: null, militaryDisabled: null, housingSituation: 'unlisted-stable-place', immigrationStatus: null, dischargeStatus: null},
-  {paysUtilities: null, homelessRisk: null, usesGuideDog: null, militaryDisabled: null, housingSituation: 'no-stable-place', immigrationStatus: null, dischargeStatus: null},
-])('buildInputObj gets all data from page elements', () => {
+  'housed',
+  'vehicle',
+  'transitional',
+  'hotel',
+  'shelter',
+  'unlisted-stable-place',
+  'no-stable-place',
+])('Sets housingSituation with value of "%s"', (id) => {
+  document.getElementById(id).checked = true;
+  expect(getInput()).toHaveProperty('housingSituation', id);
+});
+
+test.each([
+  'permanent_resident',
+  'long_term',
+  'live_temporarily',
+  'none_describe',
+])('Sets immigrationStatus with value of "%s"', (id) => {
+  document.getElementById(id).checked = true;
+  expect(getInput()).toHaveProperty('immigrationStatus', id);
+});
+
+test.each([
+  'honorable',
+  'general',
+  'oth',
+  'bad-conduct',
+  'dishonorable',
+])('Sets dischargeStatus with value of "%s"', (val) => {
+  document.getElementById('your-discharge-status').value = val;
+  expect(getInput()).toHaveProperty('dischargeStatus', val);
+});
+
+test('buildInputObj gets all data from page elements', () => {
   let input;
   const dutyPeriodStartStrs = ['1960-01-25', ''];
   const dutyPeriodEndStrs = ['1961-12-31', ''];
@@ -110,12 +156,12 @@ test.each([
     householdSize: 3,
     unbornChildren: '1',
     housingSituation: 'housed',
-    paysUtilities: null,
+    paysUtilities: true,
     hasKitchen: true,
-    homelessRisk: null,
+    homelessRisk: true,
     immigrationStatus: 'permanent_resident',
-    usesGuideDog: null,
-    militaryDisabled: null,
+    usesGuideDog: true,
+    militaryDisabled: true  ,
     dischargeStatus: 'honorable',
     servedFullDuration: true,
     dutyPeriods: [
