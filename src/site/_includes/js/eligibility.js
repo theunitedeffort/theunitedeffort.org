@@ -478,7 +478,7 @@ function withinInterval(start, end, intervals) {
 }
 
 // Shows or hides the element 'elem' via a class name.
-function setElementVisibility(elem, makeVisible) {
+function setElementVisible(elem, makeVisible) {
   if (elem) {
     if (makeVisible) {
       elem.classList.remove("hidden");
@@ -491,19 +491,19 @@ function setElementVisibility(elem, makeVisible) {
 // Makes the submit button visible or hidden.
 function setSubmitVisibility(makeVisible) {
   const submitButton = document.getElementById("submit-button");
-  setElementVisibility(submitButton, makeVisible);
+  setElementVisible(submitButton, makeVisible);
 }
 
 // Makes the next button visible or hidden.
 function setNextVisibility(makeVisible) {
   const nextButton = document.getElementById("next-button");
-  setElementVisibility(nextButton, makeVisible);
+  setElementVisible(nextButton, makeVisible);
 }
 
 // Makes the back button visible or hidden.
 function setBackVisibility(makeVisible) {
   const backButton = document.getElementById("back-button");
-  setElementVisibility(backButton, makeVisible);
+  setElementVisible(backButton, makeVisible);
 }
 
 // Resets the viewport scroll so that the top of the form is visible.
@@ -844,13 +844,13 @@ function buildStepIndicator() {
 // section containing 'toPage' will be shown.
 function switchToPage(toPage) {
   // Show the new page and hide the old.
-  setElementVisibility(currentPage, false);
-  setElementVisibility(toPage, true);
+  setElementVisible(currentPage, false);
+  setElementVisible(toPage, true);
   // Check if the section is changing while also allowing toPage or
   // currentPage to be undefined.
   if (toPage?.section.id != currentPage?.section.id) {
-    setElementVisibility(currentPage?.section, false);
-    setElementVisibility(toPage?.section, true);
+    setElementVisible(currentPage?.section, false);
+    setElementVisible(toPage?.section, true);
     // Update the step indicator to highlight the active section.
     if (currentPage?.section?.stepButton) {
       currentPage.section.stepButton.classList.remove("in_progress");
@@ -2569,7 +2569,7 @@ if (typeof module !== 'undefined' && module.exports) {
     vtaParatransitResult,
     wicResult,
     getValueOrNull,
-    setElementVisibility,
+    setElementVisible,
     modifyIds,
     clearInputs,
   };

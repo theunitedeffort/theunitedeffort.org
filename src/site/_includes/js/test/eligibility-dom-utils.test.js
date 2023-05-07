@@ -11,9 +11,9 @@ beforeEach(() => {
 test('Elements can be hidden or shown via class', () => {
   document.body.innerHTML = '<div id="testdiv" class="example"></div>';
   const elem = document.getElementById('testdiv');
-  elig.setElementVisibility(elem, false);
+  elig.setElementVisibile(elem, false);
   expect(elem.className).toContain('hidden');
-  elig.setElementVisibility(elem, true);
+  elig.setElementVisibile(elem, true);
   expect(elem.className).not.toContain('hidden');
 });
 
