@@ -2,6 +2,8 @@
  * @jest-environment jsdom
  */
 
+const elig = require('../eligibility');
+
 const fs = require('fs');
 const path = require('path');
 
@@ -55,8 +57,24 @@ function addAssets(valueArr) {
 }
 
 function getInput() {
-  return window.eval('buildInputObj()');
+  return elig.buildInputObj();
 }
+
+function isVisible() {
+  expect(document.getElementById(this.id).className).not.toContain('hidden');
+}
+
+function isHidden() {
+  expect(document.getElementById(this.id).className).toContain('hidden');
+}
+
+function check(id) {
+  return {
+    id,
+    isVisible,
+    isHidden,
+  };
+};
 
 let eligScript;
 let html;
@@ -84,8 +102,69 @@ beforeAll(() => {
 
 beforeEach(() => {
   document.body.parentElement.innerHTML = html;
-  window.eval(eligScript);
 });
+
+describe('Page Navigation', () => {
+  beforeEach(() => {
+    elig.init();
+  });
+  test('Only next button is visible on initial page', () => {
+    elig.configureButtons(document.querySelectorAll('.elig_page')[0]);
+    check('back-button').isHidden();
+    check('next-button').isVisible();
+    check('submit-button').isHidden();
+  });
+
+  test('Next button is visible on intermediate pages', () => {
+    const pages = document.querySelectorAll('.elig_page');
+    const page = pages[1];
+    // Ensure a previous page is set for our page of interest, without
+    // traversing every page.
+    page.previous = pages[0];
+    elig.configureButtons(page);
+    check('back-button').isVisible();
+    check('next-button').isVisible();
+    check('submit-button').isHidden();
+  });
+
+  test('Submit button is visible immediately before results page', () => {
+    const pages = document.querySelectorAll('.elig_page');
+    const page = pages[pages.length - 2];
+    // Ensure a previous page is set for our page of interest, without
+    // traversing every page.
+    page.previous = pages[pages.length - 3];
+    elig.configureButtons(page);
+    check('back-button').isVisible();
+    check('next-button').isHidden();
+    check('submit-button').isVisible();
+  });
+
+  test('Only back button is visible on results page', () => {
+    const pages = document.querySelectorAll('.elig_page');
+    const page = pages[pages.length - 1];
+    // Ensure a previous page is set for our page of interest, without
+    // traversing every page.
+    page.previous = pages[pages.length - 2];
+    elig.configureButtons(page);
+    check('back-button').isVisible();
+    check('next-button').isHidden();
+    check('submit-button').isHidden();
+  });
+
+  test.todo('Can move to the next page');
+  test.todo('Can move to the immediately previous page');
+  test.todo('Can move to the previous page with skipped pages in between');
+  test.todo('Can jump to a given page');
+  test.todo('Can jump to a given section');
+  test.todo('Submitting the form moves to the results section');
+  test.todo('Moving to a new section hides the old section');
+});
+
+// describe('Step indicator', () => {
+//   test.todo('Sections initialize as disabled');
+//   test.todo('Section is marked as in progress when a contained page is active');
+//   test.todo('Section is marked as done when all contained pages have been visited');
+// });
 
 describe('buildInputObj', () => {
   test.each([true, false, null])('Sets paysUtilities with value of %s', (val) => {
@@ -224,7 +303,7 @@ describe('buildInputObj', () => {
     // Note we have to call init() within an eval(), otherwise init() will
     // run in the Node environment rather than the JSDOM environment, and things
     // like DocumentFragment (and other browser/DOM stuff) will not be defined.
-    window.eval('init()');
+    elig.init();
     document.getElementById('age').value = expected.age;
     expect(getInput().age).toBe(expected.age);
 

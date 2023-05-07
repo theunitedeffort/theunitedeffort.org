@@ -8,6 +8,19 @@ beforeEach(() => {
   document.body.innerHTML = '';
 });
 
+// test('Only back button is visible on results page', () => {
+//     document.body.innerHTML = `
+//       <div class="elig_page" id="page-start"></div>
+//       <div class="elig_page" id="page-data"></div>
+//       <div class="elig_page" id="page-results"></div>`;
+//     const pages = document.querySelectorAll('.elig_page');
+//     document.getElementById
+//     elig.configureButtons(pages[pages.length - 1]);
+//     expect(document.getElementById('back-button').className).not.toContain('hidden');
+//     expect(document.getElementById('next-button').className).toContain('hidden');
+//     expect(document.getElementById('submit-button').className).toContain('hidden');
+//   });
+
 test('Elements can be hidden or shown via class', () => {
   document.body.innerHTML = '<div id="testdiv" class="example"></div>';
   const elem = document.getElementById('testdiv');
