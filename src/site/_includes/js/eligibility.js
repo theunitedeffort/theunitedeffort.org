@@ -636,7 +636,11 @@ function modifyIds(parent, idModifier) {
 function clearInputs(parent) {
   const inputs = parent.querySelectorAll('input, select');
   for (const elem of inputs) {
-    if (elem.value) {
+    if (elem.value &&
+        elem.type != 'button' &&
+        elem.type != 'reset' &&
+        elem.type != 'submit' &&
+        elem.type != 'hidden') {
       elem.value = '';
     }
     if (elem.checked) {
@@ -2565,5 +2569,8 @@ if (typeof module !== 'undefined' && module.exports) {
     vtaParatransitResult,
     wicResult,
     getValueOrNull,
+    setElementVisibility,
+    modifyIds,
+    clearInputs,
   };
 }
