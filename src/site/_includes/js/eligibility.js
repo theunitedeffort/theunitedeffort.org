@@ -1021,7 +1021,7 @@ function linkPages() {
 function customPageLinking(pageById) {
 
   pageById["page-yourself-start"].next = function() {
-    if (document.getElementById("age").value < 18 && document.getElementById("age").value > 0) {
+    if (document.getElementById("age").value <= 18 && document.getElementById("age").value > 0) {
       return pageById["page-head-of-household"];
     }
     return pageById["page-head-of-household"].next();

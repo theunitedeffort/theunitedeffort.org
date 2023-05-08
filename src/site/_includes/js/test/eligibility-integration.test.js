@@ -13,6 +13,12 @@ function visiblePage() {
   return visiblePages[0];
 }
 
+function visibleSection() {
+  const visibleSections = document.querySelectorAll('.elig_section:not(.hidden)');
+  expect(visibleSections.length).toBe(1);
+  return visibleSections[0];
+}
+
 function setYesNo(id, value) {
   if (value === true) {
     document.getElementById(`${id}-yes`).checked = true;
@@ -102,16 +108,110 @@ beforeAll(() => {
     path.resolve(__dirname, '../../../../../test/dist/public-assistance/eligibility/index.html'), 'utf8');
 });
 
-beforeEach(() => {
-  document.body.parentElement.innerHTML = html;
-  // This eval is needed for window access to the eligibility functions.
-  window.eval(eligScript);
-});
-
-describe('Page Navigation', () => {
+describe('Functional tests', () => {
   beforeEach(() => {
+    document.body.parentElement.innerHTML = html;
+    // This eval is needed for window access to the eligibility functions.
+    window.eval(eligScript);
     elig.init();
   });
+
+  test('page-intro', () => {
+    // Proper section and page visible.
+    expect(visibleSection().id).toBe('section-intro');
+    expect(visiblePage().id).toBe('page-intro');
+    // All step indicators disabled
+    const steps = document.querySelectorAll('.step_indicator button');
+    for (const step of steps) {
+      expect(step.disabled, `Step indicator "${step.textContent}"`).toBe(true);
+    }
+    // Only next button is visible
+    check('back-button').isHidden();
+    check('next-button').isVisible();
+    check('submit-button').isHidden();
+  });
+
+  test('page-yourself-start', () => {
+    const nextButton = document.getElementById('next-button');
+    // Get to the page.
+    nextButton.click();
+    // Proper section and page visible.
+    expect(visibleSection().id).toBe('section-yourself');
+    expect(visiblePage().id).toBe('page-yourself-start');
+    // Yourself step indicator in progress
+    // TODO: check state of all other indicators
+    expect(document.getElementById('nav-section-yourself').classList)
+      .toContain('in_progress');
+    // Next and back buttons visible
+    check('back-button').isVisible();
+    check('next-button').isVisible();
+    check('submit-button').isHidden();
+  });
+
+  test('page-head-of-household', () => {
+    const nextButton = document.getElementById('next-button');
+    // Get to the page.
+    nextButton.click();
+    document.getElementById('age').value = elig.cnst.calworks.MAX_CHILD_AGE;
+    nextButton.click();
+    // Proper section and page visible.
+    expect(visibleSection().id).toBe('section-yourself');
+    expect(visiblePage().id).toBe('page-head-of-household');
+    // Yourself step indicator in progress
+    // TODO: check state of all other indicators
+    expect(document.getElementById('nav-section-yourself').classList)
+      .toContain('in_progress');
+    // Next and back buttons visible
+    check('back-button').isVisible();
+    check('next-button').isVisible();
+    check('submit-button').isHidden();
+  });
+
+  test('page-disability-details', () => {
+    const nextButton = document.getElementById('next-button');
+    const backButton = document.getElementById('back-button');
+    // Get to the page.
+    nextButton.click();
+    document.getElementById('disabled').checked = true;
+    nextButton.click();
+    // Proper section and page visible.
+    expect(visibleSection().id).toBe('section-yourself');
+    expect(visiblePage().id).toBe('page-disability-details');
+    // Yourself step indicator in progress
+    // TODO: check state of all other indicators
+    expect(document.getElementById('nav-section-yourself').classList)
+      .toContain('in_progress');
+    // Next and back buttons visible
+    check('back-button').isVisible();
+    check('next-button').isVisible();
+    check('submit-button').isHidden();
+    // Veteran disability question shows up when needed
+    check('military-disability-wrapper').isHidden();
+    backButton.click();
+    document.getElementById('veteran').checked = true;
+    nextButton.click();
+    check('military-disability-wrapper').isVisible();
+  });
+
+  test('page-veteran-details', () => {
+    const nextButton = document.getElementById('next-button');
+    // Get to the page.
+    nextButton.click();
+    document.getElementById('veteran').checked = true;
+    nextButton.click();
+    // Proper section and page visible.
+    expect(visibleSection().id).toBe('section-yourself');
+    expect(visiblePage().id).toBe('page-veteran-details');
+    // Yourself step indicator in progress
+    // TODO: check state of all other indicators
+    expect(document.getElementById('nav-section-yourself').classList)
+      .toContain('in_progress');
+    // Next and back buttons visible
+    check('back-button').isVisible();
+    check('next-button').isVisible();
+    check('submit-button').isHidden();
+  });
+
   test('Only next button is visible on initial page', () => {
     // elig.configureButtons(document.querySelectorAll('.elig_page')[0]);
     check('back-button').isHidden();
@@ -119,40 +219,35 @@ describe('Page Navigation', () => {
     check('submit-button').isHidden();
   });
 
-  test('Next button is visible on intermediate pages', () => {
-    // const pages = document.querySelectorAll('.elig_page');
-    // const page = pages[1];
-    // // Ensure a previous page is set for our page of interest, without
-    // // traversing every page.
-    // page.previous = pages[0];
-    // elig.configureButtons(page);
-    // check('back-button').isVisible();
-    // check('next-button').isVisible();
-    // check('submit-button').isHidden();
+  test('Next button is visible on intermediate page', () => {
+    document.getElementById('next-button').click();
+    check('back-button').isVisible();
+    check('next-button').isVisible();
+    check('submit-button').isHidden();
   });
 
   test('Submit button is visible immediately before results page', () => {
-    // const pages = document.querySelectorAll('.elig_page');
-    // const page = pages[pages.length - 2];
-    // // Ensure a previous page is set for our page of interest, without
-    // // traversing every page.
-    // page.previous = pages[pages.length - 3];
-    // elig.configureButtons(page);
-    // check('back-button').isVisible();
-    // check('next-button').isHidden();
-    // check('submit-button').isVisible();
+    const pages = document.querySelectorAll('.elig_page');
+    const poi = pages[pages.length - 2];  // Page before results.
+    const nextButton = document.getElementById('next-button');
+    while (visiblePage().id != poi.id) {
+      nextButton.click();
+    }
+    check('back-button').isVisible();
+    check('next-button').isHidden();
+    check('submit-button').isVisible();
   });
 
   test('Only back button is visible on results page', () => {
-    // const pages = document.querySelectorAll('.elig_page');
-    // const page = pages[pages.length - 1];
-    // // Ensure a previous page is set for our page of interest, without
-    // // traversing every page.
-    // page.previous = pages[pages.length - 2];
-    // elig.configureButtons(page);
-    // check('back-button').isVisible();
-    // check('next-button').isHidden();
-    // check('submit-button').isHidden();
+    const submitButton = document.getElementById('submit-button');
+    const nextButton = document.getElementById('next-button');
+    while (submitButton.classList.contains('hidden')) {
+      nextButton.click();
+    };
+    submitButton.click();
+    check('back-button').isVisible();
+    check('next-button').isHidden();
+    check('submit-button').isHidden();
   });
 
   test('Can move to the next page', () => {
@@ -172,17 +267,17 @@ describe('Page Navigation', () => {
 
   test('Can move to the previous page with skipped pages in between', () => {
     const pages = document.querySelectorAll('.elig_page');
-    document.getElementById('next-button').click();
-    // TODO: store the previous page here?
-    // TODO: check that there are actually skipped pages?
-    document.getElementById('next-button').click();
-    expect(visiblePage()).toEqual(pages[7]);
-    document.getElementById('back-button').click();
-    expect(visiblePage()).toEqual(pages[1]);
+    const nextButton = document.getElementById('next-button');
+    const backButton = document.getElementById('back-button');
+    nextButton.click();
+    expect(visiblePage().id).toBe('page-yourself-start');
+    nextButton.click();
+    expect(visiblePage().id).toBe('page-household-members');
+    backButton.click();
+    expect(visiblePage().id).toBe('page-yourself-start');
   });
 
   test.todo('Can jump to a given page');
-  test.todo('Can jump to a given section');
 
   test('Submitting the form moves to the results section', () => {
     const submitButton = document.getElementById('submit-button');
@@ -194,16 +289,30 @@ describe('Page Navigation', () => {
     expect(visiblePage().id).toBe('page-results');
   });
 
-  test.todo('Moving to a new section hides the old section');
+  test('Moving to a new section shows it and hides the old section', () => {
+    const nextButton = document.getElementById('next-button');
+    check('section-intro').isVisible();
+    nextButton.click();
+    check('section-yourself').isVisible();
+    check('section-intro').isHidden();
+  });
+
+  test('Step indicators initialize as disabled', () => {
+    const steps = document.querySelectorAll('.step_indicator button');
+    for (const step of steps) {
+      expect(step.disabled, `Step indicator "${step.textContent}"`).toBe(true);
+    }
+  });
+
+  test.todo('Step indicator is marked as in progress when a contained page is active');
+  test.todo('Step indicator is marked as done when all contained pages have been visited');
 });
 
-// describe('Step indicator', () => {
-//   test.todo('Sections initialize as disabled');
-//   test.todo('Section is marked as in progress when a contained page is active');
-//   test.todo('Section is marked as done when all contained pages have been visited');
-// });
-
 describe('buildInputObj', () => {
+  beforeAll(() => {
+    document.body.parentElement.innerHTML = html;
+  });
+
   test.each([true, false, null])('Sets paysUtilities with value of %s', (val) => {
     setYesNo('pay-utilities', val);
     expect(getInput()).toHaveProperty('paysUtilities', val);
