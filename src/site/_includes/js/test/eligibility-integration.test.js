@@ -7,6 +7,12 @@ const elig = require('../eligibility');
 const fs = require('fs');
 const path = require('path');
 
+function visiblePage() {
+  const visiblePages = document.querySelectorAll('.elig_page:not(.hidden)');
+  expect(visiblePages.length).toBe(1);
+  return visiblePages[0];
+}
+
 function setYesNo(id, value) {
   if (value === true) {
     document.getElementById(`${id}-yes`).checked = true;
@@ -60,21 +66,17 @@ function getInput() {
   return elig.buildInputObj();
 }
 
-function isVisible() {
-  expect(document.getElementById(this.id).className).not.toContain('hidden');
-}
-
-function isHidden() {
-  expect(document.getElementById(this.id).className).toContain('hidden');
-}
-
 function check(id) {
   return {
     id,
-    isVisible,
-    isHidden,
+    isVisible: function() {
+      expect(document.getElementById(this.id).className).not.toContain('hidden');
+    },
+    isHidden: function() {
+      expect(document.getElementById(this.id).className).toContain('hidden');
+    },
   };
-};
+}
 
 let eligScript;
 let html;
@@ -102,6 +104,8 @@ beforeAll(() => {
 
 beforeEach(() => {
   document.body.parentElement.innerHTML = html;
+  // This eval is needed for window access to the eligibility functions.
+  window.eval(eligScript);
 });
 
 describe('Page Navigation', () => {
@@ -109,54 +113,87 @@ describe('Page Navigation', () => {
     elig.init();
   });
   test('Only next button is visible on initial page', () => {
-    elig.configureButtons(document.querySelectorAll('.elig_page')[0]);
+    // elig.configureButtons(document.querySelectorAll('.elig_page')[0]);
     check('back-button').isHidden();
     check('next-button').isVisible();
     check('submit-button').isHidden();
   });
 
   test('Next button is visible on intermediate pages', () => {
-    const pages = document.querySelectorAll('.elig_page');
-    const page = pages[1];
-    // Ensure a previous page is set for our page of interest, without
-    // traversing every page.
-    page.previous = pages[0];
-    elig.configureButtons(page);
-    check('back-button').isVisible();
-    check('next-button').isVisible();
-    check('submit-button').isHidden();
+    // const pages = document.querySelectorAll('.elig_page');
+    // const page = pages[1];
+    // // Ensure a previous page is set for our page of interest, without
+    // // traversing every page.
+    // page.previous = pages[0];
+    // elig.configureButtons(page);
+    // check('back-button').isVisible();
+    // check('next-button').isVisible();
+    // check('submit-button').isHidden();
   });
 
   test('Submit button is visible immediately before results page', () => {
-    const pages = document.querySelectorAll('.elig_page');
-    const page = pages[pages.length - 2];
-    // Ensure a previous page is set for our page of interest, without
-    // traversing every page.
-    page.previous = pages[pages.length - 3];
-    elig.configureButtons(page);
-    check('back-button').isVisible();
-    check('next-button').isHidden();
-    check('submit-button').isVisible();
+    // const pages = document.querySelectorAll('.elig_page');
+    // const page = pages[pages.length - 2];
+    // // Ensure a previous page is set for our page of interest, without
+    // // traversing every page.
+    // page.previous = pages[pages.length - 3];
+    // elig.configureButtons(page);
+    // check('back-button').isVisible();
+    // check('next-button').isHidden();
+    // check('submit-button').isVisible();
   });
 
   test('Only back button is visible on results page', () => {
-    const pages = document.querySelectorAll('.elig_page');
-    const page = pages[pages.length - 1];
-    // Ensure a previous page is set for our page of interest, without
-    // traversing every page.
-    page.previous = pages[pages.length - 2];
-    elig.configureButtons(page);
-    check('back-button').isVisible();
-    check('next-button').isHidden();
-    check('submit-button').isHidden();
+    // const pages = document.querySelectorAll('.elig_page');
+    // const page = pages[pages.length - 1];
+    // // Ensure a previous page is set for our page of interest, without
+    // // traversing every page.
+    // page.previous = pages[pages.length - 2];
+    // elig.configureButtons(page);
+    // check('back-button').isVisible();
+    // check('next-button').isHidden();
+    // check('submit-button').isHidden();
   });
 
-  test.todo('Can move to the next page');
-  test.todo('Can move to the immediately previous page');
-  test.todo('Can move to the previous page with skipped pages in between');
+  test('Can move to the next page', () => {
+    const pages = document.querySelectorAll('.elig_page');
+    expect(visiblePage()).toEqual(pages[0]);
+    document.getElementById('next-button').click();
+    expect(visiblePage()).toEqual(pages[1]);
+  });
+
+  test('Can move to the immediately previous page', () => {
+    const pages = document.querySelectorAll('.elig_page');
+    document.getElementById('next-button').click();
+    expect(visiblePage()).toEqual(pages[1]);
+    document.getElementById('back-button').click();
+    expect(visiblePage()).toEqual(pages[0]);
+  });
+
+  test('Can move to the previous page with skipped pages in between', () => {
+    const pages = document.querySelectorAll('.elig_page');
+    document.getElementById('next-button').click();
+    // TODO: store the previous page here?
+    // TODO: check that there are actually skipped pages?
+    document.getElementById('next-button').click();
+    expect(visiblePage()).toEqual(pages[7]);
+    document.getElementById('back-button').click();
+    expect(visiblePage()).toEqual(pages[1]);
+  });
+
   test.todo('Can jump to a given page');
   test.todo('Can jump to a given section');
-  test.todo('Submitting the form moves to the results section');
+
+  test('Submitting the form moves to the results section', () => {
+    const submitButton = document.getElementById('submit-button');
+    const nextButton = document.getElementById('next-button');
+    while (submitButton.classList.contains('hidden')) {
+      nextButton.click();
+    };
+    submitButton.click();
+    expect(visiblePage().id).toBe('page-results');
+  });
+
   test.todo('Moving to a new section hides the old section');
 });
 

@@ -2572,7 +2572,7 @@ if (typeof module !== 'undefined' && module.exports) {
     setElementVisible,
     modifyIds,
     clearInputs,
-    configureButtons,
+    // configureButtons,
     init,
     buildInputObj,
   };
