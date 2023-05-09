@@ -35,6 +35,11 @@ function getIncomePages() {
   return document.querySelectorAll('[id^="page-income-');
 }
 
+function getIncomeLists(parent) {
+  return parent.querySelectorAll(
+    '.income_details_wrapper ul.dynamic_field_list');
+}
+
 function expectStepsDone(stepIndicatorIds) {
   const steps = getSteps();
   const allStepIds = Array.from(steps, s => s.id);
@@ -85,8 +90,7 @@ function expectStepsDisabled(stepIndicatorIds) {
 
 function expectNumIncomeListsToBe(expected) {
   for (const incomePage of getIncomePages()) {
-    const fieldsetSelector = '.income_details_wrapper ul.dynamic_field_list';
-    expect(incomePage.querySelectorAll(fieldsetSelector).length).toBe(expected);
+    expect(getIncomeLists(incomePage).length).toBe(expected);
   }
 }
 
@@ -627,11 +631,23 @@ describe('Navigation and UI', () => {
     expect(updatedMembers[0]).toEqual(origMembers[0]);
     expect(updatedMembers[1]).toEqual(origMembers[2]);
 
-    // All incomes
+    // All incomes and assets
+    selector = ':scope > li';
     for (const incomePage of getIncomePages()) {
-
+      for (const incomeList of getIncomeLists(incomePage)) {
+        expect(incomeList.querySelectorAll(selector).length).toBe(0);
+        const addButton = incomeList.querySelector('.field_list_add');
+        click(addButton);
+        click(addButton);
+        const origEntries = incomeList.querySelectorAll(selector);
+        expect(origEntries.length).toBe(2);
+        const removeButtons = incomeList.querySelectorAll(':scope > li button');
+        click(removeButtons[0]);
+        const updatedEntries = incomeList.querySelectorAll(selector);
+        expect(updatedEntries.length).toBe(1);
+        expect(udpatedEntries[0]).toEqual(origEntries[1]);
+      }
     }
-
   });
 
   test.todo('Selecting no income clears and disables all income options');
