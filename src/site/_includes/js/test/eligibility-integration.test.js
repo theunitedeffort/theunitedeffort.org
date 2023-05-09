@@ -19,6 +19,62 @@ function visibleSection() {
   return visibleSections[0];
 }
 
+function expectVisibility(id, isVisible) {
+  let expct = expect(document.getElementById(id).className);
+  if (isVisible) {
+    expct = expct.not;
+  }
+  expct.toContain('hidden');
+}
+
+function expectStepsDone(stepIndicatorIds) {
+  const steps = document.querySelectorAll('.step_indicator button');
+  const allStepIds = Array.from(steps).map(s => s.id);
+  if (stepIndicatorIds) {
+    expect(allStepIds).toEqual(expect.arrayContaining(stepIndicatorIds));
+  }
+  for (const step of steps) {
+    // Steps can be either 'todo' or 'done'
+    let expected = 'todo'
+    if (stepIndicatorIds.includes(step.id)) {
+      expected = 'done'
+    }
+    expect(step.classList, `Step indicator "${step.textContent}"`)
+      .toContain(expected);
+  }
+}
+
+function expectStepInProgress(stepIndicatorId) {
+  const steps = document.querySelectorAll('.step_indicator button');
+  const allStepIds = Array.from(steps).map(s => s.id);
+  if (stepIndicatorId) {
+    expect(allStepIds).toContain(stepIndicatorId);
+  }
+  for (const step of steps) {
+    let expct = expect(step.classList, `Step indicator "${step.textContent}"`);
+    if (step.id != stepIndicatorId) {
+      expct = expct.not;
+    }
+    expct.toContain('in_progress');
+  }
+}
+
+function expectStepsDisabled(stepIndicatorIds) {
+  const steps = document.querySelectorAll('.step_indicator button');
+  const allStepIds = Array.from(steps).map(s => s.id);
+  if (stepIndicatorIds) {
+    expect(allStepIds).toEqual(expect.arrayContaining(stepIndicatorIds));
+  }
+  for (const step of steps) {
+    let expected = false;
+    if (stepIndicatorIds.includes(step.id)) {
+      expected = true;
+    }
+    expect(step.disabled, `Step indicator "${step.textContent}"`)
+      .toBe(expected);
+  }
+}
+
 function setYesNo(id, value) {
   if (value === true) {
     document.getElementById(`${id}-yes`).checked = true;
@@ -32,16 +88,22 @@ function setYesNo(id, value) {
   }
 }
 
+function click(elem, times=1) {
+  for (let i = 0; i < times; i+=1) {
+    elem.click();
+  }
+}
+
 function addHouseholdMember() {
   const button = document.querySelector(
     '#page-household-members .field_list_add');
-  button.click();
+  click(button);
 }
 
 function addDutyPeriod() {
   const button = document.querySelector(
     '#page-veteran-details .field_list_add');
-  button.click();
+  click(button);
 }
 
 function addMoney(pageIdPrefix, type, valueArr) {
@@ -54,7 +116,7 @@ function addMoney(pageIdPrefix, type, valueArr) {
         memberId = `-member${memberIdx}`;
       }
       const fieldId = `income-${type}${memberId}-${entryIdx}`;
-      buttons[memberIdx].click();
+      click(buttons[memberIdx]);
       document.getElementById(fieldId).value = valueArr[memberIdx][entryIdx];
     }
   }
@@ -72,20 +134,24 @@ function getInput() {
   return elig.buildInputObj();
 }
 
+
 function check(id) {
   return {
     id,
     isVisible: function() {
-      expect(document.getElementById(this.id).className).not.toContain('hidden');
+      expect(document.getElementById(this.id).className,
+        `Unexpected visibility for "${this.id}"`).not.toContain('hidden');
     },
     isHidden: function() {
-      expect(document.getElementById(this.id).className).toContain('hidden');
+      expect(document.getElementById(this.id).className,
+        `Unexpected visibility for "${this.id}"`).toContain('hidden');
     },
   };
 }
 
 let eligScript;
 let html;
+
 beforeAll(() => {
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
   window.scrollTo = jest.fn();
@@ -108,160 +174,367 @@ beforeAll(() => {
     path.resolve(__dirname, '../../../../../test/dist/public-assistance/eligibility/index.html'), 'utf8');
 });
 
+let nextButton;
+let backButton;
+let submitButton;
+const pageTestCases = [
+  {
+    sectionId: 'section-intro',
+    backVisible: false,
+    nextVisible: true,
+    submitVisible: false,
+    disabledSteps: [
+      'nav-section-yourself',
+      'nav-section-household',
+      'nav-section-income',
+      'nav-section-existing-assistance',
+      'nav-section-results',
+    ],
+    inProgressStep: null,
+    doneSteps: [],
+    pages: [
+      {
+        pageId: 'page-intro',
+      },
+    ],
+  },
+  {
+    sectionId: 'section-yourself',
+    backVisible: true,
+    nextVisible: true,
+    submitVisible: false,
+    disabledSteps: [
+      'nav-section-household',
+      'nav-section-income',
+      'nav-section-existing-assistance',
+      'nav-section-results',
+    ],
+    inProgressStep: 'nav-section-yourself',
+    doneSteps: [],
+    pages: [
+      {
+        pageId: 'page-yourself-start',
+        setUp: function() {
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-head-of-household',
+        setUp: function() {
+          click(nextButton);
+          document.getElementById('age').value = elig.cnst.calworks.MAX_CHILD_AGE;
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-disability-details',
+        setUp: function() {
+          click(nextButton);
+          document.getElementById('disabled').checked = true;
+          click(nextButton);
+        },
+        otherChecks: function() {
+          // Veteran disability question shows up when needed
+          check('military-disability-wrapper').isHidden();
+          click(backButton);
+          document.getElementById('veteran').checked = true;
+          click(nextButton);
+          check('military-disability-wrapper').isVisible();
+        },
+      },
+      {
+        pageId: 'page-veteran-details',
+        setUp: function() {
+          click(nextButton);
+          document.getElementById('veteran').checked = true;
+          click(nextButton);
+        },
+        otherChecks: function() {
+          // TODO: Check a duty period can be added.
+        },
+      },
+      {
+        pageId: 'page-veteran-duty-period',
+        setUp: function() {
+          click(nextButton);
+          document.getElementById('veteran').checked = true;
+          click(nextButton);
+          document.getElementById('served-from').value = '1960-01-01';
+          document.getElementById('served-until').value = '1961-12-30';  // 729 days later
+          click(nextButton);
+        },
+        otherChecks: function() {
+          expect(document.getElementById('page-veteran-duty-period').textContent)
+            .toContain('from 1/1/1960 until 12/30/1961');
+        },
+      },
+      {
+        pageId: 'page-immigration-status',
+        setUp: function() {
+          click(nextButton);
+          document.getElementById('not-citizen').checked = true;
+          click(nextButton);
+        },
+      },
+    ],
+  },
+  {
+    sectionId: 'section-household',
+    backVisible: true,
+    nextVisible: true,
+    submitVisible: false,
+    disabledSteps: [
+      'nav-section-income',
+      'nav-section-existing-assistance',
+      'nav-section-results',
+    ],
+    inProgressStep: 'nav-section-household',
+    doneSteps: [
+      'nav-section-yourself'
+    ],
+    pages: [
+      {
+        pageId: 'page-household-members',
+        setUp: function() {
+          click(nextButton, 2);
+        },
+        otherChecks: function() {
+          // Can add new members
+          const selector = '#page-household-members ul.dynamic_field_list > li';
+          expect(document.querySelectorAll(selector).length).toBe(1); // Starts with user already populated.
+          addHouseholdMember();
+          expect(document.querySelectorAll(selector).length).toBe(2);
+        },
+      },
+      {
+        pageId: 'page-household-unborn-members',
+        setUp: function() {
+          click(nextButton);
+          document.getElementById('pregnant').checked = true;
+          click(nextButton, 2);
+        },
+      },
+      {
+        pageId: 'page-household-situation',
+        setUp: function() {
+          click(nextButton, 3);
+        },
+      },
+      {
+        pageId: 'page-household-housed',
+        setUp: function() {
+          click(nextButton, 3);
+          document.getElementById('housed').checked = true;
+          click(nextButton);
+        },
+      },
+    ],
+  },
+  {
+    sectionId: 'section-income',
+    backVisible: true,
+    nextVisible: true,
+    submitVisible: false,
+    disabledSteps: [
+      'nav-section-existing-assistance',
+      'nav-section-results',
+    ],
+    inProgressStep: 'nav-section-income',
+    doneSteps: [
+      'nav-section-yourself',
+      'nav-section-household',
+    ],
+    pages: [
+      {
+        pageId: 'page-income',
+        setUp: function() {
+          click(nextButton, 4);
+        },
+      },
+      {
+        pageId: 'page-income-details-wages',
+        setUp: function() {
+          click(nextButton, 4);
+          document.getElementById('income-has-wages').checked = true;
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-income-details-self-employed',
+        setUp: function() {
+          click(nextButton, 4);
+          document.getElementById('income-has-self-employed').checked = true;
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-income-details-disability',
+        setUp: function() {
+          click(nextButton, 4);
+          document.getElementById('income-has-disability').checked = true;
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-income-details-unemployment',
+        setUp: function() {
+          click(nextButton, 4);
+          document.getElementById('income-has-unemployment').checked = true;
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-income-details-retirement',
+        setUp: function() {
+          click(nextButton, 4);
+          document.getElementById('income-has-retirement').checked = true;
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-income-details-veterans',
+        setUp: function() {
+          click(nextButton, 4);
+          document.getElementById('income-has-veterans').checked = true;
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-income-details-workers-comp',
+        setUp: function() {
+          click(nextButton, 4);
+          document.getElementById('income-has-workers-comp').checked = true;
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-income-details-child-support',
+        setUp: function() {
+          click(nextButton, 4);
+          document.getElementById('income-has-child-support').checked = true;
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-income-details-other',
+        setUp: function() {
+          click(nextButton, 4);
+          document.getElementById('income-has-other').checked = true;
+          click(nextButton);
+        },
+      },
+      {
+        pageId: 'page-income-assets',
+        setUp: function() {
+          click(nextButton, 5);
+        },
+      },
+    ],
+  },
+  {
+    sectionId: 'section-existing-assistance',
+    backVisible: true,
+    nextVisible: false,
+    submitVisible: true,
+    disabledSteps: [
+      'nav-section-results',
+    ],
+    inProgressStep: 'nav-section-existing-assistance',
+    doneSteps: [
+      'nav-section-yourself',
+      'nav-section-household',
+      'nav-section-income',
+    ],
+    pages: [
+      {
+        pageId: 'page-existing-assistance',
+        setUp: function() {
+          click(nextButton, 6);
+        },
+      },
+    ],
+  },
+  {
+    sectionId: 'section-results',
+    backVisible: true,
+    nextVisible: false,
+    submitVisible: false,
+    disabledSteps: [],
+    inProgressStep: 'nav-section-results',
+    doneSteps: [
+      'nav-section-yourself',
+      'nav-section-household',
+      'nav-section-income',
+      'nav-section-existing-assistance',
+      'nav-section-results',
+    ],
+    pages: [
+      {
+        pageId: 'page-results',
+        setUp: function() {
+          // This eval is needed for window access to the eligibility functions.
+          window.eval(eligScript);
+          click(nextButton, 6);
+          click(submitButton);
+        },
+      },
+    ],
+  },
+];
+
+// TODO:
+//   - dynamic field list adding and removing
+//   - page linking unit/integration test
+//   - back navigation
+//   - navigation via step indicator button
+describe.each(
+  pageTestCases)('Section UI is correct for $sectionId', ({sectionId,
+    backVisible, nextVisible, submitVisible, disabledSteps, inProgressStep,
+    doneSteps, pages}) => {
+  beforeEach(() => {
+    // This step is a bit slow, so use caution when creating new test() calls.
+    document.body.parentElement.innerHTML = html;
+    elig.init();
+    nextButton = document.getElementById('next-button');
+    backButton = document.getElementById('back-button');
+    submitButton = document.getElementById('submit-button');
+  });
+
+  test.each(pages)(`$pageId`, ({pageId, setUp, otherChecks}) => {
+    // Navigate to the page of interest and do any other setup.
+    if (setUp) {
+      setUp();
+    }
+    // Ensure the expected page and section are visible.
+    expect(visibleSection().id).toBe(sectionId);
+    expect(visiblePage().id).toBe(pageId);
+    // Ensure the step indicator state is as expected.
+    expectStepsDisabled(disabledSteps);
+    expectStepInProgress(inProgressStep);
+    expectStepsDone(doneSteps);
+    // Ensure the form controls are as expected.
+    expectVisibility('back-button', backVisible);
+    expectVisibility('next-button', nextVisible);
+    expectVisibility('submit-button', submitVisible);
+    // Check any page-specific items.
+    if (otherChecks) {
+      otherChecks();
+    }
+  });
+});
+
 describe('Functional tests', () => {
   beforeEach(() => {
+    // This step is a bit slow, so use caution when creating new test() calls.
     document.body.parentElement.innerHTML = html;
-    // This eval is needed for window access to the eligibility functions.
-    window.eval(eligScript);
     elig.init();
-  });
-
-  test('page-intro', () => {
-    // Proper section and page visible.
-    expect(visibleSection().id).toBe('section-intro');
-    expect(visiblePage().id).toBe('page-intro');
-    // All step indicators disabled
-    const steps = document.querySelectorAll('.step_indicator button');
-    for (const step of steps) {
-      expect(step.disabled, `Step indicator "${step.textContent}"`).toBe(true);
-    }
-    // Only next button is visible
-    check('back-button').isHidden();
-    check('next-button').isVisible();
-    check('submit-button').isHidden();
-  });
-
-  test('page-yourself-start', () => {
-    const nextButton = document.getElementById('next-button');
-    // Get to the page.
-    nextButton.click();
-    // Proper section and page visible.
-    expect(visibleSection().id).toBe('section-yourself');
-    expect(visiblePage().id).toBe('page-yourself-start');
-    // Yourself step indicator in progress
-    // TODO: check state of all other indicators
-    expect(document.getElementById('nav-section-yourself').classList)
-      .toContain('in_progress');
-    // Next and back buttons visible
-    check('back-button').isVisible();
-    check('next-button').isVisible();
-    check('submit-button').isHidden();
-  });
-
-  test('page-head-of-household', () => {
-    const nextButton = document.getElementById('next-button');
-    // Get to the page.
-    nextButton.click();
-    document.getElementById('age').value = elig.cnst.calworks.MAX_CHILD_AGE;
-    nextButton.click();
-    // Proper section and page visible.
-    expect(visibleSection().id).toBe('section-yourself');
-    expect(visiblePage().id).toBe('page-head-of-household');
-    // Yourself step indicator in progress
-    // TODO: check state of all other indicators
-    expect(document.getElementById('nav-section-yourself').classList)
-      .toContain('in_progress');
-    // Next and back buttons visible
-    check('back-button').isVisible();
-    check('next-button').isVisible();
-    check('submit-button').isHidden();
-  });
-
-  test('page-disability-details', () => {
-    const nextButton = document.getElementById('next-button');
-    const backButton = document.getElementById('back-button');
-    // Get to the page.
-    nextButton.click();
-    document.getElementById('disabled').checked = true;
-    nextButton.click();
-    // Proper section and page visible.
-    expect(visibleSection().id).toBe('section-yourself');
-    expect(visiblePage().id).toBe('page-disability-details');
-    // Yourself step indicator in progress
-    // TODO: check state of all other indicators
-    expect(document.getElementById('nav-section-yourself').classList)
-      .toContain('in_progress');
-    // Next and back buttons visible
-    check('back-button').isVisible();
-    check('next-button').isVisible();
-    check('submit-button').isHidden();
-    // Veteran disability question shows up when needed
-    check('military-disability-wrapper').isHidden();
-    backButton.click();
-    document.getElementById('veteran').checked = true;
-    nextButton.click();
-    check('military-disability-wrapper').isVisible();
-  });
-
-  test('page-veteran-details', () => {
-    const nextButton = document.getElementById('next-button');
-    // Get to the page.
-    nextButton.click();
-    document.getElementById('veteran').checked = true;
-    nextButton.click();
-    // Proper section and page visible.
-    expect(visibleSection().id).toBe('section-yourself');
-    expect(visiblePage().id).toBe('page-veteran-details');
-    // Yourself step indicator in progress
-    // TODO: check state of all other indicators
-    expect(document.getElementById('nav-section-yourself').classList)
-      .toContain('in_progress');
-    // Next and back buttons visible
-    check('back-button').isVisible();
-    check('next-button').isVisible();
-    check('submit-button').isHidden();
-  });
-
-  test('Only next button is visible on initial page', () => {
-    // elig.configureButtons(document.querySelectorAll('.elig_page')[0]);
-    check('back-button').isHidden();
-    check('next-button').isVisible();
-    check('submit-button').isHidden();
-  });
-
-  test('Next button is visible on intermediate page', () => {
-    document.getElementById('next-button').click();
-    check('back-button').isVisible();
-    check('next-button').isVisible();
-    check('submit-button').isHidden();
-  });
-
-  test('Submit button is visible immediately before results page', () => {
-    const pages = document.querySelectorAll('.elig_page');
-    const poi = pages[pages.length - 2];  // Page before results.
-    const nextButton = document.getElementById('next-button');
-    while (visiblePage().id != poi.id) {
-      nextButton.click();
-    }
-    check('back-button').isVisible();
-    check('next-button').isHidden();
-    check('submit-button').isVisible();
-  });
-
-  test('Only back button is visible on results page', () => {
-    const submitButton = document.getElementById('submit-button');
-    const nextButton = document.getElementById('next-button');
-    while (submitButton.classList.contains('hidden')) {
-      nextButton.click();
-    };
-    submitButton.click();
-    check('back-button').isVisible();
-    check('next-button').isHidden();
-    check('submit-button').isHidden();
-  });
-
-  test('Can move to the next page', () => {
-    const pages = document.querySelectorAll('.elig_page');
-    expect(visiblePage()).toEqual(pages[0]);
-    document.getElementById('next-button').click();
-    expect(visiblePage()).toEqual(pages[1]);
   });
 
   test('Can move to the immediately previous page', () => {
     const pages = document.querySelectorAll('.elig_page');
-    document.getElementById('next-button').click();
+    click(document.getElementById('next-button'));
     expect(visiblePage()).toEqual(pages[1]);
-    document.getElementById('back-button').click();
+    click(document.getElementById('back-button'));
     expect(visiblePage()).toEqual(pages[0]);
   });
 
@@ -269,44 +542,18 @@ describe('Functional tests', () => {
     const pages = document.querySelectorAll('.elig_page');
     const nextButton = document.getElementById('next-button');
     const backButton = document.getElementById('back-button');
-    nextButton.click();
+    click(nextButton);
     expect(visiblePage().id).toBe('page-yourself-start');
-    nextButton.click();
+    click(nextButton);
     expect(visiblePage().id).toBe('page-household-members');
-    backButton.click();
+    click(backButton);
     expect(visiblePage().id).toBe('page-yourself-start');
   });
 
   test.todo('Can jump to a given page');
-
-  test('Submitting the form moves to the results section', () => {
-    const submitButton = document.getElementById('submit-button');
-    const nextButton = document.getElementById('next-button');
-    while (submitButton.classList.contains('hidden')) {
-      nextButton.click();
-    };
-    submitButton.click();
-    expect(visiblePage().id).toBe('page-results');
-  });
-
-  test('Moving to a new section shows it and hides the old section', () => {
-    const nextButton = document.getElementById('next-button');
-    check('section-intro').isVisible();
-    nextButton.click();
-    check('section-yourself').isVisible();
-    check('section-intro').isHidden();
-  });
-
-  test('Step indicators initialize as disabled', () => {
-    const steps = document.querySelectorAll('.step_indicator button');
-    for (const step of steps) {
-      expect(step.disabled, `Step indicator "${step.textContent}"`).toBe(true);
-    }
-  });
-
-  test.todo('Step indicator is marked as in progress when a contained page is active');
-  test.todo('Step indicator is marked as done when all contained pages have been visited');
 });
+
+test.todo('Custom page linking works');
 
 describe('buildInputObj', () => {
   beforeAll(() => {
@@ -446,9 +693,7 @@ describe('buildInputObj', () => {
       existingWicMe: true,
     };
 
-    // Note we have to call init() within an eval(), otherwise init() will
-    // run in the Node environment rather than the JSDOM environment, and things
-    // like DocumentFragment (and other browser/DOM stuff) will not be defined.
+    document.body.parentElement.innerHTML = html;
     elig.init();
     document.getElementById('age').value = expected.age;
     expect(getInput().age).toBe(expected.age);
