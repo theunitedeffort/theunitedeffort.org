@@ -115,7 +115,7 @@ function click(elem, times=1) {
 
 function enterText(elem, text) {
   if (['INPUT', 'TEXTAREA', 'SELECT'].includes(elem.tagName)) {
-    elem.value = text;
+    elem.value = text.toString();
     const changeEvent = new Event('change');
     const inputEvent = new Event('input');
     elem.dispatchEvent(inputEvent);
@@ -516,6 +516,22 @@ describe('Navigation and UI', () => {
     },
   ];
 
+  function expectPagesUsed(pageIds) {
+    backToStart();
+    let pageIdsSeen = [visiblePage().id];
+    while (!nextButton.classList.contains('hidden')) {
+      nextButton.click();
+      pageIdsSeen.push(visiblePage().id);
+    };
+    expect(pageIds.sort()).toEqual(pageIdsSeen.sort());
+  }
+
+  function backToStart() {
+    while (!backButton.classList.contains('hidden')) {
+      backButton.click();
+    };
+  }
+
   beforeEach(() => {
     // This step is a bit slow, so use caution when creating new test() calls.
     document.body.parentElement.innerHTML = html;
@@ -696,11 +712,117 @@ describe('Navigation and UI', () => {
       expect(checkbox.checked).toBe(false);
     }
   });
+
+  test('Pages linked together properly', () => {
+    let expectedPages = [
+      'page-intro',
+      'page-yourself-start',
+      'page-household-members',
+      'page-household-situation',
+      'page-income',
+      'page-income-assets',
+      'page-existing-assistance',
+    ];
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-head-of-household');
+    enterText(document.getElementById('age'), elig.cnst.calworks.MAX_CHILD_AGE);
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-immigration-status');
+    document.getElementById('not-citizen').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-disability-details');
+    document.getElementById('disabled').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('disabled').checked = false;
+    document.getElementById('blind').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('blind').checked = false;
+    document.getElementById('deaf').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-veteran-details');
+    document.getElementById('veteran').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-veteran-duty-period');
+    document.getElementById('served-from').value = '1960-01-01';
+    document.getElementById('served-until').value = '1961-12-30';  // 729 days later
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-household-unborn-members');
+    document.getElementById('pregnant').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('pregnant').checked = false;
+    addHouseholdMember();
+    document.getElementById('hh-member-pregnant-1').checked = true;
+    expectPagesUsed(expectedPages);
+
+    document.getElementById('vehicle').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('transitional').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('hotel').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('shelter').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('no-stable-place').checked = true;
+    expectPagesUsed(expectedPages);
+    expectedPages.push('page-household-housed');
+    document.getElementById('housed').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('unlisted-stable-place').checked = true;
+    expectPagesUsed(expectedPages);
+
+    document.getElementById('income-has-none').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('income-has-none').checked = false;
+
+    expectedPages.push('page-income-details-wages');
+    document.getElementById('income-has-wages').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-self-employed');
+    document.getElementById('income-has-self-employed').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-disability');
+    document.getElementById('income-has-disability').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-unemployment');
+    document.getElementById('income-has-unemployment').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-retirement');
+    document.getElementById('income-has-retirement').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-veterans');
+    document.getElementById('income-has-veterans').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-workers-comp');
+    document.getElementById('income-has-workers-comp').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-child-support');
+    document.getElementById('income-has-child-support').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-other');
+    document.getElementById('income-has-other').checked = true;
+    expectPagesUsed(expectedPages);
+
+    const allPages = Array.from(
+      document.querySelectorAll('.elig_page:not(#page-results)'), p => p.id);
+    expectPagesUsed(allPages);
+  })
 });
 
-describe('linkPages', () => {
-
-});
+test.todo('Unused pages are cleared before eligibility assessment');
 
 describe('buildInputObj', () => {
   beforeAll(() => {
