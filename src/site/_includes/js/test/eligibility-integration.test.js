@@ -32,7 +32,7 @@ function getSteps() {
 }
 
 function getIncomePages() {
-  return document.querySelectorAll('[id^="page-income-');
+  return document.querySelectorAll('[id^="page-income-"');
 }
 
 function getIncomeLists(parent) {
@@ -110,6 +110,18 @@ function setYesNo(id, value) {
 function click(elem, times=1) {
   for (let i = 0; i < times; i+=1) {
     elem.click();
+  }
+}
+
+function enterText(elem, text) {
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(elem.tagName)) {
+    elem.value = text;
+    const changeEvent = new Event('change');
+    const inputEvent = new Event('input');
+    elem.dispatchEvent(inputEvent);
+    elem.dispatchEvent(changeEvent);
+  } else {
+    throw new Error(`Can not type input on a ${elem.type} element`);
   }
 }
 
@@ -513,8 +525,6 @@ describe('Navigation and UI', () => {
     submitButton = document.getElementById('submit-button');
   });
 
-  // TODO:
-  //   - dynamic field list adding and removing
   describe.each(
     pageTestCases)('Section UI is correct for $sectionId', ({sectionId,
       backVisible, nextVisible, submitVisible, disabledSteps, inProgressStep,
@@ -630,27 +640,62 @@ describe('Navigation and UI', () => {
     expectNumIncomeListsToBe(2);
     expect(updatedMembers[0]).toEqual(origMembers[0]);
     expect(updatedMembers[1]).toEqual(origMembers[2]);
+    // Ensure household member names can be updated.
+    enterText(updatedMembers[1].querySelector('#hh-member-name-2'), 'Ada');
+    expect(updatedMembers[1].querySelector('h4').textContent).toBe('Ada');
 
     // All incomes and assets
     selector = ':scope > li';
-    for (const incomePage of getIncomePages()) {
-      for (const incomeList of getIncomeLists(incomePage)) {
+    const incomePages = getIncomePages();
+    expect(incomePages.length).toBeGreaterThan(0);
+    for (const incomePage of incomePages) {
+      const incomeLists = getIncomeLists(incomePage);
+      expect(incomeLists.length).toBe(2);
+      for (const incomeList of incomeLists) {
         expect(incomeList.querySelectorAll(selector).length).toBe(0);
-        const addButton = incomeList.querySelector('.field_list_add');
+        const addButton = incomeList.parentElement.querySelector('.field_list_add');
         click(addButton);
         click(addButton);
         const origEntries = incomeList.querySelectorAll(selector);
         expect(origEntries.length).toBe(2);
+        for (const entry of origEntries) {
+          enterText(entry.querySelector('input[type=number]'), '123');
+        }
         const removeButtons = incomeList.querySelectorAll(':scope > li button');
         click(removeButtons[0]);
         const updatedEntries = incomeList.querySelectorAll(selector);
         expect(updatedEntries.length).toBe(1);
-        expect(udpatedEntries[0]).toEqual(origEntries[1]);
+        expect(updatedEntries[0]).toEqual(origEntries[1]);
       }
+      // Two household members, one income entry each.
+      expect(incomePage.textContent).toContain('$246');
+      // Named household member should appear.
+      expect(incomePage.textContent).toContain('Ada');
     }
   });
 
-  test.todo('Selecting no income clears and disables all income options');
+  test('Selecting no income clears and disables all income options', () => {
+    const incomeCheckboxes = document.querySelectorAll(
+      '[id^="income-has-"]:not(#income-has-none)');
+    const noIncomeCheckbox = document.getElementById('income-has-none');
+    for (const checkbox of incomeCheckboxes) {
+      expect(checkbox.disabled).toBe(false);
+      checkbox.checked = true;
+    }
+    // Use click() here rather than .checked so that the proper event fires.
+    click(noIncomeCheckbox);
+    expect(noIncomeCheckbox.checked).toBe(true);
+    for (const checkbox of incomeCheckboxes) {
+      expect(checkbox.disabled).toBe(true);
+      expect(checkbox.checked).toBe(false);
+    }
+    click(noIncomeCheckbox);
+    expect(noIncomeCheckbox.checked).toBe(false);
+    for (const checkbox of incomeCheckboxes) {
+      expect(checkbox.disabled).toBe(false);
+      expect(checkbox.checked).toBe(false);
+    }
+  });
 });
 
 describe('linkPages', () => {

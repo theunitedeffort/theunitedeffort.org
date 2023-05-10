@@ -951,7 +951,7 @@ function addListeners() {
   for (const incomeList of incomeLists) {
     incomeList.addEventListener("input", updateIncomeTotal);
   }
-  document.getElementById("income-has-none").addEventListener("change", onChangeNoIncome);
+  document.getElementById("income-has-none").addEventListener("click", onChangeNoIncome);
   document.getElementById("age").addEventListener("change", onChangeAge);
   document.getElementById("hh-myself-age").addEventListener("change", onChangeAge);
 
