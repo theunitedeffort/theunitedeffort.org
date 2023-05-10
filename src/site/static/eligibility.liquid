@@ -295,7 +295,7 @@ pageClass: "page-public-assistance"
 
 
   {% eligSection "income" %}
-    <h2>Income</h2>
+    <h2>Income & Assets</h2>
     {% eligPage "income" %}
       <p>
         Select all sources of income for you and your household. Include income from <span class="bold">all members of your household, including yourself</span>.
@@ -396,11 +396,11 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
   {% endeligSection %}
 
-  {% eligSection "existing-assistance" %}
-    <h2>Existing Assistance</h2>
-    {% eligPage "existing-assistance" %}
+  {% eligSection "existing-benefits" %}
+    <h2>Existing Benefits</h2>
+    {% eligPage "existing-benefits" %}
       <p>
-        Mark any public assistance you or your household already receive.
+        Mark any public assistance and benefits you or your household already receive.
       </p>
 
      {% capture columns -%}

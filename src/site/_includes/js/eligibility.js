@@ -2332,7 +2332,7 @@ function buildInputObj() {
   };
 
   // Existing assistance checkboxes
-  const extAssistancePage = document.getElementById('page-existing-assistance');
+  const extAssistancePage = document.getElementById('page-existing-benefits');
   const extAssistanceInputs = extAssistancePage.querySelectorAll('input');
   for (const inputElem of extAssistanceInputs) {
     // TODO: Rename to userGetsSsi or householdGetsSsi (for example).
