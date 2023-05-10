@@ -344,6 +344,7 @@ module.exports = function(eleventyConfig) {
     if (refUrl) {
       links.push(`<p><a href=${refUrl} target="_blank" rel="noopener">Learn more</a></p>`);
     }
+    links.push(`<p><a href="/contact">Contact us for help applying</a></p>`);
     return `
       <li id="program-${id}" data-eligibility="${toCamelCase(id)}Result">
         <h4>${title}</h4>
