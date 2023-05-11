@@ -231,7 +231,7 @@ describe('Navigation and UI', () => {
         'nav-section-yourself',
         'nav-section-household',
         'nav-section-income',
-        'nav-section-existing-assistance',
+        'nav-section-existing-benefits',
         'nav-section-results',
       ],
       inProgressStep: null,
@@ -250,7 +250,7 @@ describe('Navigation and UI', () => {
       disabledSteps: [
         'nav-section-household',
         'nav-section-income',
-        'nav-section-existing-assistance',
+        'nav-section-existing-benefits',
         'nav-section-results',
       ],
       inProgressStep: 'nav-section-yourself',
@@ -326,7 +326,7 @@ describe('Navigation and UI', () => {
       submitVisible: false,
       disabledSteps: [
         'nav-section-income',
-        'nav-section-existing-assistance',
+        'nav-section-existing-benefits',
         'nav-section-results',
       ],
       inProgressStep: 'nav-section-household',
@@ -370,7 +370,7 @@ describe('Navigation and UI', () => {
       nextVisible: true,
       submitVisible: false,
       disabledSteps: [
-        'nav-section-existing-assistance',
+        'nav-section-existing-benefits',
         'nav-section-results',
       ],
       inProgressStep: 'nav-section-income',
@@ -466,14 +466,14 @@ describe('Navigation and UI', () => {
       ],
     },
     {
-      sectionId: 'section-existing-assistance',
+      sectionId: 'section-existing-benefits',
       backVisible: true,
       nextVisible: false,
       submitVisible: true,
       disabledSteps: [
         'nav-section-results',
       ],
-      inProgressStep: 'nav-section-existing-assistance',
+      inProgressStep: 'nav-section-existing-benefits',
       doneSteps: [
         'nav-section-yourself',
         'nav-section-household',
@@ -481,7 +481,7 @@ describe('Navigation and UI', () => {
       ],
       pages: [
         {
-          pageId: 'page-existing-assistance',
+          pageId: 'page-existing-benefits',
           setUp: function() {
             click(nextButton, 6);
           },
@@ -499,7 +499,7 @@ describe('Navigation and UI', () => {
         'nav-section-yourself',
         'nav-section-household',
         'nav-section-income',
-        'nav-section-existing-assistance',
+        'nav-section-existing-benefits',
         'nav-section-results',
       ],
       pages: [
@@ -517,19 +517,17 @@ describe('Navigation and UI', () => {
   ];
 
   function expectPagesUsed(pageIds) {
-    backToStart();
+    // Get back to the beginning.
+    while (!backButton.classList.contains('hidden')) {
+      backButton.click();
+    };
+    // Click through all pages.
     let pageIdsSeen = [visiblePage().id];
     while (!nextButton.classList.contains('hidden')) {
       nextButton.click();
       pageIdsSeen.push(visiblePage().id);
     };
     expect(pageIds.sort()).toEqual(pageIdsSeen.sort());
-  }
-
-  function backToStart() {
-    while (!backButton.classList.contains('hidden')) {
-      backButton.click();
-    };
   }
 
   beforeEach(() => {
@@ -593,21 +591,27 @@ describe('Navigation and UI', () => {
     // Navigate to each section using the step indicator.
     for (const step of getSteps()) {
       let expectedSection;
+      let expectedPage;
       switch(step.id) {
         case 'nav-section-yourself':
           expectedSection = 'section-yourself';
+          expectedPage = 'page-yourself-start';
           break;
         case 'nav-section-household':
           expectedSection = 'section-household';
+          expectedPage = 'page-household-members';
           break;
         case 'nav-section-income':
           expectedSection = 'section-income';
+          expectedPage = 'page-income';
           break;
-        case 'nav-section-existing-assistance':
-          expectedSection = 'section-existing-assistance';
+        case 'nav-section-existing-benefits':
+          expectedSection = 'section-existing-benefits';
+          expectedPage = 'page-existing-benefits';
           break;
         case 'nav-section-results':
           expectedSection = 'section-results';
+          expectedPage = 'page-results';
           break;
         default:
           throw new Error(`Section "${step.id}" needs a test case added.`);
@@ -615,9 +619,13 @@ describe('Navigation and UI', () => {
       expect(visibleSection().id).not.toBe(expectedSection);
       click(step);
       expect(visibleSection().id).toBe(expectedSection);
+      expect(visiblePage().id).toBe(expectedPage);
     }
   });
 
+  // TODO: Break tests like this into individual test() calls, presuming
+  // the test suite does not take too long to run.  Or even if it does, perhaps
+  // then separate this functional test suite out from the unit test suites.
   test('Can add and remove items from dynamicFieldLists', () => {
     // Duty periods
     let selector = '#page-veteran-details ul.dynamic_field_list > li';
@@ -649,6 +657,8 @@ describe('Navigation and UI', () => {
     expect(origMembers.length).toBe(3);
     // An income sections should also automatically be added for the new
     // household members
+    // TODO: Test that existing income data is not copied to the new section.
+    // TODO: Test the new section heading matches the member name.
     expectNumIncomeListsToBe(3);
     removeHouseholdMemberAt(1);
     const updatedMembers = document.querySelectorAll(selector);
@@ -721,7 +731,7 @@ describe('Navigation and UI', () => {
       'page-household-situation',
       'page-income',
       'page-income-assets',
-      'page-existing-assistance',
+      'page-existing-benefits',
     ];
     expectPagesUsed(expectedPages);
 
