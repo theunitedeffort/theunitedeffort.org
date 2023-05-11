@@ -137,13 +137,14 @@ const cnst = {
   },
   lifeline: {
     // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
+    // Effective June 1, 2022 to May 31, 2023
     ANNUAL_INCOME_LIMITS: [  // USD per year
-      28700,
-      28700,
-      33300,
-      40600,
+      30500,
+      30500,
+      35400,
+      43100,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 7300,  // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 7700,  // USD per year per person
   },
   liheap: {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
@@ -539,6 +540,9 @@ function onHouseholdMemberAdd() {
   const newMember = this.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
   newMember.incomeLists = [];
+  // Add listener to the new member's spouse checkbox
+  const spouseInput = newMember.querySelector('[id^="hh-member-spouse"]');
+  spouseInput.addEventListener('click', onChangeSpouse);
 
   // Insert an income fieldset for that new member in each income page.
   const incomePages = document.querySelectorAll(
@@ -564,6 +568,19 @@ function onHouseholdMemberAdd() {
 
     firstFieldset.parentNode.appendChild(newFieldset);
     newMember.incomeLists.push(newFieldset);
+  }
+}
+
+function onChangeSpouse() {
+  if (this.checked) {
+    // If a spouse checkbox was just checked, enforce that all the others are
+    // unchecked.
+    const spouseInputs = document.querySelectorAll('[id^="hh-member-spouse"]');
+    for (const input of spouseInputs) {
+      if (input !== this) {
+        input.checked = false;
+      }
+    }
   }
 }
 
@@ -2333,7 +2350,7 @@ function buildInputObj() {
   };
 
   // Existing assistance checkboxes
-  const extAssistancePage = document.getElementById('page-existing-assistance');
+  const extAssistancePage = document.getElementById('page-existing-benefits');
   const extAssistanceInputs = extAssistancePage.querySelectorAll('input');
   for (const inputElem of extAssistanceInputs) {
     // TODO: Rename to userGetsSsi or householdGetsSsi (for example).

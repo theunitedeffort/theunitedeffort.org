@@ -225,11 +225,11 @@ pageClass: "page-public-assistance"
               <label for="hh-member-dependent">This person is my dependent</label>
             </li>
             {% comment %}
-            TODO: disable and clear hh-member-dependent if hh-member-spouse
+            TODO (#413): disable and clear hh-member-dependent if hh-member-spouse
             is selected.
             {% endcomment %}
             <li>
-              <input id="hh-member-spouse" type="radio" name="hh-spouse">
+              <input id="hh-member-spouse" type="checkbox">
               <label for="hh-member-spouse">This person is my spouse</label>
             </li>
           </ul>
@@ -295,7 +295,7 @@ pageClass: "page-public-assistance"
 
 
   {% eligSection "income" %}
-    <h2>Income</h2>
+    <h2>Income & Assets</h2>
     {% eligPage "income" %}
       <p>
         Select all sources of income for you and your household. Include income from <span class="bold">all members of your household, including yourself</span>.
@@ -396,11 +396,11 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
   {% endeligSection %}
 
-  {% eligSection "existing-assistance" %}
-    <h2>Existing Assistance</h2>
-    {% eligPage "existing-assistance" %}
+  {% eligSection "existing-benefits" %}
+    <h2>Existing Benefits</h2>
+    {% eligPage "existing-benefits" %}
       <p>
-        Mark any public assistance you or your household already receive.
+        Mark any public assistance and benefits you or your household already receive.
       </p>
 
      {% capture columns -%}
@@ -476,7 +476,7 @@ pageClass: "page-public-assistance"
             VA disability compensation provides a monthly payment to certain injured or disabled veterans.
           {% endprogram %}
 
-          {% program "General Assistance (GA)", "ga", "https://socialservices.sccgov.org/financial-assistance/financial-assistance-adults-without-dependent-children-general-assistance" %}
+          {% program "General Assistance (GA)", "ga", "https://socialservices.sccgov.org/how-do-i/apply-for-benefits", "https://socialservices.sccgov.org/financial-assistance/financial-assistance-adults-without-dependent-children-general-assistance" %}
             GA provides cash assistance and employment services to certain low-income individuals with no dependent children.
           {% endprogram %}
 
@@ -492,7 +492,7 @@ pageClass: "page-public-assistance"
             IHSS provides in-home personal assistance to certain low-income individuals who are blind, disabled, or elderly so they can continue to live at home safely.
           {% endprogram %}
 
-          {% program "California LifeLine", "lifeline", "https://www.californialifeline.com/en/eligibility_requirements", "https://www.californialifeline.com/en" %}
+          {% program "California LifeLine", "lifeline", "https://www.californialifeline.com/en/eligibility_requirements#link4", "https://www.californialifeline.com/en" %}
             Lifeline provides a discount on home phone and cell phone bills for certain low-income households.  In some situations, the program will cover the full cost of phone bills and provide a new phone for free.
           {% endprogram %}
 
