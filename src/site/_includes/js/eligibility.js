@@ -1021,7 +1021,8 @@ function linkPages() {
 function customPageLinking(pageById) {
 
   pageById["page-yourself-start"].next = function() {
-    if (document.getElementById("age").value <= 18 && document.getElementById("age").value > 0) {
+    if (document.getElementById("age").value <= cnst.calworks.MAX_CHILD_AGE &&
+        document.getElementById("age").value > 0) {
       return pageById["page-head-of-household"];
     }
     return pageById["page-head-of-household"].next();
@@ -1051,8 +1052,9 @@ function customPageLinking(pageById) {
   pageById["page-veteran-details"].next = function() {
     const fromDate = getDateOrNan("served-from");
     const untilDate = getDateOrNan("served-until");
+    const dutyDuration = getNumberOfDays(fromDate, untilDate);
     if (document.getElementById("veteran").checked &&
-        getNumberOfDays(fromDate, untilDate) < 730) {
+        dutyDuration < cnst.vaPension.MIN_LATE_DUTY_DURATION) {
       const fromPlaceHolder = document.getElementById("served-from-placeholder");
       fromPlaceHolder.textContent = formatUsDate(fromDate);
 
@@ -2572,7 +2574,6 @@ if (typeof module !== 'undefined' && module.exports) {
     setElementVisible,
     modifyIds,
     clearInputs,
-    // configureButtons,
     init,
     buildInputObj,
   };
