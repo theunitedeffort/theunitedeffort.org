@@ -540,6 +540,9 @@ function onHouseholdMemberAdd() {
   const newMember = this.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
   newMember.incomeLists = [];
+  // Add listener to the new member's spouse checkbox
+  const spouseInput = newMember.querySelector('[id^="hh-member-spouse"]');
+  spouseInput.addEventListener('click', onChangeSpouse);
 
   // Insert an income fieldset for that new member in each income page.
   const incomePages = document.querySelectorAll(
@@ -565,6 +568,19 @@ function onHouseholdMemberAdd() {
 
     firstFieldset.parentNode.appendChild(newFieldset);
     newMember.incomeLists.push(newFieldset);
+  }
+}
+
+function onChangeSpouse() {
+  if (this.checked) {
+    // If a spouse checkbox was just checked, enforce that all the others are
+    // unchecked.
+    const spouseInputs = document.querySelectorAll('[id^="hh-member-spouse"]');
+    for (const input of spouseInputs) {
+      if (input !== this) {
+        input.checked = false;
+      }
+    }
   }
 }
 

@@ -225,11 +225,11 @@ pageClass: "page-public-assistance"
               <label for="hh-member-dependent">This person is my dependent</label>
             </li>
             {% comment %}
-            TODO: disable and clear hh-member-dependent if hh-member-spouse
+            TODO (#413): disable and clear hh-member-dependent if hh-member-spouse
             is selected.
             {% endcomment %}
             <li>
-              <input id="hh-member-spouse" type="radio" name="hh-spouse">
+              <input id="hh-member-spouse" type="checkbox">
               <label for="hh-member-spouse">This person is my spouse</label>
             </li>
           </ul>
