@@ -2,8 +2,97 @@
  * @jest-environment jsdom
  */
 
+const elig = require('../eligibility');
+
 const fs = require('fs');
 const path = require('path');
+
+function visiblePage() {
+  const visiblePages = document.querySelectorAll('.elig_page:not(.hidden)');
+  expect(visiblePages.length).toBe(1);
+  return visiblePages[0];
+}
+
+function visibleSection() {
+  const visibleSections = document.querySelectorAll('.elig_section:not(.hidden)');
+  expect(visibleSections.length).toBe(1);
+  return visibleSections[0];
+}
+
+function expectVisibility(id, isVisible) {
+  let expct = expect(document.getElementById(id).className);
+  if (isVisible) {
+    expct = expct.not;
+  }
+  expct.toContain('hidden');
+}
+
+function getSteps() {
+  return document.querySelectorAll('.step_indicator button');
+}
+
+function getIncomePages() {
+  return document.querySelectorAll('[id^="page-income-"');
+}
+
+function getIncomeLists(parent) {
+  return parent.querySelectorAll(
+    '.income_details_wrapper ul.dynamic_field_list');
+}
+
+function expectStepsDone(stepIndicatorIds) {
+  const steps = getSteps();
+  const allStepIds = Array.from(steps, s => s.id);
+  if (stepIndicatorIds) {
+    expect(allStepIds).toEqual(expect.arrayContaining(stepIndicatorIds));
+  }
+  for (const step of steps) {
+    // Steps can be either 'todo' or 'done'
+    let expected = 'todo'
+    if (stepIndicatorIds.includes(step.id)) {
+      expected = 'done'
+    }
+    expect(step.classList, `Step indicator "${step.textContent}"`)
+      .toContain(expected);
+  }
+}
+
+function expectStepInProgress(stepIndicatorId) {
+  const steps = getSteps();
+  const allStepIds = Array.from(steps, s => s.id);
+  if (stepIndicatorId) {
+    expect(allStepIds).toContain(stepIndicatorId);
+  }
+  for (const step of steps) {
+    let expct = expect(step.classList, `Step indicator "${step.textContent}"`);
+    if (step.id != stepIndicatorId) {
+      expct = expct.not;
+    }
+    expct.toContain('in_progress');
+  }
+}
+
+function expectStepsDisabled(stepIndicatorIds) {
+  const steps = getSteps();
+  const allStepIds = Array.from(steps, s => s.id);
+  if (stepIndicatorIds) {
+    expect(allStepIds).toEqual(expect.arrayContaining(stepIndicatorIds));
+  }
+  for (const step of steps) {
+    let expected = false;
+    if (stepIndicatorIds.includes(step.id)) {
+      expected = true;
+    }
+    expect(step.disabled, `Step indicator "${step.textContent}"`)
+      .toBe(expected);
+  }
+}
+
+function expectNumIncomeListsToBe(expected) {
+  for (const incomePage of getIncomePages()) {
+    expect(getIncomeLists(incomePage).length).toBe(expected);
+  }
+}
 
 function setYesNo(id, value) {
   if (value === true) {
@@ -18,16 +107,46 @@ function setYesNo(id, value) {
   }
 }
 
+function click(elem, times=1) {
+  for (let i = 0; i < times; i+=1) {
+    elem.click();
+  }
+}
+
+function enterText(elem, text) {
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(elem.tagName)) {
+    elem.value = text.toString();
+    const changeEvent = new Event('change');
+    const inputEvent = new Event('input');
+    elem.dispatchEvent(inputEvent);
+    elem.dispatchEvent(changeEvent);
+  } else {
+    throw new Error(`Can not type input on a ${elem.type} element`);
+  }
+}
+
 function addHouseholdMember() {
   const button = document.querySelector(
     '#page-household-members .field_list_add');
-  button.click();
+  click(button);
 }
 
 function addDutyPeriod() {
   const button = document.querySelector(
     '#page-veteran-details .field_list_add');
-  button.click();
+  click(button);
+}
+
+function removeHouseholdMemberAt(idx) {
+  const buttons = document.querySelectorAll(
+    '#page-household-members ul.dynamic_field_list > li button');
+  click(buttons[idx - 1]);
+}
+
+function removeDutyPeriodAt(idx) {
+  const buttons = document.querySelectorAll(
+    '#page-veteran-details ul.dynamic_field_list > li button');
+  click(buttons[idx - 1]);
 }
 
 function addMoney(pageIdPrefix, type, valueArr) {
@@ -40,7 +159,7 @@ function addMoney(pageIdPrefix, type, valueArr) {
         memberId = `-member${memberIdx}`;
       }
       const fieldId = `income-${type}${memberId}-${entryIdx}`;
-      buttons[memberIdx].click();
+      click(buttons[memberIdx]);
       document.getElementById(fieldId).value = valueArr[memberIdx][entryIdx];
     }
   }
@@ -55,11 +174,27 @@ function addAssets(valueArr) {
 }
 
 function getInput() {
-  return window.eval('buildInputObj()');
+  return elig.buildInputObj();
+}
+
+
+function check(id) {
+  return {
+    id,
+    isVisible: function() {
+      expect(document.getElementById(this.id).className,
+        `Unexpected visibility for "${this.id}"`).not.toContain('hidden');
+    },
+    isHidden: function() {
+      expect(document.getElementById(this.id).className,
+        `Unexpected visibility for "${this.id}"`).toContain('hidden');
+    },
+  };
 }
 
 let eligScript;
 let html;
+
 beforeAll(() => {
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
   window.scrollTo = jest.fn();
@@ -82,12 +217,628 @@ beforeAll(() => {
     path.resolve(__dirname, '../../../../../test/dist/public-assistance/eligibility/index.html'), 'utf8');
 });
 
-beforeEach(() => {
-  document.body.parentElement.innerHTML = html;
-  window.eval(eligScript);
+describe('Navigation and UI', () => {
+  let nextButton;
+  let backButton;
+  let submitButton;
+  const pageTestCases = [
+    {
+      sectionId: 'section-intro',
+      backVisible: false,
+      nextVisible: true,
+      submitVisible: false,
+      disabledSteps: [
+        'nav-section-yourself',
+        'nav-section-household',
+        'nav-section-income',
+        'nav-section-existing-benefits',
+        'nav-section-results',
+      ],
+      inProgressStep: null,
+      doneSteps: [],
+      pages: [
+        {
+          pageId: 'page-intro',
+        },
+      ],
+    },
+    {
+      sectionId: 'section-yourself',
+      backVisible: true,
+      nextVisible: true,
+      submitVisible: false,
+      disabledSteps: [
+        'nav-section-household',
+        'nav-section-income',
+        'nav-section-existing-benefits',
+        'nav-section-results',
+      ],
+      inProgressStep: 'nav-section-yourself',
+      doneSteps: [],
+      pages: [
+        {
+          pageId: 'page-yourself-start',
+          setUp: function() {
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-head-of-household',
+          setUp: function() {
+            click(nextButton);
+            document.getElementById('age').value = elig.cnst.calworks.MAX_CHILD_AGE;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-disability-details',
+          setUp: function() {
+            click(nextButton);
+            document.getElementById('disabled').checked = true;
+            click(nextButton);
+          },
+          otherChecks: function() {
+            // Veteran disability question shows up when needed
+            check('military-disability-wrapper').isHidden();
+            click(backButton);
+            document.getElementById('veteran').checked = true;
+            click(nextButton);
+            check('military-disability-wrapper').isVisible();
+          },
+        },
+        {
+          pageId: 'page-veteran-details',
+          setUp: function() {
+            click(nextButton);
+            document.getElementById('veteran').checked = true;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-veteran-duty-period',
+          setUp: function() {
+            click(nextButton);
+            document.getElementById('veteran').checked = true;
+            click(nextButton);
+            document.getElementById('served-from').value = '1960-01-01';
+            document.getElementById('served-until').value = '1961-12-30';  // 729 days later
+            click(nextButton);
+          },
+          otherChecks: function() {
+            expect(document.getElementById('page-veteran-duty-period').textContent)
+              .toContain('from 1/1/1960 until 12/30/1961');
+          },
+        },
+        {
+          pageId: 'page-immigration-status',
+          setUp: function() {
+            click(nextButton);
+            document.getElementById('not-citizen').checked = true;
+            click(nextButton);
+          },
+        },
+      ],
+    },
+    {
+      sectionId: 'section-household',
+      backVisible: true,
+      nextVisible: true,
+      submitVisible: false,
+      disabledSteps: [
+        'nav-section-income',
+        'nav-section-existing-benefits',
+        'nav-section-results',
+      ],
+      inProgressStep: 'nav-section-household',
+      doneSteps: [
+        'nav-section-yourself'
+      ],
+      pages: [
+        {
+          pageId: 'page-household-members',
+          setUp: function() {
+            click(nextButton, 2);
+          },
+        },
+        {
+          pageId: 'page-household-unborn-members',
+          setUp: function() {
+            click(nextButton);
+            document.getElementById('pregnant').checked = true;
+            click(nextButton, 2);
+          },
+        },
+        {
+          pageId: 'page-household-situation',
+          setUp: function() {
+            click(nextButton, 3);
+          },
+        },
+        {
+          pageId: 'page-household-housed',
+          setUp: function() {
+            click(nextButton, 3);
+            document.getElementById('housed').checked = true;
+            click(nextButton);
+          },
+        },
+      ],
+    },
+    {
+      sectionId: 'section-income',
+      backVisible: true,
+      nextVisible: true,
+      submitVisible: false,
+      disabledSteps: [
+        'nav-section-existing-benefits',
+        'nav-section-results',
+      ],
+      inProgressStep: 'nav-section-income',
+      doneSteps: [
+        'nav-section-yourself',
+        'nav-section-household',
+      ],
+      pages: [
+        {
+          pageId: 'page-income',
+          setUp: function() {
+            click(nextButton, 4);
+          },
+        },
+        {
+          pageId: 'page-income-details-wages',
+          setUp: function() {
+            click(nextButton, 4);
+            document.getElementById('income-has-wages').checked = true;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-income-details-self-employed',
+          setUp: function() {
+            click(nextButton, 4);
+            document.getElementById('income-has-self-employed').checked = true;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-income-details-disability',
+          setUp: function() {
+            click(nextButton, 4);
+            document.getElementById('income-has-disability').checked = true;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-income-details-unemployment',
+          setUp: function() {
+            click(nextButton, 4);
+            document.getElementById('income-has-unemployment').checked = true;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-income-details-retirement',
+          setUp: function() {
+            click(nextButton, 4);
+            document.getElementById('income-has-retirement').checked = true;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-income-details-veterans',
+          setUp: function() {
+            click(nextButton, 4);
+            document.getElementById('income-has-veterans').checked = true;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-income-details-workers-comp',
+          setUp: function() {
+            click(nextButton, 4);
+            document.getElementById('income-has-workers-comp').checked = true;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-income-details-child-support',
+          setUp: function() {
+            click(nextButton, 4);
+            document.getElementById('income-has-child-support').checked = true;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-income-details-other',
+          setUp: function() {
+            click(nextButton, 4);
+            document.getElementById('income-has-other').checked = true;
+            click(nextButton);
+          },
+        },
+        {
+          pageId: 'page-income-assets',
+          setUp: function() {
+            click(nextButton, 5);
+          },
+        },
+      ],
+    },
+    {
+      sectionId: 'section-existing-benefits',
+      backVisible: true,
+      nextVisible: false,
+      submitVisible: true,
+      disabledSteps: [
+        'nav-section-results',
+      ],
+      inProgressStep: 'nav-section-existing-benefits',
+      doneSteps: [
+        'nav-section-yourself',
+        'nav-section-household',
+        'nav-section-income',
+      ],
+      pages: [
+        {
+          pageId: 'page-existing-benefits',
+          setUp: function() {
+            click(nextButton, 6);
+          },
+        },
+      ],
+    },
+    {
+      sectionId: 'section-results',
+      backVisible: true,
+      nextVisible: false,
+      submitVisible: false,
+      disabledSteps: [],
+      inProgressStep: 'nav-section-results',
+      doneSteps: [
+        'nav-section-yourself',
+        'nav-section-household',
+        'nav-section-income',
+        'nav-section-existing-benefits',
+        'nav-section-results',
+      ],
+      pages: [
+        {
+          pageId: 'page-results',
+          setUp: function() {
+            // This eval is needed for window access to the eligibility functions.
+            window.eval(eligScript);
+            click(nextButton, 6);
+            click(submitButton);
+          },
+        },
+      ],
+    },
+  ];
+
+  function expectPagesUsed(pageIds) {
+    // Get back to the beginning.
+    while (!backButton.classList.contains('hidden')) {
+      backButton.click();
+    };
+    // Click through all pages.
+    let pageIdsSeen = [visiblePage().id];
+    while (!nextButton.classList.contains('hidden')) {
+      nextButton.click();
+      pageIdsSeen.push(visiblePage().id);
+    };
+    expect(pageIds.sort()).toEqual(pageIdsSeen.sort());
+  }
+
+  beforeEach(() => {
+    // This step is a bit slow, so use caution when creating new test() calls.
+    document.body.parentElement.innerHTML = html;
+    elig.init();
+    nextButton = document.getElementById('next-button');
+    backButton = document.getElementById('back-button');
+    submitButton = document.getElementById('submit-button');
+  });
+
+  describe.each(
+    pageTestCases)('Section UI is correct for $sectionId', ({sectionId,
+      backVisible, nextVisible, submitVisible, disabledSteps, inProgressStep,
+      doneSteps, pages}) => {
+    test.each(pages)(`$pageId`, ({pageId, setUp, otherChecks}) => {
+      // Navigate to the page of interest and do any other setup.
+      if (setUp) {
+        setUp();
+      }
+      // Ensure the expected page and section are visible.
+      expect(visibleSection().id).toBe(sectionId);
+      expect(visiblePage().id).toBe(pageId);
+      // Ensure the step indicator state is as expected.
+      expectStepsDisabled(disabledSteps);
+      expectStepInProgress(inProgressStep);
+      expectStepsDone(doneSteps);
+      // Ensure the form controls are as expected.
+      expectVisibility('back-button', backVisible);
+      expectVisibility('next-button', nextVisible);
+      expectVisibility('submit-button', submitVisible);
+      // Check any page-specific items.
+      if (otherChecks) {
+        otherChecks();
+      }
+    });
+  });
+
+  test('Can navigate using the back button', () => {
+    const pages = document.querySelectorAll('.elig_page');
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-yourself-start');
+    click(backButton);
+    expect(visiblePage().id).toBe('page-intro');
+    click(nextButton, 2);
+    // Skips over conditional pages between yourself-start and household-members
+    expect(visiblePage().id).toBe('page-household-members');
+    click(backButton);
+    // Returns to the previously-seen page, not the closest prior page
+    expect(visiblePage().id).toBe('page-yourself-start');
+  });
+
+  test('Can jump to sections with the step indicator', () => {
+    // Get to the very end of the form.
+    window.eval(eligScript);
+    while (submitButton.classList.contains('hidden')) {
+      nextButton.click();
+    };
+    submitButton.click();
+    expect(visiblePage().id).toBe('page-results');
+    // Navigate to each section using the step indicator.
+    for (const step of getSteps()) {
+      let expectedSection;
+      let expectedPage;
+      switch(step.id) {
+        case 'nav-section-yourself':
+          expectedSection = 'section-yourself';
+          expectedPage = 'page-yourself-start';
+          break;
+        case 'nav-section-household':
+          expectedSection = 'section-household';
+          expectedPage = 'page-household-members';
+          break;
+        case 'nav-section-income':
+          expectedSection = 'section-income';
+          expectedPage = 'page-income';
+          break;
+        case 'nav-section-existing-benefits':
+          expectedSection = 'section-existing-benefits';
+          expectedPage = 'page-existing-benefits';
+          break;
+        case 'nav-section-results':
+          expectedSection = 'section-results';
+          expectedPage = 'page-results';
+          break;
+        default:
+          throw new Error(`Section "${step.id}" needs a test case added.`);
+      }
+      expect(visibleSection().id).not.toBe(expectedSection);
+      click(step);
+      expect(visibleSection().id).toBe(expectedSection);
+      expect(visiblePage().id).toBe(expectedPage);
+    }
+  });
+
+  // TODO: Break tests like this into individual test() calls, presuming
+  // the test suite does not take too long to run.  Or even if it does, perhaps
+  // then separate this functional test suite out from the unit test suites.
+  test('Can add and remove items from dynamicFieldLists', () => {
+    // Duty periods
+    let selector = '#page-veteran-details ul.dynamic_field_list > li';
+    // Starts with a duty period already populated.
+    expect(document.querySelectorAll(selector).length).toBe(1);
+    addDutyPeriod();
+    addDutyPeriod();
+    const origDutyPeriods = document.querySelectorAll(selector);
+    expect(origDutyPeriods.length).toBe(3);
+    // There are 3 duty periods. Remove the middle one.
+    removeDutyPeriodAt(1);
+    const updatedDutyPeriods = document.querySelectorAll(selector);
+    expect(updatedDutyPeriods.length).toBe(2);
+    // The remaining duty periods should be the first and last one in the
+    // inital list of 3.
+    expect(updatedDutyPeriods[0]).toEqual(origDutyPeriods[0]);
+    expect(updatedDutyPeriods[1]).toEqual(origDutyPeriods[2]);
+
+
+    // Household members
+    selector = '#page-household-members ul.dynamic_field_list > li';
+    // Starts with user already populated.
+    expect(document.querySelectorAll(selector).length).toBe(1);
+    // There should be just one income section corresponding to the one member.
+    expectNumIncomeListsToBe(1);
+    addHouseholdMember();
+    addHouseholdMember();
+    const origMembers = document.querySelectorAll(selector);
+    expect(origMembers.length).toBe(3);
+    // An income sections should also automatically be added for the new
+    // household members
+    // TODO: Test that existing income data is not copied to the new section.
+    // TODO: Test the new section heading matches the member name.
+    expectNumIncomeListsToBe(3);
+    removeHouseholdMemberAt(1);
+    const updatedMembers = document.querySelectorAll(selector);
+    expect(updatedMembers.length).toBe(2);
+    expectNumIncomeListsToBe(2);
+    expect(updatedMembers[0]).toEqual(origMembers[0]);
+    expect(updatedMembers[1]).toEqual(origMembers[2]);
+    // Ensure household member names can be updated.
+    enterText(updatedMembers[1].querySelector('#hh-member-name-2'), 'Ada');
+    expect(updatedMembers[1].querySelector('h4').textContent).toBe('Ada');
+
+    // All incomes and assets
+    selector = ':scope > li';
+    const incomePages = getIncomePages();
+    expect(incomePages.length).toBeGreaterThan(0);
+    for (const incomePage of incomePages) {
+      const incomeLists = getIncomeLists(incomePage);
+      expect(incomeLists.length).toBe(2);
+      for (const incomeList of incomeLists) {
+        expect(incomeList.querySelectorAll(selector).length).toBe(0);
+        const addButton = incomeList.parentElement.querySelector('.field_list_add');
+        click(addButton);
+        click(addButton);
+        const origEntries = incomeList.querySelectorAll(selector);
+        expect(origEntries.length).toBe(2);
+        for (const entry of origEntries) {
+          enterText(entry.querySelector('input[type=number]'), '123');
+        }
+        const removeButtons = incomeList.querySelectorAll(':scope > li button');
+        click(removeButtons[0]);
+        const updatedEntries = incomeList.querySelectorAll(selector);
+        expect(updatedEntries.length).toBe(1);
+        expect(updatedEntries[0]).toEqual(origEntries[1]);
+      }
+      // Two household members, one income entry each.
+      expect(incomePage.textContent).toContain('$246');
+      // Named household member should appear.
+      expect(incomePage.textContent).toContain('Ada');
+    }
+  });
+
+  test('Selecting no income clears and disables all income options', () => {
+    const incomeCheckboxes = document.querySelectorAll(
+      '[id^="income-has-"]:not(#income-has-none)');
+    const noIncomeCheckbox = document.getElementById('income-has-none');
+    for (const checkbox of incomeCheckboxes) {
+      expect(checkbox.disabled).toBe(false);
+      checkbox.checked = true;
+    }
+    // Use click() here rather than .checked so that the proper event fires.
+    click(noIncomeCheckbox);
+    expect(noIncomeCheckbox.checked).toBe(true);
+    for (const checkbox of incomeCheckboxes) {
+      expect(checkbox.disabled).toBe(true);
+      expect(checkbox.checked).toBe(false);
+    }
+    click(noIncomeCheckbox);
+    expect(noIncomeCheckbox.checked).toBe(false);
+    for (const checkbox of incomeCheckboxes) {
+      expect(checkbox.disabled).toBe(false);
+      expect(checkbox.checked).toBe(false);
+    }
+  });
+
+  test('Pages linked together properly', () => {
+    let expectedPages = [
+      'page-intro',
+      'page-yourself-start',
+      'page-household-members',
+      'page-household-situation',
+      'page-income',
+      'page-income-assets',
+      'page-existing-benefits',
+    ];
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-head-of-household');
+    enterText(document.getElementById('age'), elig.cnst.calworks.MAX_CHILD_AGE);
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-immigration-status');
+    document.getElementById('not-citizen').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-disability-details');
+    document.getElementById('disabled').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('disabled').checked = false;
+    document.getElementById('blind').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('blind').checked = false;
+    document.getElementById('deaf').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-veteran-details');
+    document.getElementById('veteran').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-veteran-duty-period');
+    document.getElementById('served-from').value = '1960-01-01';
+    document.getElementById('served-until').value = '1961-12-30';  // 729 days later
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-household-unborn-members');
+    document.getElementById('pregnant').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('pregnant').checked = false;
+    addHouseholdMember();
+    document.getElementById('hh-member-pregnant-1').checked = true;
+    expectPagesUsed(expectedPages);
+
+    document.getElementById('vehicle').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('transitional').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('hotel').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('shelter').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('no-stable-place').checked = true;
+    expectPagesUsed(expectedPages);
+    expectedPages.push('page-household-housed');
+    document.getElementById('housed').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('unlisted-stable-place').checked = true;
+    expectPagesUsed(expectedPages);
+
+    document.getElementById('income-has-none').checked = true;
+    expectPagesUsed(expectedPages);
+    document.getElementById('income-has-none').checked = false;
+
+    expectedPages.push('page-income-details-wages');
+    document.getElementById('income-has-wages').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-self-employed');
+    document.getElementById('income-has-self-employed').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-disability');
+    document.getElementById('income-has-disability').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-unemployment');
+    document.getElementById('income-has-unemployment').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-retirement');
+    document.getElementById('income-has-retirement').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-veterans');
+    document.getElementById('income-has-veterans').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-workers-comp');
+    document.getElementById('income-has-workers-comp').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-child-support');
+    document.getElementById('income-has-child-support').checked = true;
+    expectPagesUsed(expectedPages);
+
+    expectedPages.push('page-income-details-other');
+    document.getElementById('income-has-other').checked = true;
+    expectPagesUsed(expectedPages);
+
+    const allPages = Array.from(
+      document.querySelectorAll('.elig_page:not(#page-results)'), p => p.id);
+    expectPagesUsed(allPages);
+  })
 });
 
+test.todo('Unused pages are cleared before eligibility assessment');
+
 describe('buildInputObj', () => {
+  beforeAll(() => {
+    document.body.parentElement.innerHTML = html;
+  });
+
   test.each([true, false, null])('Sets paysUtilities with value of %s', (val) => {
     setYesNo('pay-utilities', val);
     expect(getInput()).toHaveProperty('paysUtilities', val);
@@ -221,10 +972,8 @@ describe('buildInputObj', () => {
       existingWicMe: true,
     };
 
-    // Note we have to call init() within an eval(), otherwise init() will
-    // run in the Node environment rather than the JSDOM environment, and things
-    // like DocumentFragment (and other browser/DOM stuff) will not be defined.
-    window.eval('init()');
+    document.body.parentElement.innerHTML = html;
+    elig.init();
     document.getElementById('age').value = expected.age;
     expect(getInput().age).toBe(expected.age);
 
