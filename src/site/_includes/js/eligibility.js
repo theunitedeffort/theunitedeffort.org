@@ -1893,7 +1893,8 @@ function lifelineResult(input) {
     input.existingLiheapHousehold,
     input.existingSsiMe,
     input.existingSsiHousehold,
-    // TODO (#399): add Section 8.
+    input.existingPhaMe,
+    input.existingPhaHousehold,
     // TODO: add CFAP?
     input.existingCalfreshMe,
     input.existingCalfreshHousehold,
@@ -1916,7 +1917,7 @@ function lifelineResult(input) {
   program.addConditionsOneOf([
     new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
-    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, NSLP or VA Pension',
+    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, NSLP, Public Housing Assistance, or VA Pension',
       isProgramQualified),
   ]);
 
