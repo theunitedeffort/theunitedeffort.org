@@ -970,6 +970,8 @@ describe('buildInputObj', () => {
       existingVaPensionMe: true,
       existingWicHousehold: true,
       existingWicMe: true,
+      existingPhaHousehold: true,
+      existingPhaMe: true
     };
 
     document.body.parentElement.innerHTML = html;
@@ -1161,6 +1163,12 @@ describe('buildInputObj', () => {
 
     document.getElementById('existing-wic-me').checked = expected.existingWicMe;
     expect(getInput().existingWicMe).toBe(expected.existingWicMe);
+
+    document.getElementById('existing-pha-me').checked = expected.existingPhaMe;
+    expect(getInput().existingPhaMe).toBe(expected.existingPhaMe);
+
+    document.getElementById('existing-pha-household').checked = expected.existingPhaHousehold;
+    expect(getInput().existingPhaHousehold).toBe(expected.existingPhaHousehold);
 
     expect(getInput()).toEqual(expected);
   });
