@@ -7,6 +7,13 @@ const elig = require('../eligibility');
 const fs = require('fs');
 const path = require('path');
 
+function timeout(startMs, timeoutMs=100) {
+  if (new Date().getTime() - startMs > timeoutMs) {
+    throw new Error(`Timed out after ${timeoutMs}ms`);
+  }
+  return false;
+}
+
 function visiblePage() {
   const visiblePages = document.querySelectorAll('.elig_page:not(.hidden)');
   expect(visiblePages.length).toBe(1);
@@ -518,13 +525,19 @@ describe('Navigation and UI', () => {
 
   function expectPagesUsed(pageIds) {
     // Get back to the beginning.
-    while (!backButton.classList.contains('hidden')) {
-      backButton.click();
+    let start = new Date().getTime();
+    while (timeout(start) || !backButton.classList.contains('hidden')) {
+      expect(() => {
+        backButton.click();
+      }).not.toThrow();
     };
     // Click through all pages.
     let pageIdsSeen = [visiblePage().id];
-    while (!nextButton.classList.contains('hidden')) {
-      nextButton.click();
+    start = new Date().getTime();
+    while (timeout(start) || !nextButton.classList.contains('hidden')) {
+      expect(() => {
+        nextButton.click();
+      }).not.toThrow();
       pageIdsSeen.push(visiblePage().id);
     };
     expect(pageIds.sort()).toEqual(pageIdsSeen.sort());
@@ -583,8 +596,11 @@ describe('Navigation and UI', () => {
   test('Can jump to sections with the step indicator', () => {
     // Get to the very end of the form.
     window.eval(eligScript);
-    while (submitButton.classList.contains('hidden')) {
-      nextButton.click();
+    let start = new Date().getTime();
+    while (timeout(start) || submitButton.classList.contains('hidden')) {
+      expect(() => {
+        nextButton.click();
+      }).not.toThrow();
     };
     submitButton.click();
     expect(visiblePage().id).toBe('page-results');
@@ -631,14 +647,21 @@ describe('Navigation and UI', () => {
     let selector = '#page-veteran-details ul.dynamic_field_list > li';
     // Starts with a duty period already populated.
     expect(document.querySelectorAll(selector).length).toBe(1);
+    // There should be just one follow-up question corresponding to the one duty
+    // period.
+    const qSelector = '#page-veteran-duty-period fieldset'
+    expect(document.querySelectorAll(qSelector).length).toBe(1);
     addDutyPeriod();
     addDutyPeriod();
     const origDutyPeriods = document.querySelectorAll(selector);
     expect(origDutyPeriods.length).toBe(3);
+    // A follow-up question should also be added for the new duty period.
+    expect(document.querySelectorAll(qSelector).length).toBe(3);
     // There are 3 duty periods. Remove the middle one.
     removeDutyPeriodAt(1);
     const updatedDutyPeriods = document.querySelectorAll(selector);
     expect(updatedDutyPeriods.length).toBe(2);
+    expect(document.querySelectorAll(qSelector).length).toBe(2);
     // The remaining duty periods should be the first and last one in the
     // inital list of 3.
     expect(updatedDutyPeriods[0]).toEqual(origDutyPeriods[0]);
