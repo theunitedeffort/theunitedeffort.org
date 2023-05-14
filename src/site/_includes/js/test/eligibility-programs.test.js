@@ -495,6 +495,8 @@ describe('Program eligibility', () => {
       existingGaHousehold: false,
       existingVaPensionMe: false,
       existingVaPensionHousehold: false,
+      existingPhaMe: false,
+      existingPhaHousehold: false,
     };
   });
 
@@ -1150,6 +1152,10 @@ describe('Program eligibility', () => {
         .isEligibleIf('existingVaPensionMe').is(true);
       check(elig.lifelineResult, input)
         .isEligibleIf('existingVaPensionHousehold').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingPhaMe').is(true);
+      check(elig.lifelineResult, input)
+        .isEligibleIf('existingPhaHousehold').is(true);
 
       check(elig.lifelineResult, input).isEligibleIf(liheapMadeEligible);
       check(elig.lifelineResult, input).isEligibleIf(ssiMadeEligible);
