@@ -690,7 +690,6 @@ function addDynamicFieldListItem() {
     "ul.dynamic_field_list");
   // TODO (#422): This also gets all descendants, but we only want children.
   const items = list.querySelectorAll("li");
-  console.log(items);
   // Figure out the largest id index used so far.
   // TODO (#396): replace optional chaining operators.
   const lastInput = items[items.length - 1]?.querySelector("input");
