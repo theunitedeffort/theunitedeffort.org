@@ -7,6 +7,13 @@ const elig = require('../eligibility');
 const fs = require('fs');
 const path = require('path');
 
+function timeout(startMs, timeoutMs=100) {
+  if (new Date().getTime() - startMs > timeoutMs) {
+    throw new Error(`Timed out after ${timeoutMs}ms`);
+  }
+  return false;
+}
+
 function visiblePage() {
   const visiblePages = document.querySelectorAll('.elig_page:not(.hidden)');
   expect(visiblePages.length).toBe(1);
@@ -107,13 +114,17 @@ function setYesNo(id, value) {
   }
 }
 
+// Clicks on an element, but _only_ if it's visible to the user.
 function click(elem, times=1) {
+  check(elem).isVisible();
   for (let i = 0; i < times; i+=1) {
     elem.click();
   }
 }
 
+// Enters text into an element, but _only_ if it's visible to the user.
 function enterText(elem, text) {
+  check(elem).isVisible();
   if (['INPUT', 'TEXTAREA', 'SELECT'].includes(elem.tagName)) {
     elem.value = text.toString();
     const changeEvent = new Event('change');
@@ -159,7 +170,7 @@ function addMoney(pageIdPrefix, type, valueArr) {
         memberId = `-member${memberIdx}`;
       }
       const fieldId = `income-${type}${memberId}-${entryIdx}`;
-      click(buttons[memberIdx]);
+      buttons[memberIdx].click();
       document.getElementById(fieldId).value = valueArr[memberIdx][entryIdx];
     }
   }
@@ -178,16 +189,36 @@ function getInput() {
 }
 
 
-function check(id) {
+function check(idOrElem) {
   return {
-    id,
+    idOrElem,
     isVisible: function() {
-      expect(document.getElementById(this.id).className,
-        `Unexpected visibility for "${this.id}"`).not.toContain('hidden');
+      let elem = this.idOrElem;
+      if (typeof this.idOrElem === 'string') {
+        elem = document.getElementById(this.idOrElem);
+      }
+      expect(elem.className,
+        `"${this.idOrElem}" is not visible`).not.toContain('hidden');
+      while (elem.parentElement) {
+        elem = elem.parentElement;
+        expect(elem.className,
+          `Ancestor of "${this.idOrElem}" is not visible ("${elem.id}")`)
+          .not.toContain('hidden');
+      }
     },
     isHidden: function() {
-      expect(document.getElementById(this.id).className,
-        `Unexpected visibility for "${this.id}"`).toContain('hidden');
+      let elem = this.idOrElem;
+      if (typeof this.idOrElem === 'string') {
+        elem = document.getElementById(this.idOrElem);
+      }
+      let elems = [elem]
+      while (elem.parentElement) {
+        elem = elem.parentElement;
+        elems.push(elem);
+      }
+      const hiddens = elems.map(e => e.classList.contains('hidden'));
+      expect(hiddens, `"${this.idOrElem}", nor any ancestor is hidden`)
+        .toContain(true);
     },
   };
 }
@@ -516,17 +547,38 @@ describe('Navigation and UI', () => {
     },
   ];
 
+
+  function clickUntilHidden(button) {
+    let start = new Date().getTime();
+    let prevPageId = visiblePage().id;
+    let pageIdsSeen = [prevPageId];
+    while (timeout(start) || !button.classList.contains('hidden')) {
+      // NOTE: Errors in the click handler do not propagate back to Jest.
+      // When calling such handlers in a loop like this, there is the potential
+      // for many errors to accumulate and spam the output console.  We attempt
+      // to prevent that by 1) having a timeout and 2) making sure the click()
+      // actually does something before continuing the loop.
+      click(button);
+      const thisPageId = visiblePage().id;
+      expect(thisPageId).not.toBe(prevPageId);
+      pageIdsSeen.push(thisPageId);
+      prevPageId = thisPageId;
+    };
+    return pageIdsSeen;
+  }
+
+  function toFormStart() {
+    return clickUntilHidden(backButton);
+  }
+  function toFormEnd() {
+    return clickUntilHidden(nextButton);
+  }
+
   function expectPagesUsed(pageIds) {
     // Get back to the beginning.
-    while (!backButton.classList.contains('hidden')) {
-      backButton.click();
-    };
+    toFormStart()
     // Click through all pages.
-    let pageIdsSeen = [visiblePage().id];
-    while (!nextButton.classList.contains('hidden')) {
-      nextButton.click();
-      pageIdsSeen.push(visiblePage().id);
-    };
+    const pageIdsSeen = toFormEnd();
     expect(pageIds.sort()).toEqual(pageIdsSeen.sort());
   }
 
@@ -583,10 +635,8 @@ describe('Navigation and UI', () => {
   test('Can jump to sections with the step indicator', () => {
     // Get to the very end of the form.
     window.eval(eligScript);
-    while (submitButton.classList.contains('hidden')) {
-      nextButton.click();
-    };
-    submitButton.click();
+    toFormEnd();
+    click(submitButton);
     expect(visiblePage().id).toBe('page-results');
     // Navigate to each section using the step indicator.
     for (const step of getSteps()) {
@@ -628,6 +678,9 @@ describe('Navigation and UI', () => {
   // then separate this functional test suite out from the unit test suites.
   test('Can add and remove items from dynamicFieldLists', () => {
     // Duty periods
+    click(nextButton);
+    click(document.getElementById('veteran'));
+    click(nextButton);
     let selector = '#page-veteran-details ul.dynamic_field_list > li';
     // Starts with a duty period already populated.
     expect(document.querySelectorAll(selector).length).toBe(1);
@@ -644,8 +697,8 @@ describe('Navigation and UI', () => {
     expect(updatedDutyPeriods[0]).toEqual(origDutyPeriods[0]);
     expect(updatedDutyPeriods[1]).toEqual(origDutyPeriods[2]);
 
-
     // Household members
+    click(nextButton);
     selector = '#page-household-members ul.dynamic_field_list > li';
     // Starts with user already populated.
     expect(document.querySelectorAll(selector).length).toBe(1);
@@ -671,10 +724,21 @@ describe('Navigation and UI', () => {
     expect(updatedMembers[1].querySelector('h4').textContent).toBe('Ada');
 
     // All incomes and assets
+    click(nextButton, 2);
+    click(document.getElementById('income-has-wages'));
+    click(document.getElementById('income-has-self-employed'));
+    click(document.getElementById('income-has-disability'));
+    click(document.getElementById('income-has-unemployment'));
+    click(document.getElementById('income-has-retirement'));
+    click(document.getElementById('income-has-veterans'));
+    click(document.getElementById('income-has-workers-comp'));
+    click(document.getElementById('income-has-child-support'));
+    click(document.getElementById('income-has-other'));
     selector = ':scope > li';
     const incomePages = getIncomePages();
     expect(incomePages.length).toBeGreaterThan(0);
     for (const incomePage of incomePages) {
+      click(nextButton);
       const incomeLists = getIncomeLists(incomePage);
       expect(incomeLists.length).toBe(2);
       for (const incomeList of incomeLists) {
@@ -704,6 +768,8 @@ describe('Navigation and UI', () => {
     const incomeCheckboxes = document.querySelectorAll(
       '[id^="income-has-"]:not(#income-has-none)');
     const noIncomeCheckbox = document.getElementById('income-has-none');
+    click(nextButton, 4);
+    expect(visiblePage().id).toBe('page-income');
     for (const checkbox of incomeCheckboxes) {
       expect(checkbox.disabled).toBe(false);
       checkbox.checked = true;
@@ -736,7 +802,7 @@ describe('Navigation and UI', () => {
     expectPagesUsed(expectedPages);
 
     expectedPages.push('page-head-of-household');
-    enterText(document.getElementById('age'), elig.cnst.calworks.MAX_CHILD_AGE);
+    document.getElementById('age').value = elig.cnst.calworks.MAX_CHILD_AGE;
     expectPagesUsed(expectedPages);
 
     expectedPages.push('page-immigration-status');
@@ -766,7 +832,8 @@ describe('Navigation and UI', () => {
     document.getElementById('pregnant').checked = true;
     expectPagesUsed(expectedPages);
     document.getElementById('pregnant').checked = false;
-    addHouseholdMember();
+    document.querySelector(
+    '#page-household-members .field_list_add').click();
     document.getElementById('hh-member-pregnant-1').checked = true;
     expectPagesUsed(expectedPages);
 
@@ -1003,8 +1070,10 @@ describe('buildInputObj', () => {
     setYesNo('head-household', expected.headOfHousehold);
     expect(getInput().headOfHousehold).toBe(expected.headOfHousehold);
 
-    addHouseholdMember();
-    addHouseholdMember();
+    const householdMemberAdd = document.querySelector(
+      '#page-household-members .field_list_add');
+    householdMemberAdd.click();
+    householdMemberAdd.click();
     document.getElementById('hh-member-age-1').value = expected.householdAges[0];
     document.getElementById('hh-member-age-2').value = expected.householdAges[1];
     expect(getInput().householdAges).toEqual(expected.householdAges);
@@ -1059,7 +1128,8 @@ describe('buildInputObj', () => {
     document.getElementById('full-dur-yes').checked = expected.servedFullDuration;
     expect(getInput().servedFullDuration).toBe(expected.servedFullDuration);
 
-    addDutyPeriod();
+    const button = document.querySelector(
+      '#page-veteran-details .field_list_add').click();
     document.getElementById('your-duty-type').value = expected.dutyPeriods[0].type;
     document.getElementById('served-from').value = dutyPeriodStartStrs[0];
     document.getElementById('served-until').value = dutyPeriodEndStrs[0];
