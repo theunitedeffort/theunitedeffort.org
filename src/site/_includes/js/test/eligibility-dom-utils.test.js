@@ -21,13 +21,13 @@ describe('modifyIds', () => {
   test('Modifies descendant elements with an id', () => {
     document.body.innerHTML = `
       <span id="parent">
-        <div id="child-div"><span id="child-span"></span></div>
+        <div id="child-div"><span id="grandchild-span"></span></div>
         <input type="text" id="child-input">
       </span>`;
     const parent = document.getElementById('parent');
     elig.modifyIds(parent, '-v2');
     expect(parent.querySelector('div').id).toBe('child-div-v2');
-    expect(parent.querySelector('span').id).toBe('child-span-v2');
+    expect(parent.querySelector('span').id).toBe('grandchild-span-v2');
     expect(parent.querySelector('input').id).toBe('child-input-v2');
   });
 
@@ -44,15 +44,28 @@ describe('modifyIds', () => {
   test('Updates label elements to match modified inputs', () => {
     document.body.innerHTML = `
       <span id="parent">
-        <input type="text" id="grandchild">
-        <label for="grandchild">Label</label>
+        <input type="text" id="child">
+        <label for="child">Label</label>
       </span>`;
     const parent = document.getElementById('parent');
     elig.modifyIds(parent, '-v2');
-    expect(parent.querySelector('input').id).toBe('grandchild-v2');
+    expect(parent.querySelector('input').id).toBe('child-v2');
     expect(
-      parent.querySelector('label').getAttribute('for')).toBe('grandchild-v2');
+      parent.querySelector('label').getAttribute('for')).toBe('child-v2');
   });
+
+  test('Modifies name attributes in descendant elements', () => {
+    document.body.innerHTML = `
+      <span id="parent">
+        <input type="radio" id="child" name="button-group">
+        <input type="radio" id="child2" name="button-group">
+      </span>`;
+    const parent = document.getElementById('parent');
+    elig.modifyIds(parent, '-v2');
+    const inputs = parent.querySelectorAll('input');
+    expect(inputs[0].name).toBe('button-group-v2');
+    expect(inputs[1].name).toBe('button-group-v2');
+  })
 });
 
 describe('clearInputs', () => {
