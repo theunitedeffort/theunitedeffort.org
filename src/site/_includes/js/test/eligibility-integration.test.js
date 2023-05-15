@@ -122,6 +122,14 @@ function click(elem, times=1) {
   }
 }
 
+// Selects an option from a select element, but _only_ if it's visible to the
+// user and such an option exists.
+function select(elem, option) {
+  expect(elem.querySelector(`[value="${option}"]`),
+    `No such option "${option}" for id "${elem.id}"`).not.toBe(null);
+  enterText(elem, option);
+}
+
 // Enters text into an element, but _only_ if it's visible to the user.
 function enterText(elem, text) {
   check(elem).isVisible();
