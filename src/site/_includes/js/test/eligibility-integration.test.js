@@ -690,17 +690,27 @@ describe('Navigation and UI', () => {
     select(document.getElementById('your-duty-type'), 'active-duty');
     enterText(document.getElementById('served-from'), '2020-01-01');
     enterText(document.getElementById('served-until'), '2020-01-02');
+    click(nextButton);
+    let thisPage = visiblePage();
+    expect(thisPage.id).toBe('page-veteran-duty-period');
+    check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
+    expect(thisPage.textContent).toContain('from 1/1/2020 until 1/2/2020');
+    // Choose an option for the follow up question
+    click(document.getElementById('full-dur-yes'));
+    click(backButton);
+    // Add a new duty period to use for the remainder of the test
     click(visiblePage().querySelector('.field_list_add'));
     select(document.getElementById('your-duty-type-1'), 'active-duty');
     enterText(document.getElementById('served-from-1'), '2000-01-01');
     enterText(document.getElementById('served-until-1'), '2001-12-30');  // 729 days
     click(nextButton);
-    let thisPage = visiblePage();
-    expect(thisPage.id).toBe('page-veteran-duty-period');
-    check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
     check(thisPage.querySelectorAll('fieldset')[1]).isVisible();
-    expect(thisPage.textContent).toContain('from 1/1/2020 until 1/2/2020');
     expect(thisPage.textContent).toContain('from 1/1/2000 until 12/30/2001');
+    // The selection made in the first question should not be copied to the
+    // second question.
+    expect(document.getElementById('full-dur-yes').checked).toBe(true);
+    expect(document.getElementById('full-dur-yes-period1').checked).toBe(false);
+
 
     // Not active duty
     const otherDutyTypes = Array.from(
