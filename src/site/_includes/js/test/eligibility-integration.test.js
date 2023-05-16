@@ -567,6 +567,8 @@ describe('Navigation and UI', () => {
       // for many errors to accumulate and spam the output console.  We attempt
       // to prevent that by 1) having a timeout and 2) making sure the click()
       // actually does something before continuing the loop.
+      // https://github.com/testing-library/react-testing-library/issues/624
+      // https://github.com/testing-library/react-testing-library/issues/1068
       click(button);
       const thisPageId = visiblePage().id;
       expect(thisPageId).not.toBe(prevPageId);
