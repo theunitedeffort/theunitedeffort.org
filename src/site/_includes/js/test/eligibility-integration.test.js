@@ -710,7 +710,11 @@ describe('Navigation and UI', () => {
     // second question.
     expect(document.getElementById('full-dur-yes').checked).toBe(true);
     expect(document.getElementById('full-dur-yes-period1').checked).toBe(false);
-
+    // Selecting an option in the second question should not affect the
+    // option selected in the first question.
+    click(document.getElementById('full-dur-yes-period1'))
+    expect(document.getElementById('full-dur-yes').checked).toBe(true);
+    expect(document.getElementById('full-dur-yes-period1').checked).toBe(true);
 
     // Not active duty
     const otherDutyTypes = Array.from(
