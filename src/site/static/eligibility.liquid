@@ -143,24 +143,25 @@ pageClass: "page-public-assistance"
 
     {% eligPage "veteran-duty-period" %}
       <h3>About Your Military Service</h3>
-
-      <p>
-        This question is about your <span class="bold">active duty period</span> from <span id="served-from-placeholder" class="bold"></span> until <span id="served-until-placeholder" class="bold"></span>.
-      </p>
-      <div>
-        <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
-        {% singleselect "mil-svc-duration" %}
-          {% option "full-dur-yes" %}
-            Yes
-          {% endoption %}
-          {% option "full-dur-no" %}
-            No
-          {% endoption %}
-          {% option "full-dur-not-called" %}
-            I was not called or ordered to this active duty period
-          {% endoption %}
-        {% endsingleselect %}
-      </div>
+      <fieldset>
+        <p>
+          This question is about your <span class="bold">active duty period</span> from <span id="served-from-ref" class="bold"></span> until <span id="served-until-ref" class="bold"></span>.
+        </p>
+        <div>
+          <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
+          {% singleselect "mil-svc-duration" %}
+            {% option "full-dur-yes" %}
+              Yes
+            {% endoption %}
+            {% option "full-dur-no" %}
+              No
+            {% endoption %}
+            {% option "full-dur-not-called" %}
+              I was not called or ordered to this active duty period
+            {% endoption %}
+          {% endsingleselect %}
+        </div>
+      </fieldset>
     {% endeligPage %}
 
     {% eligPage "immigration-status" %}
