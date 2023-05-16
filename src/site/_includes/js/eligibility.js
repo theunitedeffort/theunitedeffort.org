@@ -578,7 +578,7 @@ function onDutyPeriodAdd() {
     '#page-veteran-duty-period fieldset');
   const newFieldset = firstFieldset.cloneNode(true);
   const idModifier = `-period${newPeriod.dynamicFieldListId}`;
-  modifyIds(newFieldset, idModifier)
+  modifyIds(newFieldset, idModifier);
   clearInputs(newFieldset);
   firstFieldset.parentNode.appendChild(newFieldset);
   newPeriod.linkedElems = [newFieldset];
@@ -745,7 +745,8 @@ function addDynamicFieldListItem() {
 function removeDynamicFieldListItem(listItem) {
   const list = listItem.parentElement;
 
-  // If the item is a household member, it will have associated income lists.
+  // If the item has linked elements on other pages (e.g. household members,
+  // duty periods), they will need to be removed as well.
   if (listItem.linkedElems) {
     for (const fieldset of listItem.linkedElems) {
       const parent = fieldset.parentElement;
