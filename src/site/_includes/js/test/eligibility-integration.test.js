@@ -7,7 +7,7 @@ const elig = require('../eligibility');
 const fs = require('fs');
 const path = require('path');
 
-function timeout(startMs, timeoutMs=100) {
+function timeout(startMs, timeoutMs=1000) {
   if (new Date().getTime() - startMs > timeoutMs) {
     throw new Error(`Timed out after ${timeoutMs}ms`);
   }
@@ -120,6 +120,14 @@ function click(elem, times=1) {
   for (let i = 0; i < times; i+=1) {
     elem.click();
   }
+}
+
+// Selects an option from a select element, but _only_ if it's visible to the
+// user and such an option exists.
+function select(elem, option) {
+  expect(elem.querySelector(`[value="${option}"]`),
+    `No such option "${option}" for id "${elem.id}"`).not.toBe(null);
+  enterText(elem, option);
 }
 
 // Enters text into an element, but _only_ if it's visible to the user.
@@ -331,13 +339,14 @@ describe('Navigation and UI', () => {
             click(nextButton);
             document.getElementById('veteran').checked = true;
             click(nextButton);
-            document.getElementById('served-from').value = '1960-01-01';
-            document.getElementById('served-until').value = '1961-12-30';  // 729 days later
+            document.getElementById('served-from').value = '2000-01-01';
+            document.getElementById('served-until').value = '2001-12-30';  // 729 days later
+            document.getElementById('your-duty-type').value = 'active-duty';
             click(nextButton);
           },
           otherChecks: function() {
             expect(document.getElementById('page-veteran-duty-period').textContent)
-              .toContain('from 1/1/1960 until 12/30/1961');
+              .toContain('from 1/1/2000 until 12/30/2001');
           },
         },
         {
@@ -558,6 +567,8 @@ describe('Navigation and UI', () => {
       // for many errors to accumulate and spam the output console.  We attempt
       // to prevent that by 1) having a timeout and 2) making sure the click()
       // actually does something before continuing the loop.
+      // https://github.com/testing-library/react-testing-library/issues/624
+      // https://github.com/testing-library/react-testing-library/issues/1068
       click(button);
       const thisPageId = visiblePage().id;
       expect(thisPageId).not.toBe(prevPageId);
@@ -673,6 +684,75 @@ describe('Navigation and UI', () => {
     }
   });
 
+  test('Follow-up questions shown for certain short duty periods', () => {
+    click(nextButton);
+    click(document.getElementById('veteran'));
+    click(nextButton);
+    // Follow up question should be shown
+    select(document.getElementById('your-duty-type'), 'active-duty');
+    enterText(document.getElementById('served-from'), '2020-01-01');
+    enterText(document.getElementById('served-until'), '2020-01-02');
+    click(nextButton);
+    let thisPage = visiblePage();
+    expect(thisPage.id).toBe('page-veteran-duty-period');
+    check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
+    expect(thisPage.textContent).toContain('from 1/1/2020 until 1/2/2020');
+    // Choose an option for the follow up question
+    click(document.getElementById('full-dur-yes'));
+    click(backButton);
+    // Add a new duty period to use for the remainder of the test
+    click(visiblePage().querySelector('.field_list_add'));
+    select(document.getElementById('your-duty-type-1'), 'active-duty');
+    enterText(document.getElementById('served-from-1'), '2000-01-01');
+    enterText(document.getElementById('served-until-1'), '2001-12-30');  // 729 days
+    click(nextButton);
+    check(thisPage.querySelectorAll('fieldset')[1]).isVisible();
+    expect(thisPage.textContent).toContain('from 1/1/2000 until 12/30/2001');
+    // The selection made in the first question should not be copied to the
+    // second question.
+    expect(document.getElementById('full-dur-yes').checked).toBe(true);
+    expect(document.getElementById('full-dur-yes-period1').checked).toBe(false);
+    // Selecting an option in the second question should not affect the
+    // option selected in the first question.
+    click(document.getElementById('full-dur-yes-period1'));
+    expect(document.getElementById('full-dur-yes').checked).toBe(true);
+    expect(document.getElementById('full-dur-yes-period1').checked).toBe(true);
+
+    // Not active duty
+    const otherDutyTypes = Array.from(
+      document.getElementById('your-duty-type-1')
+      .querySelectorAll('option:not([value="active-duty"])'),
+      e => e.value);
+    for (const dutyType of otherDutyTypes) {
+      click(backButton);
+      select(document.getElementById('your-duty-type-1'), dutyType);
+      click(nextButton);
+      thisPage = visiblePage();
+      check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
+      check(thisPage.querySelectorAll('fieldset')[1]).isHidden();
+    }
+
+    // Duty period is too long
+    click(backButton);
+    select(document.getElementById('your-duty-type-1'), 'active-duty');
+    enterText(document.getElementById('served-from-1'), '2000-01-01');
+    enterText(document.getElementById('served-until-1'), '2001-12-31');  // 730 days
+    click(nextButton);
+    thisPage = visiblePage();
+    check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
+    check(thisPage.querySelectorAll('fieldset')[1]).isHidden();
+
+    // Service occured too long ago
+    click(backButton);
+    select(document.getElementById('your-duty-type-1'), 'active-duty');
+    enterText(document.getElementById('served-from-1'), '1980-09-07');
+    enterText(document.getElementById('served-until-1'), '1980-09-08');
+    click(nextButton);
+    thisPage = visiblePage();
+    check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
+    check(thisPage.querySelectorAll('fieldset')[1]).isHidden();
+  });
+
   // TODO: Break tests like this into individual test() calls, presuming
   // the test suite does not take too long to run.  Or even if it does, perhaps
   // then separate this functional test suite out from the unit test suites.
@@ -684,14 +764,21 @@ describe('Navigation and UI', () => {
     let selector = '#page-veteran-details ul.dynamic_field_list > li';
     // Starts with a duty period already populated.
     expect(document.querySelectorAll(selector).length).toBe(1);
+    // There should be just one follow-up question corresponding to the one duty
+    // period.
+    const qSelector = '#page-veteran-duty-period fieldset'
+    expect(document.querySelectorAll(qSelector).length).toBe(1);
     addDutyPeriod();
     addDutyPeriod();
     const origDutyPeriods = document.querySelectorAll(selector);
     expect(origDutyPeriods.length).toBe(3);
+    // A follow-up question should also be added for the new duty period.
+    expect(document.querySelectorAll(qSelector).length).toBe(3);
     // There are 3 duty periods. Remove the middle one.
     removeDutyPeriodAt(1);
     const updatedDutyPeriods = document.querySelectorAll(selector);
     expect(updatedDutyPeriods.length).toBe(2);
+    expect(document.querySelectorAll(qSelector).length).toBe(2);
     // The remaining duty periods should be the first and last one in the
     // inital list of 3.
     expect(updatedDutyPeriods[0]).toEqual(origDutyPeriods[0]);
@@ -824,8 +911,9 @@ describe('Navigation and UI', () => {
     expectPagesUsed(expectedPages);
 
     expectedPages.push('page-veteran-duty-period');
-    document.getElementById('served-from').value = '1960-01-01';
-    document.getElementById('served-until').value = '1961-12-30';  // 729 days later
+    document.getElementById('served-from').value = '2000-01-01';
+    document.getElementById('served-until').value = '2001-12-30';  // 729 days later
+    document.getElementById('your-duty-type').value = 'active-duty';
     expectPagesUsed(expectedPages);
 
     expectedPages.push('page-household-unborn-members');

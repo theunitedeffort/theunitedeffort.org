@@ -539,7 +539,7 @@ function onHouseholdMemberAdd() {
   // Get the household member that was just added.
   const newMember = this.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
-  newMember.incomeLists = [];
+  newMember.linkedElems = [];
   // Add listener to the new member's spouse checkbox
   const spouseInput = newMember.querySelector('[id^="hh-member-spouse"]');
   spouseInput.addEventListener('click', onChangeSpouse);
@@ -567,8 +567,21 @@ function onHouseholdMemberAdd() {
     addDynamicFieldListListeners(newFieldset);
 
     firstFieldset.parentNode.appendChild(newFieldset);
-    newMember.incomeLists.push(newFieldset);
+    newMember.linkedElems.push(newFieldset);
   }
+}
+
+function onDutyPeriodAdd() {
+  const newPeriod = this.closest('.elig_page').querySelector(
+    'ul.dynamic_field_list').lastChild;
+  const firstFieldset = document.querySelector(
+    '#page-veteran-duty-period fieldset');
+  const newFieldset = firstFieldset.cloneNode(true);
+  const idModifier = `-period${newPeriod.dynamicFieldListId}`;
+  modifyIds(newFieldset, idModifier);
+  clearInputs(newFieldset);
+  firstFieldset.parentNode.appendChild(newFieldset);
+  newPeriod.linkedElems = [newFieldset];
 }
 
 function onChangeSpouse() {
@@ -614,8 +627,8 @@ function onChangeName() {
   // Update the heading to the household member's name.
   item.querySelector('h4').textContent = this.value;
   // Also update the headings in all the income details pages.
-  for (const incomeList of item.incomeLists) {
-    setMemberIncomeHeading(incomeList, this.value);
+  for (const linkedElem of item.linkedElems) {
+    setMemberIncomeHeading(linkedElem, this.value);
   }
 }
 
@@ -647,6 +660,10 @@ function modifyIds(parent, idModifier) {
     if (forAttr) {
       elem.setAttribute('for', forAttr + idModifier);
     }
+    const nameAttr = elem.getAttribute('name');
+    if (nameAttr) {
+      elem.setAttribute('name', nameAttr + idModifier);
+    }
   }
 }
 
@@ -671,6 +688,7 @@ function addDynamicFieldListItem() {
   // TODO: update to use .closest()
   const list = this.parentElement.parentElement.querySelector(
     "ul.dynamic_field_list");
+  // TODO (#422): This also gets all descendants, but we only want children.
   const items = list.querySelectorAll("li");
   // Figure out the largest id index used so far.
   // TODO (#396): replace optional chaining operators.
@@ -727,9 +745,10 @@ function addDynamicFieldListItem() {
 function removeDynamicFieldListItem(listItem) {
   const list = listItem.parentElement;
 
-  // If the item is a household member, it will have associated income lists.
-  if (listItem.incomeLists) {
-    for (const fieldset of listItem.incomeLists) {
+  // If the item has linked elements on other pages (e.g. household members,
+  // duty periods), they will need to be removed as well.
+  if (listItem.linkedElems) {
+    for (const fieldset of listItem.linkedElems) {
       const parent = fieldset.parentElement;
       fieldset.remove();
       parent.dispatchEvent(
@@ -976,6 +995,10 @@ function addListeners() {
     '#page-household-members button.field_list_add').addEventListener(
     'click', onHouseholdMemberAdd);
 
+  document.querySelector(
+    '#page-veteran-details button.field_list_add').addEventListener(
+    'click', onDutyPeriodAdd);
+
   // Form control buttons
   document.getElementById("next-button").addEventListener("click", toNextPage);
   document.getElementById("back-button").addEventListener("click", toPrevPage);
@@ -1050,6 +1073,7 @@ function customPageLinking(pageById) {
       const militaryQuestion = document.getElementById(
         "military-disability-wrapper");
       if (document.getElementById("veteran").checked) {
+        // TODO: Replace with setElementVisible
         militaryQuestion.classList.remove("hidden");
       } else {
         militaryQuestion.classList.add("hidden");
@@ -1067,17 +1091,36 @@ function customPageLinking(pageById) {
   };
 
   pageById["page-veteran-details"].next = function() {
-    const fromDate = getDateOrNan("served-from");
-    const untilDate = getDateOrNan("served-until");
-    const dutyDuration = getNumberOfDays(fromDate, untilDate);
-    if (document.getElementById("veteran").checked &&
-        dutyDuration < cnst.vaPension.MIN_LATE_DUTY_DURATION) {
-      const fromPlaceHolder = document.getElementById("served-from-placeholder");
-      fromPlaceHolder.textContent = formatUsDate(fromDate);
+    let hasShortDuration = false;
+    const dutyPeriods = document.querySelectorAll(
+      '#page-veteran-details ul.dynamic_field_list > li');
+    const dutyQuestions = document.querySelectorAll(
+      '#page-veteran-duty-period fieldset');
+    for (let i = 0; i < dutyPeriods.length; i++) {
+      const fromDate = getDateOrNan(
+        dutyPeriods[i].querySelector('[id^="served-from"]').id);
+      const untilDate = getDateOrNan(
+        dutyPeriods[i].querySelector('[id^="served-until"]').id);
+      const dutyDuration = getNumberOfDays(fromDate, untilDate);
+      const dutyType = getValueOrNull(
+        dutyPeriods[i].querySelector('[id^="your-duty-type"]').id);
+      if (dutyType == 'active-duty' &&
+          fromDate > new Date(dateStrToLocal(cnst.vaPension.LATE_DUTY_AFTER)) &&
+          dutyDuration < cnst.vaPension.MIN_LATE_DUTY_DURATION) {
+        hasShortDuration = true;
+        const fromPlaceHolder = dutyQuestions[i].querySelector(
+          '[id^="served-from-ref"]');
+        fromPlaceHolder.textContent = formatUsDate(fromDate);
+        const untilPlaceHolder = dutyQuestions[i].querySelector(
+          '[id^="served-until-ref"]');
+        untilPlaceHolder.textContent = formatUsDate(untilDate);
+        setElementVisible(dutyQuestions[i], true);
+      } else {
+        setElementVisible(dutyQuestions[i], false);
+      }
+    }
 
-      const untilPlaceHolder = document.getElementById("served-until-placeholder");
-      untilPlaceHolder.textContent = formatUsDate(untilDate);
-
+    if (document.getElementById("veteran").checked && hasShortDuration) {
       return pageById["page-veteran-duty-period"];
     }
     return pageById["page-veteran-duty-period"].next();
