@@ -2121,11 +2121,29 @@ function ssiResult(input) {
 }
 
 function ssdiResult(input) {
-  // TODO
+  // Some nice comparison tools:
+  // https://www.ssa.gov/prepare/check-eligibility-for-benefits
+  // https://ssabest.benefits.gov/benefit-finder/
+  const meetsDisabilityReq = or(
+    input.disabled,
+    input.blind);
+
+  // There may be an age limit based on full retirement age. Determining
+  // full retirement age will require the user's birthdate.
+  // https://www.ssa.gov/benefits/retirement/planner/agereduction.html
+
+  const earnedIncome = totalEarnedIncome(input, 0);
+  const sgaLimit = input.blind ? cnst.ssiCapi.SGA_BLIND : cnst.ssiCapi.SGA_NON_BLIND;
+  const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
+
   const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', false));
+  program.addCondition(new EligCondition(
+    'Disabled or blind', meetsDisabilityReq));
+  program.addCondition(new EligCondition(
+    `Income from employment is below ${usdLimit(sgaLimit)} per month`,
+    noSubstantialGainfulActivity));
+  program.addCondition(new EligCondition(
+    'Has paid Social Secuity taxes on past earnings', null));
 
   return program.getResult();
 }
