@@ -674,7 +674,9 @@ function clearInputs(parent) {
         elem.type != 'button' &&
         elem.type != 'reset' &&
         elem.type != 'submit' &&
-        elem.type != 'hidden') {
+        elem.type != 'hidden' &&
+        elem.type != 'radio' &&
+        elem.type != 'checkbox') {
       elem.value = '';
     }
     if (elem.checked) {
@@ -1228,9 +1230,9 @@ function getValueOrNull(id) {
     } else if (elem.classList.contains('yes-no')) {
       if (!selected) {
         val = null;
-      } else if (selected.value == 'yes') {
+      } else if (selected.id === `${id}-yes`) {
         val = true;
-      } else if (selected.value == 'no') {
+      } else if (selected.id === `${id}-no`) {
         val = false;
       }
     }

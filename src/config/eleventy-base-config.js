@@ -339,10 +339,10 @@ module.exports = function(eleventyConfig) {
     content, title, id, applyUrl, refUrl="") {
     const links = [];
     if (applyUrl) {
-      links.push(`<p><a href=${applyUrl} target="_blank" rel="noopener">How to apply</a></p>`);
+      links.push(`<p><a href="${applyUrl}" target="_blank" rel="noopener">How to apply</a></p>`);
     }
     if (refUrl) {
-      links.push(`<p><a href=${refUrl} target="_blank" rel="noopener">Learn more</a></p>`);
+      links.push(`<p><a href="${refUrl}" target="_blank" rel="noopener">Learn more</a></p>`);
     }
     links.push(`<p><a href="/contact" target="_blank">Contact us for help applying</a></p>`);
     return `
@@ -444,11 +444,11 @@ module.exports = function(eleventyConfig) {
     return `
       <ul id="${id}" class="yes-no">
         <li>
-          <input type="radio" id="${id}-yes" name="${id}" value="yes">
+          <input type="radio" id="${id}-yes" name="${id}">
           <label for="${id}-yes">Yes</label>
         </li>
         <li>
-          <input type="radio" id="${id}-no" name="${id}" value="no">
+          <input type="radio" id="${id}-no" name="${id}">
           <label for="${id}-no">No</label>
         </li>
       </ul>`;

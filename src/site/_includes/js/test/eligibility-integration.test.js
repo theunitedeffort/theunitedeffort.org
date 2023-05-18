@@ -984,7 +984,26 @@ describe('Navigation and UI', () => {
     const allPages = Array.from(
       document.querySelectorAll('.elig_page:not(#page-results)'), p => p.id);
     expectPagesUsed(allPages);
-  })
+  });
+
+  test('Hidden yes/no questions can be answered after being revealed', () => {
+    window.eval(eligScript);
+    const pagesSeen = toFormEnd();
+    click(submitButton);
+    // The page of interest should not have been shown this first time around.
+    expect(pagesSeen).not.toContain('page-household-housed');
+    // Make the page show up by answering a question appropriately.
+    click(document.getElementById('nav-section-household'));
+    click(nextButton);
+    click(document.getElementById('housed'));
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-household-housed');
+    // Ensure the questions can be answered and submitted with no errors.
+    click(document.getElementById('pay-utilities-yes'));
+    toFormEnd();
+    click(submitButton);
+    expect(visiblePage().id).toBe('page-results');
+  });
 });
 
 test.todo('Unused pages are cleared before eligibility assessment');
