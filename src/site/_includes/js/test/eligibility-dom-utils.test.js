@@ -75,9 +75,9 @@ describe('clearInputs', () => {
         <input type="text" id="input1" value="one">
         <input type="number" id="input2" value="2">
         <div>
-          <input type="checkbox" id="input3" checked value="the-checkbox">
+          <input type="checkbox" id="input3" checked>
           <div>
-            <input type="radio" id="input4" checked value="the-radio">
+            <input type="radio" id="input4" checked>
           </div>
         </div>
       </div>`;
