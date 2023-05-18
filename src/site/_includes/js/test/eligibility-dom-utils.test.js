@@ -168,7 +168,7 @@ describe('clearInputs', () => {
     expect(document.getElementById('input1').value).toBe('AM/FM');
   });
 
-  test('Does not clear radio values', () => {
+  test('Does not clear checkbox values', () => {
     document.body.innerHTML = `
       <div id="parent">
         <input type="checkbox" id="input1" value="DONE">
