@@ -9,3 +9,6 @@ netlify/functions/serverless/**
 /**/.DS_Store
 .env
 /src/coverage
+
+# stryker temp files
+.stryker-tmp
