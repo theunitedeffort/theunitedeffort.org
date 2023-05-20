@@ -175,7 +175,7 @@ const cnst = {
   ssdi: {
     // https://www.ssa.gov/benefits/retirement/planner/agereduction.html
     FULL_RETIREMENT_AGE: 67,  // Years (for most people)
-    TRANSITON_RETIREMENT_AGE: 66,  // Years
+    TRANSITION_RETIREMENT_AGE: 66,  // Years
   },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
@@ -2136,7 +2136,7 @@ function ssdiResult(input) {
     input.disabled,
     input.blind);
 
-  const meetsAgeReq = le(input.age, cnst.ssdi.FULL_RETIREMENT_AGE);
+  const meetsAgeReq = lt(input.age, cnst.ssdi.FULL_RETIREMENT_AGE);
 
   const earnedIncome = totalEarnedIncome(input, 0);
   const sgaLimit = input.blind ? cnst.ssiCapi.SGA_BLIND : cnst.ssiCapi.SGA_NON_BLIND;
@@ -2161,7 +2161,7 @@ function ssdiResult(input) {
   // they were born.
   // A person 66 today could have a full retirement age of under age 67,
   // depending on exactly when they were born.
-  if (program.evaluate() && input.age == 66) {
+  if (program.evaluate() && input.age == cnst.ssdi.TRANSITION_RETIREMENT_AGE) {
     program.addFlag(FlagCodes.COMPLEX_RETIREMENT_AGE);
   }
 
