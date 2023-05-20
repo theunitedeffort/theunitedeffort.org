@@ -2151,7 +2151,7 @@ function ssdiResult(input) {
     `Income from employment is below ${usdLimit(sgaLimit)} per month`,
     noSubstantialGainfulActivity));
   program.addCondition(new EligCondition(
-    'Has paid Social Secuity taxes on past earnings', true));
+    'Paid Social Secuity taxes on past earnings', input.paidSsTaxes));
 
   // https://www.ssa.gov/benefits/retirement/planner/agereduction.html
   // Anyone 65 today will have been born too late to have the original full
@@ -2429,6 +2429,7 @@ function buildInputObj() {
     dutyPeriods: [],
     income: {},
     assets: getIncomeValues(document.getElementById('page-income-assets')),
+    paidSsTaxes: getValueOrNull('ss-taxes'),
   };
 
   // Existing assistance checkboxes
