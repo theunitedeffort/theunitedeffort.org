@@ -158,6 +158,24 @@ describe('clearInputs', () => {
     elig.clearInputs(document.getElementById('parent'));
     expect(document.getElementById('input1').value).toBe('Invisible');
   });
+
+  test('Does not clear radio values', () => {
+    document.body.innerHTML = `
+      <div id="parent">
+        <input type="radio" id="input1" value="AM/FM">
+      </div>`;
+    elig.clearInputs(document.getElementById('parent'));
+    expect(document.getElementById('input1').value).toBe('AM/FM');
+  });
+
+  test('Does not clear checkbox values', () => {
+    document.body.innerHTML = `
+      <div id="parent">
+        <input type="checkbox" id="input1" value="DONE">
+      </div>`;
+    elig.clearInputs(document.getElementById('parent'));
+    expect(document.getElementById('input1').value).toBe('DONE');
+  });
 });
 
 describe('getValueOrNull', () => {
@@ -216,10 +234,10 @@ describe('getValueOrNull', () => {
     document.body.innerHTML = `
       <ul id="test-question" class="yes-no">
         <li>
-          <input type="radio" id="test-question-yes" name="test-question" value="yes">
+          <input type="radio" id="test-question-yes" name="test-question">
         </li>
         <li>
-          <input type="radio" id="test-question-no" name="test-question" value="no">
+          <input type="radio" id="test-question-no" name="test-question">
         </li>
       </ul>`;
 
