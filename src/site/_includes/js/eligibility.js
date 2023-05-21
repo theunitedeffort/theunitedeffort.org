@@ -1891,6 +1891,9 @@ function reducedFeeIdResult(input) {
     input.existingCalfreshMe,
     input.existingCfapMe,
     input.existingCapiMe,
+    // TODO: Should we only check _income_ eligibility rather than full
+    // eligibility for these programs?  From DL 932: "A person whose income
+    // meets the eligibility requirements of...the above mentioned programs"
     calworksResult(input).eligible,
     ssiResult(input).eligible,
     gaResult(input).eligible,
@@ -2665,6 +2668,7 @@ if (typeof module !== 'undefined' && module.exports) {
     lifelineResult,
     liheapResult,
     noFeeIdResult,
+    reducedFeeIdResult,
     ssiCapiAdjustedIncome,
     ssiResult,
     ssdiResult,

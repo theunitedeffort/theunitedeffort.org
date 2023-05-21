@@ -35,13 +35,11 @@ function isEligibleIf(target) {
   // Special handling for testing with input overlays.
   if (typeof this.target === 'function') {
     let mergedInput = this.target(this.input);
-    const msg = (
-      `Checking ${this.program.name} with ${mergedInput._verifyFn.name} returning ` +
-      `eligible`
-    );
-    expect(this.program(this.input).eligible, msg).not.toBe(true);
+    expect(this.program(this.input).eligible,
+      dependencyMsg(this, this.input)).not.toBe(true);
     verifyOverlay(mergedInput);
-    expect(this.program(mergedInput).eligible, msg).toBe(true);
+    expect(this.program(mergedInput).eligible,
+      dependencyMsg(this, mergedInput)).toBe(true);
     return;
   }
   return this;
@@ -50,6 +48,16 @@ function isEligibleIf(target) {
 function isNotEligibleIf(target) {
   this.target = target;
   this.expected = false;
+  // Special handling for testing with input overlays.
+  if (typeof this.target === 'function') {
+    let mergedInput = this.target(this.input);
+    expect(this.program(this.input).eligible,
+      dependencyMsg(this, this.input)).toBe(true);
+    verifyOverlay(mergedInput);
+    expect(this.program(mergedInput).eligible,
+      dependencyMsg(this, mergedInput)).toBe(false);
+    return;
+  }
   return this;
 }
 
@@ -59,6 +67,17 @@ function isUnknownIf(target) {
   return this;
 }
 
+function dependencyMsg(ctx, input) {
+  let whichStr = 'unmodified input'
+  if (input._verifyFn) {
+    whichStr = `${input._verifyFn.name} returning eligible`;
+  }
+  return (
+      `Checking ${ctx.program.name} with ${whichStr}\n` +
+      `${ctx.program.name} returns:\n` +
+      `${JSON.stringify(ctx.program(input), null, 2)}`
+    );
+}
 function msg(ctx, whichStr) {
   return (
       `Checking ${ctx.program.name} with ${whichStr} value of ` +
@@ -302,7 +321,7 @@ describe('Program eligibility', () => {
     let modified = structuredClone(baseInput);
     modified.citizen = false;
     modified.immigrationStatus = 'long_term';
-    modified.age = 99;
+    modified.disabled = true;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
     modified._verifyFn = elig.capiResult;
@@ -311,7 +330,7 @@ describe('Program eligibility', () => {
 
   function gaMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
-    modified.age = 99;
+    modified.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ga.MONTHLY_INCOME_LIMITS[0]]];
     modified._verifyFn = elig.gaResult;
@@ -320,7 +339,7 @@ describe('Program eligibility', () => {
 
   function ihssMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
-    modified.age = 99;
+    modified.age = elig.cnst.ihss.MIN_ELDERLY_AGE;
     modified.housingSituation = 'housed';
     modified.existingMedicalMe = true;
     modified._verifyFn = elig.ihssResult;
@@ -333,6 +352,21 @@ describe('Program eligibility', () => {
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.liheap.MONTHLY_INCOME_LIMITS[0]]];
     modified._verifyFn = elig.liheapResult;
+    return modified;
+  }
+
+  function noFeeIdMadeEligible(baseInput) {
+    let modified = structuredClone(baseInput);
+    modified.housingSituation = 'no-stable-place';
+    modified.age = elig.cnst.noFeeId.MIN_ELIGIBLE_AGE;
+    modified._verifyFn = elig.noFeeIdResult;
+    return modified;
+  }
+
+  function noFeeIdMadeIneligible(baseInput) {
+    let modified = structuredClone(baseInput);
+    modified.housingSituation = 'housed';
+    modified.age = elig.cnst.noFeeId.MIN_ELIGIBLE_AGE - 1;
     return modified;
   }
 
@@ -349,7 +383,7 @@ describe('Program eligibility', () => {
 
   function ssiMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
-    modified.age = 99;
+    modified.disabled = true;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
     modified._verifyFn = elig.ssiResult;
@@ -1206,6 +1240,15 @@ describe('Program eligibility', () => {
   });
 
   describe('No Fee ID Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      verifyOverlay(noFeeIdMadeEligible(input));
+    });
+
+    test('Not eligible with ineligible input', () => {
+      expect(elig.noFeeIdResult(noFeeIdMadeIneligible(input)).eligible)
+        .toBe(false);
+    })
+
     test('Not eligible with default input', () => {
       expect(elig.noFeeIdResult(input).eligible).not.toBe(true);
     });
@@ -1228,6 +1271,41 @@ describe('Program eligibility', () => {
         .isEligibleIf('housingSituation').is('shelter');
       check(elig.noFeeIdResult, input)
         .isEligibleIf('housingSituation').is('no-stable-place');
+    });
+  });
+
+  describe('Reduced Fee ID Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.reducedFeeIdResult(input).eligible).not.toBe(true);
+    });
+
+    test('Eligible when receiving or eligible for certain assistance', () => {
+      input = noFeeIdMadeIneligible(input);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingCalworksMe').is(true);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingSsiMe').is(true);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingGaMe').is(true);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingCalfreshMe').is(true);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingCfapMe').is(true);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingCapiMe').is(true);
+
+      check(elig.reducedFeeIdResult, input).isEligibleIf(calworksMadeEligible);
+      check(elig.reducedFeeIdResult, input).isEligibleIf(ssiMadeEligible);
+      check(elig.reducedFeeIdResult, input).isEligibleIf(gaMadeEligible);
+      check(elig.reducedFeeIdResult, input).isEligibleIf(calfreshMadeEligible);
+      check(elig.reducedFeeIdResult, input).isEligibleIf(capiMadeEligible);
+      // TODO: Add CFAP eligibility check here once it's supported.
+    });
+
+    test('Not eligible when no-fee ID is available', () => {
+      input = noFeeIdMadeIneligible(input);
+      input.existingCalworksMe = true;
+      check(elig.reducedFeeIdResult, input).isNotEligibleIf(noFeeIdMadeEligible);
     });
   });
 
