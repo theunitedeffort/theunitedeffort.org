@@ -336,6 +336,17 @@ describe('Program eligibility', () => {
     return modified;
   }
 
+  function ssdiMadeEligible(baseInput) {
+    let modified = structuredClone(baseInput);
+    modified.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
+    modified.disabled = true;
+    modified.income.valid = true;
+    modified.income.wages = [[elig.cnst.ssiCapi.SGA_NON_BLIND]];
+    modified.paidSsTaxes = true;
+    modified._verifyFn = elig.ssdiResult;
+    return modified;
+  }
+
   function ssiMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
     modified.age = 99;
@@ -468,6 +479,7 @@ describe('Program eligibility', () => {
         other: [[]],
       },
       assets: [[]],
+      paidSsTaxes: null,
       ssiIncome: [],
       existingSsiMe: false,
       existingSsiHousehold: false,
@@ -531,7 +543,7 @@ describe('Program eligibility', () => {
       check(elig.adsaResult, input).isEligibleIf(capiMadeEligible);
       check(elig.adsaResult, input).isEligibleIf(ihssMadeEligible);
       check(elig.adsaResult, input).isEligibleIf(ssiMadeEligible);
-      // TODO: Add check for SSDI once ssdiResult() is implemented;
+      check(elig.adsaResult, input).isEligibleIf(ssdiMadeEligible);
     });
   });
 
@@ -1347,6 +1359,86 @@ describe('Program eligibility', () => {
     );
   });
 
+  describe('SSDI Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      verifyOverlay(ssdiMadeEligible(input));
+    });
+
+    test('Requires age under full retirement age', () => {
+      input.income.valid = true;
+      input.disabled = true;
+      input.paidSsTaxes = true;
+      check(elig.ssdiResult, input).isEligibleIf('age')
+        .isUnder(elig.cnst.ssdi.FULL_RETIREMENT_AGE);
+    });
+
+    test('Requires past payment of Social Security taxes', () => {
+      input.income.valid = true;
+      input.disabled = true;
+      input.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
+      check(elig.ssdiResult, input).isEligibleIf('paidSsTaxes').is(true);
+    });
+
+    test('Requires no substantial gainful activity', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
+      input.paidSsTaxes = true;
+      input.disabled = true;
+      // SGA should only count earned income.
+      input.income.unemployment = [[1]];
+      check(elig.ssdiResult, input)
+        .isEligibleIf('income.wages').isAtMost(elig.cnst.ssiCapi.SGA_NON_BLIND);
+
+      input.blind = true;
+      check(elig.ssdiResult, input)
+        .isEligibleIf('income.wages').isAtMost(elig.cnst.ssiCapi.SGA_BLIND);
+    });
+
+    test('Eligible if disabled', () => {
+      input.income.valid = true;
+      input.paidSsTaxes = true;
+      input.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
+      check(elig.ssdiResult, input).isEligibleIf('disabled').is(true);
+    });
+
+    test('Eligible if blind', () => {
+      input.income.valid = true;
+      input.paidSsTaxes = true;
+      input.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
+      check(elig.ssdiResult, input).isEligibleIf('blind').is(true);
+    });
+
+    test('Has COMPLEX_RETIREMENT_AGE flag for transitional retirement age', () => {
+      input.paidSsTaxes = true;
+      input.age = elig.cnst.ssdi.TRANSITION_RETIREMENT_AGE;
+      input.disabled = true;
+
+      input.income.valid = false;
+      expect(elig.ssdiResult(input).eligible).toBe(null);
+      expect(elig.ssdiResult(input).flags)
+        .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
+
+      input.income.valid = true;
+      input.disabled = false;
+      expect(elig.ssdiResult(input).eligible).toBe(false);
+      expect(elig.ssdiResult(input).flags)
+        .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
+
+      input.disabled = true;
+      expect(elig.ssdiResult(input).eligible).toBe(true);
+      expect(elig.ssdiResult(input).flags)
+        .toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
+
+      input.age = elig.cnst.ssdi.TRANSITION_RETIREMENT_AGE - 1;
+      expect(elig.ssdiResult(input).flags)
+        .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
+
+      input.age = elig.cnst.ssdi.TRANSITION_RETIREMENT_AGE + 1;
+      expect(elig.ssdiResult(input).flags)
+        .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
+    });
+  });
+
   describe('UPLIFT Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.upliftResult(input).eligible).not.toBe(true);
@@ -1714,7 +1806,12 @@ describe('Program eligibility', () => {
       check(elig.vaPensionResult, input)
         .isEligibleIf('existingSsdiMe').is(true);
       check(elig.vaPensionResult, input).isEligibleIf(ssiMadeEligible);
-      // TODO: add ssdiMadeEligible
+      // Due to interactions between the VA Pension income limit and the SSDI
+      // income limit, we need to add a dependent here to ensure the VA Pension
+      // income limit is above the SSDI income limit for this test.
+      input.householdSize = 2;
+      input.householdDependents = [true];
+      check(elig.vaPensionResult, input).isEligibleIf(ssdiMadeEligible);
     });
   });
 

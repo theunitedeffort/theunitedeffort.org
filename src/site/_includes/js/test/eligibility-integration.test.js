@@ -498,9 +498,15 @@ describe('Navigation and UI', () => {
           },
         },
         {
-          pageId: 'page-income-assets',
+          pageId: 'page-ss-taxes',
           setUp: function() {
             click(nextButton, 5);
+          },
+        },
+        {
+          pageId: 'page-income-assets',
+          setUp: function() {
+            click(nextButton, 6);
           },
         },
       ],
@@ -523,7 +529,7 @@ describe('Navigation and UI', () => {
         {
           pageId: 'page-existing-benefits',
           setUp: function() {
-            click(nextButton, 6);
+            click(nextButton, 7);
           },
         },
       ],
@@ -548,7 +554,7 @@ describe('Navigation and UI', () => {
           setUp: function() {
             // This eval is needed for window access to the eligibility functions.
             window.eval(eligScript);
-            click(nextButton, 6);
+            click(nextButton, 7);
             click(submitButton);
           },
         },
@@ -826,6 +832,10 @@ describe('Navigation and UI', () => {
     expect(incomePages.length).toBeGreaterThan(0);
     for (const incomePage of incomePages) {
       click(nextButton);
+      if (visiblePage().id == 'page-ss-taxes') {
+        // Skip over Social Security taxes question to get to assets page.
+        click(nextButton);
+      }
       const incomeLists = getIncomeLists(incomePage);
       expect(incomeLists.length).toBe(2);
       for (const incomeList of incomeLists) {
@@ -883,6 +893,7 @@ describe('Navigation and UI', () => {
       'page-household-members',
       'page-household-situation',
       'page-income',
+      'page-ss-taxes',
       'page-income-assets',
       'page-existing-benefits',
     ];
@@ -1033,6 +1044,11 @@ describe('buildInputObj', () => {
     expect(getInput()).toHaveProperty('militaryDisabled', val);
   });
 
+  test.each([true, false, null])('Sets paidSsTaxes with value of %s', (val) => {
+    setYesNo('ss-taxes', val);
+    expect(getInput()).toHaveProperty('paidSsTaxes', val);
+  });
+
   test.each([
     'housed',
     'vehicle',
@@ -1117,6 +1133,7 @@ describe('buildInputObj', () => {
         other: [[18, 58], [280], [3800]],
       },
       assets: [[1000, 99], [2000], [3000]],
+      paidSsTaxes: true,
       ssiIncome: [12, 220],
       existingCalfreshHousehold: true,
       existingCalfreshMe: true,
@@ -1258,6 +1275,9 @@ describe('buildInputObj', () => {
 
     addAssets(expected.assets);
     expect(getInput().assets).toEqual(expected.assets);
+
+    setYesNo('ss-taxes', expected.paidSsTaxes);
+    expect(getInput().paidSsTaxes).toBe(expected.paidSsTaxes);
 
     document.getElementById('income-disability-is-ssi-capi-0').checked = true;
     document.getElementById('income-disability-is-ssi-capi-member1-0').checked = true;
