@@ -172,6 +172,11 @@ const cnst = {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
     MIN_ELIGIBLE_AGE: 62,  // Years
   },
+  ssdi: {
+    // https://www.ssa.gov/benefits/retirement/planner/agereduction.html
+    FULL_RETIREMENT_AGE: 67,  // Years (for most people)
+    TRANSITION_RETIREMENT_AGE: 66,  // Years
+  },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
     SGA_NON_BLIND: 1470,  // USD per month
@@ -1385,7 +1390,8 @@ const FlagCodes = {
   NEAR_INCOME_LIMIT: 1,
   TOO_COMPLEX: 2,
   COMPLEX_IMMIGRATION: 3,
-  MORE_INFO_NEEDED: 4,
+  COMPLEX_RETIREMENT_AGE: 4,
+  MORE_INFO_NEEDED: 5,
 };
 
 // A single eligibility condition that can be displayed to the user.  Note
@@ -1887,6 +1893,9 @@ function reducedFeeIdResult(input) {
     input.existingCalfreshMe,
     input.existingCfapMe,
     input.existingCapiMe,
+    // TODO: Should we only check _income_ eligibility rather than full
+    // eligibility for these programs?  From DL 932: "A person whose income
+    // meets the eligibility requirements of...the above mentioned programs"
     calworksResult(input).eligible,
     ssiResult(input).eligible,
     gaResult(input).eligible,
@@ -2125,11 +2134,40 @@ function ssiResult(input) {
 }
 
 function ssdiResult(input) {
-  // TODO
+  // https://www.ssa.gov/benefits/disability/#anchor1
+  const meetsDisabilityReq = or(
+    input.disabled,
+    input.blind);
+
+  const meetsAgeReq = lt(input.age, cnst.ssdi.FULL_RETIREMENT_AGE);
+
+  // https://www.ssa.gov/benefits/disability/qualify.html#anchor3
+  const earnedIncome = totalEarnedIncome(input, 0);
+  const sgaLimit = input.blind ? cnst.ssiCapi.SGA_BLIND : cnst.ssiCapi.SGA_NON_BLIND;
+  const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
+
   const program = new Program();
-  // TODO: Replace this single example condition with a set of simplified
-  // conditions describing the separate eligibility requirements.
-  program.addCondition(new EligCondition('Example', false));
+  program.addCondition(new EligCondition(
+    'Disabled or blind', meetsDisabilityReq));
+  program.addCondition(new EligCondition(
+    `Younger than age ${cnst.ssdi.FULL_RETIREMENT_AGE}`, meetsAgeReq));
+  program.addCondition(new EligCondition(
+    `Income from employment is below ${usdLimit(sgaLimit)} per month`,
+    noSubstantialGainfulActivity));
+  program.addCondition(new EligCondition(
+    'Paid Social Secuity taxes on past earnings', input.paidSsTaxes));
+
+  // https://www.ssa.gov/benefits/retirement/planner/agereduction.html
+  // Anyone 65 today will have been born too late to have the original full
+  // retirement age of 65 applied to them.  Thus, they are definitely under
+  // full retirement age.
+  // Anyone 67 today will be older than full retirement age regardless of when
+  // they were born.
+  // A person 66 today could have a full retirement age of under age 67,
+  // depending on exactly when they were born.
+  if (program.evaluate() && input.age == cnst.ssdi.TRANSITION_RETIREMENT_AGE) {
+    program.addFlag(FlagCodes.COMPLEX_RETIREMENT_AGE);
+  }
 
   return program.getResult();
 }
@@ -2395,6 +2433,7 @@ function buildInputObj() {
     dutyPeriods: [],
     income: {},
     assets: getIncomeValues(document.getElementById('page-income-assets')),
+    paidSsTaxes: getValueOrNull('ss-taxes'),
   };
 
   // Existing assistance checkboxes
@@ -2505,13 +2544,20 @@ function computeEligibility() {
       switch (flag) {
       case FlagCodes.MORE_INFO_NEEDED:
         flagMsg = 'We need more information from you to make an eligibility ' +
-        'recommendation. ' +
-        '<button type="button" class="link back_to_form" data-section-id="section-yourself">' +
-        'Go back to the form</button>';
+          'recommendation. ' +
+          '<button type="button" class="link back_to_form" data-section-id="section-yourself">' +
+          'Back to the form</button>';
         break;
       case FlagCodes.COMPLEX_IMMIGRATION:
         flagMsg = 'The immigrant eligibility rules for this program are ' +
-            'complex, and not all immigrants are eligible.';
+          'complex, and not all immigrants are eligible.';
+        break;
+      case FlagCodes.COMPLEX_RETIREMENT_AGE:
+        flagMsg = 'To be eligible for this program, you must be younger than ' +
+          'the Social Security Administration\'s ' +
+          '<a href="https://www.ssa.gov/benefits/retirement/planner/ageincrease.html" ' +
+          'target="_blank" rel="noopener">full retirement age</a>, which ' +
+          'changes slightly depending on exactly when you were born.';
         break;
       }
       if (flagMsg) {
@@ -2624,6 +2670,7 @@ if (typeof module !== 'undefined' && module.exports) {
     lifelineResult,
     liheapResult,
     noFeeIdResult,
+    reducedFeeIdResult,
     ssiCapiAdjustedIncome,
     ssiResult,
     ssdiResult,
