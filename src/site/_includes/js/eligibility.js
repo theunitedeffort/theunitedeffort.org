@@ -2129,15 +2129,14 @@ function ssiResult(input) {
 }
 
 function ssdiResult(input) {
-  // Some nice comparison tools:
-  // https://www.ssa.gov/prepare/check-eligibility-for-benefits
-  // https://ssabest.benefits.gov/benefit-finder/
+  // https://www.ssa.gov/benefits/disability/#anchor1
   const meetsDisabilityReq = or(
     input.disabled,
     input.blind);
 
   const meetsAgeReq = lt(input.age, cnst.ssdi.FULL_RETIREMENT_AGE);
 
+  // https://www.ssa.gov/benefits/disability/qualify.html#anchor3
   const earnedIncome = totalEarnedIncome(input, 0);
   const sgaLimit = input.blind ? cnst.ssiCapi.SGA_BLIND : cnst.ssiCapi.SGA_NON_BLIND;
   const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);

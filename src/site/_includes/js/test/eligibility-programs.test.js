@@ -1436,7 +1436,6 @@ describe('Program eligibility', () => {
       input.age = elig.cnst.ssdi.TRANSITION_RETIREMENT_AGE + 1;
       expect(elig.ssdiResult(input).flags)
         .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
-
     });
   });
 
