@@ -1162,7 +1162,9 @@ describe('buildInputObj', () => {
       existingWicHousehold: true,
       existingWicMe: true,
       existingPhaHousehold: true,
-      existingPhaMe: true
+      existingPhaMe: true,
+      existingSchipMe: true,
+      existingSchipHousehold: true
     };
 
     document.body.parentElement.innerHTML = html;
@@ -1366,6 +1368,12 @@ describe('buildInputObj', () => {
 
     document.getElementById('existing-pha-household').checked = expected.existingPhaHousehold;
     expect(getInput().existingPhaHousehold).toBe(expected.existingPhaHousehold);
+
+    document.getElementById('existing-schip-me').checked = expected.existingSchipMe;
+    expect(getInput().existingSchipMe).toBe(expected.existingSchipMe);
+
+    document.getElementById('existing-schip-household').checked = expected.existingSchipHousehold;
+    expect(getInput().existingSchipHousehold).toBe(expected.existingSchipHousehold);
 
     expect(getInput()).toEqual(expected);
   });
