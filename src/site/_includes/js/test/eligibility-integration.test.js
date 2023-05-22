@@ -801,10 +801,8 @@ describe('Navigation and UI', () => {
     addHouseholdMember();
     const origMembers = document.querySelectorAll(selector);
     expect(origMembers.length).toBe(3);
-    // An income sections should also automatically be added for the new
+    // An income section should also automatically be added for the new
     // household members
-    // TODO: Test that existing income data is not copied to the new section.
-    // TODO: Test the new section heading matches the member name.
     expectNumIncomeListsToBe(3);
     removeHouseholdMemberAt(1);
     const updatedMembers = document.querySelectorAll(selector);
@@ -859,6 +857,22 @@ describe('Navigation and UI', () => {
       // Named household member should appear.
       expect(incomePage.textContent).toContain('Ada');
     }
+    // Go back to add another household member, and ensure the existing
+    // income data is not copied to the new income section.
+    click(document.getElementById('nav-section-household'));
+    addHouseholdMember();
+    click(nextButton, 2);
+    for (const incomePage of incomePages) {
+      click(nextButton);
+      if (visiblePage().id == 'page-ss-taxes') {
+        // Skip over Social Security taxes question to get to assets page.
+        click(nextButton);
+      }
+      const incomeLists = getIncomeLists(incomePage);
+      expect(incomeLists.length).toBe(3);
+      const lastIncomeList = incomeLists[incomeLists.length - 1];
+      expect(lastIncomeList.querySelectorAll(selector).length).toBe(0);
+    }
   });
 
   test('Selecting no income clears and disables all income options', () => {
@@ -884,6 +898,45 @@ describe('Navigation and UI', () => {
       expect(checkbox.disabled).toBe(false);
       expect(checkbox.checked).toBe(false);
     }
+  });
+
+  test('Selecting a spouse unselects any previous spouse selection', () => {
+    click(nextButton, 2);
+    addHouseholdMember();
+    addHouseholdMember();
+    addHouseholdMember();
+    const spouse1 = document.getElementById('hh-member-spouse-1');
+    const spouse2 = document.getElementById('hh-member-spouse-2');
+    const spouse3 = document.getElementById('hh-member-spouse-3');
+    click(spouse1);
+    expect(spouse1.checked).toBe(true);
+    expect(spouse2.checked).toBe(false);
+    expect(spouse3.checked).toBe(false);
+    click(spouse2);
+    expect(spouse1.checked).toBe(false);
+    expect(spouse2.checked).toBe(true);
+    expect(spouse3.checked).toBe(false);
+    click(spouse3);
+    expect(spouse1.checked).toBe(false);
+    expect(spouse2.checked).toBe(false);
+    expect(spouse3.checked).toBe(true);
+    click(spouse3);
+    expect(spouse1.checked).toBe(false);
+    expect(spouse2.checked).toBe(false);
+    expect(spouse3.checked).toBe(false);
+  });
+
+  test('Setting one age field updates the value of the other age field', () => {
+    const yourselfAge = document.getElementById('age');
+    const householdAge = document.getElementById('hh-myself-age');
+    click(nextButton);
+    enterText(yourselfAge, '42');
+    expect(yourselfAge.value).toBe('42');
+    expect(householdAge.value).toBe('42');
+    click(nextButton);
+    enterText(householdAge, '43');
+    expect(yourselfAge.value).toBe('43');
+    expect(householdAge.value).toBe('43');
   });
 
   test('Pages linked together properly', () => {

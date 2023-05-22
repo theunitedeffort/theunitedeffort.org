@@ -1225,7 +1225,7 @@ function customPageLinking(pageById) {
 
 function getValueOrNull(id) {
   const elem = document.getElementById(id);
-  let val;
+  let val = null;
   if (elem.type === 'checkbox' || elem.type === 'radio') {
     val = elem.checked;
   } else if (elem.tagName.toLowerCase() === 'ul') {
