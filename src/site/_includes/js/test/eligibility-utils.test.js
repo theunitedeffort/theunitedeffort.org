@@ -80,6 +80,27 @@ describe('toCamelCase', () => {
   })
 });
 
+describe('usdLimit', () => {
+  test('Formats whole numbers as US dollars', () => {
+    expect(elig.usdLimit(450)).toBe('$450');
+    expect(elig.usdLimit(0)).toBe('$0');
+    expect(elig.usdLimit(-100)).toBe('-$100');
+  });
+
+  test('Rounds up and formats fractional numbers as US dollars', () => {
+    expect(elig.usdLimit(100.1)).toBe('$101');
+    expect(elig.usdLimit(100.9)).toBe('$101');
+    expect(elig.usdLimit(-100.1)).toBe('-$100');
+  });
+
+  test('Returns placeholder text for non-numbers', () => {
+    expect(elig.usdLimit(null)).toBe('the limit');
+    expect(elig.usdLimit(NaN)).toBe('the limit');
+    expect(elig.usdLimit(undefined)).toBe('the limit');
+    expect(elig.usdLimit('text')).toBe('the limit');
+  });
+});
+
 test('Date strings are converted to local datetime strings', () => {
   expect(elig.dateStrToLocal('1969-07-16')).toBe('1969-07-16T00:00');
 });
@@ -117,7 +138,7 @@ describe('dateOrToday', () => {
     jest.useRealTimers();
   });
 
-  test("Returns today's date for empty input", () => {
+  test('Returns today\'s date for empty input', () => {
     const now = new Date('2000-01-01T00:00');
     jest.useFakeTimers();
     jest.setSystemTime(now);
@@ -214,6 +235,11 @@ describe('Null-passing OR', () => {
     expect(elig.or(false, null)).toBe(null);
     expect(elig.or(null, null)).toBe(null);
   });
+
+  test('Throws for undefined input', () => {
+    expect(() => elig.or(true, undefined)).toThrow();
+    expect(() => elig.or(undefined, false)).toThrow();
+  });
 });
 
 describe('Null-passing AND', () => {
@@ -229,6 +255,11 @@ describe('Null-passing AND', () => {
     expect(elig.and(false, null)).toBe(false);
     expect(elig.and(null, null)).toBe(null);
   });
+
+  test('Throws for undefined input', () => {
+    expect(() => elig.and(true, undefined)).toThrow();
+    expect(() => elig.and(undefined, false)).toThrow();
+  });
 });
 
 describe('Null-passing NOT', () => {
@@ -239,6 +270,10 @@ describe('Null-passing NOT', () => {
 
   test('Returns null for null input', () => {
     expect(elig.not(null)).toBe(null);
+  });
+
+  test('Throws for undefined input', () => {
+    expect(() => elig.not(undefined)).toThrow();
   });
 });
 
@@ -258,6 +293,11 @@ describe('Null-passing equal', () => {
     expect(elig.eq(1, NaN)).toBe(null);
     expect(elig.eq(NaN, NaN)).toBe(null);
   });
+
+  test('Throws for undefined input', () => {
+    expect(() => elig.eq(1, undefined)).toThrow();
+    expect(() => elig.eq(undefined, 2)).toThrow();
+  });
 });
 
 describe('Null-passing not-equal', () => {
@@ -275,6 +315,11 @@ describe('Null-passing not-equal', () => {
   test('Returns null for NaN inputs', () => {
     expect(elig.ne(1, NaN)).toBe(null);
     expect(elig.ne(NaN, NaN)).toBe(null);
+  });
+
+  test('Throws for undefined input', () => {
+    expect(() => elig.ne(1, undefined)).toThrow();
+    expect(() => elig.ne(undefined, 2)).toThrow();
   });
 });
 
@@ -297,6 +342,11 @@ describe('Null-passing greater-than', () => {
     expect(elig.gt(1, NaN)).toBe(null);
     expect(elig.gt(NaN, NaN)).toBe(null);
   });
+
+  test('Throws for undefined input', () => {
+    expect(() => elig.gt(1, undefined)).toThrow();
+    expect(() => elig.gt(undefined, 2)).toThrow();
+  });
 });
 
 describe('Null-passing greater-than-or-equal-to', () => {
@@ -317,6 +367,11 @@ describe('Null-passing greater-than-or-equal-to', () => {
   test('Returns null for NaN inputs', () => {
     expect(elig.ge(1, NaN)).toBe(null);
     expect(elig.ge(NaN, NaN)).toBe(null);
+  });
+
+  test('Throws for undefined input', () => {
+    expect(() => elig.ge(1, undefined)).toThrow();
+    expect(() => elig.ge(undefined, 2)).toThrow();
   });
 });
 
@@ -339,6 +394,11 @@ describe('Null-passing less-than', () => {
     expect(elig.lt(1, NaN)).toBe(null);
     expect(elig.lt(NaN, NaN)).toBe(null);
   });
+
+  test('Throws for undefined input', () => {
+    expect(() => elig.lt(1, undefined)).toThrow();
+    expect(() => elig.lt(undefined, 2)).toThrow();
+  });
 });
 
 describe('Null-passing less-than-or-equal-to', () => {
@@ -359,5 +419,10 @@ describe('Null-passing less-than-or-equal-to', () => {
   test('Returns null for NaN inputs', () => {
     expect(elig.le(1, NaN)).toBe(null);
     expect(elig.le(NaN, NaN)).toBe(null);
+  });
+
+  test('Throws for undefined input', () => {
+    expect(() => elig.le(1, undefined)).toThrow();
+    expect(() => elig.le(undefined, 2)).toThrow();
   });
 });
