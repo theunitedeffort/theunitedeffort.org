@@ -35,13 +35,11 @@ function isEligibleIf(target) {
   // Special handling for testing with input overlays.
   if (typeof this.target === 'function') {
     let mergedInput = this.target(this.input);
-    const msg = (
-      `Checking ${this.program.name} with ${mergedInput._verifyFn.name} returning ` +
-      `eligible`
-    );
-    expect(this.program(this.input).eligible, msg).not.toBe(true);
+    expect(this.program(this.input).eligible,
+      dependencyMsg(this, this.input)).not.toBe(true);
     verifyOverlay(mergedInput);
-    expect(this.program(mergedInput).eligible, msg).toBe(true);
+    expect(this.program(mergedInput).eligible,
+      dependencyMsg(this, mergedInput)).toBe(true);
     return;
   }
   return this;
@@ -50,6 +48,16 @@ function isEligibleIf(target) {
 function isNotEligibleIf(target) {
   this.target = target;
   this.expected = false;
+  // Special handling for testing with input overlays.
+  if (typeof this.target === 'function') {
+    let mergedInput = this.target(this.input);
+    expect(this.program(this.input).eligible,
+      dependencyMsg(this, this.input)).toBe(true);
+    verifyOverlay(mergedInput);
+    expect(this.program(mergedInput).eligible,
+      dependencyMsg(this, mergedInput)).toBe(false);
+    return;
+  }
   return this;
 }
 
@@ -59,6 +67,17 @@ function isUnknownIf(target) {
   return this;
 }
 
+function dependencyMsg(ctx, input) {
+  let whichStr = 'unmodified input'
+  if (input._verifyFn) {
+    whichStr = `${input._verifyFn.name} returning eligible`;
+  }
+  return (
+      `Checking ${ctx.program.name} with ${whichStr}\n` +
+      `${ctx.program.name} returns:\n` +
+      `${JSON.stringify(ctx.program(input), null, 2)}`
+    );
+}
 function msg(ctx, whichStr) {
   return (
       `Checking ${ctx.program.name} with ${whichStr} value of ` +
@@ -244,6 +263,7 @@ describe('MonthlyIncomeLimits', () => {
 
   test('Computes limit outside provided household size range', () => {
     const limits = new elig.MonthlyIncomeLimits(monthlyValues, 1);
+    expect(limits.getLimit(0)).toBe(0);
     expect(limits.getLimit(4)).toBe(301);
     expect(limits.getLimit(6)).toBe(303);
   });
@@ -251,6 +271,7 @@ describe('MonthlyIncomeLimits', () => {
   test('Computes limit outside household size range with custom function', () => {
     const limits = new elig.MonthlyIncomeLimits(monthlyValues,
       (numExtraPeople) => 10 + numExtraPeople);
+    expect(limits.getLimit(0)).toBe(0);
     expect(limits.getLimit(4)).toBe(311);
     expect(limits.getLimit(6)).toBe(313);
   });
@@ -264,6 +285,7 @@ describe('MonthlyIncomeLimits', () => {
 
   test('Computes monthly limit from annual limits outside provided household size range', () => {
     const limits = elig.MonthlyIncomeLimits.fromAnnual(annualValues, 12);
+    expect(limits.getLimit(0)).toBe(0);
     expect(limits.getLimit(4)).toBe(3001);
     expect(limits.getLimit(6)).toBe(3003);
   });
@@ -271,6 +293,7 @@ describe('MonthlyIncomeLimits', () => {
   test('Computes monthly limit from annual limits outside provided household size range with custom fuction', () => {
     const limits = elig.MonthlyIncomeLimits.fromAnnual(annualValues,
       (numExtraPeople) => 12 * 2 * numExtraPeople);
+    expect(limits.getLimit(0)).toBe(0);
     expect(limits.getLimit(4)).toBe(3002);
     expect(limits.getLimit(6)).toBe(3006);
   });
@@ -302,7 +325,7 @@ describe('Program eligibility', () => {
     let modified = structuredClone(baseInput);
     modified.citizen = false;
     modified.immigrationStatus = 'long_term';
-    modified.age = 99;
+    modified.disabled = true;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
     modified._verifyFn = elig.capiResult;
@@ -311,7 +334,7 @@ describe('Program eligibility', () => {
 
   function gaMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
-    modified.age = 99;
+    modified.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ga.MONTHLY_INCOME_LIMITS[0]]];
     modified._verifyFn = elig.gaResult;
@@ -320,7 +343,7 @@ describe('Program eligibility', () => {
 
   function ihssMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
-    modified.age = 99;
+    modified.age = elig.cnst.ihss.MIN_ELDERLY_AGE;
     modified.housingSituation = 'housed';
     modified.existingMedicalMe = true;
     modified._verifyFn = elig.ihssResult;
@@ -336,9 +359,35 @@ describe('Program eligibility', () => {
     return modified;
   }
 
+  function noFeeIdMadeEligible(baseInput) {
+    let modified = structuredClone(baseInput);
+    modified.housingSituation = 'no-stable-place';
+    modified.age = elig.cnst.noFeeId.MIN_ELIGIBLE_AGE;
+    modified._verifyFn = elig.noFeeIdResult;
+    return modified;
+  }
+
+  function noFeeIdMadeIneligible(baseInput) {
+    let modified = structuredClone(baseInput);
+    modified.housingSituation = 'housed';
+    modified.age = elig.cnst.noFeeId.MIN_ELIGIBLE_AGE - 1;
+    return modified;
+  }
+
+  function ssdiMadeEligible(baseInput) {
+    let modified = structuredClone(baseInput);
+    modified.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
+    modified.disabled = true;
+    modified.income.valid = true;
+    modified.income.wages = [[elig.cnst.ssiCapi.SGA_NON_BLIND]];
+    modified.paidSsTaxes = true;
+    modified._verifyFn = elig.ssdiResult;
+    return modified;
+  }
+
   function ssiMadeEligible(baseInput) {
     let modified = structuredClone(baseInput);
-    modified.age = 99;
+    modified.disabled = true;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
     modified._verifyFn = elig.ssiResult;
@@ -468,6 +517,7 @@ describe('Program eligibility', () => {
         other: [[]],
       },
       assets: [[]],
+      paidSsTaxes: null,
       ssiIncome: [],
       existingSsiMe: false,
       existingSsiHousehold: false,
@@ -531,7 +581,7 @@ describe('Program eligibility', () => {
       check(elig.adsaResult, input).isEligibleIf(capiMadeEligible);
       check(elig.adsaResult, input).isEligibleIf(ihssMadeEligible);
       check(elig.adsaResult, input).isEligibleIf(ssiMadeEligible);
-      // TODO: Add check for SSDI once ssdiResult() is implemented;
+      check(elig.adsaResult, input).isEligibleIf(ssdiMadeEligible);
     });
   });
 
@@ -1194,6 +1244,15 @@ describe('Program eligibility', () => {
   });
 
   describe('No Fee ID Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      verifyOverlay(noFeeIdMadeEligible(input));
+    });
+
+    test('Not eligible with ineligible input', () => {
+      expect(elig.noFeeIdResult(noFeeIdMadeIneligible(input)).eligible)
+        .toBe(false);
+    })
+
     test('Not eligible with default input', () => {
       expect(elig.noFeeIdResult(input).eligible).not.toBe(true);
     });
@@ -1216,6 +1275,41 @@ describe('Program eligibility', () => {
         .isEligibleIf('housingSituation').is('shelter');
       check(elig.noFeeIdResult, input)
         .isEligibleIf('housingSituation').is('no-stable-place');
+    });
+  });
+
+  describe('Reduced Fee ID Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.reducedFeeIdResult(input).eligible).not.toBe(true);
+    });
+
+    test('Eligible when receiving or eligible for certain assistance', () => {
+      input = noFeeIdMadeIneligible(input);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingCalworksMe').is(true);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingSsiMe').is(true);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingGaMe').is(true);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingCalfreshMe').is(true);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingCfapMe').is(true);
+      check(elig.reducedFeeIdResult, input)
+        .isEligibleIf('existingCapiMe').is(true);
+
+      check(elig.reducedFeeIdResult, input).isEligibleIf(calworksMadeEligible);
+      check(elig.reducedFeeIdResult, input).isEligibleIf(ssiMadeEligible);
+      check(elig.reducedFeeIdResult, input).isEligibleIf(gaMadeEligible);
+      check(elig.reducedFeeIdResult, input).isEligibleIf(calfreshMadeEligible);
+      check(elig.reducedFeeIdResult, input).isEligibleIf(capiMadeEligible);
+      // TODO: Add CFAP eligibility check here once it's supported.
+    });
+
+    test('Not eligible when no-fee ID is available', () => {
+      input = noFeeIdMadeIneligible(input);
+      input.existingCalworksMe = true;
+      check(elig.reducedFeeIdResult, input).isNotEligibleIf(noFeeIdMadeEligible);
     });
   });
 
@@ -1345,6 +1439,86 @@ describe('Program eligibility', () => {
       },
       elig.ssiResult
     );
+  });
+
+  describe('SSDI Program', () => {
+    test('Eligible with input for other program dependencies', () => {
+      verifyOverlay(ssdiMadeEligible(input));
+    });
+
+    test('Requires age under full retirement age', () => {
+      input.income.valid = true;
+      input.disabled = true;
+      input.paidSsTaxes = true;
+      check(elig.ssdiResult, input).isEligibleIf('age')
+        .isUnder(elig.cnst.ssdi.FULL_RETIREMENT_AGE);
+    });
+
+    test('Requires past payment of Social Security taxes', () => {
+      input.income.valid = true;
+      input.disabled = true;
+      input.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
+      check(elig.ssdiResult, input).isEligibleIf('paidSsTaxes').is(true);
+    });
+
+    test('Requires no substantial gainful activity', () => {
+      input.income.valid = true;
+      input.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
+      input.paidSsTaxes = true;
+      input.disabled = true;
+      // SGA should only count earned income.
+      input.income.unemployment = [[1]];
+      check(elig.ssdiResult, input)
+        .isEligibleIf('income.wages').isAtMost(elig.cnst.ssiCapi.SGA_NON_BLIND);
+
+      input.blind = true;
+      check(elig.ssdiResult, input)
+        .isEligibleIf('income.wages').isAtMost(elig.cnst.ssiCapi.SGA_BLIND);
+    });
+
+    test('Eligible if disabled', () => {
+      input.income.valid = true;
+      input.paidSsTaxes = true;
+      input.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
+      check(elig.ssdiResult, input).isEligibleIf('disabled').is(true);
+    });
+
+    test('Eligible if blind', () => {
+      input.income.valid = true;
+      input.paidSsTaxes = true;
+      input.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
+      check(elig.ssdiResult, input).isEligibleIf('blind').is(true);
+    });
+
+    test('Has COMPLEX_RETIREMENT_AGE flag for transitional retirement age', () => {
+      input.paidSsTaxes = true;
+      input.age = elig.cnst.ssdi.TRANSITION_RETIREMENT_AGE;
+      input.disabled = true;
+
+      input.income.valid = false;
+      expect(elig.ssdiResult(input).eligible).toBe(null);
+      expect(elig.ssdiResult(input).flags)
+        .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
+
+      input.income.valid = true;
+      input.disabled = false;
+      expect(elig.ssdiResult(input).eligible).toBe(false);
+      expect(elig.ssdiResult(input).flags)
+        .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
+
+      input.disabled = true;
+      expect(elig.ssdiResult(input).eligible).toBe(true);
+      expect(elig.ssdiResult(input).flags)
+        .toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
+
+      input.age = elig.cnst.ssdi.TRANSITION_RETIREMENT_AGE - 1;
+      expect(elig.ssdiResult(input).flags)
+        .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
+
+      input.age = elig.cnst.ssdi.TRANSITION_RETIREMENT_AGE + 1;
+      expect(elig.ssdiResult(input).flags)
+        .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
+    });
   });
 
   describe('UPLIFT Program', () => {
@@ -1714,7 +1888,12 @@ describe('Program eligibility', () => {
       check(elig.vaPensionResult, input)
         .isEligibleIf('existingSsdiMe').is(true);
       check(elig.vaPensionResult, input).isEligibleIf(ssiMadeEligible);
-      // TODO: add ssdiMadeEligible
+      // Due to interactions between the VA Pension income limit and the SSDI
+      // income limit, we need to add a dependent here to ensure the VA Pension
+      // income limit is above the SSDI income limit for this test.
+      input.householdSize = 2;
+      input.householdDependents = [true];
+      check(elig.vaPensionResult, input).isEligibleIf(ssdiMadeEligible);
     });
   });
 

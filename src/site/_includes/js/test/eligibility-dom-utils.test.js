@@ -15,6 +15,8 @@ test('Elements can be hidden or shown via class', () => {
   expect(elem.className).toContain('hidden');
   elig.setElementVisible(elem, true);
   expect(elem.className).not.toContain('hidden');
+  expect(() => elig.setElementVisible(document.getElementById('bogus')))
+    .not.toThrow();
 });
 
 describe('modifyIds', () => {
@@ -247,5 +249,29 @@ describe('getValueOrNull', () => {
     expect(elig.getValueOrNull(testId)).toBe(true);
     document.getElementById(`${testId}-no`).checked = true;
     expect(elig.getValueOrNull(testId)).toBe(false);
+  });
+
+  test('Returns null for unsupported elements', () => {
+    document.body.innerHTML = `
+      <ul id="test-ul" class="unsupported">
+        <li>A</li>
+        <li>B</li>
+      </ul>
+      <ul id="bad-question" class="yes-no">
+        <li>
+          <input type="radio" id="bad-question-oui" name="bad-question">
+        </li>
+        <li>
+          <input type="radio" id="bad-question-non" name="bad-question">
+        </li>
+      </ul>`;
+
+    expect(elig.getValueOrNull('test-ul')).toBe(null);
+    expect(elig.getValueOrNull('bad-question')).toBe(null);
+    document.getElementById(`bad-question-oui`).checked = true;
+    expect(elig.getValueOrNull('bad-question')).toBe(null);
+    document.getElementById(`bad-question-non`).checked = true;
+    expect(elig.getValueOrNull('bad-question')).toBe(null);
+
   });
 });

@@ -389,6 +389,13 @@ pageClass: "page-public-assistance"
       {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other"  %}
     {% endeligPage %}
 
+    {% eligPage "ss-taxes" %}
+      <div>
+        <p>In the last 10 years, have you worked <span class="bold">and</span> paid Social Security taxes on your earnings?</p>
+        {% yesNo "ss-taxes" %}
+      </div>
+    {% endeligPage %}
+
     {% eligPage "income-assets" %}
       {% capture assetPreamble %}
         Enter the values of all assets or resources you and your household have.  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
@@ -514,7 +521,7 @@ pageClass: "page-public-assistance"
             SSI is a federal program that provides a monthly cash benefit to certain low-income individuals who are disabled, blind, or elderly.
           {% endprogram %}
 
-          {% program "<i>[Under development]</i> Social Security Disability Insurance (SSDI)", "ssdi", "https://www.ssa.gov/applyfordisability/", "https://ca.db101.org/ca/programs/income_support/ssdi2/program.htm" %}
+          {% program "Social Security Disability Insurance (SSDI)", "ssdi", "https://www.ssa.gov/applyfordisability/", "https://ca.db101.org/ca/programs/income_support/ssdi2/program.htm" %}
             SSDI is a federal program that provides a monthly cash benefit to certain disabled individuals who have worked and paid Social Security taxes in the past.
           {% endprogram %}
 
