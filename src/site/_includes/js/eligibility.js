@@ -1727,6 +1727,8 @@ function careResult(input) {
     input.existingCfapHousehold,
     input.existingNslpMe,
     input.existingNslpHousehold,
+    input.existingSchipMe,
+    input.existingSchipHousehold,
     // TODO: Add Medi-Cal eligibility check here once supported.
     ssiResult(input).eligible,
     liheapResult(input).eligible,
@@ -1742,7 +1744,7 @@ function careResult(input) {
   program.addConditionsOneOf([
     new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
-    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, CFAP or NSLP',
+    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, CFAP, NSLP or SCHIP',
       isCategoricallyEligible),
   ]);
 

@@ -547,6 +547,8 @@ describe('Program eligibility', () => {
       existingVaPensionHousehold: false,
       existingPhaMe: false,
       existingPhaHousehold: false,
+      existingSchipMe: false,
+      existingSchipHousehold: false,
     };
   });
 
@@ -924,6 +926,8 @@ describe('Program eligibility', () => {
       check(elig.careResult, input).isEligibleIf('existingSsiHousehold').is(true);
       check(elig.careResult, input).isEligibleIf('existingCalworksMe').is(true);
       check(elig.careResult, input).isEligibleIf('existingCalworksHousehold').is(true);
+      check(elig.careResult, input).isEligibleIf('existingSchipMe').is(true);
+      check(elig.careResult, input).isEligibleIf('existingSchipHousehold').is(true);
 
       check(elig.careResult, input).isEligibleIf(wicMadeEligible);
       check(elig.careResult, input).isEligibleIf(calfreshMadeEligible);
