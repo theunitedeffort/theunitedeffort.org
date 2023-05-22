@@ -543,8 +543,8 @@ describe('Program eligibility', () => {
       existingVaPensionHousehold: false,
       existingPhaMe: false,
       existingPhaHousehold: false,
-      existingSchipiMe: false,
-      existingSchipiHousehold: false,
+      existingSchipMe: false,
+      existingSchipHousehold: false,
     };
   });
 
