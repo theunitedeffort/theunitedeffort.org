@@ -1,6 +1,7 @@
 node_modules
 dist
 /test
+/reports
 .netlify
 .cache
 _generated*
