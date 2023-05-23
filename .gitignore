@@ -1,6 +1,7 @@
 node_modules
 dist
 /test
+/reports
 .netlify
 .cache
 _generated*
@@ -9,3 +10,6 @@ netlify/functions/serverless/**
 /**/.DS_Store
 .env
 /src/coverage
+
+# stryker temp files
+.stryker-tmp
