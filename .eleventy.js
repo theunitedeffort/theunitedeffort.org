@@ -12,7 +12,9 @@ module.exports = function(eleventyConfig) {
 
   // Pass through static assets and client-side js files.
   eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
-  if (process.env.ELEVENTY_ENV !== 'production' ) {
+  if (process.env.CONTEXT === 'dev' ) {
+    // For builds that are not local development builds, the js files will
+    // come from Babel instead.
     eleventyConfig.addPassthroughCopy({ "src/site/_includes/js/*.js": "/js" });
   }
 

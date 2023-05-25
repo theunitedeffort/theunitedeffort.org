@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:assets": "babel src/site/_includes/js -d dist/js --ignore \"src/**/*.test.js\"",
-    "build:site": "ELEVENTY_ENV=production eleventy",
+    "build:assets": "babel src/site/_includes/js -d dist/js --ignore \"src/**/*.test.js\",\"src/**/test\"",
+    "build:site": "eleventy",
     "build": "npm-run-all build:assets build:site",
     "dev": "eleventy --watch --serve",
     "test": "eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest"
