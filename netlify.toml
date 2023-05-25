@@ -3,20 +3,10 @@ command = "npm run build"
 publish = "dist"
 functions = "netlify/functions"
 
-[build.processing]
-  skip_processing = true
-
 [dev]
 command = "npm run dev"
 publish = "dist"
 functions = "netlify/functions"
-
-# Branch specific settings
-[context.branch-deploy.processing]
-  skip_processing = false
-[context.branch-deploy.processing.js]
-  minify = true
-  bundle = false
 
 [[redirects]]
 from = "/housing/affordable-housing/tracker"
