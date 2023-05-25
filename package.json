@@ -8,7 +8,7 @@
     "build:site": "ELEVENTY_ENV=production eleventy",
     "build": "npm-run-all build:assets build:site",
     "dev": "eleventy --watch --serve",
-    "test": "eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest",
+    "test": "eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest"
   },
   "keywords": [],
   "author": "",
