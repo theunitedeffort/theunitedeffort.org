@@ -1,4 +1,5 @@
 const sass = require("sass");
+// const pluginBabel = require('eleventy-plugin-babel');
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 // This requirement is somehow not propagated from affordable-housing.11tydata.js
 // so include it here to be sure it makes it into the serverless bundle.
@@ -11,7 +12,9 @@ module.exports = function(eleventyConfig) {
 
   // Pass through static assets and client-side js files.
   eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
-  eleventyConfig.addPassthroughCopy({ "src/site/_includes/js/*.js": "/js" });
+  if (process.env.ELEVENTY_ENV !== 'production' ) {
+    eleventyConfig.addPassthroughCopy({ "src/site/_includes/js/*.js": "/js" });
+  }
 
   // Eleventy Serverless plugin
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
@@ -42,6 +45,13 @@ module.exports = function(eleventyConfig) {
       }
     }
   });
+
+  // eleventyConfig.addPlugin(pluginBabel, {
+  //   Watch: ["src/site/_includes/js/*.js"],
+  //   babel: {
+  //     presets: ['@babel/preset-env'],
+  //   },
+  // });
 
   return {
     dir: {
