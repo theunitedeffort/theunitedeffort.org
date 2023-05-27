@@ -12,4 +12,5 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache: npm
     - name: Install dependencies
+      shell: bash
       run: npm ci
