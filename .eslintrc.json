@@ -12,8 +12,7 @@
     },
     "rules": {
         "require-jsdoc": "off",
-        "indent": ["error", 2],
-        "max-len": "off"
+        "indent": ["error", 2]
     },
     "ignorePatterns": ["sorttable.js"]
 }
