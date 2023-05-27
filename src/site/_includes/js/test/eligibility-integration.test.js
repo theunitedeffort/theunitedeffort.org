@@ -49,15 +49,15 @@ function getIncomeLists(parent) {
 
 function expectStepsDone(stepIndicatorIds) {
   const steps = getSteps();
-  const allStepIds = Array.from(steps, s => s.id);
+  const allStepIds = Array.from(steps, (s) => s.id);
   if (stepIndicatorIds) {
     expect(allStepIds).toEqual(expect.arrayContaining(stepIndicatorIds));
   }
   for (const step of steps) {
     // Steps can be either 'todo' or 'done'
-    let expected = 'todo'
+    let expected = 'todo';
     if (stepIndicatorIds.includes(step.id)) {
-      expected = 'done'
+      expected = 'done';
     }
     expect(step.classList, `Step indicator "${step.textContent}"`)
       .toContain(expected);
@@ -66,7 +66,7 @@ function expectStepsDone(stepIndicatorIds) {
 
 function expectStepInProgress(stepIndicatorId) {
   const steps = getSteps();
-  const allStepIds = Array.from(steps, s => s.id);
+  const allStepIds = Array.from(steps, (s) => s.id);
   if (stepIndicatorId) {
     expect(allStepIds).toContain(stepIndicatorId);
   }
@@ -81,7 +81,7 @@ function expectStepInProgress(stepIndicatorId) {
 
 function expectStepsDisabled(stepIndicatorIds) {
   const steps = getSteps();
-  const allStepIds = Array.from(steps, s => s.id);
+  const allStepIds = Array.from(steps, (s) => s.id);
   if (stepIndicatorIds) {
     expect(allStepIds).toEqual(expect.arrayContaining(stepIndicatorIds));
   }
@@ -219,12 +219,12 @@ function check(idOrElem) {
       if (typeof this.idOrElem === 'string') {
         elem = document.getElementById(this.idOrElem);
       }
-      let elems = [elem]
+      const elems = [elem];
       while (elem.parentElement) {
         elem = elem.parentElement;
         elems.push(elem);
       }
-      const hiddens = elems.map(e => e.classList.contains('hidden'));
+      const hiddens = elems.map((e) => e.classList.contains('hidden'));
       expect(hiddens, `"${this.idOrElem}", nor any ancestor is hidden`)
         .toContain(true);
     },
@@ -340,7 +340,7 @@ describe('Navigation and UI', () => {
             document.getElementById('veteran').checked = true;
             click(nextButton);
             document.getElementById('served-from').value = '2000-01-01';
-            document.getElementById('served-until').value = '2001-12-30';  // 729 days later
+            document.getElementById('served-until').value = '2001-12-30'; // 729 days later
             document.getElementById('your-duty-type').value = 'active-duty';
             click(nextButton);
           },
@@ -371,7 +371,7 @@ describe('Navigation and UI', () => {
       ],
       inProgressStep: 'nav-section-household',
       doneSteps: [
-        'nav-section-yourself'
+        'nav-section-yourself',
       ],
       pages: [
         {
@@ -564,9 +564,9 @@ describe('Navigation and UI', () => {
 
 
   function clickUntilHidden(button) {
-    let start = new Date().getTime();
+    const start = new Date().getTime();
     let prevPageId = visiblePage().id;
-    let pageIdsSeen = [prevPageId];
+    const pageIdsSeen = [prevPageId];
     while (timeout(start) || !button.classList.contains('hidden')) {
       // NOTE: Errors in the click handler do not propagate back to Jest.
       // When calling such handlers in a loop like this, there is the potential
@@ -593,7 +593,7 @@ describe('Navigation and UI', () => {
 
   function expectPagesUsed(pageIds) {
     // Get back to the beginning.
-    toFormStart()
+    toFormStart();
     // Click through all pages.
     const pageIdsSeen = toFormEnd();
     expect(pageIds.sort()).toEqual(pageIdsSeen.sort());
@@ -610,8 +610,8 @@ describe('Navigation and UI', () => {
 
   describe.each(
     pageTestCases)('Section UI is correct for $sectionId', ({sectionId,
-      backVisible, nextVisible, submitVisible, disabledSteps, inProgressStep,
-      doneSteps, pages}) => {
+    backVisible, nextVisible, submitVisible, disabledSteps, inProgressStep,
+    doneSteps, pages}) => {
     test.each(pages)(`$pageId`, ({pageId, setUp, otherChecks}) => {
       // Navigate to the page of interest and do any other setup.
       if (setUp) {
@@ -636,7 +636,6 @@ describe('Navigation and UI', () => {
   });
 
   test('Can navigate using the back button', () => {
-    const pages = document.querySelectorAll('.elig_page');
     click(nextButton);
     expect(visiblePage().id).toBe('page-yourself-start');
     click(backButton);
@@ -659,29 +658,29 @@ describe('Navigation and UI', () => {
     for (const step of getSteps()) {
       let expectedSection;
       let expectedPage;
-      switch(step.id) {
-        case 'nav-section-yourself':
-          expectedSection = 'section-yourself';
-          expectedPage = 'page-yourself-start';
-          break;
-        case 'nav-section-household':
-          expectedSection = 'section-household';
-          expectedPage = 'page-household-members';
-          break;
-        case 'nav-section-income':
-          expectedSection = 'section-income';
-          expectedPage = 'page-income';
-          break;
-        case 'nav-section-existing-benefits':
-          expectedSection = 'section-existing-benefits';
-          expectedPage = 'page-existing-benefits';
-          break;
-        case 'nav-section-results':
-          expectedSection = 'section-results';
-          expectedPage = 'page-results';
-          break;
-        default:
-          throw new Error(`Section "${step.id}" needs a test case added.`);
+      switch (step.id) {
+      case 'nav-section-yourself':
+        expectedSection = 'section-yourself';
+        expectedPage = 'page-yourself-start';
+        break;
+      case 'nav-section-household':
+        expectedSection = 'section-household';
+        expectedPage = 'page-household-members';
+        break;
+      case 'nav-section-income':
+        expectedSection = 'section-income';
+        expectedPage = 'page-income';
+        break;
+      case 'nav-section-existing-benefits':
+        expectedSection = 'section-existing-benefits';
+        expectedPage = 'page-existing-benefits';
+        break;
+      case 'nav-section-results':
+        expectedSection = 'section-results';
+        expectedPage = 'page-results';
+        break;
+      default:
+        throw new Error(`Section "${step.id}" needs a test case added.`);
       }
       expect(visibleSection().id).not.toBe(expectedSection);
       click(step);
@@ -710,7 +709,7 @@ describe('Navigation and UI', () => {
     click(visiblePage().querySelector('.field_list_add'));
     select(document.getElementById('your-duty-type-1'), 'active-duty');
     enterText(document.getElementById('served-from-1'), '2000-01-01');
-    enterText(document.getElementById('served-until-1'), '2001-12-30');  // 729 days
+    enterText(document.getElementById('served-until-1'), '2001-12-30'); // 729 days
     click(nextButton);
     check(thisPage.querySelectorAll('fieldset')[1]).isVisible();
     expect(thisPage.textContent).toContain('from 1/1/2000 until 12/30/2001');
@@ -727,8 +726,8 @@ describe('Navigation and UI', () => {
     // Not active duty
     const otherDutyTypes = Array.from(
       document.getElementById('your-duty-type-1')
-      .querySelectorAll('option:not([value="active-duty"])'),
-      e => e.value);
+        .querySelectorAll('option:not([value="active-duty"])'),
+      (e) => e.value);
     for (const dutyType of otherDutyTypes) {
       click(backButton);
       select(document.getElementById('your-duty-type-1'), dutyType);
@@ -742,7 +741,7 @@ describe('Navigation and UI', () => {
     click(backButton);
     select(document.getElementById('your-duty-type-1'), 'active-duty');
     enterText(document.getElementById('served-from-1'), '2000-01-01');
-    enterText(document.getElementById('served-until-1'), '2001-12-31');  // 730 days
+    enterText(document.getElementById('served-until-1'), '2001-12-31'); // 730 days
     click(nextButton);
     thisPage = visiblePage();
     check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
@@ -772,7 +771,7 @@ describe('Navigation and UI', () => {
     expect(document.querySelectorAll(selector).length).toBe(1);
     // There should be just one follow-up question corresponding to the one duty
     // period.
-    const qSelector = '#page-veteran-duty-period fieldset'
+    const qSelector = '#page-veteran-duty-period fieldset';
     expect(document.querySelectorAll(qSelector).length).toBe(1);
     addDutyPeriod();
     addDutyPeriod();
@@ -940,7 +939,7 @@ describe('Navigation and UI', () => {
   });
 
   test('Pages linked together properly', () => {
-    let expectedPages = [
+    const expectedPages = [
       'page-intro',
       'page-yourself-start',
       'page-household-members',
@@ -976,7 +975,7 @@ describe('Navigation and UI', () => {
 
     expectedPages.push('page-veteran-duty-period');
     document.getElementById('served-from').value = '2000-01-01';
-    document.getElementById('served-until').value = '2001-12-30';  // 729 days later
+    document.getElementById('served-until').value = '2001-12-30'; // 729 days later
     document.getElementById('your-duty-type').value = 'active-duty';
     expectPagesUsed(expectedPages);
 
@@ -985,7 +984,7 @@ describe('Navigation and UI', () => {
     expectPagesUsed(expectedPages);
     document.getElementById('pregnant').checked = false;
     document.querySelector(
-    '#page-household-members .field_list_add').click();
+      '#page-household-members .field_list_add').click();
     document.getElementById('hh-member-pregnant-1').checked = true;
     expectPagesUsed(expectedPages);
 
@@ -1046,7 +1045,7 @@ describe('Navigation and UI', () => {
     expectPagesUsed(expectedPages);
 
     const allPages = Array.from(
-      document.querySelectorAll('.elig_page:not(#page-results)'), p => p.id);
+      document.querySelectorAll('.elig_page:not(#page-results)'), (p) => p.id);
     expectPagesUsed(allPages);
   });
 
@@ -1158,7 +1157,7 @@ describe('buildInputObj', () => {
       homelessRisk: true,
       immigrationStatus: 'permanent_resident',
       usesGuideDog: true,
-      militaryDisabled: true  ,
+      militaryDisabled: true,
       dischargeStatus: 'honorable',
       servedFullDuration: true,
       dutyPeriods: [
@@ -1217,7 +1216,7 @@ describe('buildInputObj', () => {
       existingPhaHousehold: true,
       existingPhaMe: true,
       existingSchipMe: true,
-      existingSchipHousehold: true
+      existingSchipHousehold: true,
     };
 
     document.body.parentElement.innerHTML = html;
@@ -1307,8 +1306,7 @@ describe('buildInputObj', () => {
     document.getElementById('full-dur-yes').checked = expected.servedFullDuration;
     expect(getInput().servedFullDuration).toBe(expected.servedFullDuration);
 
-    const button = document.querySelector(
-      '#page-veteran-details .field_list_add').click();
+    document.querySelector('#page-veteran-details .field_list_add').click();
     document.getElementById('your-duty-type').value = expected.dutyPeriods[0].type;
     document.getElementById('served-from').value = dutyPeriodStartStrs[0];
     document.getElementById('served-until').value = dutyPeriodEndStrs[0];

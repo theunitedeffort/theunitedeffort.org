@@ -1,7 +1,7 @@
 const elig = require('../eligibility');
 
-// TODO: Reset empty_input each time in case it changes in a test.
-const empty_input = {
+// TODO: Reset emptyInput each time in case it changes in a test.
+const emptyInput = {
   income: {
     valid: true,
     wages: [[], []],
@@ -13,7 +13,7 @@ const empty_input = {
     childSupport: [[], []],
     retirement: [[], []],
     other: [[], []],
-  }
+  },
 };
 
 describe('categoryTotal', () => {
@@ -47,9 +47,9 @@ describe('categoryTotal', () => {
 });
 
 describe('totalEarnedIncome', () => {
-  const test_input = {};
+  const testInput = {};
   beforeEach(() => {
-    test_input.income = {
+    testInput.income = {
       valid: true,
       wages: [[100], [400]],
       selfEmployed: [[200, 200], []],
@@ -65,29 +65,29 @@ describe('totalEarnedIncome', () => {
 
   // TODO: how to protect against forgetting a newly-added income type?
   test('Returns 0 for empty income array', () => {
-    expect(elig.totalEarnedIncome(empty_input)).toBe(0);
+    expect(elig.totalEarnedIncome(emptyInput)).toBe(0);
   });
 
   test('Sums all earned income only', () => {
-    expect(elig.totalEarnedIncome(test_input)).toBe(900);
+    expect(elig.totalEarnedIncome(testInput)).toBe(900);
   });
 
   test('Sums only earned income from specified group indices', () => {
-    expect(elig.totalEarnedIncome(test_input, 1)).toBe(400);
-    expect(elig.totalEarnedIncome(test_input, [0, 1])).toBe(900);
-    expect(elig.totalEarnedIncome(test_input, null)).toBe(900);
+    expect(elig.totalEarnedIncome(testInput, 1)).toBe(400);
+    expect(elig.totalEarnedIncome(testInput, [0, 1])).toBe(900);
+    expect(elig.totalEarnedIncome(testInput, null)).toBe(900);
   });
 
   test('Returns NaN for invalid input', () => {
-    test_input.income.valid = false;
-    expect(elig.totalEarnedIncome(test_input)).toBe(NaN);
+    testInput.income.valid = false;
+    expect(elig.totalEarnedIncome(testInput)).toBe(NaN);
   });
 });
 
 describe('totalUnearnedIncome', () => {
-  const test_input = {};
+  const testInput = {};
   beforeEach(() => {
-    test_input.income = {
+    testInput.income = {
       valid: true,
       wages: [[99], [99]],
       selfEmployed: [[99], [99]],
@@ -103,29 +103,29 @@ describe('totalUnearnedIncome', () => {
 
   // TODO: how to protect against forgetting a newly-added income type?
   test('Returns 0 for empty income array', () => {
-    expect(elig.totalUnearnedIncome(empty_input)).toBe(0);
+    expect(elig.totalUnearnedIncome(emptyInput)).toBe(0);
   });
 
   test('Sums all unearned income only', () => {
-    expect(elig.totalUnearnedIncome(test_input)).toBe(800);
+    expect(elig.totalUnearnedIncome(testInput)).toBe(800);
   });
 
   test('Sums only unearned income from specified group indices', () => {
-    expect(elig.totalUnearnedIncome(test_input, 1)).toBe(50);
-    expect(elig.totalUnearnedIncome(test_input, [0, 1])).toBe(800);
-    expect(elig.totalUnearnedIncome(test_input, null)).toBe(800);
+    expect(elig.totalUnearnedIncome(testInput, 1)).toBe(50);
+    expect(elig.totalUnearnedIncome(testInput, [0, 1])).toBe(800);
+    expect(elig.totalUnearnedIncome(testInput, null)).toBe(800);
   });
 
   test('Returns NaN for invalid input', () => {
-    test_input.income.valid = false;
-    expect(elig.totalUnearnedIncome(test_input)).toBe(NaN);
+    testInput.income.valid = false;
+    expect(elig.totalUnearnedIncome(testInput)).toBe(NaN);
   });
 });
 
 describe('grossIncome', () => {
-  const test_input = {};
+  const testInput = {};
   beforeEach(() => {
-    test_input.income = {
+    testInput.income = {
       valid: true,
       wages: [[100], []],
       selfEmployed: [[100], []],
@@ -140,43 +140,43 @@ describe('grossIncome', () => {
   });
 
   test('Returns 0 for empty income array', () => {
-    expect(elig.grossIncome(empty_input)).toBe(0);
+    expect(elig.grossIncome(emptyInput)).toBe(0);
   });
 
   test('Sums all income', () => {
-    expect(elig.grossIncome(test_input)).toBe(1000);
+    expect(elig.grossIncome(testInput)).toBe(1000);
   });
 
   test('Sums only income from specified group indices', () => {
-    expect(elig.grossIncome(test_input, 1)).toBe(50);
-    expect(elig.grossIncome(test_input, [0, 1])).toBe(1000);
-    expect(elig.grossIncome(test_input, null)).toBe(1000);
+    expect(elig.grossIncome(testInput, 1)).toBe(50);
+    expect(elig.grossIncome(testInput, [0, 1])).toBe(1000);
+    expect(elig.grossIncome(testInput, null)).toBe(1000);
   });
 
   test('Returns NaN for invalid input', () => {
-    test_input.income.valid = false;
-    expect(elig.grossIncome(test_input)).toBe(NaN);
+    testInput.income.valid = false;
+    expect(elig.grossIncome(testInput)).toBe(NaN);
   });
 });
 
 describe('totalResources', () => {
   test('Returns 0 for an empty assets array', () => {
     const input = {
-      assets: [[], []]
+      assets: [[], []],
     };
     expect(elig.totalResources(input)).toBe(0);
   });
 
   test('Sums all assets array values', () => {
     const input = {
-      assets: [[42, 10], [8], [100]]
+      assets: [[42, 10], [8], [100]],
     };
     expect(elig.totalResources(input)).toBe(160);
   });
 
   test('Sums assets array values from specified group indices', () => {
     const input = {
-      assets: [[42, 10], [8], [100]]
+      assets: [[42, 10], [8], [100]],
     };
     expect(elig.totalResources(input, 1)).toBe(8);
     expect(elig.totalResources(input, [0, 2])).toBe(152);

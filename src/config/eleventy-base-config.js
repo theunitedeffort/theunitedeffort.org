@@ -1,4 +1,4 @@
-const markdown = require("marked");
+const markdown = require('marked');
 
 // This is a global sort ranking for all filter options.
 // It assumes no name collisions.
@@ -6,43 +6,45 @@ const markdown = require("marked");
 // Force an item to be ranked last every time with rank = -1.
 const SORT_RANKING = new Map([
   // Unit Type
-  ["SRO", 1],
-  ["Studio", 2],
-  ["Others", -1],
+  ['SRO', 1],
+  ['Studio', 2],
+  ['Others', -1],
   // Availability
-  ["Available", 1],
-  ["Waitlist Open", 2],
-  ["Waitlist Closed", 3],
-  ["Call for Status", 4],
+  ['Available', 1],
+  ['Waitlist Open', 2],
+  ['Waitlist Closed', 3],
+  ['Call for Status', 4],
   // Populations Served
-  ["General Population", 1],
-  ["Seniors", 2],
-  ["Youth", 3],
-  ["Developmentally Disabled", 4],
-  ["Physically Disabled", 5],
+  ['General Population', 1],
+  ['Seniors', 2],
+  ['Youth', 3],
+  ['Developmentally Disabled', 4],
+  ['Physically Disabled', 5],
 ]);
 
 module.exports = function(eleventyConfig) {
   // Markdown filter
-  eleventyConfig.addFilter("markdownify", (str) => {
-    str = str.replaceAll("http:///", "/");
-    return markdown.marked(str)
+  eleventyConfig.addFilter('markdownify', (str) => {
+    str = str.replaceAll('http:///', '/');
+    return markdown.marked(str);
   });
 
   // Get all of the unique values of a property
-  eleventyConfig.addFilter("index", function(collection, property) {
+  eleventyConfig.addFilter('index', function(collection, property) {
     let values = [];
     for (const item in collection) {
-      if (collection[item][property]) {
-        values = values.concat(collection[item][property]);
+      if (Object.hasOwn(collection, item)) {
+        if (collection[item][property]) {
+          values = values.concat(collection[item][property]);
+        }
       }
     }
     return [...new Set(values)];
   });
 
   // Filter a data set by a value present in an array property
-  eleventyConfig.addFilter("whereIncluded", function(collection, key, value) {
-    let filtered = [];
+  eleventyConfig.addFilter('whereIncluded', function(collection, key, value) {
+    const filtered = [];
     for (const item in collection) {
       if (collection[item][key] && collection[item][key].includes(value)) {
         filtered.push(collection[item]);
@@ -51,8 +53,8 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
   // Filter a data set by a value present in an array property
-  eleventyConfig.addFilter("whereEmpty", function(collection, key) {
-    let filtered = [];
+  eleventyConfig.addFilter('whereEmpty', function(collection, key) {
+    const filtered = [];
     for (const item in collection) {
       if (!collection[item][key]) {
         filtered.push(collection[item]);
@@ -61,29 +63,31 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
-  eleventyConfig.addFilter("groupBy", function(collection, keys) {
-    const SEPARATOR = "__"
+  eleventyConfig.addFilter('groupBy', function(collection, keys) {
+    const SEPARATOR = '__';
     const groupMap = {};
     const keyArr = [].concat(keys);
     for (const item of collection) {
-      const keyValue = keyArr.map(k => item[k]).join(SEPARATOR);
+      const keyValue = keyArr.map((k) => item[k]).join(SEPARATOR);
       groupMap[keyValue] = groupMap[keyValue] || [];
       groupMap[keyValue].push(item);
     }
-    const grouped = []
+    const grouped = [];
     for (const groupKey in groupMap) {
-      const entry = {"key": groupKey, "values": groupMap[groupKey]};
-      for (const [index, key] of groupKey.split(SEPARATOR).entries()) {
-        entry["key" + index] = key;
+      if (Object.hasOwn(groupMap, groupKey)) {
+        const entry = {'key': groupKey, 'values': groupMap[groupKey]};
+        for (const [index, key] of groupKey.split(SEPARATOR).entries()) {
+          entry['key' + index] = key;
+        }
+        grouped.push(entry);
       }
-      grouped.push(entry);
     }
     return grouped;
   });
 
   // Returns either the 'singular' string or 'plural' string depending on 'num'.
   // If 'num' is not a number, will return null.
-  eleventyConfig.addFilter("pluralize", function(num, singular, plural) {
+  eleventyConfig.addFilter('pluralize', function(num, singular, plural) {
     const parsedNum = Number(num);
     if (Number.isNaN(parsedNum)) {
       return null;
@@ -95,20 +99,20 @@ module.exports = function(eleventyConfig) {
   });
 
   // Generates a URL query string from Eleventy serverless query parameters.
-  eleventyConfig.addFilter("queryString", function(queryParams) {
+  eleventyConfig.addFilter('queryString', function(queryParams) {
     const searchParams = new URLSearchParams(queryParams);
     return searchParams.toString();
   });
 
   // Formats a value as USD with no decimals.
-  eleventyConfig.addFilter("money", function(value) {
+  eleventyConfig.addFilter('money', function(value) {
     return formatCurrency(value);
   });
 
-  eleventyConfig.addFilter("getValidatedLocCoords", function(address) {
+  eleventyConfig.addFilter('getValidatedLocCoords', function(address) {
     if (address.verifiedLocCoords &&
         address.locCoords) {
-      const coords = address.locCoords.split(",");
+      const coords = address.locCoords.split(',');
       if (coords.length == 2) {
         const lat = Number.parseFloat(coords[0]);
         const lng = Number.parseFloat(coords[1]);
@@ -142,8 +146,7 @@ module.exports = function(eleventyConfig) {
     } else if (a.maxIncome.low && b.maxIncome.low && a.maxIncome.low != b.maxIncome.low) {
       compA = a.maxIncome.low;
       compB = b.maxIncome.low;
-    }
-    else if (a.incomeBracket && b.incomeBracket && a.incomeBracket != b.incomeBracket) {
+    } else if (a.incomeBracket && b.incomeBracket && a.incomeBracket != b.incomeBracket) {
       compA = a.incomeBracket;
       compB = b.incomeBracket;
     }
@@ -154,22 +157,22 @@ module.exports = function(eleventyConfig) {
       return 1;
     }
     return 0;
-  }
+  };
 
-  eleventyConfig.addFilter("sortUnitOfferings", function(units) {
+  eleventyConfig.addFilter('sortUnitOfferings', function(units) {
     return units.sort(compareRents);
   });
 
   // Sorts items according to the ranking defined in SORT_RANKING.
-  eleventyConfig.addFilter("rankSort", function(values, properties="") {
-    let sorted = values.sort(function(a, b) {
+  eleventyConfig.addFilter('rankSort', function(values, properties='') {
+    const sorted = values.sort(function(a, b) {
       const props = [].concat(properties);
       let ret = 0;
       for (const prop of props) {
-        let valA = prop ? a[prop] : a;
-        let valB = prop ? b[prop] : b;
-        let rankA = SORT_RANKING.get(valA);
-        let rankB = SORT_RANKING.get(valB);
+        const valA = prop ? a[prop] : a;
+        const valB = prop ? b[prop] : b;
+        const rankA = SORT_RANKING.get(valA);
+        const rankB = SORT_RANKING.get(valB);
         // Special handling for the -1 rank, which is always sorted last.
         if (rankB < 0) {
           ret = -1;
@@ -202,18 +205,18 @@ module.exports = function(eleventyConfig) {
     return sorted;
   });
 
-  eleventyConfig.addFilter("numFiltersApplied", function(query){
+  eleventyConfig.addFilter('numFiltersApplied', function(query) {
     // TODO: Don't hardcode this list of filters here.
     const allowedFilters = [
-      "city",
-      "availability",
-      "unitType",
-      "propertyName",
-      "rentMax",
-      "income",
-      "populationsServed",
-      "wheelchairAccessibleOnly",
-      "includeReferrals",
+      'city',
+      'availability',
+      'unitType',
+      'propertyName',
+      'rentMax',
+      'income',
+      'populationsServed',
+      'wheelchairAccessibleOnly',
+      'includeReferrals',
     ];
     let count = 0;
     for (const key in query) {
@@ -225,33 +228,41 @@ module.exports = function(eleventyConfig) {
   });
 
   // Add filter checkbox state from the query parameters to 'filterValues'.
-  eleventyConfig.addFilter("updateFilterState", function(filterValues, query) {
+  eleventyConfig.addFilter('updateFilterState', function(filterValues, query) {
     // The AssetCache holding filterValues stores a buffered version of the
     // cached filterValues and does not read it in from the filesystem on each
     // page render. We need to be sure to not modify the original object, lest
     // those edits persist in the cached object.
-    let filterValuesCopy = JSON.parse(JSON.stringify(filterValues));
+    const filterValuesCopy = JSON.parse(JSON.stringify(filterValues));
     // If there is no query (such as on the affordable housing landing page)
     // there is no state to add to the filterValues.
-    if (!query) { return filterValuesCopy; }
+    if (!query) {
+      return filterValuesCopy;
+    }
 
     // Updates the state of the FilterSection with the name 'filterName'
     // according to 'queryValue'
     function updateFilterSection(queryValue, filterName) {
-      if (!queryValue) { return; }
-      let selectedOptions = queryValue.split(", ");
-      let filterIdx = filterValuesCopy.findIndex(f => f.name == filterName);
-      if (filterIdx < 0) { return; }
+      if (!queryValue) {
+        return;
+      }
+      const selectedOptions = queryValue.split(', ');
+      const filterIdx = filterValuesCopy.findIndex((f) => f.name == filterName);
+      if (filterIdx < 0) {
+        return;
+      }
       for (const selectedOption of selectedOptions) {
-        let idx = filterValuesCopy[filterIdx].options.findIndex(
-          v => v.name.split(", ").includes(selectedOption));
+        const idx = filterValuesCopy[filterIdx].options.findIndex(
+          (v) => v.name.split(', ').includes(selectedOption));
         if (idx >= 0) {
           filterValuesCopy[filterIdx].options[idx].selected = true;
         }
       }
     }
-    for (const section in query){
-      updateFilterSection(query[section], section);
+    for (const section in query) {
+      if (Object.hasOwn(query, section)) {
+        updateFilterSection(query[section], section);
+      }
     }
 
     return filterValuesCopy;
@@ -271,21 +282,21 @@ module.exports = function(eleventyConfig) {
   // eleventy.serverless.query object and "allAvailabilities" is a list of
   // all possible values for the availability parameter, generally fetched
   // ahead of time from Airtable.  Returns a URL query string.
-  eleventyConfig.addFilter("removeWaitlistClosed", function(query,
+  eleventyConfig.addFilter('removeWaitlistClosed', function(query,
     allAvailabilities) {
-    const availKey = "availability";
-    const closedValue = "Waitlist Closed";
-    let queryParams = new URLSearchParams(query);
+    const availKey = 'availability';
+    const closedValue = 'Waitlist Closed';
+    const queryParams = new URLSearchParams(query);
     // Copy existing availability values that were set by the user.
     let availabilityValues = queryParams.get(availKey);
     if (!availabilityValues || availabilityValues === closedValue) {
       // The user had no availabilities set or only asked for waitlist closed,
       // so initialize to the full list.
-      availabilityValues = allAvailabilities.join(", ");
+      availabilityValues = allAvailabilities.join(', ');
     }
     // Remove the Waitlist Closed item from the availability values.
-    availabilityValues = (availabilityValues.split(", ")
-      .filter(x => x !== closedValue).join(", "));
+    availabilityValues = (availabilityValues.split(', ')
+      .filter((x) => x !== closedValue).join(', '));
     queryParams.set(availKey, availabilityValues);
     return queryParams.toString();
   });
@@ -294,10 +305,10 @@ module.exports = function(eleventyConfig) {
   // https://stackoverflow.com/questions/4149276/how-to-convert-camelcase-to-camel-case
   const camelCaseToSpaces = function(str) {
     // Insert space before each capital letter.
-    let spaced = str.replace(/([A-Z])/g, " $1");
+    const spaced = str.replace(/([A-Z])/g, ' $1');
     // The first word is all lowercase, so capitalize it.
-    return `${spaced[0].toUpperCase()}${spaced.slice(1)}`
-  }
+    return `${spaced[0].toUpperCase()}${spaced.slice(1)}`;
+  };
 
   // Converts "the-test-string", "the_test_string", or "the test string" to "theTestString".
   const toCamelCase = function(str) {
@@ -307,36 +318,36 @@ module.exports = function(eleventyConfig) {
     for (const word of words.slice(1)) {
       result.push(`${word.slice(0, 1).toUpperCase()}${word.slice(1)}`);
     }
-    return result.join("");
-  }
+    return result.join('');
+  };
 
   // Formats a value as USD with no decimals.
   const formatCurrency = function(value) {
-    const num = Number(value)
+    const num = Number(value);
     if (isNaN(num)) {
-      return "";
+      return '';
     } else {
-      return num.toLocaleString("en-US",
-      {
-        style: "currency",
-        maximumFractionDigits: 0,
-        minimumFractionDigits: 0,
-        currency: "USD"
-      });
+      return num.toLocaleString('en-US',
+        {
+          style: 'currency',
+          maximumFractionDigits: 0,
+          minimumFractionDigits: 0,
+          currency: 'USD',
+        });
     }
-  }
+  };
 
-  eleventyConfig.addPairedShortcode("eligPage", function(content, id) {
+  eleventyConfig.addPairedShortcode('eligPage', function(content, id) {
     return `<div id="page-${id}" class="elig_page hidden">${content}</div>`;
   });
 
-  eleventyConfig.addPairedShortcode("eligSection", function(content, id) {
+  eleventyConfig.addPairedShortcode('eligSection', function(content, id) {
     return `<div id="section-${id}" class="elig_section hidden">${content}</div>`;
   });
 
   // Renders a single public assistance program to display in a list.
-  eleventyConfig.addPairedShortcode("program", function(
-    content, title, id, applyUrl, refUrl="") {
+  eleventyConfig.addPairedShortcode('program', function(
+    content, title, id, applyUrl, refUrl='') {
     const links = [];
     if (applyUrl) {
       links.push(`<p><a href="${applyUrl}" target="_blank" rel="noopener">How to apply</a></p>`);
@@ -350,14 +361,14 @@ module.exports = function(eleventyConfig) {
         <h4>${title}</h4>
         <ul class="elig_flags"></ul>
         <p>${content}</p>
-        ${links.join("")}
+        ${links.join('')}
         <h5>Eligibility Requirements</h5>
         <ul class="elig_conditions"></ul>
       </li>`;
   });
 
   // Generates a list that can have items added and removed dynamically.
-  eleventyConfig.addPairedShortcode("dynamicFieldList", function(
+  eleventyConfig.addPairedShortcode('dynamicFieldList', function(
     listItemContent, addText, emptyAddText, templateContent) {
     let templateStr = '';
     let listItemStr = '';
@@ -385,14 +396,14 @@ module.exports = function(eleventyConfig) {
       </div>`;
   });
 
-  eleventyConfig.addShortcode("checkboxTable", function(tableId, columnsStr, rowsStr) {
+  eleventyConfig.addShortcode('checkboxTable', function(tableId, columnsStr, rowsStr) {
     function unpack(str) {
-      const parts = str.split(":");
+      const parts = str.split(':');
       return {id: parts[0].trim(), content: parts[1].trim()};
     }
 
-    const columns = columnsStr.split("\n").map(unpack);
-    const rows = rowsStr.split("\n").map(unpack);
+    const columns = columnsStr.split('\n').map(unpack);
+    const rows = rowsStr.split('\n').map(unpack);
 
     columnsHtml = ['<th></th>'];
     for (column of columns) {
@@ -415,7 +426,7 @@ module.exports = function(eleventyConfig) {
           <td class="label" id="row-label-${row.id}">
             ${row.content}
           </td>
-          ${cellsHtml.join("")}
+          ${cellsHtml.join('')}
         </tr>`);
     }
 
@@ -423,16 +434,16 @@ module.exports = function(eleventyConfig) {
       <table>
         <thead>
           <tr>
-            ${columnsHtml.join("")}
+            ${columnsHtml.join('')}
           </tr>
         </thead>
         <tbody>
-          ${rowsHtml.join("")}
+          ${rowsHtml.join('')}
         </tbody>
       </table>`;
   });
 
-  eleventyConfig.addPairedShortcode("singleselect", function(options, id) {
+  eleventyConfig.addPairedShortcode('singleselect', function(options, id) {
     delete this.page.singleselectId;
     return `
       <ul id="${id}" class="singleselect">
@@ -440,7 +451,7 @@ module.exports = function(eleventyConfig) {
       </ul>`;
   });
 
-  eleventyConfig.addShortcode("yesNo", function(id) {
+  eleventyConfig.addShortcode('yesNo', function(id) {
     return `
       <ul id="${id}" class="yes-no">
         <li>
@@ -454,7 +465,7 @@ module.exports = function(eleventyConfig) {
       </ul>`;
   });
 
-  eleventyConfig.addPairedShortcode("option", function(labelText, id) {
+  eleventyConfig.addPairedShortcode('option', function(labelText, id) {
     this.page.singleselectId = (this.page.singleselectId ||
       `singleselect-${Math.floor(Math.random() * 1000)}`);
     return `
@@ -474,19 +485,19 @@ module.exports = function(eleventyConfig) {
   // An optional 'index' string will be appended to the generated id like
   // "id:index".  If the field specified by 'fieldName' includes a description,
   // it will be rendered next to the label text as a hover tooltip icon.
-  const fieldLabel = function(labelText, fields, fieldName, index="") {
-    let forAttr = `${fields[fieldName].id}${index !== "" ? ":" + index : ""}`;
-    let tag = `<label for="${forAttr}">${labelText}</label>`;
-    let tooltip = "";
+  const fieldLabel = function(labelText, fields, fieldName, index='') {
+    const forAttr = `${fields[fieldName].id}${index !== '' ? ':' + index : ''}`;
+    const tag = `<label for="${forAttr}">${labelText}</label>`;
+    let tooltip = '';
     if (fields[fieldName].description) {
-      let descStr = fields[fieldName].description.replace(/\n/g, "<br/>");
+      const descStr = fields[fieldName].description.replace(/\n/g, '<br/>');
       tooltip = `<span class="tooltip_entry">
   <span class="icon_query"></span>
   <span class="tooltip_content">${descStr}</span>
   </span>`;
     }
-   return `${tag} ${tooltip}`;
-  }
+    return `${tag} ${tooltip}`;
+  };
 
   // Generates an HTML form input for the field specified by 'fieldName'.
   //
@@ -498,27 +509,27 @@ module.exports = function(eleventyConfig) {
   // string will be appended to the generated id like 'id:index'. The input
   // (or select, or textarea) element style can be adjusted with the 'className'
   // string.
-  const formField = function(fields, fieldName, className="", index="") {
-    let field = fields[fieldName];
-    let tag = "";
-    let options = "";
-    let content = "";
-    let endtag = "";
-    let indexStr = index !== "" ? ":" + index : "";
-    let classStr = className !== "" ? `class="${className}"` : "";
-    if (field.type === "singleSelect") {
-      tag = "select";
-      endtag = "</select>";
+  const formField = function(fields, fieldName, className='', index='') {
+    const field = fields[fieldName];
+    let tag = '';
+    let options = '';
+    let content = '';
+    let endtag = '';
+    const indexStr = index !== '' ? ':' + index : '';
+    const classStr = className !== '' ? `class="${className}"` : '';
+    if (field.type === 'singleSelect') {
+      tag = 'select';
+      endtag = '</select>';
       content = `<option></option>`;
       for (const choice of field.options.choices) {
         content += `<option value="${choice.name}"
           data-color="${choice.color}">${choice.name}</option>`;
       }
-    } else if (field.type === "multipleSelects") {
-      let checkboxes = [];
+    } else if (field.type === 'multipleSelects') {
+      const checkboxes = [];
       for (const choice of field.options.choices) {
-        let choiceId = choice.name.replace(/\s/g, "-").toLowerCase();
-        let id = `${field.id}:${choiceId}${indexStr}`;
+        const choiceId = choice.name.replace(/\s/g, '-').toLowerCase();
+        const id = `${field.id}:${choiceId}${indexStr}`;
         checkboxes.push(`<input type="checkbox" id="${id}"
           name="${field.name}${indexStr}" value="${choice.name}"
           data-color="${choice.color}"> <label
@@ -526,90 +537,92 @@ module.exports = function(eleventyConfig) {
       }
       // Break out of the generalized element generation and just
       // return what we've come up with above for multipleSelects.
-      return checkboxes.join("<br/>");
-    } else if (field.type === "multilineText") {
-      tag = "textarea";
-      endtag = "</textarea>";
-    } else if (field.type === "number") {
-      let precision = Number(field.options.precision);
-      tag = "input";
-      options = `type="number" min="0" step="${10 ** (-1 * precision)}"`
-    } else if (field.type === "email") {
-      tag = "input";
+      return checkboxes.join('<br/>');
+    } else if (field.type === 'multilineText') {
+      tag = 'textarea';
+      endtag = '</textarea>';
+    } else if (field.type === 'number') {
+      const precision = Number(field.options.precision);
+      tag = 'input';
+      options = `type="number" min="0" step="${10 ** (-1 * precision)}"`;
+    } else if (field.type === 'email') {
+      tag = 'input';
       options = `type="email"`;
-    } else if (field.type === "phoneNumber") {
-      tag = "input";
+    } else if (field.type === 'phoneNumber') {
+      tag = 'input';
       options = `type="tel"`;
-    } else if(field.type === "url") {
-      tag = "input";
+    } else if (field.type === 'url') {
+      tag = 'input';
       options = `type="url"`;
-    } else if (field.type === "singleLineText") {
-      tag = "input";
+    } else if (field.type === 'singleLineText') {
+      tag = 'input';
       options = `type="text"`;
-    } else if (field.type === "checkbox") {
-      tag = "input";
+    } else if (field.type === 'checkbox') {
+      tag = 'input';
       options = `type="checkbox"`;
     } else {
-      return "";
+      return '';
     }
     return `<${tag} id="${field.id}${indexStr}"
       name="${field.name}${indexStr}" ${options} ${classStr}>${content}${endtag}`;
-  }
+  };
 
-  eleventyConfig.addShortcode("fieldLabel",
-      function(labelText, fields, fieldName) {
-    return fieldLabel(labelText, fields, fieldName);
-  });
+  eleventyConfig.addShortcode('fieldLabel',
+    function(labelText, fields, fieldName) {
+      return fieldLabel(labelText, fields, fieldName);
+    });
 
-  eleventyConfig.addShortcode("indexedFieldLabel",
-      function(index, labelText, fields, fieldName) {
-    return fieldLabel(labelText, fields, fieldName, index);
-  });
+  eleventyConfig.addShortcode('indexedFieldLabel',
+    function(index, labelText, fields, fieldName) {
+      return fieldLabel(labelText, fields, fieldName, index);
+    });
 
-  eleventyConfig.addShortcode("formField",
-      function(fields, fieldName, className="") {
-    return formField(fields, fieldName, className);
-  });
+  eleventyConfig.addShortcode('formField',
+    function(fields, fieldName, className='') {
+      return formField(fields, fieldName, className);
+    });
 
-  eleventyConfig.addShortcode("indexedFormField",
-      function(index, fields, fieldName, className="") {
-    return formField(fields, fieldName, className, index);
-  });
+  eleventyConfig.addShortcode('indexedFormField',
+    function(index, fields, fieldName, className='') {
+      return formField(fields, fieldName, className, index);
+    });
 
 
   // Generates a rendered summary of affordable housing filter options.
-  eleventyConfig.addShortcode("querySummary", function(query) {
+  eleventyConfig.addShortcode('querySummary', function(query) {
     // Copy the query so we don't modify it directly when making changes later on.
-    let queryCopy = JSON.parse(JSON.stringify(query));
+    const queryCopy = JSON.parse(JSON.stringify(query));
     // The includeUnknown(Rent|Income) parameters only apply if a rent or income
     // is supplied, so remove them if they do not apply.
-    if (queryCopy["includeUnknownRent"] && !queryCopy["rentMax"]) {
-      delete queryCopy["includeUnknownRent"];
+    if (queryCopy['includeUnknownRent'] && !queryCopy['rentMax']) {
+      delete queryCopy['includeUnknownRent'];
     }
-    if (queryCopy["includeUnknownIncome"] && !queryCopy["income"]) {
-      delete queryCopy["includeUnknownIncome"];
+    if (queryCopy['includeUnknownIncome'] && !queryCopy['income']) {
+      delete queryCopy['includeUnknownIncome'];
     }
-    let filtersApplied = []
-    for (let parameter in queryCopy) {
-      let value = queryCopy[parameter];
-      if (!value) {
-        continue
+    const filtersApplied = [];
+    for (const parameter in queryCopy) {
+      if (Object.hasOwn(queryCopy, parameter)) {
+        let value = queryCopy[parameter];
+        if (!value) {
+          continue;
+        }
+        if (parameter == 'rentMax' || parameter == 'income') {
+          value = formatCurrency(Number(value));
+        }
+        if (value == 'on') {
+          // Simply showing the parameter key is enough.  No need to also show
+          // "on" or similar (e.g. "yes", "true").
+          value = '';
+        }
+        let valueStr = '';
+        if (value) {
+          valueStr = `: ${value}`;
+        }
+        filtersApplied.push(`<span class="badge"><span class="bold">${camelCaseToSpaces(parameter)}</span>${valueStr}</span>`);
       }
-      if (parameter == "rentMax" || parameter == "income") {
-        value = formatCurrency(Number(value));
-      }
-      if (value == "on") {
-        // Simply showing the parameter key is enough.  No need to also show
-        // "on" or similar (e.g. "yes", "true").
-        value = "";
-      }
-      let valueStr = "";
-      if (value) {
-        valueStr = `: ${value}`;
-      }
-      filtersApplied.push(`<span class="badge"><span class="bold">${camelCaseToSpaces(parameter)}</span>${valueStr}</span>`)
     }
-    return filtersApplied.join(" ");
+    return filtersApplied.join(' ');
   });
 
   // Summarizes the 'units' array of each item in 'housingList' by the
@@ -620,13 +633,13 @@ module.exports = function(eleventyConfig) {
   // should be summarized by.  The summary is generated by removing all keys
   // except those in 'summarizeBy' and then getting the unique set of the
   // resulting array of units.
-  eleventyConfig.addFilter("summarizeUnits", function(housingList, summarizeBy) {
-    let housingListCopy = JSON.parse(JSON.stringify(housingList));
-    for (let housing of housingListCopy) {
-      let summary = new Set();
-      for (let unit of housing.units) {
-        let unitSummary = {};
-        for (let prop of summarizeBy) {
+  eleventyConfig.addFilter('summarizeUnits', function(housingList, summarizeBy) {
+    const housingListCopy = JSON.parse(JSON.stringify(housingList));
+    for (const housing of housingListCopy) {
+      const summary = new Set();
+      for (const unit of housing.units) {
+        const unitSummary = {};
+        for (const prop of summarizeBy) {
           unitSummary[prop] = unit[prop];
         }
         // Stringify the unitSummary so that we can ensure uniqueness
@@ -637,13 +650,13 @@ module.exports = function(eleventyConfig) {
       }
       // Make an array from the Set, and also convert the stringified
       // unit objects back into objects.
-      housing.units = [...summary].map(x => JSON.parse(x));
+      housing.units = [...summary].map((x) => JSON.parse(x));
     }
     return housingListCopy;
   });
 
-  eleventyConfig.addFilter("filterByQuery", function(housingList, query) {
-    query = query || "";
+  eleventyConfig.addFilter('filterByQuery', function(housingList, query) {
+    query = query || '';
     console.log(query);
     let housingListCopy = JSON.parse(JSON.stringify(housingList));
 
@@ -655,37 +668,37 @@ module.exports = function(eleventyConfig) {
     // These apartments will be filtered out just prior to returning the
     // final filtered array.
     if (!query.includeReferrals) {
-      housingListCopy = housingListCopy.filter(a => !a.disallowsPublicApps);
+      housingListCopy = housingListCopy.filter((a) => !a.disallowsPublicApps);
     }
 
     if (query.unitType) {
-      const rooms = query.unitType.split(", ");
-      housingListCopy = housingListCopy.map(apt => {
+      const rooms = query.unitType.split(', ');
+      housingListCopy = housingListCopy.map((apt) => {
         apt.units = (
-          apt.units.filter(u => rooms.includes(u.type)));
+          apt.units.filter((u) => rooms.includes(u.type)));
         return apt;
       });
     }
 
     if (query.city) {
-      const cities = query.city.split(", ");
-      housingListCopy = housingListCopy.filter(a => cities.includes(a.city));
+      const cities = query.city.split(', ');
+      housingListCopy = housingListCopy.filter((a) => cities.includes(a.city));
     }
 
     if (query.availability) {
-      const availabilities = query.availability.split(", ");
-      housingListCopy = housingListCopy.map(apt => {
+      const availabilities = query.availability.split(', ');
+      housingListCopy = housingListCopy.map((apt) => {
         apt.units = (
-          apt.units.filter(u => availabilities.includes(u.openStatus)));
+          apt.units.filter((u) => availabilities.includes(u.openStatus)));
         return apt;
       });
     }
 
     if (query.populationsServed) {
-      const populations = query.populationsServed.split(", ");
-      housingListCopy = housingListCopy.filter(apt => {
+      const populations = query.populationsServed.split(', ');
+      housingListCopy = housingListCopy.filter((apt) => {
         if (!apt.populationsServed.length &&
-            populations.includes("General Population")) {
+            populations.includes('General Population')) {
           // Entries with an empty _POPULATIONS_SERVED field are interpreted as
           // being open to the general public, so allow those entries as well if
           // the user wants General Population entries.
@@ -701,13 +714,13 @@ module.exports = function(eleventyConfig) {
 
     if (query.wheelchairAccessibleOnly) {
       housingListCopy = (
-        housingListCopy.filter(a => a.hasWheelchairAccessibleUnits));
+        housingListCopy.filter((a) => a.hasWheelchairAccessibleUnits));
     }
 
     if (query.rentMax) {
       const rentMax = Number(query.rentMax);
-      housingListCopy = housingListCopy.map(apt => {
-        apt.units = apt.units.filter(unit => {
+      housingListCopy = housingListCopy.map((apt) => {
+        apt.units = apt.units.filter((unit) => {
           return ((query.includeUnknownRent && !unit.rent.amount) ||
             Number(unit.rent.amount) <= rentMax);
         });
@@ -717,8 +730,8 @@ module.exports = function(eleventyConfig) {
 
     if (query.income) {
       const income = Number(query.income);
-      housingListCopy = housingListCopy.map(apt => {
-        apt.units = apt.units.filter(unit => {
+      housingListCopy = housingListCopy.map((apt) => {
+        apt.units = apt.units.filter((unit) => {
           const minIncomeMatch = (
             (query.includeUnknownIncome && !unit.minIncome.amount) ||
             Number(unit.minIncome.amount) <= income);
@@ -734,19 +747,19 @@ module.exports = function(eleventyConfig) {
     if (query.propertyName) {
       const aptName = query.propertyName.toLowerCase();
       housingListCopy = housingListCopy.filter(
-        a => a.aptName.toLowerCase().includes(aptName));
+        (a) => a.aptName.toLowerCase().includes(aptName));
     }
 
     // Some properties may have had all their associated units filtered out,
     // so remove those before returning the final list of filtered properties.
-    return housingListCopy.filter(a => a.units.length);
+    return housingListCopy.filter((a) => a.units.length);
   });
 
-  eleventyConfig.addFilter("except", function(collection, value) {
-    return collection.filter(x => x != value);
+  eleventyConfig.addFilter('except', function(collection, value) {
+    return collection.filter((x) => x != value);
   });
 
-  eleventyConfig.addFilter("includes", function(collection, value) {
+  eleventyConfig.addFilter('includes', function(collection, value) {
     return collection.includes(value);
   });
-}
+};
