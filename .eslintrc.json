@@ -1,0 +1,19 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true
+    },
+    "extends": "google",
+    "overrides": [
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "require-jsdoc": "off",
+        "indent": ["error", 2],
+        "max-len": "off"
+    },
+    "ignorePatterns": ["sorttable.js"]
+}

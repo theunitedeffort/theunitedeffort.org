@@ -8,6 +8,7 @@
     "build:site": "eleventy",
     "build": "npm-run-all build:assets build:site",
     "dev": "eleventy --watch --serve",
+    "lint": "eslint src",
     "test": "eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest"
   },
   "keywords": [],
@@ -27,6 +28,8 @@
     "@stryker-mutator/core": "^6.4.2",
     "@stryker-mutator/jest-runner": "^6.4.2",
     "eleventy-plugin-babel": "^1.0.1",
+    "eslint": "^8.41.0",
+    "eslint-config-google": "^0.14.0",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
     "jest-expect-message": "^1.1.3",
