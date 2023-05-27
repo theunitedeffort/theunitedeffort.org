@@ -33,10 +33,8 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter('index', function(collection, property) {
     let values = [];
     for (const item in collection) {
-      if (Object.hasOwn(collection, item)) {
-        if (collection[item][property]) {
-          values = values.concat(collection[item][property]);
-        }
+      if (collection[item][property]) {
+        values = values.concat(collection[item][property]);
       }
     }
     return [...new Set(values)];
