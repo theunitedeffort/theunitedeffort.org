@@ -77,7 +77,7 @@ describe('toCamelCase', () => {
   test('Passes strings with some other separator through unchanged', () => {
     const inputStr = 'this/is/a/test';
     expect(elig.toCamelCase(inputStr)).toBe(inputStr);
-  })
+  });
 });
 
 describe('usdLimit', () => {

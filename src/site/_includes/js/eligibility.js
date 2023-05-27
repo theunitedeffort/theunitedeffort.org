@@ -2,7 +2,7 @@ const cnst = {
   calfresh: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
     // Section 2.1
-    FED_POVERTY_LEVEL: [  // USD per month
+    FED_POVERTY_LEVEL: [ // USD per month
       1133,
       1526,
       1920,
@@ -12,10 +12,10 @@ const cnst = {
       3493,
       3886,
     ],
-    FED_POVERTY_LEVEL_ADDL_PERSON: 394,  // USD per month per person
+    FED_POVERTY_LEVEL_ADDL_PERSON: 394, // USD per month per person
     // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
     // Section 11.8
-    GROSS_INCOME_LIMIT_MCE_FACTOR: 2.0,  // Times federal poverty limit
+    GROSS_INCOME_LIMIT_MCE_FACTOR: 2.0, // Times federal poverty limit
     // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap19.pdf
     // Section 19.1.3
     SELF_EMPLOYED_EXEMPT_FRACTION: 0.4,
@@ -23,7 +23,7 @@ const cnst = {
   calworks: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
     // Section 1.2
-    MBSAC: [  // USD per month
+    MBSAC: [ // USD per month
       807,
       1324,
       1641,
@@ -35,29 +35,29 @@ const cnst = {
       3242,
       3519,
     ],
-    MBSAC_ADDL_PERSON: 32,  // USD per month per person
+    MBSAC_ADDL_PERSON: 32, // USD per month per person
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
     // Section 14.1
-    BASE_RESOURCE_LIMIT: 10888,  // USD
-    DISABLED_ELDERLY_RESOURCE_LIMIT: 16333,  // USD
-    MIN_ELDERLY_AGE: 60,  // Years
+    BASE_RESOURCE_LIMIT: 10888, // USD
+    DISABLED_ELDERLY_RESOURCE_LIMIT: 16333, // USD
+    MIN_ELDERLY_AGE: 60, // Years
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap33.pdf
     // Section 33.3
-    EMPLOYMENT_DISREGARD: 450,  // USD per month
+    EMPLOYMENT_DISREGARD: 450, // USD per month
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap31.pdf
     // Section 31.6.1
     SELF_EMPLOYED_DISREGARD_FRAC: 0.4,
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
     // Section 27.9.3
-    ONE_CHILD_SUPPORT_DISREGARD: 100,  // USD per month
-    TWO_CHILD_SUPPORT_DISREGARD: 200,  // USD per month
+    ONE_CHILD_SUPPORT_DISREGARD: 100, // USD per month
+    TWO_CHILD_SUPPORT_DISREGARD: 200, // USD per month
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap13.pdf
     // Section 13.1.1
-    MAX_CHILD_AGE: 18,  // Years
+    MAX_CHILD_AGE: 18, // Years
   },
   care: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    ANNUAL_INCOME_LIMITS: [  // USD per year
+    ANNUAL_INCOME_LIMITS: [ // USD per year
       36620,
       36620,
       46060,
@@ -67,13 +67,13 @@ const cnst = {
       83820,
       93260,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 9440,  // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 9440, // USD per year per person
   },
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    ANNUAL_INCOME_LIMITS: [  // USD per year
-      57575,  // Min household size 3.
-      57575,  // Min household size 3.
+    ANNUAL_INCOME_LIMITS: [ // USD per year
+      57575, // Min household size 3.
+      57575, // Min household size 3.
       57575,
       69375,
       81175,
@@ -81,13 +81,13 @@ const cnst = {
       104775,
       116575,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11800,  // USD per year per person
-    MIN_HOUSEHOLD_SIZE: 3,  // People
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11800, // USD per year per person
+    MIN_HOUSEHOLD_SIZE: 3, // People
   },
   ga: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
     // Section 4.2, UNSHARED Housing in section 4.2.1
-    MONTHLY_INCOME_LIMITS: [  // USD per month
+    MONTHLY_INCOME_LIMITS: [ // USD per month
       343,
       460,
       576,
@@ -99,28 +99,28 @@ const cnst = {
       1278,
       1396,
     ],
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 11,  // USD per month per person
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 11, // USD per month per person
     // https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap02.pdf
     // Section 2.3.2
-    MIN_ELIGIBLE_AGE: 18,  // Years
-    NUM_OF_DEPENDENTS: 0,  // People
+    MIN_ELIGIBLE_AGE: 18, // Years
+    NUM_OF_DEPENDENTS: 0, // People
     // https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap08.pdf
     // Section 8.1.5
-    MAX_RESOURCES: 500,  // USD
+    MAX_RESOURCES: 500, // USD
   },
   housingChoice: {
     // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
     MIN_ELIGIBLE_AGE: 18,
     // For income limits additional person calculations
     // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
-    INCOME_ROUND_UP_TO_NEAREST: 50,  // USD
-    BASE_HOUSEHOLD_SIZE: 4,  // People
+    INCOME_ROUND_UP_TO_NEAREST: 50, // USD
+    BASE_HOUSEHOLD_SIZE: 4, // People
     FAMILY_SIZE_ADJ_8: 1.32,
     INCREMENTAL_ADJ: 0.08,
     // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
     // See "very low income" here:
     // https://www.huduser.gov/portal/datasets/il/il2022/2022summary.odn?states=6.0&data=2022&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2022&selection_type=county
-    ANNUAL_INCOME_LIMITS: [  // USD per month
+    ANNUAL_INCOME_LIMITS: [ // USD per month
       59000,
       67400,
       75850,
@@ -133,18 +133,18 @@ const cnst = {
   },
   ihss: {
     // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
-    MIN_ELDERLY_AGE: 65,  // Years
+    MIN_ELDERLY_AGE: 65, // Years
   },
   lifeline: {
     // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
     // Effective June 1, 2022 to May 31, 2023
-    ANNUAL_INCOME_LIMITS: [  // USD per year
+    ANNUAL_INCOME_LIMITS: [ // USD per year
       30500,
       30500,
       35400,
       43100,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 7700,  // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 7700, // USD per year per person
   },
   liheap: {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
@@ -152,9 +152,10 @@ const cnst = {
     // LIHEAP income limits are set at 60% of State Median Income:
     //   https://www.acf.hhs.gov/ocs/policy-guidance/liheap-im-2022-04-state-median-income-estimates-optional-use-ffy-2022-and
     //
-    // Calculating income limit for various household sizes by multiplying the 4-person limit by various values:
+    // Calculating income limit for various household sizes by multiplying the
+    // 4-person limit by various values:
     //   https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf
-    MONTHLY_INCOME_LIMITS: [  // USD per month
+    MONTHLY_INCOME_LIMITS: [ // USD per month
       2700.17,
       3531.0,
       4361.83,
@@ -166,69 +167,69 @@ const cnst = {
       7321.78,
       7477.56,
     ],
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 155.78,  // USD per month
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 155.78, // USD per month
   },
   noFeeId: {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
-    MIN_ELIGIBLE_AGE: 62,  // Years
+    MIN_ELIGIBLE_AGE: 62, // Years
   },
   ssdi: {
     // https://www.ssa.gov/benefits/retirement/planner/agereduction.html
-    FULL_RETIREMENT_AGE: 67,  // Years (for most people)
-    TRANSITION_RETIREMENT_AGE: 66,  // Years
+    FULL_RETIREMENT_AGE: 67, // Years (for most people)
+    TRANSITION_RETIREMENT_AGE: 66, // Years
   },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
-    SGA_NON_BLIND: 1470,  // USD per month
-    SGA_BLIND: 2460,  // USD per month
+    SGA_NON_BLIND: 1470, // USD per month
+    SGA_BLIND: 2460, // USD per month
     // https://www.ssa.gov/pubs/EN-05-11125.pdf
     // Note these max benefit amounts include the California state supplement.
     // TODO: Handle other living categories (e.g. non-medical out-of-home care).
-    MAX_BENEFIT_NON_BLIND: 1133.73,  // USD per month
-    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1251.74,  // USD per month
-    MAX_BENEFIT_BLIND: 1211,  // USD per month
+    MAX_BENEFIT_NON_BLIND: 1133.73, // USD per month
+    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1251.74, // USD per month
+    MAX_BENEFIT_BLIND: 1211, // USD per month
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
-    MAX_RESOURCES: 2000,  // USD
+    MAX_RESOURCES: 2000, // USD
     // https://www.ssa.gov/oact/cola/incomexcluded.html
-    MAX_UNEARNED_INCOME_EXCLUSION: 20,  // USD per month
-    MAX_EARNED_INCOME_EXCLUSION: 65,  // USD per month
+    MAX_UNEARNED_INCOME_EXCLUSION: 20, // USD per month
+    MAX_EARNED_INCOME_EXCLUSION: 65, // USD per month
     EARNED_INCOME_EXCLUSION_FACTOR: 0.5,
     // https://www.ssa.gov/ssi/text-eligibility-ussi.htm
-    MIN_ELDERLY_AGE: 65,  // Years
+    MIN_ELDERLY_AGE: 65, // Years
   },
   vaPension: {
     // https://www.va.gov/pension/eligibility/
-    MIN_ELDERLY_AGE: 65,  // Years
-    MIN_EARLY_DUTY_DURATION: 90,  // days
-    MIN_LATE_DUTY_DURATION: 730,  // days
-    EARLY_DUTY_BEFORE: '1980-09-08',  // YYYY-MM-DD
-    LATE_DUTY_AFTER: '1980-09-07',  // YYYY-MM-DD
+    MIN_ELDERLY_AGE: 65, // Years
+    MIN_EARLY_DUTY_DURATION: 90, // days
+    MIN_LATE_DUTY_DURATION: 730, // days
+    EARLY_DUTY_BEFORE: '1980-09-08', // YYYY-MM-DD
+    LATE_DUTY_AFTER: '1980-09-07', // YYYY-MM-DD
     // Each wartime period is defined as a two-element array.  First the
     // start date, then the end date.  Dates are given as strings with the
     // format YYYY-MM-DD.  An empty string is intepreted as "today"
     WARTIMES: [
-      ['1916-05-09', '1917-04-05'],  // Mexican Border period
-      ['1917-04-05', '1918-11-11'],  // WWI
-      ['1941-12-07', '1946-12-31'],  // WWII
-      ['1950-06-27', '1955-01-31'],  // Korean conflict
-      ['1955-11-01', '1975-05-07'],  // Vietnam War, in Vietnam
-      ['1964-08-05', '1975-05-07'],  // Vietnam War, out of Vietnam
-      ['1990-08-02', ''],            // Gulf war, no end date yet.
+      ['1916-05-09', '1917-04-05'], // Mexican Border period
+      ['1917-04-05', '1918-11-11'], // WWI
+      ['1941-12-07', '1946-12-31'], // WWII
+      ['1950-06-27', '1955-01-31'], // Korean conflict
+      ['1955-11-01', '1975-05-07'], // Vietnam War, in Vietnam
+      ['1964-08-05', '1975-05-07'], // Vietnam War, out of Vietnam
+      ['1990-08-02', ''], // Gulf war, no end date yet.
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
-    ANNUAL_NET_WORTH_LIMIT: 150538,  // USD per year
+    ANNUAL_NET_WORTH_LIMIT: 150538, // USD per year
     // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
-    ANNUAL_INCOME_LIMITS: [  // USD per year
+    ANNUAL_INCOME_LIMITS: [ // USD per year
       16037,
       21001,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2743,  // USD per year
-    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 13850,  // USD per year
+    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2743, // USD per year
+    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 13850, // USD per year
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
-    MONTHLY_INCOME_LIMITS: [  // USD per month
+    MONTHLY_INCOME_LIMITS: [ // USD per month
       2096,
       2823,
       3551,
@@ -238,9 +239,9 @@ const cnst = {
       6462,
       7189,
     ],
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 728,  // USD per month per person
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 728, // USD per month per person
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
-    CHILD_EXIT_AGE: 5,  // Birthday at which a child is ineligible.
+    CHILD_EXIT_AGE: 5, // Birthday at which a child is ineligible.
   },
 };
 
@@ -248,11 +249,11 @@ const cnst = {
 let currentPage;
 
 function hasNulls(...values) {
-  return values.some(v => v === null || Number.isNaN(v));
+  return values.some((v) => v === null || Number.isNaN(v));
 }
 
 function throwIfUndefined(...values) {
-  if (values.some(v => v === undefined)) {
+  if (values.some((v) => v === undefined)) {
     throw new Error('A logic input value was undefined');
   }
 }
@@ -269,12 +270,12 @@ function throwIfUndefined(...values) {
 function or(...stmts) {
   throwIfUndefined(...stmts);
   // Convert all values that are not null to booleans
-  stmts = stmts.map(s => s === null ? null : !!s);
+  stmts = stmts.map((s) => s === null ? null : !!s);
   // The result is determined only if at least one statement is true or
   // everything is false.
-  const anyTrue = stmts.some(b => b);
+  const anyTrue = stmts.some((b) => b);
   const determined = (
-    anyTrue || stmts.every(b => b === false));
+    anyTrue || stmts.every((b) => b === false));
   if (!determined) {
     return null;
   }
@@ -293,12 +294,12 @@ function or(...stmts) {
 function and(...stmts) {
   throwIfUndefined(...stmts);
   // Convert all values that are not null to booleans
-  stmts = stmts.map(s => s === null ? null : !!s);
+  stmts = stmts.map((s) => s === null ? null : !!s);
   // The result is determined only if at least one statement is false or
   // everything is true.
-  const allTrue = stmts.every(b => b);
+  const allTrue = stmts.every((b) => b);
   const determined = (
-    stmts.some(b => b === false) || allTrue);
+    stmts.some((b) => b === false) || allTrue);
   if (!determined) {
     return null;
   }
@@ -395,32 +396,32 @@ const toCamelCase = function(str) {
     result.push(`${word.slice(0, 1).toUpperCase()}${word.slice(1)}`);
   }
   return result.join('');
-}
+};
 
 // Formats a value as USD with no decimals (always rounding up).
 const usdLimit = function(value) {
   const num = Math.ceil(Number(value));
   if (isNaN(num) || value === null) {
-    return "the limit";
+    return 'the limit';
   } else {
-    return num.toLocaleString("en-US",
-    {
-      style: "currency",
-      maximumFractionDigits: 0,
-      minimumFractionDigits: 0,
-      currency: "USD"
-    });
+    return num.toLocaleString('en-US',
+      {
+        style: 'currency',
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+        currency: 'USD',
+      });
   }
-}
+};
 
 function isOneOf(value, allowedValues) {
   const allowedValuesArr = [].concat(allowedValues);
-  return or(...allowedValuesArr.map(v => eq(value, v)));
+  return or(...allowedValuesArr.map((v) => eq(value, v)));
 }
 
 function indexOfAll(arr, value) {
   const matchingIdxs = arr.map((v, idx) => v == value ? idx : -1);
-  return matchingIdxs.filter(i => i >= 0);
+  return matchingIdxs.filter((i) => i >= 0);
 }
 
 function dateStrToLocal(dateStr) {
@@ -459,7 +460,7 @@ function dateOrToday(inputStr) {
   if (inputStr) {
     return new Date(dateStrToLocal(inputStr));
   }
-  let today = new Date();
+  const today = new Date();
   today.setHours(0);
   today.setMinutes(0);
   today.setSeconds(0);
@@ -477,9 +478,9 @@ function dateOrToday(inputStr) {
 // This function will return null if the 'start' or 'end' is null.
 function withinInterval(start, end, intervals) {
   return or(
-    ...intervals.map(i => and(
+    ...intervals.map((i) => and(
       le(start, i.end),
-      ge(end, i.start))
+      ge(end, i.start)),
     ));
 }
 
@@ -487,40 +488,40 @@ function withinInterval(start, end, intervals) {
 function setElementVisible(elem, makeVisible) {
   if (elem) {
     if (makeVisible) {
-      elem.classList.remove("hidden");
+      elem.classList.remove('hidden');
     } else {
-      elem.classList.add("hidden");
+      elem.classList.add('hidden');
     }
   }
 }
 
 // Makes the submit button visible or hidden.
 function setSubmitVisibility(makeVisible) {
-  const submitButton = document.getElementById("submit-button");
+  const submitButton = document.getElementById('submit-button');
   setElementVisible(submitButton, makeVisible);
 }
 
 // Makes the next button visible or hidden.
 function setNextVisibility(makeVisible) {
-  const nextButton = document.getElementById("next-button");
+  const nextButton = document.getElementById('next-button');
   setElementVisible(nextButton, makeVisible);
 }
 
 // Makes the back button visible or hidden.
 function setBackVisibility(makeVisible) {
-  const backButton = document.getElementById("back-button");
+  const backButton = document.getElementById('back-button');
   setElementVisible(backButton, makeVisible);
 }
 
 // Resets the viewport scroll so that the top of the form is visible.
 function resetScroll() {
-  document.getElementById("form-top").scrollIntoView();
+  document.getElementById('form-top').scrollIntoView();
 }
 
 // Asks the user to confirm they want to leave.
 function confirmExit(event) {
   event.preventDefault();
-  return event.returnValue = "Are you sure you want to exit?";
+  return event.returnValue = 'Are you sure you want to exit?';
 }
 
 // Called when the user inputs data into a form element.
@@ -528,7 +529,7 @@ function onInput(event) {
   // As soon as the user enters any data at all, register the beforeonload
   // event listener so that they can confirm they want to exit the form
   // when an unload is about to happen.
-  addEventListener("beforeunload", confirmExit);
+  addEventListener('beforeunload', confirmExit);
 }
 
 function onHouseholdMemberAdd() {
@@ -603,27 +604,27 @@ function onChangeSpouse() {
 }
 
 function onChangeNoIncome() {
-  let wrapper = document.getElementById("income-types");
-  let allIncomeTypes = wrapper.querySelectorAll("input[type=checkbox]");
+  const wrapper = document.getElementById('income-types');
+  const allIncomeTypes = wrapper.querySelectorAll('input[type=checkbox]');
   for (const incomeType of allIncomeTypes) {
     if (incomeType == this) {
       continue;
     }
-    let label = wrapper.querySelector(`label[for="${incomeType.id}"]`);
+    const label = wrapper.querySelector(`label[for="${incomeType.id}"]`);
     if (this.checked) {
       incomeType.checked = false;
-      incomeType.setAttribute("disabled", "disabled");
-      label.classList.add("disabled");
+      incomeType.setAttribute('disabled', 'disabled');
+      label.classList.add('disabled');
     } else {
-      incomeType.removeAttribute("disabled");
-      label.classList.remove("disabled");
+      incomeType.removeAttribute('disabled');
+      label.classList.remove('disabled');
     }
   }
 }
 
 function onChangeAge() {
-  document.getElementById("hh-myself-age").value = this.value;
-  document.getElementById("age").value = this.value;
+  document.getElementById('hh-myself-age').value = this.value;
+  document.getElementById('age').value = this.value;
 }
 
 function onChangeName() {
@@ -639,7 +640,7 @@ function onChangeName() {
 
 // Helper function to add the correct class name to a displayed condition.
 function addConditionIcon(listItem, met,
-    {displayMet=true, displayUnmet=true, displayUnk=true}={}) {
+  {displayMet=true, displayUnmet=true, displayUnk=true}={}) {
   let cls = '';
   if (met == null && displayUnk) {
     cls = 'condition__unk';
@@ -694,22 +695,22 @@ function clearInputs(parent) {
 function addDynamicFieldListItem() {
   // TODO: update to use .closest()
   const list = this.parentElement.parentElement.querySelector(
-    "ul.dynamic_field_list");
+    'ul.dynamic_field_list');
   // TODO (#422): This also gets all descendants, but we only want children.
-  const items = list.querySelectorAll("li");
+  const items = list.querySelectorAll('li');
   // Figure out the largest id index used so far.
   // TODO (#396): replace optional chaining operators.
-  const lastInput = items[items.length - 1]?.querySelector("input");
+  const lastInput = items[items.length - 1]?.querySelector('input');
   let lastIdNumber = -1;
   if (lastInput) {
     lastIdNumber = Number(lastInput.id.match(/-\d+$/g)?.[0]?.slice(1)) || 0;
   }
   // Create a new item using a template tag or, if none is present, the first
   // item in the list as a template.
-  const template = list.querySelector("template");
+  const template = list.querySelector('template');
   let newItem;
   if (template) {
-    newItem = document.createElement("li")
+    newItem = document.createElement('li');
     newItem.appendChild(template.content.cloneNode(true));
   } else {
     newItem = items[0].cloneNode(true);
@@ -723,20 +724,20 @@ function addDynamicFieldListItem() {
   clearInputs(newItem);
 
   // Update the item heading if there is one.
-  const itemHeading = newItem.querySelector("h3,h4,h5,h6");
+  const itemHeading = newItem.querySelector('h3,h4,h5,h6');
   if (itemHeading) {
     // Add one for 1 indexing of headings vs 0 indexing of IDs.
     itemHeading.textContent = itemHeading.textContent.replace(
       /\d+$/, newIdNumber + 1);
   }
   // Add a remove button for the new item.
-  const removeButton = document.createElement("button");
-  removeButton.classList.add("link");
-  removeButton.textContent = "remove";
-  removeButton.setAttribute("type", "button");
-  removeButton.addEventListener("click", onDynamicFieldListRemove);
+  const removeButton = document.createElement('button');
+  removeButton.classList.add('link');
+  removeButton.textContent = 'remove';
+  removeButton.setAttribute('type', 'button');
+  removeButton.addEventListener('click', onDynamicFieldListRemove);
   const fragment = new DocumentFragment();
-  fragment.append(" (", removeButton, ")");
+  fragment.append(' (', removeButton, ')');
   // If there is a heading, put the remove button after it.  Otherwise,
   // make it the first element in the list item.
   if (itemHeading) {
@@ -759,14 +760,14 @@ function removeDynamicFieldListItem(listItem) {
       const parent = fieldset.parentElement;
       fieldset.remove();
       parent.dispatchEvent(
-        new Event("input", {bubbles: true, cancelable: false}));
+        new Event('input', {bubbles: true, cancelable: false}));
     }
   }
 
   listItem.remove();
   // Can't dispatch the event on the item since it's removed.
   list.dispatchEvent(
-    new Event("input", {bubbles: true, cancelable: false}));
+    new Event('input', {bubbles: true, cancelable: false}));
   const fieldListButton = (
     list.parentElement.querySelector('button.field_list_add'));
   updateDynamicFieldListButton(fieldListButton);
@@ -782,7 +783,8 @@ function updateDynamicFieldListButton(button) {
   if (items.length) {
     button.textContent = button.dataset.nonEmptyText;
   } else {
-    button.textContent = button.dataset.emptyText || button.dataset.nonEmptyText;
+    button.textContent = (
+      button.dataset.emptyText || button.dataset.nonEmptyText);
   }
 }
 
@@ -799,23 +801,23 @@ function updateIncomeTotal() {
   if (sum - intSum === 0) {
     sum = intSum;
   }
-  totalDisplay.textContent = sum.toLocaleString("en-US");
+  totalDisplay.textContent = sum.toLocaleString('en-US');
 }
 
 // Marks the section as complete in the step indicator.
 function markSectionDone(section) {
   if (section.stepButton) {
-    section.stepButton.classList.remove("todo");
-    section.stepButton.classList.add("done");
+    section.stepButton.classList.remove('todo');
+    section.stepButton.classList.add('done');
   }
 }
 
 // Shows the appropriate buttons for the given 'page'.
 function configureButtons(page) {
-  let resultsPage = !page.next();
+  const resultsPage = !page.next();
   // TODO: Is there a better way than hard-coding this ID here?
-  let finalInputPage = page.next()?.id == 'page-results'
-  let firstPage = !page.previous;
+  const finalInputPage = page.next()?.id == 'page-results';
+  const firstPage = !page.previous;
   if (finalInputPage) {
     // This is the last page with user input, so show a submit button rather
     // than a generic next button.
@@ -849,11 +851,11 @@ function configureButtons(page) {
 // not have a level 2 heading, no step indicator for that section will be
 // added.
 function buildStepIndicator() {
-  const allSections = document.querySelectorAll("div.elig_section");
-  const stepIndicatorList = document.querySelector("div.step_indicator ul");
+  const allSections = document.querySelectorAll('div.elig_section');
+  const stepIndicatorList = document.querySelector('div.step_indicator ul');
   for (const section of allSections) {
     // TODO: Support different text for the h2 and the step indicator.
-    const heading = section.querySelector("h2");
+    const heading = section.querySelector('h2');
     if (!heading) {
       // The section does not have a heading (e.g. intro) so don't put this
       // section in the step indicator.
@@ -861,20 +863,20 @@ function buildStepIndicator() {
     }
     // Make the button that will be used for navigation to already-completed
     // sections.
-    const button = document.createElement("button");
+    const button = document.createElement('button');
     button.id = `nav-${section.id}`;
     button.dataset.sectionId = section.id;
     button.textContent = heading.textContent;
     // Sections are to-do and un-clickable by default.  They will become
     // clickable when the corresponding section is completed by the user.
-    button.className = "todo";
+    button.className = 'todo';
     button.disabled = true;
-    button.addEventListener("click", toSection);
+    button.addEventListener('click', toSection);
     // Store a reference to the step indicator button in the section element
     // for easier access later.
     section.stepButton = button;
     // Make a container for the button.
-    const listItem = document.createElement("li");
+    const listItem = document.createElement('li');
     // Put the button in the container and add it to the step indicator.
     listItem.appendChild(button);
     stepIndicatorList.appendChild(listItem);
@@ -896,10 +898,10 @@ function switchToPage(toPage) {
     setElementVisible(toPage?.section, true);
     // Update the step indicator to highlight the active section.
     if (currentPage?.section?.stepButton) {
-      currentPage.section.stepButton.classList.remove("in_progress");
+      currentPage.section.stepButton.classList.remove('in_progress');
     }
     if (toPage?.section?.stepButton) {
-      toPage.section.stepButton.classList.add("in_progress");
+      toPage.section.stepButton.classList.add('in_progress');
       // Always allow users to navigate directly to sections they have started
       // even if the section is not complete yet.
       toPage.section.stepButton.disabled = false;
@@ -915,7 +917,7 @@ function switchToPage(toPage) {
 // represents the context of the event, i.e. the button that was clicked.
 function toSection() {
   const section = document.getElementById(this.dataset.sectionId);
-  if (section.id == "section-results") {
+  if (section.id == 'section-results') {
     // Ensure results are always up-to-date prior to showing them.
     // TODO: Determine if it would be better to invalidate results on
     // form data change and require the user to click the submit button
@@ -923,7 +925,7 @@ function toSection() {
     computeEligibility();
   }
   // Find the first page in the section.
-  const toPage = section.querySelector("div.elig_page");
+  const toPage = section.querySelector('div.elig_page');
   if (toPage) {
     switchToPage(toPage);
   }
@@ -977,26 +979,29 @@ function addDynamicFieldListListeners(parent) {
   const fieldListAddButtons = parent.querySelectorAll(
     'button.field_list_add');
   for (const button of fieldListAddButtons) {
-    button.addEventListener("click", addDynamicFieldListItem);
+    button.addEventListener('click', addDynamicFieldListItem);
   }
 }
 
 // Sets up listeners for the document.
 function addListeners() {
   // Form inputs
-  const inputs = document.querySelectorAll("input, textarea, select");
+  const inputs = document.querySelectorAll('input, textarea, select');
   for (const input of inputs) {
-    input.addEventListener("input", onInput);
+    input.addEventListener('input', onInput);
   }
 
   addDynamicFieldListListeners(document);
-  const incomeLists = document.querySelectorAll("#section-income .income_details_wrapper");
+  const incomeLists = document.querySelectorAll(
+    '#section-income .income_details_wrapper');
   for (const incomeList of incomeLists) {
-    incomeList.addEventListener("input", updateIncomeTotal);
+    incomeList.addEventListener('input', updateIncomeTotal);
   }
-  document.getElementById("income-has-none").addEventListener("click", onChangeNoIncome);
-  document.getElementById("age").addEventListener("change", onChangeAge);
-  document.getElementById("hh-myself-age").addEventListener("change", onChangeAge);
+  document.getElementById('income-has-none').addEventListener('click',
+    onChangeNoIncome);
+  document.getElementById('age').addEventListener('change', onChangeAge);
+  document.getElementById('hh-myself-age').addEventListener('change',
+    onChangeAge);
 
   document.querySelector(
     '#page-household-members button.field_list_add').addEventListener(
@@ -1007,13 +1012,18 @@ function addListeners() {
     'click', onDutyPeriodAdd);
 
   // Form control buttons
-  document.getElementById("next-button").addEventListener("click", toNextPage);
-  document.getElementById("back-button").addEventListener("click", toPrevPage);
-  document.getElementById("submit-button").addEventListener("click", submitForm);
-  document.addEventListener("keypress", function(event) {
-    if (event.key === "Enter" && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "SELECT")){
+  document.getElementById('next-button').addEventListener('click', toNextPage);
+  document.getElementById('back-button').addEventListener('click', toPrevPage);
+  document.getElementById('submit-button').addEventListener('click',
+    submitForm);
+  document.addEventListener('keypress', function(event) {
+    if (
+      event.key === 'Enter' &&
+      (document.activeElement.tagName === 'INPUT' ||
+       document.activeElement.tagName === 'SELECT')) {
       event.preventDefault();
-      const actionButton = document.querySelector("#controls button.btn_primary:not(.hidden)");
+      const actionButton = document.querySelector(
+        '#controls button.btn_primary:not(.hidden)');
       if (actionButton) {
         actionButton.click();
       }
@@ -1023,7 +1033,7 @@ function addListeners() {
 
 // Switches to the first form page in the document.
 function showFirstPage() {
-  switchToPage(document.querySelector("div.elig_page"));
+  switchToPage(document.querySelector('div.elig_page'));
 }
 
 // Initializes the user interface.
@@ -1045,7 +1055,7 @@ function initUi() {
 // This also adds the 'section' property to page elements for convenient
 // access to the containing section element.
 function linkPages() {
-  const pages = document.querySelectorAll("div.elig_page");
+  const pages = document.querySelectorAll('div.elig_page');
   const pageById = {};
   for (let j = 0; j < pages.length; j++) {
     // Alias the parent element as 'section' for convenience.
@@ -1066,38 +1076,39 @@ function linkPages() {
 // Holder for all page advancing logic that is more complex than simply
 // "the next page in the sequence".
 function customPageLinking(pageById) {
-
-  pageById["page-yourself-start"].next = function() {
-    if (document.getElementById("age").value <= cnst.calworks.MAX_CHILD_AGE &&
-        document.getElementById("age").value > 0) {
-      return pageById["page-head-of-household"];
+  pageById['page-yourself-start'].next = function() {
+    if (document.getElementById('age').value <= cnst.calworks.MAX_CHILD_AGE &&
+        document.getElementById('age').value > 0) {
+      return pageById['page-head-of-household'];
     }
-    return pageById["page-head-of-household"].next();
+    return pageById['page-head-of-household'].next();
   };
 
-  pageById["page-head-of-household"].next = function() {
-    if (document.getElementById("disabled").checked || document.getElementById("blind").checked || document.getElementById("deaf").checked) {
+  pageById['page-head-of-household'].next = function() {
+    if (document.getElementById('disabled').checked ||
+      document.getElementById('blind').checked ||
+      document.getElementById('deaf').checked) {
       const militaryQuestion = document.getElementById(
-        "military-disability-wrapper");
-      if (document.getElementById("veteran").checked) {
+        'military-disability-wrapper');
+      if (document.getElementById('veteran').checked) {
         // TODO: Replace with setElementVisible
-        militaryQuestion.classList.remove("hidden");
+        militaryQuestion.classList.remove('hidden');
       } else {
-        militaryQuestion.classList.add("hidden");
+        militaryQuestion.classList.add('hidden');
       }
-      return pageById["page-disability-details"];
+      return pageById['page-disability-details'];
     }
-    return pageById["page-disability-details"].next();
+    return pageById['page-disability-details'].next();
   };
 
-  pageById["page-disability-details"].next = function() {
-    if (document.getElementById("veteran").checked) {
-      return pageById["page-veteran-details"];
+  pageById['page-disability-details'].next = function() {
+    if (document.getElementById('veteran').checked) {
+      return pageById['page-veteran-details'];
     }
-    return pageById["page-veteran-details"].next();
+    return pageById['page-veteran-details'].next();
   };
 
-  pageById["page-veteran-details"].next = function() {
+  pageById['page-veteran-details'].next = function() {
     let hasShortDuration = false;
     const dutyPeriods = document.querySelectorAll(
       '#page-veteran-details ul.dynamic_field_list > li');
@@ -1127,100 +1138,100 @@ function customPageLinking(pageById) {
       }
     }
 
-    if (document.getElementById("veteran").checked && hasShortDuration) {
-      return pageById["page-veteran-duty-period"];
+    if (document.getElementById('veteran').checked && hasShortDuration) {
+      return pageById['page-veteran-duty-period'];
     }
-    return pageById["page-veteran-duty-period"].next();
+    return pageById['page-veteran-duty-period'].next();
   };
 
-  pageById["page-veteran-duty-period"].next = function() {
-    if (document.getElementById("not-citizen").checked) {
-      return pageById["page-immigration-status"];
+  pageById['page-veteran-duty-period'].next = function() {
+    if (document.getElementById('not-citizen').checked) {
+      return pageById['page-immigration-status'];
     }
-    return pageById["page-immigration-status"].next();
+    return pageById['page-immigration-status'].next();
   };
 
-  pageById["page-household-members"].next = function() {
+  pageById['page-household-members'].next = function() {
     const hhPregnant = getValuesOrNulls('hh-member-pregnant');
     if (document.getElementById('pregnant').checked ||
-        hhPregnant.some(p => p)) {
-      return pageById["page-household-unborn-members"];
+        hhPregnant.some((p) => p)) {
+      return pageById['page-household-unborn-members'];
     }
-    return pageById["page-household-situation"];
-  }
-
-
-  pageById["page-household-situation"].next = function() {
-    if (document.getElementById("housed").checked || document.getElementById("unlisted-stable-place").checked) {
-      return pageById["page-household-housed"];
-    }
-    return pageById["page-household-housed"].next();
+    return pageById['page-household-situation'];
   };
 
 
-  pageById["page-income"].next = function() {
-    if (document.getElementById("income-has-wages").checked) {
-      return pageById["page-income-details-wages"];
+  pageById['page-household-situation'].next = function() {
+    if (document.getElementById('housed').checked ||
+      document.getElementById('unlisted-stable-place').checked) {
+      return pageById['page-household-housed'];
     }
-    return pageById["page-income-details-wages"].next();
+    return pageById['page-household-housed'].next();
   };
 
-  pageById["page-income-details-wages"].next = function() {
-    if (document.getElementById("income-has-self-employed").checked) {
-      return pageById["page-income-details-self-employed"];
+
+  pageById['page-income'].next = function() {
+    if (document.getElementById('income-has-wages').checked) {
+      return pageById['page-income-details-wages'];
     }
-    return pageById["page-income-details-self-employed"].next();
+    return pageById['page-income-details-wages'].next();
   };
 
-  pageById["page-income-details-self-employed"].next = function() {
-    if (document.getElementById("income-has-disability").checked) {
-      return pageById["page-income-details-disability"];
+  pageById['page-income-details-wages'].next = function() {
+    if (document.getElementById('income-has-self-employed').checked) {
+      return pageById['page-income-details-self-employed'];
     }
-    return pageById["page-income-details-disability"].next();
+    return pageById['page-income-details-self-employed'].next();
   };
 
-  pageById["page-income-details-disability"].next = function() {
-    if (document.getElementById("income-has-unemployment").checked) {
-      return pageById["page-income-details-unemployment"];
+  pageById['page-income-details-self-employed'].next = function() {
+    if (document.getElementById('income-has-disability').checked) {
+      return pageById['page-income-details-disability'];
     }
-    return pageById["page-income-details-unemployment"].next();
+    return pageById['page-income-details-disability'].next();
   };
 
-  pageById["page-income-details-unemployment"].next = function() {
-    if (document.getElementById("income-has-retirement").checked) {
-      return pageById["page-income-details-retirement"];
+  pageById['page-income-details-disability'].next = function() {
+    if (document.getElementById('income-has-unemployment').checked) {
+      return pageById['page-income-details-unemployment'];
     }
-    return pageById["page-income-details-retirement"].next();
+    return pageById['page-income-details-unemployment'].next();
   };
 
-  pageById["page-income-details-retirement"].next = function() {
-    if (document.getElementById("income-has-veterans").checked) {
-      return pageById["page-income-details-veterans"];
+  pageById['page-income-details-unemployment'].next = function() {
+    if (document.getElementById('income-has-retirement').checked) {
+      return pageById['page-income-details-retirement'];
     }
-    return pageById["page-income-details-veterans"].next();
+    return pageById['page-income-details-retirement'].next();
   };
 
-  pageById["page-income-details-veterans"].next = function() {
-    if (document.getElementById("income-has-workers-comp").checked) {
-      return pageById["page-income-details-workers-comp"];
+  pageById['page-income-details-retirement'].next = function() {
+    if (document.getElementById('income-has-veterans').checked) {
+      return pageById['page-income-details-veterans'];
     }
-    return pageById["page-income-details-workers-comp"].next();
+    return pageById['page-income-details-veterans'].next();
   };
 
-  pageById["page-income-details-workers-comp"].next = function() {
-    if (document.getElementById("income-has-child-support").checked) {
-      return pageById["page-income-details-child-support"];
+  pageById['page-income-details-veterans'].next = function() {
+    if (document.getElementById('income-has-workers-comp').checked) {
+      return pageById['page-income-details-workers-comp'];
     }
-    return pageById["page-income-details-child-support"].next();
+    return pageById['page-income-details-workers-comp'].next();
   };
 
-  pageById["page-income-details-child-support"].next = function() {
-    if (document.getElementById("income-has-other").checked) {
-      return pageById["page-income-details-other"];
+  pageById['page-income-details-workers-comp'].next = function() {
+    if (document.getElementById('income-has-child-support').checked) {
+      return pageById['page-income-details-child-support'];
     }
-    return pageById["page-income-details-other"].next();
+    return pageById['page-income-details-child-support'].next();
   };
 
+  pageById['page-income-details-child-support'].next = function() {
+    if (document.getElementById('income-has-other').checked) {
+      return pageById['page-income-details-other'];
+    }
+    return pageById['page-income-details-other'].next();
+  };
 }
 
 function getValueOrNull(id) {
@@ -1261,7 +1272,7 @@ function getDateOrNan(id) {
 // Gets values for all input elements with id starting with 'idPrefix'.
 function getValuesOrNulls(idPrefix) {
   return Array.from(document.querySelectorAll(
-    `input[id^="${idPrefix}"]`), e => getValueOrNull(e.id));
+    `input[id^="${idPrefix}"]`), (e) => getValueOrNull(e.id));
 }
 
 function categoryTotal(incomeArray, hhMemberIdx=null) {
@@ -1290,7 +1301,7 @@ function totalEarnedIncome(input, hhMemberIdx=null) {
     input.income.wages,
     input.income.selfEmployed,
   ];
-  return EARNED_INCOME.map(i => categoryTotal(i, hhMemberIdx)).reduce(add, 0);
+  return EARNED_INCOME.map((i) => categoryTotal(i, hhMemberIdx)).reduce(add, 0);
 }
 
 function totalUnearnedIncome(input, hhMemberIdx=null) {
@@ -1306,8 +1317,9 @@ function totalUnearnedIncome(input, hhMemberIdx=null) {
     input.income.childSupport,
     input.income.retirement,
     input.income.other,
-  ]
-  return UNEARNED_INCOME.map(i => categoryTotal(i, hhMemberIdx)).reduce(add, 0);
+  ];
+  return UNEARNED_INCOME.map(
+    (i) => categoryTotal(i, hhMemberIdx)).reduce(add, 0);
 }
 
 function grossIncome(input, hhMemberIdx=null) {
@@ -1337,7 +1349,7 @@ function validImmigration(input) {
 // Returns true if the immigration status is considered complex enough for a
 // Program flag.
 function complexImmigration(input,
-    complexOptions=['long_term', 'none_describe']) {
+  complexOptions=['long_term', 'none_describe']) {
   return (
     !input.citizen &&
     complexOptions.includes(input.immigrationStatus));
@@ -1362,7 +1374,7 @@ class MonthlyIncomeLimits {
       extra = addlPersonExtra / 12;
     }
     return new MonthlyIncomeLimits(
-      limits.map(l => l / 12), extra);
+      limits.map((l) => l / 12), extra);
   }
 
   getLimit(hhSize) {
@@ -1420,17 +1432,17 @@ function Program() {
   // previously added conditions.
   this.addCondition = function(condition) {
     this.conditions.push(condition);
-  }
+  };
 
   // Adds a list of EligConditions, one of which must be met in addition to
   // all other previously added conditions.
   this.addConditionsOneOf = function(conditions) {
     this.conditions.push([].concat(conditions));
-  }
+  };
 
   this.addFlag = function(code) {
     this.flags.push(code);
-  }
+  };
 
   // Evaluates the entire set of conditions, returning true, false, or null.
   // True should be returned if all the conditions are met, false if they
@@ -1439,13 +1451,13 @@ function Program() {
     const values = [];
     for (const condition of this.conditions) {
       if (condition instanceof Array) {
-        values.push(or(...condition.map(c => c.met)));
+        values.push(or(...condition.map((c) => c.met)));
       } else {
         values.push(condition.met);
       }
     }
     return and(...values);
-  }
+  };
 
   // Returns a result object containing the eligibility determination,
   // the list of conditions used to make that determination, and
@@ -1458,9 +1470,9 @@ function Program() {
     return {
       'eligible': evaluation,
       'conditions': this.conditions,
-      'flags': this.flags
+      'flags': this.flags,
     };
-  }
+  };
 }
 
 // The functions below determine eligibility for various programs.
@@ -1566,15 +1578,15 @@ function calworksAdjustedIncome(input) {
   // Self-employed counts as employed.
   // https://www.cdss.ca.gov/Portals/9/Additional-Resources/Forms-and-Brochures/2020/A-D/CW29.pdf?ver=2021-11-19-150846-840
   const employed = [...Array(input.householdSize).keys()].map(
-    i => totalEarnedIncome(input, i) > 0);
-  const numEmployed = employed.filter(e => e).length;
+    (i) => totalEarnedIncome(input, i) > 0);
+  const numEmployed = employed.filter((e) => e).length;
 
   // If household ages are not given, simply don't take the disregards rather
   // than propagate null age values.
   // Note if the applicant is under 19, they do not count as a child for
   // child support income.
   const numChildren = (input.householdAges.filter(
-    a => a <= cnst.calworks.MAX_CHILD_AGE).length);
+    (a) => a <= cnst.calworks.MAX_CHILD_AGE).length);
 
   const maxEmploymentDisregard = (
     numEmployed * cnst.calworks.EMPLOYMENT_DISREGARD);
@@ -1607,7 +1619,7 @@ function calworksResult(input) {
     validImmigration(input));
 
   const meetsFamilyReq = or(
-    ...input.householdAges.map(a => le(a, cnst.calworks.MAX_CHILD_AGE)),
+    ...input.householdAges.map((a) => le(a, cnst.calworks.MAX_CHILD_AGE)),
     // TODO: is this head of household check needed?  Could we just
     // check if _anyone_ is under 19?
     and(
@@ -1628,11 +1640,11 @@ function calworksResult(input) {
 
   let resourceLimit = cnst.calworks.BASE_RESOURCE_LIMIT;
   const hasElderlyOrDisabled = or(
-    ...input.householdAges.map(a => ge(a, cnst.calworks.MIN_ELDERLY_AGE)),
+    ...input.householdAges.map((a) => ge(a, cnst.calworks.MIN_ELDERLY_AGE)),
     ge(input.age, cnst.calworks.MIN_ELDERLY_AGE),
     ...input.householdDisabled,
     // TODO: Determine if blind or deaf is considered "disabled" here.
-    input.disabled)
+    input.disabled);
   // If household ages are not specified, we are ok falling back to
   // BASE_RESOURCE_LIMIT.
   if (hasElderlyOrDisabled) {
@@ -1646,7 +1658,8 @@ function calworksResult(input) {
       meetsImmigrationReq));
   program.addCondition(
     new EligCondition(
-      `Household has a member who is pregnant or under ${cnst.calworks.MAX_CHILD_AGE + 1}`,
+      `Household has a member who is pregnant or under ` +
+          `${cnst.calworks.MAX_CHILD_AGE + 1}`,
       meetsFamilyReq));
   program.addCondition(
     new EligCondition(
@@ -1674,7 +1687,8 @@ function capiResult(input) {
 
   const program = ssiCapiBaseProgram(input);
   program.addCondition(new EligCondition(
-    'Meets expanded immigration status <a href="https://ca.db101.org/ca/programs/income_support/capi/program2b.htm" target="_blank" rel="noopener">requirements</a>',
+    'Meets expanded immigration status ' +
+      '<a href="https://ca.db101.org/ca/programs/income_support/capi/program2b.htm" target="_blank" rel="noopener">requirements</a>',
     meetsImmigrationReq));
   // For this program in particular, we show the complex immigration flag
   // even if we suggest eligibility, since applicants must be immigrants
@@ -1742,10 +1756,12 @@ function careResult(input) {
   program.addCondition(
     new EligCondition('Pays utilities', input.paysUtilities));
   program.addConditionsOneOf([
-    new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`,
+    new EligCondition(
+      `Gross income is below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
-    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, CFAP, NSLP or SCHIP',
-      isCategoricallyEligible),
+    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, ' +
+        'CalWORKS, CalFresh, Medi-Cal, CFAP, NSLP or SCHIP',
+    isCategoricallyEligible),
   ]);
 
   return program.getResult();
@@ -1774,14 +1790,17 @@ function feraResult(input) {
   program.addCondition(
     new EligCondition('Pays utilities', input.paysUtilities));
   program.addCondition(
-    new EligCondition(`Gross income exceeds CARE program limit of ${usdLimit(incomeLimitCare)} per month`,
-      overCareIncomeLimit));
+    new EligCondition(`Gross income exceeds CARE program limit of ` +
+          `${usdLimit(incomeLimitCare)} per month`,
+    overCareIncomeLimit));
   program.addCondition(
-    new EligCondition(`Gross income is under FERA program limit of ${usdLimit(incomeLimitFera)} per month`,
-      underFeraIncomeLimit));
+    new EligCondition(`Gross income is under FERA program limit of ` +
+          `${usdLimit(incomeLimitFera)} per month`,
+    underFeraIncomeLimit));
   program.addCondition(
-    new EligCondition(`Household has at least ${cnst.fera.MIN_HOUSEHOLD_SIZE} people`,
-      meetsHouseholdSizeReq));
+    new EligCondition(`Household has at least ` +
+          `${cnst.fera.MIN_HOUSEHOLD_SIZE} people`,
+    meetsHouseholdSizeReq));
 
   return program.getResult();
 }
@@ -1789,9 +1808,9 @@ function feraResult(input) {
 function vaDisabilityResult(input) {
   // https://www.va.gov/disability/eligibility/
   const meetsDutyReq = or(
-    ...input.dutyPeriods.map(d => eq(d.type, 'active-duty')),
-    ...input.dutyPeriods.map(d => eq(d.type, 'active-training')),
-    ...input.dutyPeriods.map(d => eq(d.type, 'inactive-training')));
+    ...input.dutyPeriods.map((d) => eq(d.type, 'active-duty')),
+    ...input.dutyPeriods.map((d) => eq(d.type, 'active-training')),
+    ...input.dutyPeriods.map((d) => eq(d.type, 'inactive-training')));
 
   const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
     'dishonorable',
@@ -1810,11 +1829,13 @@ function vaDisabilityResult(input) {
       isServiceDisabled));
   program.addCondition(
     new EligCondition(
-      'Served on active duty, active duty for training, or inactive duty training',
+      'Served on active duty, active duty for training, or inactive ' +
+          'duty training',
       meetsDutyReq));
   program.addCondition(
-    new EligCondition('Discharge status that is not dishonorable, bad conduct, or other-than-honorable',
-      meetsDischargeReq));
+    new EligCondition('Discharge status that is not dishonorable, ' +
+          'bad conduct, or other-than-honorable',
+    meetsDischargeReq));
   return program.getResult();
 }
 
@@ -1823,11 +1844,16 @@ function vaDisabilityResult(input) {
 //   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
 //
 // TO DO:
-//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap07.pdf (7. Citizens/Noncitizens)
-//     Qualified non-citizen: Need to determine all non-citizen groups which fit this category. May or may not need to add more detail to immigration status form page.
+//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap07.pdf
+//     (7. Citizens/Noncitizens)
+//     Qualified non-citizen: Need to determine all non-citizen groups which
+//     fit this category. May or may not need to add more detail to immigration
+//     status form page.
 //
-//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf (Section 5.1)
-//     Maximum age can be over 64 years with some conditions. May or may not need to implement this.
+//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf
+//     (Section 5.1)
+//     Maximum age can be over 64 years with some conditions. May or may not
+//     need to implement this.
 function gaResult(input) {
   const grossLimit = new MonthlyIncomeLimits(
     cnst.ga.MONTHLY_INCOME_LIMITS,
@@ -1835,7 +1861,7 @@ function gaResult(input) {
 
   const meetsAgeReq = ge(input.age, cnst.ga.MIN_ELIGIBLE_AGE);
 
-  const numDependents = input.householdDependents.filter(d => d).length;
+  const numDependents = input.householdDependents.filter((d) => d).length;
   const hasNoDependents = eq(numDependents, cnst.ga.NUM_OF_DEPENDENTS);
 
   const underResourceLimit = le(totalResources(input), cnst.ga.MAX_RESOURCES);
@@ -1848,15 +1874,22 @@ function gaResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition(`Age ${cnst.ga.MIN_ELIGIBLE_AGE} or older`, meetsAgeReq));
+    new EligCondition(`Age ${cnst.ga.MIN_ELIGIBLE_AGE} or older`,
+      meetsAgeReq));
   program.addCondition(
-    new EligCondition(`Has ${cnst.ga.NUM_OF_DEPENDENTS} dependent children`, hasNoDependents));
+    new EligCondition(`Has ${cnst.ga.NUM_OF_DEPENDENTS} dependent children`,
+      hasNoDependents));
   program.addCondition(
-    new EligCondition(`Total value of assets is below ${usdLimit(cnst.ga.MAX_RESOURCES)}`, underResourceLimit));
+    new EligCondition(
+      `Total value of assets is below ${usdLimit(cnst.ga.MAX_RESOURCES)}`,
+      underResourceLimit));
   program.addCondition(
-    new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
+    new EligCondition(
+      `Gross income is below ${usdLimit(incomeLimit)} per month`,
+      underIncomeLimit));
   program.addCondition(
-    new EligCondition('U.S. citizen or qualified immigrant', meetsImmigrationReq));
+    new EligCondition('U.S. citizen or qualified immigrant',
+      meetsImmigrationReq));
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
@@ -1865,17 +1898,18 @@ function gaResult(input) {
 
 function noFeeIdResult(input) {
   const isUnhoused = isOneOf(input.housingSituation, [
-      'vehicle',
-      'transitional',
-      'hotel',
-      'shelter',
-      'no-stable-place']);
+    'vehicle',
+    'transitional',
+    'hotel',
+    'shelter',
+    'no-stable-place']);
   const meetsAgeReq = ge(input.age, cnst.noFeeId.MIN_ELIGIBLE_AGE);
 
   const program = new Program();
   program.addConditionsOneOf([
     new EligCondition('Experiencing homelessness', isUnhoused),
-    new EligCondition(`Age ${cnst.noFeeId.MIN_ELIGIBLE_AGE} or older`, meetsAgeReq)
+    new EligCondition(`Age ${cnst.noFeeId.MIN_ELIGIBLE_AGE} or older`,
+      meetsAgeReq),
   ]);
   return program.getResult();
 }
@@ -1924,7 +1958,9 @@ function ihssResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition(`Disabled, blind or age ${cnst.ihss.MIN_ELDERLY_AGE} or older`, meetsDisabilityReq));
+    new EligCondition(
+      `Disabled, blind or age ${cnst.ihss.MIN_ELDERLY_AGE} or older`,
+      meetsDisabilityReq));
   program.addCondition(
     new EligCondition('Is housed', meetsHousedReq));
   // TODO: Add medicalResult(input).eligible once we can screen for Medi-Cal.
@@ -1971,10 +2007,13 @@ function lifelineResult(input) {
 
   const program = new Program();
   program.addConditionsOneOf([
-    new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`,
+    new EligCondition(
+      `Gross income is below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
-    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, CalWORKS, CalFresh, Medi-Cal, NSLP, Public Housing Assistance, or VA Pension',
-      isProgramQualified),
+    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, ' +
+        'CalWORKS, CalFresh, Medi-Cal, NSLP, Public Housing Assistance, or ' +
+        'VA Pension',
+    isProgramQualified),
   ]);
 
   return program.getResult();
@@ -1988,7 +2027,7 @@ function liheapResult(input) {
   const meetsHousedReq = isOneOf(input.housingSituation, [
     'housed',
     'unlisted-stable-place']);
-									
+
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
@@ -1996,7 +2035,9 @@ function liheapResult(input) {
   program.addCondition(
     new EligCondition('Is housed', meetsHousedReq));
   program.addCondition(
-    new EligCondition(`Gross income is below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
+    new EligCondition(
+      `Gross income is below ${usdLimit(incomeLimit)} per month`,
+      underIncomeLimit));
 
   return program.getResult();
 }
@@ -2022,7 +2063,7 @@ function housingChoiceResult(input) {
       Math.trunc(incomeLimit) / cnst.housingChoice.INCOME_ROUND_UP_TO_NEAREST));
     // Return incremental change ("extra") from the max listed input value.
     return rounded - limits[limits.length - 1];
-  }
+  };
 
   const grossLimit = MonthlyIncomeLimits.fromAnnual(
     cnst.housingChoice.ANNUAL_INCOME_LIMITS,
@@ -2043,7 +2084,8 @@ function housingChoiceResult(input) {
     new EligCondition('U.S. citizen or qualified immigrant',
       meetsImmigrationReq));
   program.addCondition(
-    new EligCondition(`Age ${cnst.housingChoice.MIN_ELIGIBLE_AGE} or older`, meetsAgeReq));
+    new EligCondition(`Age ${cnst.housingChoice.MIN_ELIGIBLE_AGE} or older`,
+      meetsAgeReq));
   program.addCondition(
     new EligCondition(
       `Gross income is below ${usdLimit(incomeLimit)} per month`,
@@ -2058,9 +2100,9 @@ function ssiCapiAdjustedIncome(earnedIncome, unearnedIncome) {
   // See https://www.ssa.gov/oact/cola/incomexcluded.html for calculation.
   const unearnedExclusion = Math.min(unearnedIncome,
     cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION);
-  const countableEarnedIncome = Math.max(0, cnst.ssiCapi.EARNED_INCOME_EXCLUSION_FACTOR * (
-    earnedIncome -
-    cnst.ssiCapi.MAX_EARNED_INCOME_EXCLUSION -
+  const countableEarnedIncome = Math.max(0,
+    cnst.ssiCapi.EARNED_INCOME_EXCLUSION_FACTOR * (
+      earnedIncome - cnst.ssiCapi.MAX_EARNED_INCOME_EXCLUSION -
     (cnst.ssiCapi.MAX_UNEARNED_INCOME_EXCLUSION - unearnedExclusion)));
   const countableUnearnedIncome = unearnedIncome - unearnedExclusion;
   return countableEarnedIncome + countableUnearnedIncome;
@@ -2076,7 +2118,8 @@ function ssiCapiBaseProgram(input) {
     input.blind,
     ge(input.age, cnst.ssiCapi.MIN_ELDERLY_AGE));
 
-  const sgaLimit = input.blind ? cnst.ssiCapi.SGA_BLIND : cnst.ssiCapi.SGA_NON_BLIND;
+  const sgaLimit = (
+    input.blind ? cnst.ssiCapi.SGA_BLIND : cnst.ssiCapi.SGA_NON_BLIND);
   let maxBenefit = cnst.ssiCapi.MAX_BENEFIT_NON_BLIND;
   if (input.blind) {
     maxBenefit = cnst.ssiCapi.MAX_BENEFIT_BLIND;
@@ -2143,7 +2186,8 @@ function ssdiResult(input) {
 
   // https://www.ssa.gov/benefits/disability/qualify.html#anchor3
   const earnedIncome = totalEarnedIncome(input, 0);
-  const sgaLimit = input.blind ? cnst.ssiCapi.SGA_BLIND : cnst.ssiCapi.SGA_NON_BLIND;
+  const sgaLimit = (
+    input.blind ? cnst.ssiCapi.SGA_BLIND : cnst.ssiCapi.SGA_NON_BLIND);
   const noSubstantialGainfulActivity = le(earnedIncome, sgaLimit);
 
   const program = new Program();
@@ -2176,14 +2220,14 @@ function ssdiResult(input) {
 // a spouse, or an empty list if no spouse exists.
 function spouseIndices(input) {
   // Add offset of 1 for user (index 0).
-  return indexOfAll(input.householdSpouse, true).map(i => i + 1);
+  return indexOfAll(input.householdSpouse, true).map((i) => i + 1);
 }
 
 // Returns a list of indices that can be used to extract income and assets for
 // any dependents, or an empty list if no dependents exist.
 function dependentIndices(input) {
   // Add offset of 1 for user (index 0).
-  return indexOfAll(input.householdDependents, true).map(i => i + 1);
+  return indexOfAll(input.householdDependents, true).map((i) => i + 1);
 }
 
 // Computes the countable income for VA Pension eligiblility.
@@ -2194,7 +2238,8 @@ function vaPensionCountableIncome(input) {
   // https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFRf5fe31f49d4f511/section-3.23#p-3.23(d)(4)
   const dependentIdxs = dependentIndices(input);
   // Use a Set to remove any duplicate indices.
-  const incomeIdxs = [...new Set([0, ...(spouseIndices(input)), ...dependentIdxs])];
+  const incomeIdxs = [
+    ...new Set([0, ...(spouseIndices(input)), ...dependentIdxs])];
   // https://www.va.gov/pension/veterans-pension-rates/
   let countableIncome = grossIncome(input, incomeIdxs);
   // Exclude the wages from each dependent child (up to a maximum).
@@ -2231,7 +2276,7 @@ function vaPensionResult(input) {
     cnst.vaPension.ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT);
 
   const wartimes = cnst.vaPension.WARTIMES.map(
-    p => ({start: dateOrToday(p[0]), end: dateOrToday(p[1])}));
+    (p) => ({start: dateOrToday(p[0]), end: dateOrToday(p[1])}));
 
   const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
     'dishonorable',
@@ -2263,10 +2308,12 @@ function vaPensionResult(input) {
         eq(duty.type, 'active-duty'),
         or(
           and(
-            lt(duty.start, new Date(dateStrToLocal(cnst.vaPension.EARLY_DUTY_BEFORE))),
+            lt(duty.start,
+              new Date(dateStrToLocal(cnst.vaPension.EARLY_DUTY_BEFORE))),
             ge(duration, cnst.vaPension.MIN_EARLY_DUTY_DURATION)),
           and(
-            gt(duty.start, new Date(dateStrToLocal(cnst.vaPension.LATE_DUTY_AFTER))),
+            gt(duty.start,
+              new Date(dateStrToLocal(cnst.vaPension.LATE_DUTY_AFTER))),
             or(
               ge(duration, cnst.vaPension.MIN_LATE_DUTY_DURATION),
               input.servedFullDuration)))));
@@ -2289,14 +2336,22 @@ function vaPensionResult(input) {
   program.addCondition(
     new EligCondition('Discharged honorably or under honorable conditions',
       meetsDischargeReq));
-  program.addCondition(new EligCondition('Meets specific duty type and duration <a href="https://www.va.gov/pension/eligibility/" target="_blank" rel="noopener">requirements</a>',
+  program.addCondition(new EligCondition(
+    'Meets specific duty type and duration ' +
+    '<a href="https://www.va.gov/pension/eligibility/" target="_blank" rel="noopener">requirements</a>',
     meetsAnyServiceReq));
-  program.addCondition(new EligCondition(`Adjusted income is below ${usdLimit(maxPayment)} per month`, underMaprLimit));
-  program.addCondition(new EligCondition(`Adjusted yearly income and assets combined are below ${usdLimit(cnst.vaPension.ANNUAL_NET_WORTH_LIMIT)}`, underNetWorthLimit));
+  program.addCondition(new EligCondition(
+    `Adjusted income is below ${usdLimit(maxPayment)} per month`,
+    underMaprLimit));
+  program.addCondition(new EligCondition(
+    `Adjusted yearly income and assets combined are below ` +
+    `${usdLimit(cnst.vaPension.ANNUAL_NET_WORTH_LIMIT)}`, underNetWorthLimit));
   program.addConditionsOneOf([
     new EligCondition('Disabled', input.disabled),
-    new EligCondition(`Age ${cnst.vaPension.MIN_ELDERLY_AGE} or older`, meetsAgeReq),
-    new EligCondition('Receives or is eligible for SSI or SSDI', isProgramQualified)
+    new EligCondition(`Age ${cnst.vaPension.MIN_ELDERLY_AGE} or older`,
+      meetsAgeReq),
+    new EligCondition('Receives or is eligible for SSI or SSDI',
+      isProgramQualified),
   ]);
   return program.getResult();
 }
@@ -2313,7 +2368,8 @@ function wicResult(input) {
   const hasBreastfeeding = or(
     input.feeding,
     ...input.householdFeeding);
-  const hasChild = or(...input.householdAges.map(a => lt(a, cnst.wic.CHILD_EXIT_AGE)));
+  const hasChild = or(
+    ...input.householdAges.map((a) => lt(a, cnst.wic.CHILD_EXIT_AGE)));
 
   // Rather than null, if unborn-children is left empty, numUnborn == 0.
   const numUnborn = Number(input.unbornChildren);
@@ -2362,7 +2418,7 @@ function upliftResult(input) {
   const program = new Program();
   program.addConditionsOneOf([
     new EligCondition('Experiencing homelessness', isUnhoused),
-    new EligCondition(`At risk of losing housing`, input.homelessRisk)
+    new EligCondition(`At risk of losing housing`, input.homelessRisk),
   ]);
   return program.getResult();
 }
@@ -2380,7 +2436,7 @@ function clearUnusedPages() {
     page = page.next();
   } while (page);
   // Clear out those pages that are not used with the current form inputs.
-  for (const unusedPage of pages.filter(p => !p.used)) {
+  for (const unusedPage of pages.filter((p) => !p.used)) {
     clearInputs(unusedPage);
   }
 }
@@ -2390,18 +2446,18 @@ function clearUnusedPages() {
 function buildInputObj() {
   // Helper function to get income or asset value lists.
   function getIncomeValues(page) {
-    const allValues = []
+    const allValues = [];
     const groups = page.querySelectorAll(
       '.income_details_wrapper > fieldset');
     for (const group of groups) {
       const values = Array.from(group.querySelectorAll('input[type=number]'),
-        i => Number(i.value));
+        (i) => Number(i.value));
       allValues.push(values);
     }
     return allValues;
   }
 
-  let inputData = {
+  const inputData = {
     age: getValueOrNull('age'),
     citizen: not(getValueOrNull('not-citizen')),
     disabled: getValueOrNull('disabled'),
@@ -2419,7 +2475,7 @@ function buildInputObj() {
     householdSpouse: getValuesOrNulls('hh-member-spouse'),
     householdDependents: getValuesOrNulls('hh-member-dependent'),
     householdSize: document.querySelectorAll(
-      "#page-household-members ul.dynamic_field_list>li").length,
+      '#page-household-members ul.dynamic_field_list>li').length,
     unbornChildren: getValueOrNull('unborn-children'),
     housingSituation: getValueOrNull('housing-situation'),
     paysUtilities: getValueOrNull('pay-utilities'),
@@ -2456,17 +2512,17 @@ function buildInputObj() {
   }
   // Income is invalid only if no income of any kind for any household member
   // was entered (and the household was not marked as having zero income).
-  inputData.income.valid = (householdTotal > 0
-    || getValueOrNull('income-has-none'));
+  inputData.income.valid = (householdTotal > 0 ||
+    getValueOrNull('income-has-none'));
 
   // Income specifically from SSI
   const retirementEntries = [...document.querySelectorAll(
-    "#page-income-details-disability ul.dynamic_field_list>li")];
+    '#page-income-details-disability ul.dynamic_field_list>li')];
   const ssiEntries = retirementEntries.filter(
-    e => e.querySelector(
+    (e) => e.querySelector(
       'input[id^="income-disability-is-ssi-capi"]').checked);
   inputData.ssiIncome = ssiEntries.map(
-    e => Number(e.querySelector("input[type=number]").value));
+    (e) => Number(e.querySelector('input[type=number]').value));
 
   // Military duty periods
   const dutyPeriodItems = document.querySelectorAll(
@@ -2513,7 +2569,7 @@ function computeEligibility() {
       if (condition instanceof Array) {
         // For nested lists of conditions, first create a
         // HTML list item to act as a heading for the grouping.
-        const combinedMet = or(...condition.map(c => c.met));
+        const combinedMet = or(...condition.map((c) => c.met));
         listItem.textContent = 'One of:';
         addConditionIcon(listItem, combinedMet);
         conditionList.appendChild(listItem);
@@ -2545,7 +2601,8 @@ function computeEligibility() {
       case FlagCodes.MORE_INFO_NEEDED:
         flagMsg = 'We need more information from you to make an eligibility ' +
           'recommendation. ' +
-          '<button type="button" class="link back_to_form" data-section-id="section-yourself">' +
+          '<button type="button" class="link back_to_form" ' +
+          'data-section-id="section-yourself">' +
           'Back to the form</button>';
         break;
       case FlagCodes.COMPLEX_IMMIGRATION:
