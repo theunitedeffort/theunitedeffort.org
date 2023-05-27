@@ -1,0 +1,17 @@
+name: Node setup
+description: Checks out code, installs Node.js and dependencies.js
+inputs:
+  node-version:
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository code
+      uses: actions/checkout@v3
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        cache: npm
+    - name: Install dependencies
+      run: npm ci
