@@ -5,8 +5,7 @@
         "es6": true
     },
     "extends": "google",
-    "overrides": [
-    ],
+    "plugins": ["eslint-plugin-builtin-compat"],
     "parserOptions": {
         "ecmaVersion": "latest"
     },

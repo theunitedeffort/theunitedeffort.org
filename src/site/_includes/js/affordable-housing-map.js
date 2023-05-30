@@ -23,22 +23,22 @@
 
   // Sets element visibility to show the map view rather than the
   // list view on small screens.
-  function switchToMapView(interface) {
-    interface.mapContainer.classList.remove('responsive_hidden');
-    interface.mapContainer.classList.add('responsive_visible');
-    interface.listContainer.classList.remove('responsive_visible');
-    interface.listContainer.classList.add('responsive_hidden');
-    interface.toggleButton.textContent = 'Show List';
+  function switchToMapView(interf) {
+    interf.mapContainer.classList.remove('responsive_hidden');
+    interf.mapContainer.classList.add('responsive_visible');
+    interf.listContainer.classList.remove('responsive_visible');
+    interf.listContainer.classList.add('responsive_hidden');
+    interf.toggleButton.textContent = 'Show List';
   }
 
   // Sets element visibility to show the list view rather than the
   // map view on small screens.
-  function switchToListView(interface) {
-    interface.listContainer.classList.remove('responsive_hidden');
-    interface.listContainer.classList.add('responsive_visible');
-    interface.mapContainer.classList.remove('responsive_visible');
-    interface.mapContainer.classList.add('responsive_hidden');
-    interface.toggleButton.textContent = 'Show Map';
+  function switchToListView(interf) {
+    interf.listContainer.classList.remove('responsive_hidden');
+    interf.listContainer.classList.add('responsive_visible');
+    interf.mapContainer.classList.remove('responsive_visible');
+    interf.mapContainer.classList.add('responsive_hidden');
+    interf.toggleButton.textContent = 'Show Map';
     const selectedItem = document.querySelector('li.highlighted');
     if (selectedItem) {
       // When switching into the list view, make sure that any highlighted list
@@ -147,7 +147,7 @@
   }
 
   // Sets up listeners for the apartment location markers.
-  function setUpAptListeners(map, markers, infowindow, interface) {
+  function setUpAptListeners(map, markers, infowindow, interf) {
     for (const marker of markers) {
       marker.addListener('click', (e, disableScroll) => {
         if (infowindow.listItem) {
@@ -242,16 +242,16 @@
   }
 
   // Initializes the map's surrounding interface and sets up relevant listeners.
-  function initInterface(interface, map, markers) {
+  function initInterface(interf, map, markers) {
     // Show the map, toggle button, and interactive list item map links since
     // javascript is working.
     if (markers.length > 0) {
-      interface.toggleButton.parentNode.classList.remove('hidden');
-      interface.listContainer.classList.add('responsive_split');
-      interface.mapContainer.classList.add('responsive_split');
-      interface.mapContainer.classList.remove('hidden');
+      interf.toggleButton.parentNode.classList.remove('hidden');
+      interf.listContainer.classList.add('responsive_split');
+      interf.mapContainer.classList.add('responsive_split');
+      interf.mapContainer.classList.remove('hidden');
     } else {
-      interface.listContainer.querySelector('ul').classList.add('no_results');
+      interf.listContainer.querySelector('ul').classList.add('no_results');
     }
     for (const marker of markers) {
       const showMapButton = marker.listItem.querySelector('button.map_link');
@@ -266,12 +266,12 @@
         // the map can zoom and pan uninterrupted.
         google.maps.event.clearListeners(map, 'bounds_changed');
         google.maps.event.trigger(marker, 'click', null, true);
-        switchToMapView(interface);
-        interface.toggleButton.scrollIntoView();
+        switchToMapView(interf);
+        interf.toggleButton.scrollIntoView();
       });
     }
     // Start the user out with a list view.
-    switchToListView(interface);
+    switchToListView(interf);
   }
 
   // Initialize and add the map, set up all markers.
@@ -280,7 +280,7 @@
       SMALL_BUS_ICON_WIDTH, SMALL_BUS_ICON_HEIGHT, SMALL_BUS_ICON_SCALE);
     const largeTransitMarkerOpts = makeMarkerOpts(LARGE_BUS_ICON_PATH,
       LARGE_BUS_ICON_WIDTH, LARGE_BUS_ICON_HEIGHT, LARGE_BUS_ICON_SCALE);
-    const interface = {
+    const interf = {
       toggleButton: document.querySelector('#map-toggle button'),
       mapContainer: document.getElementById('map-container'),
       listContainer: document.getElementById('list-container'),
@@ -301,7 +301,7 @@
 
     const infowindow = new google.maps.InfoWindow();
     const aptMarkers = addAptMarkers(map);
-    setUpAptListeners(map, aptMarkers, infowindow, interface);
+    setUpAptListeners(map, aptMarkers, infowindow, interf);
     setMapBounds(map, aptMarkers);
 
     // This array will be filled when the transit markers are first
@@ -310,7 +310,7 @@
 
     const legend = addLegend(map, smallTransitMarkerOpts.icon);
 
-    initInterface(interface, map, aptMarkers);
+    initInterface(interf, map, aptMarkers);
 
     let prevZoom = 0;
     google.maps.event.addListener(map, 'zoom_changed', () => {
@@ -369,11 +369,11 @@
       }
     });
 
-    interface.toggleButton.addEventListener('click', () => {
-      if (interface.listContainer.classList.contains('responsive_hidden')) {
-        switchToListView(interface);
+    interf.toggleButton.addEventListener('click', () => {
+      if (interf.listContainer.classList.contains('responsive_hidden')) {
+        switchToListView(interf);
       } else {
-        switchToMapView(interface);
+        switchToMapView(interf);
       }
     });
   }

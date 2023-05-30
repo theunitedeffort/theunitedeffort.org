@@ -9,7 +9,8 @@
     "build": "npm-run-all build:assets build:site",
     "dev": "eleventy --watch --serve",
     "lint": "eslint src",
-    "test": "eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest"
+    "test": "eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest",
+    "update:packages": "npm install theunitedeffort/eslint-plugin-builtin-compat --save-dev"
   },
   "keywords": [],
   "author": "",
@@ -27,9 +28,9 @@
     "@babel/preset-env": "^7.21.5",
     "@stryker-mutator/core": "^6.4.2",
     "@stryker-mutator/jest-runner": "^6.4.2",
-    "eleventy-plugin-babel": "^1.0.1",
     "eslint": "^8.41.0",
     "eslint-config-google": "^0.14.0",
+    "eslint-plugin-builtin-compat": "github:theunitedeffort/eslint-plugin-builtin-compat",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
     "jest-expect-message": "^1.1.3",

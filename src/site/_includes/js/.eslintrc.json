@@ -1,0 +1,22 @@
+{
+  "overrides": [
+    {
+      "files": "*.js",
+      "excludedFiles": ["test/**"],
+      "rules": {
+        "builtin-compat/no-incompatible-builtins": "warn"
+      },
+      "settings": {
+        "builtin-compat-ignore": [
+          "Temporal\\..*",
+          "SharedArrayBuffer\\.*",
+          "TypedArray\\..*",
+          "Generator\\..*",
+          "AsyncGenerator\\..*",
+          "WeakSet\\..*",
+          "Atomics\\..*"
+        ]
+      }
+    }
+  ]
+}
