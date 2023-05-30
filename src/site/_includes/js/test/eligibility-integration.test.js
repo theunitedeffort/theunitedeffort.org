@@ -578,7 +578,7 @@ describe('Navigation and UI', () => {
       expect(thisPageId).not.toBe(prevPageId);
       pageIdsSeen.push(thisPageId);
       prevPageId = thisPageId;
-    };
+    }
     return pageIdsSeen;
   }
 

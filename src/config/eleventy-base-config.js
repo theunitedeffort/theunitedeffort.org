@@ -403,17 +403,17 @@ module.exports = function(eleventyConfig) {
     const columns = columnsStr.split('\n').map(unpack);
     const rows = rowsStr.split('\n').map(unpack);
 
-    columnsHtml = ['<th></th>'];
-    for (column of columns) {
+    const columnsHtml = ['<th></th>'];
+    for (const column of columns) {
       columnsHtml.push(`
         <th id="col-label-${column.id}">
           ${column.content}
         </th>`);
     }
-    rowsHtml = [];
-    for (row of rows) {
-      cellsHtml = [];
-      for (column of columns) {
+    const rowsHtml = [];
+    for (const row of rows) {
+      const cellsHtml = [];
+      for (const column of columns) {
         cellsHtml.push(`
           <td>
             <input type="checkbox" id="${tableId}-${row.id}-${column.id}" aria-labelledby="row-label-${row.id} col-label-${column.id}">
