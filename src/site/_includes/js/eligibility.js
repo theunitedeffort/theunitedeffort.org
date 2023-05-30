@@ -1,3 +1,5 @@
+'use strict';
+
 const cnst = {
   calfresh: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
@@ -1037,6 +1039,30 @@ function addListeners() {
       }
     }
   });
+}
+
+// Links program DOM elements with their respective eligibility result function.
+function mapResultFunctions() {
+  document.getElementById('program-adsa').result = adsaResult;
+  document.getElementById('program-calfresh').result = calfreshResult;
+  document.getElementById('program-calworks').result = calworksResult;
+  document.getElementById('program-capi').result = capiResult;
+  document.getElementById('program-care').result = careResult;
+  document.getElementById('program-fera').result = feraResult;
+  document.getElementById('program-va-disability').result = vaDisabilityResult;
+  document.getElementById('program-ga').result = gaResult;
+  document.getElementById('program-no-fee-id').result = noFeeIdResult;
+  document.getElementById('program-reduced-fee-id').result = reducedFeeIdResult;
+  document.getElementById('program-ihss').result = ihssResult;
+  document.getElementById('program-lifeline').result = lifelineResult;
+  document.getElementById('program-liheap').result = liheapResult;
+  document.getElementById('program-vta-paratransit').result = vtaParatransitResult;
+  document.getElementById('program-housing-choice').result = housingChoiceResult;
+  document.getElementById('program-ssi').result = ssiResult;
+  document.getElementById('program-ssdi').result = ssdiResult;
+  document.getElementById('program-va-pension').result = vaPensionResult;
+  document.getElementById('program-wic').result = wicResult;
+  document.getElementById('program-uplift').result = upliftResult;
 }
 
 // Switches to the first form page in the document.
@@ -2561,7 +2587,7 @@ function computeEligibility() {
   const ineligibleList = document.querySelector('.programs__ineligible > ul');
   const unknownList = document.querySelector('.programs__unknown > ul');
   for (const program of allPrograms) {
-    const result = window[program.dataset.eligibility](input);
+    const result = program.result(input);
     const conditionList = program.querySelector('.elig_conditions');
     const flagList = program.querySelector('.elig_flags');
     // Reset the program's displayed conditions and flags.
@@ -2690,6 +2716,7 @@ function init() {
   linkPages();
   initUi();
   addListeners();
+  mapResultFunctions();
 }
 
 if (typeof module !== 'undefined' && module.exports) {

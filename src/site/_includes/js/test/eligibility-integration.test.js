@@ -552,8 +552,6 @@ describe('Navigation and UI', () => {
         {
           pageId: 'page-results',
           setUp: function() {
-            // This eval is needed for window access to the eligibility functions.
-            window.eval(eligScript);
             click(nextButton, 7);
             click(submitButton);
           },
@@ -650,7 +648,6 @@ describe('Navigation and UI', () => {
 
   test('Can jump to sections with the step indicator', () => {
     // Get to the very end of the form.
-    window.eval(eligScript);
     toFormEnd();
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
@@ -1050,7 +1047,6 @@ describe('Navigation and UI', () => {
   });
 
   test('Hidden yes/no questions can be answered after being revealed', () => {
-    window.eval(eligScript);
     const pagesSeen = toFormEnd();
     click(submitButton);
     // The page of interest should not have been shown this first time around.
