@@ -6,7 +6,7 @@ const OPERATOR_ID_MAP = {
 };
 
 const fetchTransitData = async (operatorId) => {
-  if (!OPERATOR_ID_MAP.hasOwnProperty(operatorId)) {
+  if (!Object.prototype.hasOwnProperty.call(OPERATOR_ID_MAP, operatorId)) {
     return [];
   }
   if (!process.env.SF_BAY_511_API_KEY) {

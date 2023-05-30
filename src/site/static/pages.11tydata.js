@@ -28,7 +28,7 @@ const fetchPages = async () => {
   })
     .all()
     .then(async (records) => {
-      for (record of records) {
+      for (const record of records) {
         if (record.get('Status') == 'Published') {
           const name = record.get('Page title');
           const path = record.get('Page path');
@@ -48,7 +48,7 @@ const fetchPages = async () => {
             content: content,
           });
         }
-      };
+      }
 
       // Collect each page array into our pages array
       for (const key in data) {

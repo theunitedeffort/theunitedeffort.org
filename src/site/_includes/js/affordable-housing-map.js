@@ -1,3 +1,4 @@
+/* global transitStops, aptLocations, google */
 (function() {
   const MAP_CENTER_LAT = 37.233907; // Center of Santa Clara County.
   const MAP_CENTER_LNG = -121.756180; // Center of Santa Clara County.
@@ -126,7 +127,7 @@
     if (isVisible) {
       mapRef = map;
     }
-    for (i = 0; i < transitMarkers.length; i++) {
+    for (let i = 0; i < transitMarkers.length; i++) {
       transitMarkers[i].setMap(mapRef);
     }
     if (isVisible) {
@@ -140,7 +141,7 @@
   // This is useful to change the transit marker icon.  The transit stop legend
   // will also be updated to use the same icon.
   function setTransitMarkerOptions(transitMarkers, legend, markerOptions) {
-    for (i = 0; i < transitMarkers.length; i++) {
+    for (let i = 0; i < transitMarkers.length; i++) {
       transitMarkers[i].setOptions(markerOptions);
     }
     setLegendContent(legend, markerOptions.icon);
