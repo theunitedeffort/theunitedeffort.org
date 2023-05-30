@@ -231,27 +231,11 @@ function check(idOrElem) {
   };
 }
 
-let eligScript;
 let html;
 
 beforeAll(() => {
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
   window.scrollTo = jest.fn();
-  // This is a bit of a hack to run the eligibility script in the loaded
-  // HTML document.  Loading the file as an external <script> as is done
-  // in production has proven to be difficult because:
-  //   1) We don't necessarily want to use runScripts: "dangerously" as
-  //      there may be third-party external scripts included in the HTML,
-  //      particularly from the base.liquid layout.
-  //   2) The src of the <script> needs to be different for production
-  //      and testing, as root-relative URLS (src="/js/eligibility.js")
-  //      don't seem to work with JSDOM.
-  // There may be a way to set up a test with a node server running and
-  // create a JSDOM object from the url of that server.  We'd still have to
-  // make a custom JSDOM Resource Loader to avoid loading anything *except*
-  // the script we care about: eligibility.js
-  eligScript = fs.readFileSync(
-    path.resolve(__dirname, '../eligibility.js'), 'utf8');
   html = fs.readFileSync(
     path.resolve(__dirname, '../../../../../test/dist/public-assistance/eligibility/index.html'), 'utf8');
 });
