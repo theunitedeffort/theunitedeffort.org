@@ -797,7 +797,7 @@ function updateIncomeTotal() {
   const totalDisplay = page.querySelector('.total');
   const inputs = page.querySelectorAll('input[type=number]');
   let sum = 0;
-  for (input of inputs) {
+  for (const input of inputs) {
     sum += Number(input.value);
   }
   sum = sum.toFixed(2);
@@ -2329,7 +2329,7 @@ function vaPensionResult(input) {
 
   // https://www.va.gov/pension/veterans-pension-rates/
   // Note alternate household size definition.
-  householdSize = vaPensionHouseholdSize(input);
+  const householdSize = vaPensionHouseholdSize(input);
   const maxPayment = mapr.getLimit(householdSize);
   const countableIncome = vaPensionCountableIncome(input);
   const underNetWorthLimit = le(

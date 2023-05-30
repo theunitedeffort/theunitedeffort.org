@@ -15,9 +15,9 @@ const fetchHousingSchema = async () => {
   })
     .all()
     .then((records) => {
-      housingDbFields = JSON.parse(
+      const housingDbFields = JSON.parse(
         records[0].get('HOUSING_DATABASE_FIELDS_JSON'));
-      unitsFields = JSON.parse(records[0].get('UNITS_FIELDS_JSON'));
+      const unitsFields = JSON.parse(records[0].get('UNITS_FIELDS_JSON'));
       return {
         housing: Object.fromEntries(housingDbFields.map((x) => [x.name, x])),
         units: Object.fromEntries(unitsFields.map((x) => [x.name, x])),

@@ -102,7 +102,7 @@ function is(value) {
   setValue(this.input, this.target, value);
   expect(this.program(this.input).eligible, msg(this, 'modified')).toBe(this.expected);
   setValue(this.input, this.target, initValue);
-};
+}
 
 function isAtLeast(value) {
   const initValue = getValue(this.input, this.target);
@@ -157,7 +157,7 @@ function check(program, input) {
     isUnder,
     isOver,
   };
-};
+}
 
 function plusDays(date, numDays) {
   const newDate = new Date(date);
