@@ -1,3 +1,5 @@
+'use strict';
+
 const cnst = {
   calfresh: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
@@ -536,7 +538,7 @@ function onInput(event) {
   addEventListener('beforeunload', confirmExit);
 }
 
-function onHouseholdMemberAdd() {
+function onHouseholdMemberAdd(event) {
   const nameInputs = document.querySelectorAll(
     'input[id^="hh-member-name"]');
   for (const input of nameInputs) {
@@ -547,7 +549,7 @@ function onHouseholdMemberAdd() {
   }
 
   // Get the household member that was just added.
-  const newMember = this.closest('.elig_page').querySelector(
+  const newMember = event.target.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
   newMember.linkedElems = [];
   // Add listener to the new member's spouse checkbox
@@ -581,8 +583,8 @@ function onHouseholdMemberAdd() {
   }
 }
 
-function onDutyPeriodAdd() {
-  const newPeriod = this.closest('.elig_page').querySelector(
+function onDutyPeriodAdd(event) {
+  const newPeriod = event.target.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
   const firstFieldset = document.querySelector(
     '#page-veteran-duty-period fieldset');
@@ -594,28 +596,28 @@ function onDutyPeriodAdd() {
   newPeriod.linkedElems = [newFieldset];
 }
 
-function onChangeSpouse() {
-  if (this.checked) {
+function onChangeSpouse(event) {
+  if (event.target.checked) {
     // If a spouse checkbox was just checked, enforce that all the others are
     // unchecked.
     const spouseInputs = document.querySelectorAll('[id^="hh-member-spouse"]');
     for (const input of spouseInputs) {
-      if (input !== this) {
+      if (input !== event.target) {
         input.checked = false;
       }
     }
   }
 }
 
-function onChangeNoIncome() {
+function onChangeNoIncome(event) {
   const wrapper = document.getElementById('income-types');
   const allIncomeTypes = wrapper.querySelectorAll('input[type=checkbox]');
   for (const incomeType of allIncomeTypes) {
-    if (incomeType == this) {
+    if (incomeType == event.target) {
       continue;
     }
     const label = wrapper.querySelector(`label[for="${incomeType.id}"]`);
-    if (this.checked) {
+    if (event.target.checked) {
       incomeType.checked = false;
       incomeType.setAttribute('disabled', 'disabled');
       label.classList.add('disabled');
@@ -626,19 +628,19 @@ function onChangeNoIncome() {
   }
 }
 
-function onChangeAge() {
-  document.getElementById('hh-myself-age').value = this.value;
-  document.getElementById('age').value = this.value;
+function onChangeAge(event) {
+  document.getElementById('hh-myself-age').value = event.target.value;
+  document.getElementById('age').value = event.target.value;
 }
 
-function onChangeName() {
+function onChangeName(event) {
   // TODO (#395): Revert to placeholder if the name is deleted.
-  const item = this.closest('ul.dynamic_field_list>li');
+  const item = event.target.closest('ul.dynamic_field_list>li');
   // Update the heading to the household member's name.
-  item.querySelector('h4').textContent = this.value;
+  item.querySelector('h4').textContent = event.target.value;
   // Also update the headings in all the income details pages.
   for (const linkedElem of item.linkedElems) {
-    setMemberIncomeHeading(linkedElem, this.value);
+    setMemberIncomeHeading(linkedElem, event.target.value);
   }
 }
 
@@ -696,9 +698,9 @@ function clearInputs(parent) {
 }
 
 // Adds an item to a dynamic list of fields.
-function addDynamicFieldListItem() {
+function addDynamicFieldListItem(event) {
   // TODO: update to use .closest()
-  const list = this.parentElement.parentElement.querySelector(
+  const list = event.target.parentElement.parentElement.querySelector(
     'ul.dynamic_field_list');
   // TODO (#422): This also gets all descendants, but we only want children.
   const items = list.querySelectorAll('li');
@@ -751,7 +753,7 @@ function addDynamicFieldListItem() {
   }
   // Add our new item to the list.
   list.appendChild(newItem);
-  updateDynamicFieldListButton(this);
+  updateDynamicFieldListButton(event.target);
 }
 
 function removeDynamicFieldListItem(listItem) {
@@ -763,13 +765,17 @@ function removeDynamicFieldListItem(listItem) {
     for (const fieldset of listItem.linkedElems) {
       const parent = fieldset.parentElement;
       fieldset.remove();
+      // Removing a linked element (such as income inputs) should
+      // trigger the same actions as clearing that element's inputs.
       parent.dispatchEvent(
         new Event('input', {bubbles: true, cancelable: false}));
     }
   }
 
   listItem.remove();
-  // Can't dispatch the event on the item since it's removed.
+  // Removing a list item should trigger the same actions as clearing that
+  // item's inputs. However, we can't dispatch the event on the item itself
+  // since it was just removed.
   list.dispatchEvent(
     new Event('input', {bubbles: true, cancelable: false}));
   const fieldListButton = (
@@ -777,8 +783,8 @@ function removeDynamicFieldListItem(listItem) {
   updateDynamicFieldListButton(fieldListButton);
 }
 
-function onDynamicFieldListRemove() {
-  removeDynamicFieldListItem(this.closest('li'));
+function onDynamicFieldListRemove(event) {
+  removeDynamicFieldListItem(event.target.closest('li'));
 }
 
 function updateDynamicFieldListButton(button) {
@@ -792,8 +798,8 @@ function updateDynamicFieldListButton(button) {
   }
 }
 
-function updateIncomeTotal() {
-  const page = this.closest('.elig_page');
+function updateIncomeTotal(event) {
+  const page = event.target.closest('.elig_page');
   const totalDisplay = page.querySelector('.total');
   const inputs = page.querySelectorAll('input[type=number]');
   let sum = 0;
@@ -923,8 +929,8 @@ function switchToPage(toPage) {
 // Brings the user to the first page of a section.
 // This function is used as a step indicator click handler, and 'this'
 // represents the context of the event, i.e. the button that was clicked.
-function toSection() {
-  const section = document.getElementById(this.dataset.sectionId);
+function toSection(event) {
+  const section = document.getElementById(event.target.dataset.sectionId);
   if (section.id == 'section-results') {
     // Ensure results are always up-to-date prior to showing them.
     // TODO: Determine if it would be better to invalidate results on
@@ -1037,6 +1043,30 @@ function addListeners() {
       }
     }
   });
+}
+
+// Links program DOM elements with their respective eligibility result function.
+function mapResultFunctions() {
+  document.getElementById('program-adsa').result = adsaResult;
+  document.getElementById('program-calfresh').result = calfreshResult;
+  document.getElementById('program-calworks').result = calworksResult;
+  document.getElementById('program-capi').result = capiResult;
+  document.getElementById('program-care').result = careResult;
+  document.getElementById('program-fera').result = feraResult;
+  document.getElementById('program-va-disability').result = vaDisabilityResult;
+  document.getElementById('program-ga').result = gaResult;
+  document.getElementById('program-no-fee-id').result = noFeeIdResult;
+  document.getElementById('program-reduced-fee-id').result = reducedFeeIdResult;
+  document.getElementById('program-ihss').result = ihssResult;
+  document.getElementById('program-lifeline').result = lifelineResult;
+  document.getElementById('program-liheap').result = liheapResult;
+  document.getElementById('program-vta-paratransit').result = vtaParatransitResult;
+  document.getElementById('program-housing-choice').result = housingChoiceResult;
+  document.getElementById('program-ssi').result = ssiResult;
+  document.getElementById('program-ssdi').result = ssdiResult;
+  document.getElementById('program-va-pension').result = vaPensionResult;
+  document.getElementById('program-wic').result = wicResult;
+  document.getElementById('program-uplift').result = upliftResult;
 }
 
 // Switches to the first form page in the document.
@@ -2561,7 +2591,7 @@ function computeEligibility() {
   const ineligibleList = document.querySelector('.programs__ineligible > ul');
   const unknownList = document.querySelector('.programs__unknown > ul');
   for (const program of allPrograms) {
-    const result = window[program.dataset.eligibility](input);
+    const result = program.result(input);
     const conditionList = program.querySelector('.elig_conditions');
     const flagList = program.querySelector('.elig_flags');
     // Reset the program's displayed conditions and flags.
@@ -2690,6 +2720,7 @@ function init() {
   linkPages();
   initUi();
   addListeners();
+  mapResultFunctions();
 }
 
 if (typeof module !== 'undefined' && module.exports) {

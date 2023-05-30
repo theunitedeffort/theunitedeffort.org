@@ -231,27 +231,11 @@ function check(idOrElem) {
   };
 }
 
-let eligScript;
 let html;
 
 beforeAll(() => {
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
   window.scrollTo = jest.fn();
-  // This is a bit of a hack to run the eligibility script in the loaded
-  // HTML document.  Loading the file as an external <script> as is done
-  // in production has proven to be difficult because:
-  //   1) We don't necessarily want to use runScripts: "dangerously" as
-  //      there may be third-party external scripts included in the HTML,
-  //      particularly from the base.liquid layout.
-  //   2) The src of the <script> needs to be different for production
-  //      and testing, as root-relative URLS (src="/js/eligibility.js")
-  //      don't seem to work with JSDOM.
-  // There may be a way to set up a test with a node server running and
-  // create a JSDOM object from the url of that server.  We'd still have to
-  // make a custom JSDOM Resource Loader to avoid loading anything *except*
-  // the script we care about: eligibility.js
-  eligScript = fs.readFileSync(
-    path.resolve(__dirname, '../eligibility.js'), 'utf8');
   html = fs.readFileSync(
     path.resolve(__dirname, '../../../../../test/dist/public-assistance/eligibility/index.html'), 'utf8');
 });
@@ -552,8 +536,6 @@ describe('Navigation and UI', () => {
         {
           pageId: 'page-results',
           setUp: function() {
-            // This eval is needed for window access to the eligibility functions.
-            window.eval(eligScript);
             click(nextButton, 7);
             click(submitButton);
           },
@@ -650,7 +632,6 @@ describe('Navigation and UI', () => {
 
   test('Can jump to sections with the step indicator', () => {
     // Get to the very end of the form.
-    window.eval(eligScript);
     toFormEnd();
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
@@ -1050,7 +1031,6 @@ describe('Navigation and UI', () => {
   });
 
   test('Hidden yes/no questions can be answered after being revealed', () => {
-    window.eval(eligScript);
     const pagesSeen = toFormEnd();
     click(submitButton);
     // The page of interest should not have been shown this first time around.
