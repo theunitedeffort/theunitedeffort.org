@@ -404,6 +404,10 @@ const usdLimit = function(value) {
   if (isNaN(num) || value === null) {
     return 'the limit';
   } else {
+    /* eslint-disable-next-line builtin-compat/no-incompatible-builtins --
+     * Linter will warn on BigInt.toLocaleString, but sum is a Number, which
+     * is well supported in our target browsers.
+    **/
     return num.toLocaleString('en-US',
       {
         style: 'currency',
@@ -801,6 +805,10 @@ function updateIncomeTotal() {
   if (sum - intSum === 0) {
     sum = intSum;
   }
+  /* eslint-disable-next-line builtin-compat/no-incompatible-builtins --
+   * Linter will warn on BigInt.toLocaleString, but sum is a Number, which
+   * is well supported in our target browsers.
+  **/
   totalDisplay.textContent = sum.toLocaleString('en-US');
 }
 
