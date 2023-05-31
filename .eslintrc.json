@@ -1,20 +1,32 @@
 {
-    "env": {
-        "browser": true,
-        "node": true,
-        "commonjs": true,
-        "es6": true,
-        "jest": true
-    },
-    "extends": ["eslint:recommended", "google"],
-    "plugins": ["eslint-plugin-builtin-compat"],
-    "parserOptions": {
-        "ecmaVersion": "latest"
-    },
-    "rules": {
-        "require-jsdoc": "off",
-        "indent": ["error", 2],
-        "max-len": "off"
-    },
-    "ignorePatterns": ["sorttable.js"]
+  "env": {
+    "browser": true,
+    "node": true,
+    "commonjs": true,
+    "es6": true,
+    "jest": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "google"
+  ],
+  "plugins": [
+    "eslint-plugin-builtin-compat"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "rules": {
+    "require-jsdoc": "off",
+    "indent": ["error", 2],
+    "max-len": ["error",
+      {
+        "code": 80,
+        "tabWidth": 2,
+        "ignoreUrls": true,
+        "ignoreStrings": true
+      }
+    ]
+  },
+  "ignorePatterns": ["sorttable.js"]
 }

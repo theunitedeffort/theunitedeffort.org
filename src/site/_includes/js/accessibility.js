@@ -4,7 +4,8 @@
     const timeoutMs = timeout || 0;
     liveRegion.innerHTML = '';
     window.setTimeout(function() {
-      liveRegion.innerHTML = '<span class="toggletip_content">'+ message +'</span>';
+      liveRegion.innerHTML = '<span class="toggletip_content">' +
+        message + '</span>';
     }, timeoutMs);
   }
 

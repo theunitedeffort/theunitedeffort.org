@@ -98,49 +98,61 @@ function incomeSafeVal(target, value) {
 
 function is(value) {
   const initValue = getValue(this.input, this.target);
-  expect(this.program(this.input).eligible, msg(this, 'initial')).not.toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'initial'))
+    .not.toBe(this.expected);
   setValue(this.input, this.target, value);
-  expect(this.program(this.input).eligible, msg(this, 'modified')).toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'modified'))
+    .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
 function isAtLeast(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
-  expect(this.program(this.input).eligible, msg(this, 'lower')).not.toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'lower'))
+    .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given')).toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'given'))
+    .toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
-  expect(this.program(this.input).eligible, msg(this, 'higher')).toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'higher'))
+    .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
 function isAtMost(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
-  expect(this.program(this.input).eligible, msg(this, 'higher')).not.toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'higher'))
+    .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given')).toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'given'))
+    .toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
-  expect(this.program(this.input).eligible, msg(this, 'lower')).toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'lower'))
+    .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
 function isOver(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given')).not.toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'given'))
+    .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
-  expect(this.program(this.input).eligible, msg(this, 'higher')).toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'higher'))
+    .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
 function isUnder(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given')).not.toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'given'))
+    .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
-  expect(this.program(this.input).eligible, msg(this, 'lower')).toBe(this.expected);
+  expect(this.program(this.input).eligible, msg(this, 'lower'))
+    .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
@@ -396,7 +408,8 @@ describe('Program eligibility', () => {
     modified.dischargeStatus = 'honorable';
     modified.disabled = true;
     modified.income.valid = true;
-    modified.income.wages = [[elig.cnst.vaPension.ANNUAL_INCOME_LIMITS[0] / 12]];
+    modified.income.wages = (
+      [[elig.cnst.vaPension.ANNUAL_INCOME_LIMITS[0] / 12]]);
     modified.assets = [[elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT -
         12 * modified.income.wages[0][0]]];
     modified.dutyPeriods = [{
@@ -424,7 +437,8 @@ describe('Program eligibility', () => {
       {immStatus: 'live_temporarily', expectedElig: false, flagExpected: false},
       {immStatus: 'none_describe', expectedElig: true, flagExpected: true},
     ];
-    describe.each(cases)('Immigration status "$immStatus"', ({immStatus, expectedElig, flagExpected}) => {
+    describe.each(cases)('Immigration status "$immStatus"', (
+      {immStatus, expectedElig, flagExpected}) => {
       beforeEach(() => {
         setupFn();
       });
@@ -606,10 +620,14 @@ describe('Program eligibility', () => {
     });
 
     test('Eligible categorically when receiving CalWORKS or GA', () => {
-      check(elig.calfreshResult, input).isEligibleIf('existingCalworksMe').is(true);
-      check(elig.calfreshResult, input).isEligibleIf('existingCalworksHousehold').is(true);
-      check(elig.calfreshResult, input).isEligibleIf('existingGaMe').is(true);
-      check(elig.calfreshResult, input).isEligibleIf('existingGaHousehold').is(true);
+      check(elig.calfreshResult, input).isEligibleIf(
+        'existingCalworksMe').is(true);
+      check(elig.calfreshResult, input).isEligibleIf(
+        'existingCalworksHousehold').is(true);
+      check(elig.calfreshResult, input).isEligibleIf(
+        'existingGaMe').is(true);
+      check(elig.calfreshResult, input).isEligibleIf(
+        'existingGaHousehold').is(true);
 
       check(elig.calfreshResult, input).isEligibleIf(calworksMadeEligible);
       check(elig.calfreshResult, input).isEligibleIf(gaMadeEligible);
@@ -1308,7 +1326,8 @@ describe('Program eligibility', () => {
     test('Not eligible when no-fee ID is available', () => {
       input = noFeeIdMadeIneligible(input);
       input.existingCalworksMe = true;
-      check(elig.reducedFeeIdResult, input).isNotEligibleIf(noFeeIdMadeEligible);
+      check(elig.reducedFeeIdResult, input).isNotEligibleIf(
+        noFeeIdMadeEligible);
     });
   });
 
