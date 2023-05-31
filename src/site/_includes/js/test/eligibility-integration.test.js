@@ -136,8 +136,8 @@ function enterText(elem, text) {
   check(elem).isVisible();
   if (['INPUT', 'TEXTAREA', 'SELECT'].includes(elem.tagName)) {
     elem.value = text.toString();
-    const changeEvent = new Event('change');
-    const inputEvent = new Event('input');
+    const changeEvent = new Event('change', {bubbles: true});
+    const inputEvent = new Event('input', {bubbles: true});
     elem.dispatchEvent(inputEvent);
     elem.dispatchEvent(changeEvent);
   } else {
@@ -946,6 +946,70 @@ describe('Navigation and UI', () => {
     expect(heading.textContent).toBe(defaultHeading);
     enterText(nameInput, customName);
     expect(heading.textContent).toBe(customName);
+  });
+
+  test('Dynamic field lists are reset on unused pages.', () => {
+    const wagesCheckbox = document.getElementById('income-has-wages');
+    const veteranCheckbox = document.getElementById('veteran');
+    const itemSelector = 'ul.dynamic_field_list > li';
+
+    // Get to the veteran details page
+    click(nextButton);
+    click(veteranCheckbox);
+    click(nextButton);
+    let page = visiblePage();
+    expect(page.id).toBe('page-veteran-details');
+
+    // Add duty period entries
+    click(document.querySelector('#page-veteran-details .field_list_add'), 2);
+    expect(page.querySelectorAll(itemSelector).length).toBe(3);
+
+    // Go back and unselect veteran option
+    click(backButton);
+    click(veteranCheckbox);
+    expect(veteranCheckbox.checked).toBe(false);
+
+    // Get to the wages income details page
+    click(nextButton);
+    addHouseholdMember();
+    click(nextButton, 2);
+    click(wagesCheckbox);
+    click(nextButton);
+
+    // Add data for both household members
+    page = visiblePage();
+    expect(page.id).toBe('page-income-details-wages');
+    const addButtons = page.querySelectorAll('.field_list_add');
+    for (const addButton of addButtons) {
+      click(addButton);
+    }
+    expect(page.querySelectorAll(itemSelector).length).toBe(2);
+    enterText(document.getElementById('income-wages-0'), 50);
+    enterText(document.getElementById('income-wages-member1-0'), 40);
+    expect(page.textContent).toContain('$90');
+
+    // Go back and un-select income from wages
+    click(backButton);
+    click(wagesCheckbox);
+    expect(wagesCheckbox.checked).toBe(false);
+
+    // See results, then return to the veteran and wages income details pages to
+    // ensure the lists have reset to the initial state.
+    toFormEnd();
+    click(submitButton);
+    click(document.getElementById('nav-section-yourself'));
+    click(veteranCheckbox);
+    click(nextButton);
+    page = visiblePage();
+    expect(page.id).toBe('page-veteran-details');
+    expect(page.querySelectorAll(itemSelector).length).toBe(1);
+    click(document.getElementById('nav-section-income'));
+    click(wagesCheckbox);
+    click(nextButton);
+    page = visiblePage();
+    expect(page.id).toBe('page-income-details-wages');
+    expect(page.querySelectorAll(itemSelector).length).toBe(0);
+    expect(page.textContent).toContain('$0');
   });
 
   test('Pages linked together properly', () => {

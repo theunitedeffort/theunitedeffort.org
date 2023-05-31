@@ -559,11 +559,7 @@ function onHouseholdMemberAdd(event) {
     setMemberIncomeHeading(newFieldset,
       newMember.querySelector('h4').textContent);
     // Remove all items from the new list
-    const itemsToRemove = newFieldset.querySelectorAll(
-      'ul.dynamic_field_list>li:not([data-static-item])');
-    for (const item of itemsToRemove) {
-      removeDynamicFieldListItem(item);
-    }
+    resetDynamicFieldLists(newFieldset);
 
     // Ensure IDs are unique, and update input labels to match.
     const templ = newFieldset.querySelector('template');
@@ -700,6 +696,14 @@ function clearInputs(parent) {
   }
 }
 
+function resetDynamicFieldLists(parent) {
+  const itemsToRemove = parent.querySelectorAll(
+    'ul.dynamic_field_list > li:not([data-static-item])');
+  for (const item of itemsToRemove) {
+    removeDynamicFieldListItem(item);
+  }
+}
+
 // Adds an item to a dynamic list of fields.
 function addDynamicFieldListItem(event) {
   // TODO: update to use .closest()
@@ -708,7 +712,6 @@ function addDynamicFieldListItem(event) {
   // TODO (#422): This also gets all descendants, but we only want children.
   const items = list.querySelectorAll('li');
   // Figure out the largest id index used so far.
-  // TODO (#396): replace optional chaining operators.
   const lastInput = items[items.length - 1]?.querySelector('input');
   let lastIdNumber = -1;
   if (lastInput) {
@@ -724,6 +727,7 @@ function addDynamicFieldListItem(event) {
   } else {
     newItem = items[0].cloneNode(true);
   }
+  newItem.removeAttribute('data-static-item');
   const newIdNumber = lastIdNumber + 1;
   // Save the reference ID for later access.
   newItem.dynamicFieldListId = newIdNumber;
@@ -2481,6 +2485,7 @@ function clearUnusedPages() {
   // Clear out those pages that are not used with the current form inputs.
   for (const unusedPage of pages.filter((p) => !p.used)) {
     clearInputs(unusedPage);
+    resetDynamicFieldLists(unusedPage);
   }
 }
 
