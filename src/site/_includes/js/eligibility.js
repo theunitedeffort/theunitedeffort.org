@@ -706,11 +706,9 @@ function resetDynamicFieldLists(parent) {
 
 // Adds an item to a dynamic list of fields.
 function addDynamicFieldListItem(event) {
-  // TODO: update to use .closest()
-  const list = event.target.parentElement.parentElement.querySelector(
-    'ul.dynamic_field_list');
-  // TODO (#422): This also gets all descendants, but we only want children.
-  const items = list.querySelectorAll('li');
+  const wrapper = event.target.closest('.dynamic_field_list_wrapper');
+  const list = wrapper.querySelector('ul.dynamic_field_list');
+  const items = wrapper.querySelectorAll('ul.dynamic_field_list > li');
   // Figure out the largest id index used so far.
   const lastInput = items[items.length - 1]?.querySelector('input');
   let lastIdNumber = -1;
