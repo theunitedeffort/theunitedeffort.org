@@ -1060,8 +1060,10 @@ function mapResultFunctions() {
   document.getElementById('program-ihss').result = ihssResult;
   document.getElementById('program-lifeline').result = lifelineResult;
   document.getElementById('program-liheap').result = liheapResult;
-  document.getElementById('program-vta-paratransit').result = vtaParatransitResult;
-  document.getElementById('program-housing-choice').result = housingChoiceResult;
+  document.getElementById('program-vta-paratransit').result = (
+    vtaParatransitResult);
+  document.getElementById('program-housing-choice').result = (
+    housingChoiceResult);
   document.getElementById('program-ssi').result = ssiResult;
   document.getElementById('program-ssdi').result = ssdiResult;
   document.getElementById('program-va-pension').result = vaPensionResult;

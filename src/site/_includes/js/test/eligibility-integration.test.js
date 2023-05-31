@@ -21,7 +21,8 @@ function visiblePage() {
 }
 
 function visibleSection() {
-  const visibleSections = document.querySelectorAll('.elig_section:not(.hidden)');
+  const visibleSections = document.querySelectorAll(
+    '.elig_section:not(.hidden)');
   expect(visibleSections.length).toBe(1);
   return visibleSections[0];
 }
@@ -237,7 +238,9 @@ beforeAll(() => {
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
   window.scrollTo = jest.fn();
   html = fs.readFileSync(
-    path.resolve(__dirname, '../../../../../test/dist/public-assistance/eligibility/index.html'), 'utf8');
+    path.resolve(__dirname,
+      '../../../../../test/dist/public-assistance/eligibility/index.html'),
+    'utf8');
 });
 
 describe('Navigation and UI', () => {
@@ -289,7 +292,8 @@ describe('Navigation and UI', () => {
           pageId: 'page-head-of-household',
           setUp: function() {
             click(nextButton);
-            document.getElementById('age').value = elig.cnst.calworks.MAX_CHILD_AGE;
+            document.getElementById('age').value = (
+              elig.cnst.calworks.MAX_CHILD_AGE);
             click(nextButton);
           },
         },
@@ -324,12 +328,14 @@ describe('Navigation and UI', () => {
             document.getElementById('veteran').checked = true;
             click(nextButton);
             document.getElementById('served-from').value = '2000-01-01';
-            document.getElementById('served-until').value = '2001-12-30'; // 729 days later
+            // 729 days later:
+            document.getElementById('served-until').value = '2001-12-30';
             document.getElementById('your-duty-type').value = 'active-duty';
             click(nextButton);
           },
           otherChecks: function() {
-            expect(document.getElementById('page-veteran-duty-period').textContent)
+            expect(
+              document.getElementById('page-veteran-duty-period').textContent)
               .toContain('from 1/1/2000 until 12/30/2001');
           },
         },
@@ -690,7 +696,8 @@ describe('Navigation and UI', () => {
     click(visiblePage().querySelector('.field_list_add'));
     select(document.getElementById('your-duty-type-1'), 'active-duty');
     enterText(document.getElementById('served-from-1'), '2000-01-01');
-    enterText(document.getElementById('served-until-1'), '2001-12-30'); // 729 days
+    // 729 days later:
+    enterText(document.getElementById('served-until-1'), '2001-12-30');
     click(nextButton);
     check(thisPage.querySelectorAll('fieldset')[1]).isVisible();
     expect(thisPage.textContent).toContain('from 1/1/2000 until 12/30/2001');
@@ -722,7 +729,8 @@ describe('Navigation and UI', () => {
     click(backButton);
     select(document.getElementById('your-duty-type-1'), 'active-duty');
     enterText(document.getElementById('served-from-1'), '2000-01-01');
-    enterText(document.getElementById('served-until-1'), '2001-12-31'); // 730 days
+    // 730 days later:
+    enterText(document.getElementById('served-until-1'), '2001-12-31');
     click(nextButton);
     thisPage = visiblePage();
     check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
@@ -818,7 +826,8 @@ describe('Navigation and UI', () => {
       expect(incomeLists.length).toBe(2);
       for (const incomeList of incomeLists) {
         expect(incomeList.querySelectorAll(selector).length).toBe(0);
-        const addButton = incomeList.parentElement.querySelector('.field_list_add');
+        const addButton = incomeList.parentElement.querySelector(
+          '.field_list_add');
         click(addButton);
         click(addButton);
         const origEntries = incomeList.querySelectorAll(selector);
@@ -956,7 +965,8 @@ describe('Navigation and UI', () => {
 
     expectedPages.push('page-veteran-duty-period');
     document.getElementById('served-from').value = '2000-01-01';
-    document.getElementById('served-until').value = '2001-12-30'; // 729 days later
+    // 729 days later:
+    document.getElementById('served-until').value = '2001-12-30';
     document.getElementById('your-duty-type').value = 'active-duty';
     expectPagesUsed(expectedPages);
 
@@ -1056,27 +1066,37 @@ describe('buildInputObj', () => {
     document.body.parentElement.innerHTML = html;
   });
 
-  test.each([true, false, null])('Sets paysUtilities with value of %s', (val) => {
+  test.each(
+    [true, false, null],
+  )('Sets paysUtilities with value of %s', (val) => {
     setYesNo('pay-utilities', val);
     expect(getInput()).toHaveProperty('paysUtilities', val);
   });
 
-  test.each([true, false, null])('Sets homelessRisk with value of %s', (val) => {
+  test.each(
+    [true, false, null],
+  )('Sets homelessRisk with value of %s', (val) => {
     setYesNo('risk-homeless', val);
     expect(getInput()).toHaveProperty('homelessRisk', val);
   });
 
-  test.each([true, false, null])('Sets usesGuideDog with value of %s', (val) => {
+  test.each(
+    [true, false, null],
+  )('Sets usesGuideDog with value of %s', (val) => {
     setYesNo('use-guide-dog', val);
     expect(getInput()).toHaveProperty('usesGuideDog', val);
   });
 
-  test.each([true, false, null])('Sets militaryDisabled with value of %s', (val) => {
+  test.each(
+    [true, false, null],
+  )('Sets militaryDisabled with value of %s', (val) => {
     setYesNo('dis-military', val);
     expect(getInput()).toHaveProperty('militaryDisabled', val);
   });
 
-  test.each([true, false, null])('Sets paidSsTaxes with value of %s', (val) => {
+  test.each(
+    [true, false, null],
+  )('Sets paidSsTaxes with value of %s', (val) => {
     setYesNo('ss-taxes', val);
     expect(getInput()).toHaveProperty('paidSsTaxes', val);
   });
@@ -1232,29 +1252,42 @@ describe('buildInputObj', () => {
       '#page-household-members .field_list_add');
     householdMemberAdd.click();
     householdMemberAdd.click();
-    document.getElementById('hh-member-age-1').value = expected.householdAges[0];
-    document.getElementById('hh-member-age-2').value = expected.householdAges[1];
+    document.getElementById('hh-member-age-1').value = (
+      expected.householdAges[0]);
+    document.getElementById('hh-member-age-2').value = (
+      expected.householdAges[1]);
     expect(getInput().householdAges).toEqual(expected.householdAges);
 
-    document.getElementById('hh-member-disabled-1').checked = expected.householdDisabled[0];
-    document.getElementById('hh-member-disabled-2').checked = expected.householdDisabled[1];
+    document.getElementById('hh-member-disabled-1').checked = (
+      expected.householdDisabled[0]);
+    document.getElementById('hh-member-disabled-2').checked = (
+      expected.householdDisabled[1]);
     expect(getInput().householdDisabled).toEqual(expected.householdDisabled);
 
-    document.getElementById('hh-member-pregnant-1').checked = expected.householdPregnant[0];
-    document.getElementById('hh-member-pregnant-2').checked = expected.householdPregnant[1];
+    document.getElementById('hh-member-pregnant-1').checked = (
+      expected.householdPregnant[0]);
+    document.getElementById('hh-member-pregnant-2').checked = (
+      expected.householdPregnant[1]);
     expect(getInput().householdPregnant).toEqual(expected.householdPregnant);
 
-    document.getElementById('hh-member-breastfeeding-1').checked = expected.householdFeeding[0];
-    document.getElementById('hh-member-breastfeeding-2').checked = expected.householdFeeding[1];
+    document.getElementById('hh-member-breastfeeding-1').checked = (
+      expected.householdFeeding[0]);
+    document.getElementById('hh-member-breastfeeding-2').checked = (
+      expected.householdFeeding[1]);
     expect(getInput().householdFeeding).toEqual(expected.householdFeeding);
 
-    document.getElementById('hh-member-spouse-1').checked = expected.householdSpouse[0];
-    document.getElementById('hh-member-spouse-2').checked = expected.householdSpouse[1];
+    document.getElementById('hh-member-spouse-1').checked = (
+      expected.householdSpouse[0]);
+    document.getElementById('hh-member-spouse-2').checked = (
+      expected.householdSpouse[1]);
     expect(getInput().householdSpouse).toEqual(expected.householdSpouse);
 
-    document.getElementById('hh-member-dependent-1').checked = expected.householdDependents[0];
-    document.getElementById('hh-member-dependent-2').checked = expected.householdDependents[1];
-    expect(getInput().householdDependents).toEqual(expected.householdDependents);
+    document.getElementById('hh-member-dependent-1').checked = (
+      expected.householdDependents[0]);
+    document.getElementById('hh-member-dependent-2').checked = (
+      expected.householdDependents[1]);
+    expect(getInput().householdDependents).toEqual(
+      expected.householdDependents);
 
     document.getElementById('unborn-children').value = expected.unbornChildren;
     expect(getInput().unbornChildren).toBe(expected.unbornChildren);
@@ -1280,17 +1313,21 @@ describe('buildInputObj', () => {
     setYesNo('dis-military', expected.militaryDisabled);
     expect(getInput().militaryDisabled).toBe(expected.militaryDisabled);
 
-    document.getElementById('your-discharge-status').value = expected.dischargeStatus;
+    document.getElementById('your-discharge-status').value = (
+      expected.dischargeStatus);
     expect(getInput().dischargeStatus).toBe(expected.dischargeStatus);
 
-    document.getElementById('full-dur-yes').checked = expected.servedFullDuration;
+    document.getElementById('full-dur-yes').checked = (
+      expected.servedFullDuration);
     expect(getInput().servedFullDuration).toBe(expected.servedFullDuration);
 
     document.querySelector('#page-veteran-details .field_list_add').click();
-    document.getElementById('your-duty-type').value = expected.dutyPeriods[0].type;
+    document.getElementById('your-duty-type').value = (
+      expected.dutyPeriods[0].type);
     document.getElementById('served-from').value = dutyPeriodStartStrs[0];
     document.getElementById('served-until').value = dutyPeriodEndStrs[0];
-    document.getElementById('your-duty-type-1').value = expected.dutyPeriods[1].type;
+    document.getElementById('your-duty-type-1').value = (
+      expected.dutyPeriods[1].type);
     document.getElementById('served-from-1').value = dutyPeriodStartStrs[1];
     document.getElementById('served-until-1').value = dutyPeriodEndStrs[1];
     expect(getInput().dutyPeriods).toEqual(expected.dutyPeriods);
@@ -1313,82 +1350,116 @@ describe('buildInputObj', () => {
     expect(getInput().paidSsTaxes).toBe(expected.paidSsTaxes);
 
     document.getElementById('income-disability-is-ssi-capi-0').checked = true;
-    document.getElementById('income-disability-is-ssi-capi-member1-0').checked = true;
+    document.getElementById(
+      'income-disability-is-ssi-capi-member1-0').checked = true;
     expect(getInput().ssiIncome).toEqual(expected.ssiIncome);
 
-    document.getElementById('existing-calfresh-household').checked = expected.existingCalfreshHousehold;
-    expect(getInput().existingCalfreshHousehold).toBe(expected.existingCalfreshHousehold);
+    document.getElementById('existing-calfresh-household').checked = (
+      expected.existingCalfreshHousehold);
+    expect(getInput().existingCalfreshHousehold).toBe(
+      expected.existingCalfreshHousehold);
 
-    document.getElementById('existing-calfresh-me').checked = expected.existingCalfreshMe;
+    document.getElementById('existing-calfresh-me').checked = (
+      expected.existingCalfreshMe);
     expect(getInput().existingCalfreshMe).toBe(expected.existingCalfreshMe);
 
-    document.getElementById('existing-calworks-household').checked = expected.existingCalworksHousehold;
-    expect(getInput().existingCalworksHousehold).toBe(expected.existingCalworksHousehold);
+    document.getElementById('existing-calworks-household').checked = (
+      expected.existingCalworksHousehold);
+    expect(getInput().existingCalworksHousehold).toBe(
+      expected.existingCalworksHousehold);
 
-    document.getElementById('existing-calworks-me').checked = expected.existingCalworksMe;
+    document.getElementById('existing-calworks-me').checked = (
+      expected.existingCalworksMe);
     expect(getInput().existingCalworksMe).toBe(expected.existingCalworksMe);
 
-    document.getElementById('existing-capi-household').checked = expected.existingCapiHousehold;
-    expect(getInput().existingCapiHousehold).toBe(expected.existingCapiHousehold);
+    document.getElementById('existing-capi-household').checked = (
+      expected.existingCapiHousehold);
+    expect(getInput().existingCapiHousehold).toBe(
+      expected.existingCapiHousehold);
 
-    document.getElementById('existing-capi-me').checked = expected.existingCapiMe;
+    document.getElementById('existing-capi-me').checked = (
+      expected.existingCapiMe);
     expect(getInput().existingCapiMe).toBe(expected.existingCapiMe);
 
-    document.getElementById('existing-cfap-household').checked = expected.existingCfapHousehold;
-    expect(getInput().existingCfapHousehold).toBe(expected.existingCfapHousehold);
+    document.getElementById('existing-cfap-household').checked = (
+      expected.existingCfapHousehold);
+    expect(getInput().existingCfapHousehold).toBe(
+      expected.existingCfapHousehold);
 
-    document.getElementById('existing-cfap-me').checked = expected.existingCfapMe;
+    document.getElementById('existing-cfap-me').checked = (
+      expected.existingCfapMe);
     expect(getInput().existingCfapMe).toBe(expected.existingCfapMe);
 
-    document.getElementById('existing-ga-household').checked = expected.existingGaHousehold;
+    document.getElementById('existing-ga-household').checked = (
+      expected.existingGaHousehold);
     expect(getInput().existingGaHousehold).toBe(expected.existingGaHousehold);
 
     document.getElementById('existing-ga-me').checked = expected.existingGaMe;
     expect(getInput().existingGaMe).toBe(expected.existingGaMe);
 
-    document.getElementById('existing-ihss-household').checked = expected.existingIhssHousehold;
-    expect(getInput().existingIhssHousehold).toBe(expected.existingIhssHousehold);
+    document.getElementById('existing-ihss-household').checked = (
+      expected.existingIhssHousehold);
+    expect(getInput().existingIhssHousehold).toBe(
+      expected.existingIhssHousehold);
 
-    document.getElementById('existing-ihss-me').checked = expected.existingIhssMe;
+    document.getElementById('existing-ihss-me').checked = (
+      expected.existingIhssMe);
     expect(getInput().existingIhssMe).toBe(expected.existingIhssMe);
 
-    document.getElementById('existing-liheap-household').checked = expected.existingLiheapHousehold;
-    expect(getInput().existingLiheapHousehold).toBe(expected.existingLiheapHousehold);
+    document.getElementById('existing-liheap-household').checked = (
+      expected.existingLiheapHousehold);
+    expect(getInput().existingLiheapHousehold).toBe(
+      expected.existingLiheapHousehold);
 
-    document.getElementById('existing-liheap-me').checked = expected.existingLiheapMe;
+    document.getElementById('existing-liheap-me').checked = (
+      expected.existingLiheapMe);
     expect(getInput().existingLiheapMe).toBe(expected.existingLiheapMe);
 
-    document.getElementById('existing-medical-household').checked = expected.existingMedicalHousehold;
-    expect(getInput().existingMedicalHousehold).toBe(expected.existingMedicalHousehold);
+    document.getElementById('existing-medical-household').checked = (
+      expected.existingMedicalHousehold);
+    expect(getInput().existingMedicalHousehold).toBe(
+      expected.existingMedicalHousehold);
 
-    document.getElementById('existing-medical-me').checked = expected.existingMedicalMe;
+    document.getElementById('existing-medical-me').checked = (
+      expected.existingMedicalMe);
     expect(getInput().existingMedicalMe).toBe(expected.existingMedicalMe);
 
-    document.getElementById('existing-nslp-household').checked = expected.existingNslpHousehold;
-    expect(getInput().existingNslpHousehold).toBe(expected.existingNslpHousehold);
+    document.getElementById('existing-nslp-household').checked = (
+      expected.existingNslpHousehold);
+    expect(getInput().existingNslpHousehold).toBe(
+      expected.existingNslpHousehold);
 
-    document.getElementById('existing-nslp-me').checked = expected.existingNslpMe;
+    document.getElementById('existing-nslp-me').checked = (
+      expected.existingNslpMe);
     expect(getInput().existingNslpMe).toBe(expected.existingNslpMe);
 
-    document.getElementById('existing-ssdi-household').checked = expected.existingSsdiHousehold;
-    expect(getInput().existingSsdiHousehold).toBe(expected.existingSsdiHousehold);
+    document.getElementById('existing-ssdi-household').checked = (
+      expected.existingSsdiHousehold);
+    expect(getInput().existingSsdiHousehold).toBe(
+      expected.existingSsdiHousehold);
 
-    document.getElementById('existing-ssdi-me').checked = expected.existingSsdiMe;
+    document.getElementById('existing-ssdi-me').checked = (
+      expected.existingSsdiMe);
     expect(getInput().existingSsdiMe).toBe(expected.existingSsdiMe);
 
-    document.getElementById('existing-ssi-household').checked = expected.existingSsiHousehold;
+    document.getElementById('existing-ssi-household').checked = (
+      expected.existingSsiHousehold);
     expect(getInput().existingSsiHousehold).toBe(expected.existingSsiHousehold);
 
     document.getElementById('existing-ssi-me').checked = expected.existingSsiMe;
     expect(getInput().existingSsiMe).toBe(expected.existingSsiMe);
 
-    document.getElementById('existing-va-pension-household').checked = expected.existingVaPensionHousehold;
-    expect(getInput().existingVaPensionHousehold).toBe(expected.existingVaPensionHousehold);
+    document.getElementById('existing-va-pension-household').checked = (
+      expected.existingVaPensionHousehold);
+    expect(getInput().existingVaPensionHousehold).toBe(
+      expected.existingVaPensionHousehold);
 
-    document.getElementById('existing-va-pension-me').checked = expected.existingVaPensionMe;
+    document.getElementById('existing-va-pension-me').checked = (
+      expected.existingVaPensionMe);
     expect(getInput().existingVaPensionMe).toBe(expected.existingVaPensionMe);
 
-    document.getElementById('existing-wic-household').checked = expected.existingWicHousehold;
+    document.getElementById('existing-wic-household').checked = (
+      expected.existingWicHousehold);
     expect(getInput().existingWicHousehold).toBe(expected.existingWicHousehold);
 
     document.getElementById('existing-wic-me').checked = expected.existingWicMe;
@@ -1397,14 +1468,18 @@ describe('buildInputObj', () => {
     document.getElementById('existing-pha-me').checked = expected.existingPhaMe;
     expect(getInput().existingPhaMe).toBe(expected.existingPhaMe);
 
-    document.getElementById('existing-pha-household').checked = expected.existingPhaHousehold;
+    document.getElementById('existing-pha-household').checked = (
+      expected.existingPhaHousehold);
     expect(getInput().existingPhaHousehold).toBe(expected.existingPhaHousehold);
 
-    document.getElementById('existing-schip-me').checked = expected.existingSchipMe;
+    document.getElementById('existing-schip-me').checked = (
+      expected.existingSchipMe);
     expect(getInput().existingSchipMe).toBe(expected.existingSchipMe);
 
-    document.getElementById('existing-schip-household').checked = expected.existingSchipHousehold;
-    expect(getInput().existingSchipHousehold).toBe(expected.existingSchipHousehold);
+    document.getElementById('existing-schip-household').checked = (
+      expected.existingSchipHousehold);
+    expect(getInput().existingSchipHousehold).toBe(
+      expected.existingSchipHousehold);
 
     expect(getInput()).toEqual(expected);
   });

@@ -203,8 +203,10 @@ function updateMultiselectColors() {
 
 // Shows min and max age fields when required and hides them otherwise.
 function updateAgeVisibility() {
-  const seniorsOption = document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`);
-  const youthOption = document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`);
+  const seniorsOption = document.getElementById(
+    `${POPULATIONS_SERVED_FIELD_ID}:seniors`);
+  const youthOption = document.getElementById(
+    `${POPULATIONS_SERVED_FIELD_ID}:youth`);
   const minAge = document.getElementById('min-age');
   const maxAge = document.getElementById('max-age');
   if (youthOption.checked) {
@@ -227,8 +229,10 @@ function updateAgeVisibility() {
 function updateMaxIncomeRowsVisibility() {
   const unitContainer = this.parentNode;
   const offeringContainers = unitContainer.querySelectorAll('fieldset');
-  const minOccupancyField = unitContainer.querySelector('[name*=MIN_OCCUPANCY]');
-  const maxOccupancyField = unitContainer.querySelector('[name*=MAX_OCCUPANCY]');
+  const minOccupancyField = unitContainer.querySelector(
+    '[name*=MIN_OCCUPANCY]');
+  const maxOccupancyField = unitContainer.querySelector(
+    '[name*=MAX_OCCUPANCY]');
   const minHhSize = parseInt(minOccupancyField.value || 0);
   const maxHhSize = parseInt(maxOccupancyField.value || Number.MAX_SAFE_INT);
   for (let i = 0; i < offeringContainers.length; i++) {
@@ -269,7 +273,8 @@ function updateRentVisibility() {
 function updateMinIncomeVisibility() {
   const unit = this.parentNode;
   const minIncomeInput = unit.querySelector('.min_income');
-  const minIncomeAlternateInputs = unit.querySelectorAll('.min_income_alternate');
+  const minIncomeAlternateInputs = unit.querySelectorAll(
+    '.min_income_alternate');
   if (this.checked) {
     minIncomeInput.setAttribute('hidden', 'hidden');
     clearAllFieldsIn(minIncomeInput);
@@ -290,7 +295,8 @@ function updateMinIncomeVisibility() {
 function updateMaxIncomeVisibility() {
   const offering = this.parentNode;
   const maxIncomeInput = offering.querySelector('table.max_income');
-  const maxIncomeAlternateInput = offering.querySelector('.max_income_alternate');
+  const maxIncomeAlternateInput = offering.querySelector(
+    '.max_income_alternate');
   if (this.checked) {
     maxIncomeInput.setAttribute('hidden', 'hidden');
     clearAllFieldsIn(maxIncomeInput);
@@ -672,10 +678,12 @@ function addListeners() {
   for (const checkbox of document.querySelectorAll('.is_alternate_rent')) {
     checkbox.addEventListener('change', updateRentVisibility);
   }
-  for (const checkbox of document.querySelectorAll('.is_alternate_min_income')) {
+  for (const checkbox of document.querySelectorAll(
+    '.is_alternate_min_income')) {
     checkbox.addEventListener('change', updateMinIncomeVisibility);
   }
-  for (const checkbox of document.querySelectorAll('.is_alternate_max_income')) {
+  for (const checkbox of document.querySelectorAll(
+    '.is_alternate_max_income')) {
     checkbox.addEventListener('change', updateMaxIncomeVisibility);
   }
 
@@ -691,10 +699,12 @@ function addListeners() {
   for (const occupancy of document.querySelectorAll('[name*=OCCUPANCY]')) {
     occupancy.addEventListener('change', updateMaxIncomeRowsVisibility);
   }
-  for (const type of document.querySelectorAll(`[id*=${UNIT_TYPE_FIELD_ID}]`)) {
+  for (const type of document.querySelectorAll(
+    `[id*=${UNIT_TYPE_FIELD_ID}]`)) {
     type.addEventListener('change', updateUnitHeading);
   }
-  for (const ami of document.querySelectorAll(`[id*=${AMI_PERCENT_FIELD_ID}]`)) {
+  for (const ami of document.querySelectorAll(
+    `[id*=${AMI_PERCENT_FIELD_ID}]`)) {
     ami.addEventListener('change', updateOfferingHeading);
   }
   const coloredSelects = document.querySelectorAll(

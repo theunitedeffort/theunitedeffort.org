@@ -1,6 +1,7 @@
 const {AssetCache} = require('@11ty/eleventy-fetch');
 const Airtable = require('airtable');
-const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
+const base = new Airtable(
+  {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
 
 const UNITS_TABLE = 'tblRtXBod9CC0mivK';
 const HOUSING_DATABASE_TABLE = 'tbl8LUgXQoTYEw2Yh';
@@ -60,7 +61,9 @@ const fetchApartmentRecords = async () => {
             verifiedLocCoords: record.get('VERIFIED_LOC_COORDS'),
             phone: record.get('PHONE'),
             website: record.get('PROPERTY_URL'),
-            supplementalUrls: [...Array(4).keys()].map((n) => record.get(`SUPPLEMENTAL_URL_${n + 1}`)).filter((u) => u),
+            supplementalUrls: [...Array(4).keys()]
+              .map((n) => record.get(`SUPPLEMENTAL_URL_${n + 1}`))
+              .filter((u) => u),
             email: record.get('EMAIL'),
             numTotalUnits: record.get('NUM_TOTAL_UNITS'),
             populationsServed: record.get('POPULATIONS_SERVED') || [],
@@ -165,7 +168,8 @@ const housingData = async () => {
 const filterOptions = (housing) => {
   const cities = [...new Set(housing.map((h) => h.city).filter((c) => c))];
   const openStatuses = [...new Set(
-    housing.map((h) => h.units.map((u) => u.openStatus)).flat().filter((s) => s))];
+    housing.map((h) => h.units.map((u) => u.openStatus)).flat()
+      .filter((s) => s))];
   const unitTypes = [...new Set(
     housing.map((h) => h.units.map((u) => u.type)).flat().filter((t) => t))];
   const allPopulationsServed = [...new Set(
@@ -202,7 +206,8 @@ const filterOptions = (housing) => {
     }
     // Make a single entry out of all the grouped sizes.
     const groupedStr = groupedSizes.map((x) => x.str).join(', ');
-    unitTypeOptions.push(new FilterCheckbox(groupedStr, `${HIGH_CAPACITY_UNIT}+ ${bedroomStr}`));
+    unitTypeOptions.push(new FilterCheckbox(groupedStr,
+      `${HIGH_CAPACITY_UNIT}+ ${bedroomStr}`));
   }
   unitTypeOptions.push(...unitTypes.map((x) => new FilterCheckbox(x)));
   filterVals.push(new FilterSection('Type of Unit', 'unitType',

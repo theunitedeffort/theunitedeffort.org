@@ -138,13 +138,19 @@ module.exports = function(eleventyConfig) {
     if (a.rent.amount && b.rent.amount && a.rent.amount != b.rent.amount) {
       compA = a.rent.amount;
       compB = b.rent.amount;
-    } else if (a.minIncome.amount && b.minIncome.amount && a.minIncome.amount != b.minIncome.amount) {
+    } else if (a.minIncome.amount &&
+        b.minIncome.amount &&
+        a.minIncome.amount != b.minIncome.amount) {
       compA = a.minIncome.amount;
       compB = b.minIncome.amount;
-    } else if (a.maxIncome.low && b.maxIncome.low && a.maxIncome.low != b.maxIncome.low) {
+    } else if (a.maxIncome.low &&
+        b.maxIncome.low &&
+        a.maxIncome.low != b.maxIncome.low) {
       compA = a.maxIncome.low;
       compB = b.maxIncome.low;
-    } else if (a.incomeBracket && b.incomeBracket && a.incomeBracket != b.incomeBracket) {
+    } else if (a.incomeBracket &&
+        b.incomeBracket &&
+        a.incomeBracket != b.incomeBracket) {
       compA = a.incomeBracket;
       compB = b.incomeBracket;
     }
@@ -308,7 +314,8 @@ module.exports = function(eleventyConfig) {
     return `${spaced[0].toUpperCase()}${spaced.slice(1)}`;
   };
 
-  // Converts "the-test-string", "the_test_string", or "the test string" to "theTestString".
+  // Converts "the-test-string", "the_test_string", or "the test string" to
+  // "theTestString".
   const toCamelCase = function(str) {
     const words = str.trim().toLowerCase().split(/[-_\s]/);
     const result = [];
@@ -340,7 +347,8 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addPairedShortcode('eligSection', function(content, id) {
-    return `<div id="section-${id}" class="elig_section hidden">${content}</div>`;
+    return (
+      `<div id="section-${id}" class="elig_section hidden">${content}</div>`);
   });
 
   // Renders a single public assistance program to display in a list.
@@ -348,12 +356,21 @@ module.exports = function(eleventyConfig) {
     content, title, id, applyUrl, refUrl='') {
     const links = [];
     if (applyUrl) {
-      links.push(`<p><a href="${applyUrl}" target="_blank" rel="noopener">How to apply</a></p>`);
+      links.push(`
+        <p>
+          <a href="${applyUrl}" target="_blank" rel="noopener">How to apply</a>
+        </p>`);
     }
     if (refUrl) {
-      links.push(`<p><a href="${refUrl}" target="_blank" rel="noopener">Learn more</a></p>`);
+      links.push(`
+        <p>
+          <a href="${refUrl}" target="_blank" rel="noopener">Learn more</a>
+        </p>`);
     }
-    links.push(`<p><a href="/contact" target="_blank">Contact us for help applying</a></p>`);
+    links.push(`
+      <p>
+        <a href="/contact" target="_blank">Contact us for help applying</a>
+      </p>`);
     return `
       <li id="program-${id}" data-eligibility="${toCamelCase(id)}Result">
         <h4>${title}</h4>
@@ -382,6 +399,10 @@ module.exports = function(eleventyConfig) {
           ${listItemContent}
         </li>`;
     }
+    const buttonStr = `<button type="button" ` +
+      `class="btn btn_secondary field_list_add" ` +
+      `data-non-empty-text="${addText}" ` +
+      `data-empty-text="${emptyAddText}">${addText}</button>`;
     return `
       <div class="dynamic_field_list_wrapper">
         <ul class="dynamic_field_list">
@@ -389,12 +410,13 @@ module.exports = function(eleventyConfig) {
           ${listItemStr}
         </ul>
         <div>
-          <button type="button" class="btn btn_secondary field_list_add" data-non-empty-text="${addText}" data-empty-text="${emptyAddText}">${addText}</button>
+          ${buttonStr}
         </div>
       </div>`;
   });
 
-  eleventyConfig.addShortcode('checkboxTable', function(tableId, columnsStr, rowsStr) {
+  eleventyConfig.addShortcode('checkboxTable', function(
+    tableId, columnsStr, rowsStr) {
     function unpack(str) {
       const parts = str.split(':');
       return {id: parts[0].trim(), content: parts[1].trim()};
@@ -414,9 +436,12 @@ module.exports = function(eleventyConfig) {
     for (const row of rows) {
       const cellsHtml = [];
       for (const column of columns) {
+        const checkboxStr = `<input type="checkbox" ` +
+          `id="${tableId}-${row.id}-${column.id}" ` +
+          `aria-labelledby="row-label-${row.id} col-label-${column.id}">`;
         cellsHtml.push(`
           <td>
-            <input type="checkbox" id="${tableId}-${row.id}-${column.id}" aria-labelledby="row-label-${row.id} col-label-${column.id}">
+            ${checkboxStr}
           </td>`);
       }
       rowsHtml.push(`
@@ -512,12 +537,12 @@ module.exports = function(eleventyConfig) {
     let tag = '';
     let options = '';
     let content = '';
-    let endtag = '';
+    let etag = '';
     const indexStr = index !== '' ? ':' + index : '';
     const classStr = className !== '' ? `class="${className}"` : '';
     if (field.type === 'singleSelect') {
       tag = 'select';
-      endtag = '</select>';
+      etag = '</select>';
       content = `<option></option>`;
       for (const choice of field.options.choices) {
         content += `<option value="${choice.name}"
@@ -538,7 +563,7 @@ module.exports = function(eleventyConfig) {
       return checkboxes.join('<br/>');
     } else if (field.type === 'multilineText') {
       tag = 'textarea';
-      endtag = '</textarea>';
+      etag = '</textarea>';
     } else if (field.type === 'number') {
       const precision = Number(field.options.precision);
       tag = 'input';
@@ -562,7 +587,7 @@ module.exports = function(eleventyConfig) {
       return '';
     }
     return `<${tag} id="${field.id}${indexStr}"
-      name="${field.name}${indexStr}" ${options} ${classStr}>${content}${endtag}`;
+      name="${field.name}${indexStr}" ${options} ${classStr}>${content}${etag}`;
   };
 
   eleventyConfig.addShortcode('fieldLabel',
@@ -588,7 +613,7 @@ module.exports = function(eleventyConfig) {
 
   // Generates a rendered summary of affordable housing filter options.
   eleventyConfig.addShortcode('querySummary', function(query) {
-    // Copy the query so we don't modify it directly when making changes later on.
+    // Copy the query so we don't modify it directly when making changes later.
     const queryCopy = JSON.parse(JSON.stringify(query));
     // The includeUnknown(Rent|Income) parameters only apply if a rent or income
     // is supplied, so remove them if they do not apply.
@@ -617,7 +642,8 @@ module.exports = function(eleventyConfig) {
         if (value) {
           valueStr = `: ${value}`;
         }
-        filtersApplied.push(`<span class="badge"><span class="bold">${camelCaseToSpaces(parameter)}</span>${valueStr}</span>`);
+        filtersApplied.push(`<span class="badge"><span class="bold">` +
+          `${camelCaseToSpaces(parameter)}</span>${valueStr}</span>`);
       }
     }
     return filtersApplied.join(' ');
@@ -631,7 +657,8 @@ module.exports = function(eleventyConfig) {
   // should be summarized by.  The summary is generated by removing all keys
   // except those in 'summarizeBy' and then getting the unique set of the
   // resulting array of units.
-  eleventyConfig.addFilter('summarizeUnits', function(housingList, summarizeBy) {
+  eleventyConfig.addFilter('summarizeUnits', function(
+    housingList, summarizeBy) {
     const housingListCopy = JSON.parse(JSON.stringify(housingList));
     for (const housing of housingListCopy) {
       const summary = new Set();
