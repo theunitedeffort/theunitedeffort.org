@@ -948,7 +948,7 @@ describe('Navigation and UI', () => {
     expect(heading.textContent).toBe(customName);
   });
 
-  test.only('Dynamic field lists are reset on unused pages.', () => {
+  test('Dynamic field lists are reset on unused pages.', () => {
     const wagesCheckbox = document.getElementById('income-has-wages');
     const veteranCheckbox = document.getElementById('veteran');
     const itemSelector = 'ul.dynamic_field_list > li';
