@@ -928,6 +928,26 @@ describe('Navigation and UI', () => {
     expect(householdAge.value).toBe('43');
   });
 
+  test('Clearing household member name field resets the heading', () => {
+    click(nextButton, 2);
+    addHouseholdMember();
+    const nameInput = document.getElementById('hh-member-name-1');
+    const member = document.querySelectorAll(
+      '#page-household-members ul.dynamic_field_list > li')[1];
+    const heading = member.querySelector('h4');
+    const defaultHeading = 'Household Member 2';
+    const customName = 'Alan';
+    expect(heading.textContent).toBe(defaultHeading);
+    enterText(nameInput, customName);
+    expect(heading.textContent).toBe(customName);
+    enterText(nameInput, '');
+    expect(heading.textContent).toBe(defaultHeading);
+    enterText(nameInput, ' ');
+    expect(heading.textContent).toBe(defaultHeading);
+    enterText(nameInput, customName);
+    expect(heading.textContent).toBe(customName);
+  });
+
   test('Pages linked together properly', () => {
     const expectedPages = [
       'page-intro',
