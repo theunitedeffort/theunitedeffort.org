@@ -539,23 +539,17 @@ function onInput(event) {
 }
 
 function onHouseholdMemberAdd(event) {
-  const nameInputs = document.querySelectorAll(
-    'input[id^="hh-member-name"]');
-  for (const input of nameInputs) {
-    // First remove any existing listeners that may have been already
-    // added so we don't get duplicates.
-    input.removeEventListener('change', onChangeName);
-    input.addEventListener('change', onChangeName);
-  }
-
   // Get the household member that was just added.
   const newMember = event.target.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
-  newMember.linkedElems = [];
   // Add listener to the new member's spouse checkbox
   const spouseInput = newMember.querySelector('[id^="hh-member-spouse"]');
   spouseInput.addEventListener('click', onChangeSpouse);
+  // Add listener to the name input so the heading can be updated.
+  const nameInput = newMember.querySelector('[id^="hh-member-name"]');
+  nameInput.addEventListener('change', onChangeName);
 
+  newMember.linkedElems = [];
   // Insert an income fieldset for that new member in each income page.
   const incomePages = document.querySelectorAll(
     'div[id^="page-income-"]');
@@ -634,13 +628,22 @@ function onChangeAge(event) {
 }
 
 function onChangeName(event) {
-  // TODO (#395): Revert to placeholder if the name is deleted.
   const item = event.target.closest('ul.dynamic_field_list>li');
   // Update the heading to the household member's name.
-  item.querySelector('h4').textContent = event.target.value;
+  const heading = item.querySelector('h4');
+  if (!heading.defaultContent) {
+    // Save the initial content in case the custom name is later deleted.
+    heading.defaultContent = heading.textContent;
+  }
+  const inputValue = event.target.value.trim();
+  if (inputValue) {
+    heading.textContent = inputValue;
+  } else {
+    heading.textContent = heading.defaultContent;
+  }
   // Also update the headings in all the income details pages.
   for (const linkedElem of item.linkedElems) {
-    setMemberIncomeHeading(linkedElem, event.target.value);
+    setMemberIncomeHeading(linkedElem, heading.textContent);
   }
 }
 
