@@ -417,21 +417,28 @@ pageClass: "page-public-assistance"
      {%- endcapture %}
 
      {% capture rows -%}
+        adsa: Assistance Dog Special Allowance (ADSA)
         calfresh: CalFresh <span class="subtitle">Also known as Supplemental Nutrition Assistance Program (SNAP) or Food Stamps</span>
         calworks: California Work Opportunity and Responsibility to Kids (CalWORKs) <span class="subtitle">Also known as Temporary Assistance for Needy Families (TANF)</span>
         capi: Cash Assistance Program for Immigrants (CAPI)
+        care: California Alternate Rates for Energy (CARE)
         cfap: California Food Assistance Program (CFAP) <span class="subtitle">Alternative to CalFresh, also known as Food Stamps</span>
+        fera: Family Electric Rate Assistance (FERA)
         pha: Federal Public Housing Assistance <span class="subtitle">Also known as Section 8, Housing Choice Voucher, or Property Voucher</span>
         ga: General Assistance (GA)
         ihss: In-Home Supportive Services (IHSS)
         liheap: Low Income Home Energy Assistance Program (LIHEAP)
+        lifeline: California LifeLine
         medical: Medi-Cal <span class="subtitle">Also known as California’s Medicaid program</span>
         nslp: National School Lunch Program (NSLP)
         schip: State Children's Health Insurance Program (SCHIP) <span class="subtitle">Also known as Healthy Families A & B</span>
         ssi: Supplemental Security Income (SSI)
         ssdi: Social Security Disability Insurance (SSDI)
+        uplift: Universal Pass for Life Improvement From Transportation (UPLIFT)
         wic: Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)
+        va-disability: VA Disability Compensation
         va-pension: Veterans Pension or Survivors Pension
+        vta-paratransit: VTA ACCESS Paratransit
      {%- endcapture %}
 
      {% checkboxTable "existing", columns, rows %}
@@ -543,6 +550,13 @@ pageClass: "page-public-assistance"
       <div class="programs programs__ineligible">
         <p class="has_results">
           We checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  If you think you should be eligible for one of these programs, contact the program provider for an eligibility assessment.
+        </p>
+        <ul></ul>
+      </div>
+
+      <div class="programs programs__enrolled">
+        <p class="has_results">
+          You noted that you are already benefitting from the programs below, so we did not assess your eligibility for these.
         </p>
         <ul></ul>
       </div>

@@ -357,7 +357,7 @@ module.exports = function(eleventyConfig) {
     const links = [];
     if (applyUrl) {
       links.push(`
-        <p>
+        <p class="unenrolled-only">
           <a href="${applyUrl}" target="_blank" rel="noopener">How to apply</a>
         </p>`);
     }
@@ -368,17 +368,17 @@ module.exports = function(eleventyConfig) {
         </p>`);
     }
     links.push(`
-      <p>
+      <p class="unenrolled-only">
         <a href="/contact" target="_blank">Contact us for help applying</a>
       </p>`);
     return `
-      <li id="program-${id}" data-eligibility="${toCamelCase(id)}Result">
+      <li id="program-${id}">
         <h4>${title}</h4>
-        <ul class="elig_flags"></ul>
+        <ul class="elig_flags unenrolled-only"></ul>
         <p>${content}</p>
         ${links.join('')}
-        <h5>Eligibility Requirements</h5>
-        <ul class="elig_conditions"></ul>
+        <h5 class="unenrolled-only">Eligibility Requirements</h5>
+        <ul class="elig_conditions unenrolled-only"></ul>
       </li>`;
   });
 
