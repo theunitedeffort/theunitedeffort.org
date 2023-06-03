@@ -314,18 +314,6 @@ module.exports = function(eleventyConfig) {
     return `${spaced[0].toUpperCase()}${spaced.slice(1)}`;
   };
 
-  // Converts "the-test-string", "the_test_string", or "the test string" to
-  // "theTestString".
-  const toCamelCase = function(str) {
-    const words = str.trim().toLowerCase().split(/[-_\s]/);
-    const result = [];
-    result.push(words[0]);
-    for (const word of words.slice(1)) {
-      result.push(`${word.slice(0, 1).toUpperCase()}${word.slice(1)}`);
-    }
-    return result.join('');
-  };
-
   // Formats a value as USD with no decimals.
   const formatCurrency = function(value) {
     const num = Number(value);
