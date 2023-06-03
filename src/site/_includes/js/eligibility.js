@@ -2648,7 +2648,7 @@ function buildInputObj() {
 }
 
 function setUnenrolledVisibility(program, showUnenrolledInfo) {
-  for (const elem of program.querySelectorAll('.unenrolled-only')) {
+  for (const elem of program.querySelectorAll('.unenrolled_only')) {
     setElementVisible(elem, showUnenrolledInfo);
   }
 }

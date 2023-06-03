@@ -345,7 +345,7 @@ module.exports = function(eleventyConfig) {
     const links = [];
     if (applyUrl) {
       links.push(`
-        <p class="unenrolled-only">
+        <p class="unenrolled_only">
           <a href="${applyUrl}" target="_blank" rel="noopener">How to apply</a>
         </p>`);
     }
@@ -356,17 +356,17 @@ module.exports = function(eleventyConfig) {
         </p>`);
     }
     links.push(`
-      <p class="unenrolled-only">
+      <p class="unenrolled_only">
         <a href="/contact" target="_blank">Contact us for help applying</a>
       </p>`);
     return `
       <li id="program-${id}">
         <h4>${title}</h4>
-        <ul class="elig_flags unenrolled-only"></ul>
+        <ul class="elig_flags unenrolled_only"></ul>
         <p>${content}</p>
         ${links.join('')}
-        <h5 class="unenrolled-only">Eligibility Requirements</h5>
-        <ul class="elig_conditions unenrolled-only"></ul>
+        <h5 class="unenrolled_only">Eligibility Requirements</h5>
+        <ul class="elig_conditions unenrolled_only"></ul>
       </li>`;
   });
 
