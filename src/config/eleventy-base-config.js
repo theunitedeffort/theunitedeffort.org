@@ -404,14 +404,29 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addShortcode('checkboxTable', function(
-    tableId, columnsStr, rowsStr) {
+    tableId, columnsStr, rowsStr, sortFirstCol=true) {
     function unpack(str) {
       const parts = str.split(':');
       return {id: parts[0].trim(), content: parts[1].trim()};
     }
 
+    function sortByContent(a, b) {
+      const strA = a.content.toLowerCase();
+      const strB = b.content.toLowerCase();
+      if (strA < strB) {
+        return -1;
+      }
+      if (strA > strB) {
+        return 1;
+      }
+      return 0;
+    }
+
     const columns = columnsStr.split('\n').map(unpack);
     const rows = rowsStr.split('\n').map(unpack);
+    if (sortFirstCol) {
+      rows.sort(sortByContent);
+    }
 
     const columnsHtml = ['<th></th>'];
     for (const column of columns) {
