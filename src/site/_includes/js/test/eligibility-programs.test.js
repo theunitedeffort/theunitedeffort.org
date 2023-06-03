@@ -31,6 +31,7 @@ function setValue(input, target, value) {
 
 function isEligibleIf(target) {
   this.target = target;
+  this.prop = 'eligible'
   this.expected = true;
   // Special handling for testing with input overlays.
   if (typeof this.target === 'function') {
@@ -47,6 +48,7 @@ function isEligibleIf(target) {
 
 function isNotEligibleIf(target) {
   this.target = target;
+  this.prop = 'eligible'
   this.expected = false;
   // Special handling for testing with input overlays.
   if (typeof this.target === 'function') {
@@ -61,8 +63,16 @@ function isNotEligibleIf(target) {
   return this;
 }
 
+function isEnrolledIf(target) {
+  this.target = target;
+  this.prop = 'enrolled'
+  this.expected = true;
+  return this;
+}
+
 function isUnknownIf(target) {
   this.target = target;
+  this.prop = 'eligible'
   this.expected = null;
   return this;
 }
@@ -98,10 +108,10 @@ function incomeSafeVal(target, value) {
 
 function is(value) {
   const initValue = getValue(this.input, this.target);
-  expect(this.program(this.input).eligible, msg(this, 'initial'))
+  expect(this.program(this.input)[this.prop], msg(this, 'initial'))
     .not.toBe(this.expected);
   setValue(this.input, this.target, value);
-  expect(this.program(this.input).eligible, msg(this, 'modified'))
+  expect(this.program(this.input)[this.prop], msg(this, 'modified'))
     .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
@@ -109,13 +119,13 @@ function is(value) {
 function isAtLeast(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
-  expect(this.program(this.input).eligible, msg(this, 'lower'))
+  expect(this.program(this.input)[this.prop], msg(this, 'lower'))
     .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given'))
+  expect(this.program(this.input)[this.prop], msg(this, 'given'))
     .toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
-  expect(this.program(this.input).eligible, msg(this, 'higher'))
+  expect(this.program(this.input)[this.prop], msg(this, 'higher'))
     .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
@@ -123,13 +133,13 @@ function isAtLeast(value) {
 function isAtMost(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
-  expect(this.program(this.input).eligible, msg(this, 'higher'))
+  expect(this.program(this.input)[this.prop], msg(this, 'higher'))
     .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given'))
+  expect(this.program(this.input)[this.prop], msg(this, 'given'))
     .toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
-  expect(this.program(this.input).eligible, msg(this, 'lower'))
+  expect(this.program(this.input)[this.prop], msg(this, 'lower'))
     .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
@@ -137,10 +147,10 @@ function isAtMost(value) {
 function isOver(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given'))
+  expect(this.program(this.input)[this.prop], msg(this, 'given'))
     .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
-  expect(this.program(this.input).eligible, msg(this, 'higher'))
+  expect(this.program(this.input)[this.prop], msg(this, 'higher'))
     .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
@@ -148,10 +158,10 @@ function isOver(value) {
 function isUnder(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given'))
+  expect(this.program(this.input)[this.prop], msg(this, 'given'))
     .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
-  expect(this.program(this.input).eligible, msg(this, 'lower'))
+  expect(this.program(this.input)[this.prop], msg(this, 'lower'))
     .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
@@ -163,6 +173,7 @@ function check(program, input) {
     isEligibleIf,
     isNotEligibleIf,
     isUnknownIf,
+    isEnrolledIf,
     is,
     isAtLeast,
     isAtMost,
@@ -559,6 +570,20 @@ describe('Program eligibility', () => {
       existingPhaHousehold: false,
       existingSchipMe: false,
       existingSchipHousehold: false,
+      existingAdsaMe: false,
+      existingAdsaHousehold: false,
+      existingCareMe: false,
+      existingCareHousehold: false,
+      existingFeraMe: false,
+      existingFeraHousehold: false,
+      existingLifelineMe: false,
+      existingLifelineHousehold: false,
+      existingUpliftMe: false,
+      existingUpliftHousehold: false,
+      existingVaDisabilityMe: false,
+      existingVaDisabilityHousehold: false,
+      existingVtaParatransitMe: false,
+      existingVtaParatransitHousehold: false,
     };
   });
 
@@ -566,6 +591,12 @@ describe('Program eligibility', () => {
   describe('ADSA Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.adsaResult(input).eligible).toBe(false);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingAdsaHousehold = true;
+      check(elig.adsaResult, input).isEnrolledIf('existingAdsaMe').is(true);
     });
 
     test('Requires disability, blindness, or deafness', () => {
@@ -610,6 +641,12 @@ describe('Program eligibility', () => {
 
     test('Not eligible with default input', () => {
       expect(elig.calfreshResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      check(elig.calfreshResult, input).isEnrolledIf('existingCalfreshMe').is(true);
+      check(elig.calfreshResult, input).isEnrolledIf(
+        'existingCalfreshHousehold').is(true);
     });
 
     test('Eligible with U.S. citizenship', () => {
@@ -771,6 +808,12 @@ describe('Program eligibility', () => {
       expect(elig.calworksResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      check(elig.calworksResult, input).isEnrolledIf('existingCalworksMe').is(true);
+      check(elig.calworksResult, input).isEnrolledIf(
+        'existingCalworksHousehold').is(true);
+    });
+
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.pregnant = true;
@@ -868,6 +911,12 @@ describe('Program eligibility', () => {
       expect(elig.capiResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingCapiHousehold = true;
+      check(elig.capiResult, input).isEnrolledIf('existingCapiMe').is(true);
+    });
+
     test('Requires valid immigration status', () => {
       input.income.valid = true;
       input.disabled = true;
@@ -891,6 +940,12 @@ describe('Program eligibility', () => {
   describe('CARE Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.careResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      check(elig.careResult, input).isEnrolledIf('existingCareMe').is(true);
+      check(elig.careResult, input).isEnrolledIf(
+        'existingCareHousehold').is(true);
     });
 
     test('Requires utility bill payment', () => {
@@ -962,6 +1017,12 @@ describe('Program eligibility', () => {
       expect(elig.calworksResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      check(elig.feraResult, input).isEnrolledIf('existingFeraMe').is(true);
+      check(elig.feraResult, input).isEnrolledIf(
+        'existingFeraHousehold').is(true);
+    });
+
     test('Requires minimum household size', () => {
       input.income.valid = true;
       input.income.wages = [[expectedLowIncomeLimit + 1]];
@@ -1025,6 +1086,12 @@ describe('Program eligibility', () => {
       expect(elig.gaResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingGaHousehold = true;
+      check(elig.gaResult, input).isEnrolledIf('existingGaMe').is(true);
+    });
+
     test('Requires applicant to be older than a minimum age', () => {
       input.income.valid = true;
       check(elig.gaResult, input).isEligibleIf('age')
@@ -1073,6 +1140,13 @@ describe('Program eligibility', () => {
   describe('Housing Choice Voucher Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.housingChoiceResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      check(elig.housingChoiceResult, input).isEnrolledIf(
+        'existingHousingChoiceMe').is(true);
+      check(elig.housingChoiceResult, input).isEnrolledIf(
+        'existingHousingChoiceHousehold').is(true);
     });
 
     test('Requires applicant to be older than a minimum age', () => {
@@ -1137,6 +1211,12 @@ describe('Program eligibility', () => {
       expect(elig.ihssResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingIhssHousehold = true;
+      check(elig.ihssResult, input).isEnrolledIf('existingIhssMe').is(true);
+    });
+
     test('Requires Medi-Cal', () => {
       input.blind = true;
       input.housingSituation = 'housed';
@@ -1175,6 +1255,13 @@ describe('Program eligibility', () => {
   describe('Lifeline Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.lifelineResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingLifelineHousehold = true;
+      check(elig.lifelineResult, input).isEnrolledIf(
+        'existingLifelineMe').is(true);
     });
 
     test('Eligible when gross income is at or below the limit', () => {
@@ -1240,6 +1327,12 @@ describe('Program eligibility', () => {
 
     test('Not eligible with default input', () => {
       expect(elig.liheapResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      check(elig.liheapResult, input).isEnrolledIf('existingLiheapMe').is(true);
+      check(elig.liheapResult, input).isEnrolledIf(
+        'existingLiheapHousehold').is(true);
     });
 
     test('Requires being housed', () => {
@@ -1444,6 +1537,12 @@ describe('Program eligibility', () => {
       expect(elig.ssiResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingSsiHousehold = true;
+      check(elig.ssiResult, input).isEnrolledIf('existingSsiMe').is(true);
+    });
+
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.disabled = true;
@@ -1462,6 +1561,12 @@ describe('Program eligibility', () => {
   describe('SSDI Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(ssdiMadeEligible(input));
+    });
+
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingSsdiHousehold = true;
+      check(elig.ssdiResult, input).isEnrolledIf('existingSsdiMe').is(true);
     });
 
     test('Requires age under full retirement age', () => {
@@ -1544,6 +1649,12 @@ describe('Program eligibility', () => {
       expect(elig.upliftResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingUpliftHousehold = true;
+      check(elig.upliftResult, input).isEnrolledIf('existingUpliftMe').is(true);
+    });
+
     test('Eligible when unhoused', () => {
       input.housingSituation = 'housed';
       check(elig.upliftResult, input)
@@ -1569,6 +1680,13 @@ describe('Program eligibility', () => {
   describe('VA Disability Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.vaDisabilityResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingVaDisabilityHousehold = true;
+      check(elig.vaDisabilityResult, input).isEnrolledIf(
+        'existingVaDisabilityMe').is(true);
     });
 
     test('Requires veteran status', () => {
@@ -1726,6 +1844,13 @@ describe('Program eligibility', () => {
 
     test('Not eligible with default input', () => {
       expect(elig.vaPensionResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingVaPensionHousehold = true;
+      check(elig.vaPensionResult, input).isEnrolledIf(
+          'existingVaPensionMe').is(true);
     });
 
     test('Requires veteran status', () => {
@@ -1920,6 +2045,13 @@ describe('Program eligibility', () => {
       expect(elig.vtaParatransitResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingVtaParatransitHousehold = true;
+      check(elig.vtaParatransitResult, input).isEnrolledIf(
+        'existingVtaParatransitMe').is(true);
+    });
+
     test('Requires disability', () => {
       check(elig.vtaParatransitResult, input).isEligibleIf('disabled').is(true);
     });
@@ -1932,6 +2064,12 @@ describe('Program eligibility', () => {
 
     test('Not eligible with default input', () => {
       expect(elig.wicResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      check(elig.wicResult, input).isEnrolledIf('existingWicMe').is(true);
+      check(elig.wicResult, input).isEnrolledIf(
+        'existingWicHousehold').is(true);
     });
 
     test('Eligible when gross income is at or below the income limit', () => {

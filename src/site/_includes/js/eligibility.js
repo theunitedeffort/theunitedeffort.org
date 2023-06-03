@@ -1906,7 +1906,7 @@ function vaDisabilityResult(input) {
           'bad conduct, or other-than-honorable',
     meetsDischargeReq));
 
-  if (input.existingVaDisabilityMe || input.existingVaDisabilityHousehold) {
+  if (input.existingVaDisabilityMe) {
     program.markEnrolled();
   }
   return program.getResult();
@@ -1966,7 +1966,7 @@ function gaResult(input) {
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
-  if (input.existingGaMe || input.existingGaHousehold) {
+  if (input.existingGaMe) {
     program.markEnrolled();
   }
   return program.getResult();
@@ -2095,7 +2095,7 @@ function lifelineResult(input) {
     isProgramQualified),
   ]);
 
-  if (input.existingLifeLineMe) {
+  if (input.existingLifelineMe) {
     program.markEnrolled();
   }
   return program.getResult();
@@ -2449,7 +2449,7 @@ function vaPensionResult(input) {
     new EligCondition('Receives or is eligible for SSI or SSDI',
       isProgramQualified),
   ]);
-  if (input.existingVaPensionMe || input.existingVaPensionHousehold) {
+  if (input.existingVaPensionMe) {
     program.markEnrolled();
   }
   return program.getResult();
