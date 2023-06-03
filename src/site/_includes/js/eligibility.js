@@ -1472,6 +1472,7 @@ function EligCondition(desc, met) {
 function Program() {
   this.conditions = [];
   this.flags = [];
+  this.enrolled = false;
 
   // Adds a single EligCondition that must be met in addition to all other
   // previously added conditions.
@@ -1487,6 +1488,10 @@ function Program() {
 
   this.addFlag = function(code) {
     this.flags.push(code);
+  };
+
+  this.markEnrolled = function(code) {
+    this.enrolled = true;
   };
 
   // Evaluates the entire set of conditions, returning true, false, or null.
@@ -1513,6 +1518,7 @@ function Program() {
       this.addFlag(FlagCodes.MORE_INFO_NEEDED);
     }
     return {
+      'enrolled': this.enrolled,
       'eligible': evaluation,
       'conditions': this.conditions,
       'flags': this.flags,
@@ -1552,6 +1558,9 @@ function adsaResult(input) {
   program.addCondition(
     new EligCondition('Receives or is eligible for SSI, SSDI, IHSS, or CAPI',
       isProgramQualified));
+  if (input.existingAdsaMe) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -1609,6 +1618,9 @@ function calfreshResult(input) {
 
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
+  }
+  if (input.existingCalfreshMe || input.existingCalfreshHousehold) {
+    program.markEnrolled();
   }
   return program.getResult();
 }
@@ -1717,6 +1729,9 @@ function calworksResult(input) {
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
+  if (input.existingCalworksMe || input.existingCalworksHousehold) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -1744,6 +1759,9 @@ function capiResult(input) {
         'long_term',
         'none_describe'])) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
+  }
+  if (input.existingCapiMe) {
+    program.markEnrolled();
   }
   return program.getResult();
 }
@@ -1809,6 +1827,9 @@ function careResult(input) {
     isCategoricallyEligible),
   ]);
 
+  if (input.existingCareMe || input.existingCareHousehold) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -1847,6 +1868,9 @@ function feraResult(input) {
           `${cnst.fera.MIN_HOUSEHOLD_SIZE} people`,
     meetsHouseholdSizeReq));
 
+  if (input.existingFeraMe || input.existingFeraHousehold) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -1881,6 +1905,10 @@ function vaDisabilityResult(input) {
     new EligCondition('Discharge status that is not dishonorable, ' +
           'bad conduct, or other-than-honorable',
     meetsDischargeReq));
+
+  if (input.existingVaDisabilityMe) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -1937,6 +1965,9 @@ function gaResult(input) {
       meetsImmigrationReq));
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
+  }
+  if (input.existingGaMe) {
+    program.markEnrolled();
   }
   return program.getResult();
 }
@@ -2012,6 +2043,9 @@ function ihssResult(input) {
   program.addCondition(
     new EligCondition('Receives Medi-Cal', input.existingMedicalMe));
 
+  if (input.existingIhssMe) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -2061,6 +2095,9 @@ function lifelineResult(input) {
     isProgramQualified),
   ]);
 
+  if (input.existingLifelineMe) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -2084,6 +2121,9 @@ function liheapResult(input) {
       `Gross income is below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit));
 
+  if (input.existingLiheapMe || input.existingLiheapHousehold) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -2093,6 +2133,9 @@ function vtaParatransitResult(input) {
   program.addCondition(
     new EligCondition('Disabled', input.disabled));
 
+  if (input.existingVtaParatransitMe) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -2137,6 +2180,9 @@ function housingChoiceResult(input) {
       underIncomeLimit));
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
+  }
+  if (input.existingHousingChoiceMe || input.existingHousingChoiceHousehold) {
+    program.markEnrolled();
   }
   return program.getResult();
 }
@@ -2218,6 +2264,9 @@ function ssiResult(input) {
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
+  if (input.existingSsiMe) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -2257,7 +2306,9 @@ function ssdiResult(input) {
   if (program.evaluate() && input.age == cnst.ssdi.TRANSITION_RETIREMENT_AGE) {
     program.addFlag(FlagCodes.COMPLEX_RETIREMENT_AGE);
   }
-
+  if (input.existingSsdiMe) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -2398,6 +2449,9 @@ function vaPensionResult(input) {
     new EligCondition('Receives or is eligible for SSI or SSDI',
       isProgramQualified),
   ]);
+  if (input.existingVaPensionMe) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -2449,6 +2503,9 @@ function wicResult(input) {
     new EligCondition(
       `Household includes a child under the age of ${cnst.wic.CHILD_EXIT_AGE}`,
       hasChild)]);
+  if (input.existingWicMe || input.existingWicHousehold) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -2465,6 +2522,9 @@ function upliftResult(input) {
     new EligCondition('Experiencing homelessness', isUnhoused),
     new EligCondition(`At risk of losing housing`, input.homelessRisk),
   ]);
+  if (input.existingUpliftMe) {
+    program.markEnrolled();
+  }
   return program.getResult();
 }
 
@@ -2587,6 +2647,12 @@ function buildInputObj() {
   return inputData;
 }
 
+function setUnenrolledVisibility(program, showUnenrolledInfo) {
+  for (const elem of program.querySelectorAll('.unenrolled_only')) {
+    setElementVisible(elem, showUnenrolledInfo);
+  }
+}
+
 // Determines eligibility for programs based on user form input values.
 function computeEligibility() {
   // Ensure any inputs on unused pages are cleared out prior to eligibility
@@ -2598,6 +2664,7 @@ function computeEligibility() {
   const eligibleList = document.querySelector('.programs__eligible > ul');
   const ineligibleList = document.querySelector('.programs__ineligible > ul');
   const unknownList = document.querySelector('.programs__unknown > ul');
+  const enrolledList = document.querySelector('.programs__enrolled > ul');
   for (const program of allPrograms) {
     const result = program.result(input);
     const conditionList = program.querySelector('.elig_conditions');
@@ -2674,12 +2741,18 @@ function computeEligibility() {
     for (const button of revisitButtons) {
       button.addEventListener('click', toSection);
     }
-    if (result.eligible === null) {
-      unknownList.appendChild(program);
-    } else if (result.eligible) {
-      eligibleList.appendChild(program);
+    if (result.enrolled) {
+      setUnenrolledVisibility(program, false);
+      enrolledList.appendChild(program);
     } else {
-      ineligibleList.appendChild(program);
+      setUnenrolledVisibility(program, true);
+      if (result.eligible === null) {
+        unknownList.appendChild(program);
+      } else if (result.eligible) {
+        eligibleList.appendChild(program);
+      } else {
+        ineligibleList.appendChild(program);
+      }
     }
   }
 

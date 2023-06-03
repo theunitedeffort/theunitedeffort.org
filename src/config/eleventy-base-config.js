@@ -314,18 +314,6 @@ module.exports = function(eleventyConfig) {
     return `${spaced[0].toUpperCase()}${spaced.slice(1)}`;
   };
 
-  // Converts "the-test-string", "the_test_string", or "the test string" to
-  // "theTestString".
-  const toCamelCase = function(str) {
-    const words = str.trim().toLowerCase().split(/[-_\s]/);
-    const result = [];
-    result.push(words[0]);
-    for (const word of words.slice(1)) {
-      result.push(`${word.slice(0, 1).toUpperCase()}${word.slice(1)}`);
-    }
-    return result.join('');
-  };
-
   // Formats a value as USD with no decimals.
   const formatCurrency = function(value) {
     const num = Number(value);
@@ -357,7 +345,7 @@ module.exports = function(eleventyConfig) {
     const links = [];
     if (applyUrl) {
       links.push(`
-        <p>
+        <p class="unenrolled_only">
           <a href="${applyUrl}" target="_blank" rel="noopener">How to apply</a>
         </p>`);
     }
@@ -368,17 +356,17 @@ module.exports = function(eleventyConfig) {
         </p>`);
     }
     links.push(`
-      <p>
+      <p class="unenrolled_only">
         <a href="/contact" target="_blank">Contact us for help applying</a>
       </p>`);
     return `
-      <li id="program-${id}" data-eligibility="${toCamelCase(id)}Result">
+      <li id="program-${id}">
         <h4>${title}</h4>
-        <ul class="elig_flags"></ul>
+        <ul class="elig_flags unenrolled_only"></ul>
         <p>${content}</p>
         ${links.join('')}
-        <h5>Eligibility Requirements</h5>
-        <ul class="elig_conditions"></ul>
+        <h5 class="unenrolled_only">Eligibility Requirements</h5>
+        <ul class="elig_conditions unenrolled_only"></ul>
       </li>`;
   });
 
@@ -416,14 +404,29 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addShortcode('checkboxTable', function(
-    tableId, columnsStr, rowsStr) {
+    tableId, columnsStr, rowsStr, sortFirstCol=true) {
     function unpack(str) {
       const parts = str.split(':');
       return {id: parts[0].trim(), content: parts[1].trim()};
     }
 
+    function sortByContent(a, b) {
+      const strA = a.content.toLowerCase();
+      const strB = b.content.toLowerCase();
+      if (strA < strB) {
+        return -1;
+      }
+      if (strA > strB) {
+        return 1;
+      }
+      return 0;
+    }
+
     const columns = columnsStr.split('\n').map(unpack);
     const rows = rowsStr.split('\n').map(unpack);
+    if (sortFirstCol) {
+      rows.sort(sortByContent);
+    }
 
     const columnsHtml = ['<th></th>'];
     for (const column of columns) {

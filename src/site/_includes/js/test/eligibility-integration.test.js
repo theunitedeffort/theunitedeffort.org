@@ -1271,18 +1271,26 @@ describe('buildInputObj', () => {
       assets: [[1000, 99], [2000], [3000]],
       paidSsTaxes: true,
       ssiIncome: [12, 220],
+      existingAdsaHousehold: true,
+      existingAdsaMe: true,
       existingCalfreshHousehold: true,
       existingCalfreshMe: true,
       existingCalworksHousehold: true,
       existingCalworksMe: true,
+      existingCareHousehold: true,
+      existingCareMe: true,
       existingCapiHousehold: true,
       existingCapiMe: true,
       existingCfapHousehold: true,
       existingCfapMe: true,
+      existingFeraHousehold: true,
+      existingFeraMe: true,
       existingGaHousehold: true,
       existingGaMe: true,
       existingIhssHousehold: true,
       existingIhssMe: true,
+      existingLifelineHousehold: true,
+      existingLifelineMe: true,
       existingLiheapHousehold: true,
       existingLiheapMe: true,
       existingMedicalHousehold: true,
@@ -1293,8 +1301,14 @@ describe('buildInputObj', () => {
       existingSsdiMe: true,
       existingSsiHousehold: true,
       existingSsiMe: true,
+      existingUpliftHousehold: true,
+      existingUpliftMe: true,
+      existingVaDisabilityHousehold: true,
+      existingVaDisabilityMe: true,
       existingVaPensionHousehold: true,
       existingVaPensionMe: true,
+      existingVtaParatransitHousehold: true,
+      existingVtaParatransitMe: true,
       existingWicHousehold: true,
       existingWicMe: true,
       existingPhaHousehold: true,
@@ -1438,6 +1452,15 @@ describe('buildInputObj', () => {
       'income-disability-is-ssi-capi-member1-0').checked = true;
     expect(getInput().ssiIncome).toEqual(expected.ssiIncome);
 
+    document.getElementById('existing-adsa-household').checked = (
+      expected.existingAdsaHousehold);
+    expect(getInput().existingAdsaHousehold).toBe(
+      expected.existingAdsaHousehold);
+
+    document.getElementById('existing-adsa-me').checked = (
+      expected.existingAdsaMe);
+    expect(getInput().existingAdsaMe).toBe(expected.existingAdsaMe);
+
     document.getElementById('existing-calfresh-household').checked = (
       expected.existingCalfreshHousehold);
     expect(getInput().existingCalfreshHousehold).toBe(
@@ -1465,6 +1488,15 @@ describe('buildInputObj', () => {
       expected.existingCapiMe);
     expect(getInput().existingCapiMe).toBe(expected.existingCapiMe);
 
+    document.getElementById('existing-care-household').checked = (
+      expected.existingCareHousehold);
+    expect(getInput().existingCareHousehold).toBe(
+      expected.existingCareHousehold);
+
+    document.getElementById('existing-care-me').checked = (
+      expected.existingCareMe);
+    expect(getInput().existingCareMe).toBe(expected.existingCareMe);
+
     document.getElementById('existing-cfap-household').checked = (
       expected.existingCfapHousehold);
     expect(getInput().existingCfapHousehold).toBe(
@@ -1473,6 +1505,15 @@ describe('buildInputObj', () => {
     document.getElementById('existing-cfap-me').checked = (
       expected.existingCfapMe);
     expect(getInput().existingCfapMe).toBe(expected.existingCfapMe);
+
+    document.getElementById('existing-fera-household').checked = (
+      expected.existingFeraHousehold);
+    expect(getInput().existingFeraHousehold).toBe(
+      expected.existingFeraHousehold);
+
+    document.getElementById('existing-fera-me').checked = (
+      expected.existingFeraMe);
+    expect(getInput().existingFeraMe).toBe(expected.existingFeraMe);
 
     document.getElementById('existing-ga-household').checked = (
       expected.existingGaHousehold);
@@ -1489,6 +1530,15 @@ describe('buildInputObj', () => {
     document.getElementById('existing-ihss-me').checked = (
       expected.existingIhssMe);
     expect(getInput().existingIhssMe).toBe(expected.existingIhssMe);
+
+    document.getElementById('existing-lifeline-household').checked = (
+      expected.existingLifelineHousehold);
+    expect(getInput().existingLifelineHousehold).toBe(
+      expected.existingLifelineHousehold);
+
+    document.getElementById('existing-lifeline-me').checked = (
+      expected.existingLifelineMe);
+    expect(getInput().existingLifelineMe).toBe(expected.existingLifelineMe);
 
     document.getElementById('existing-liheap-household').checked = (
       expected.existingLiheapHousehold);
@@ -1533,6 +1583,25 @@ describe('buildInputObj', () => {
     document.getElementById('existing-ssi-me').checked = expected.existingSsiMe;
     expect(getInput().existingSsiMe).toBe(expected.existingSsiMe);
 
+    document.getElementById('existing-uplift-household').checked = (
+      expected.existingUpliftHousehold);
+    expect(getInput().existingUpliftHousehold).toBe(
+      expected.existingUpliftHousehold);
+
+    document.getElementById('existing-uplift-me').checked = (
+      expected.existingUpliftMe);
+    expect(getInput().existingUpliftMe).toBe(expected.existingUpliftMe);
+
+    document.getElementById('existing-va-disability-household').checked = (
+      expected.existingVaDisabilityHousehold);
+    expect(getInput().existingVaDisabilityHousehold).toBe(
+      expected.existingVaDisabilityHousehold);
+
+    document.getElementById('existing-va-disability-me').checked = (
+      expected.existingVaDisabilityMe);
+    expect(getInput().existingVaDisabilityMe)
+      .toBe(expected.existingVaDisabilityMe);
+
     document.getElementById('existing-va-pension-household').checked = (
       expected.existingVaPensionHousehold);
     expect(getInput().existingVaPensionHousehold).toBe(
@@ -1541,6 +1610,16 @@ describe('buildInputObj', () => {
     document.getElementById('existing-va-pension-me').checked = (
       expected.existingVaPensionMe);
     expect(getInput().existingVaPensionMe).toBe(expected.existingVaPensionMe);
+
+    document.getElementById('existing-vta-paratransit-household').checked = (
+      expected.existingVtaParatransitHousehold);
+    expect(getInput().existingVtaParatransitHousehold).toBe(
+      expected.existingVtaParatransitHousehold);
+
+    document.getElementById('existing-vta-paratransit-me').checked = (
+      expected.existingVtaParatransitMe);
+    expect(getInput().existingVtaParatransitMe)
+      .toBe(expected.existingVtaParatransitMe);
 
     document.getElementById('existing-wic-household').checked = (
       expected.existingWicHousehold);
