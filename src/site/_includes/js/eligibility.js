@@ -1492,7 +1492,7 @@ function Program() {
 
   this.markEnrolled = function(code) {
     this.enrolled = true;
-  }
+  };
 
   // Evaluates the entire set of conditions, returning true, false, or null.
   // True should be returned if all the conditions are met, false if they

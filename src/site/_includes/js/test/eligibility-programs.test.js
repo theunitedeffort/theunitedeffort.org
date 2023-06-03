@@ -31,7 +31,7 @@ function setValue(input, target, value) {
 
 function isEligibleIf(target) {
   this.target = target;
-  this.prop = 'eligible'
+  this.prop = 'eligible';
   this.expected = true;
   // Special handling for testing with input overlays.
   if (typeof this.target === 'function') {
@@ -48,7 +48,7 @@ function isEligibleIf(target) {
 
 function isNotEligibleIf(target) {
   this.target = target;
-  this.prop = 'eligible'
+  this.prop = 'eligible';
   this.expected = false;
   // Special handling for testing with input overlays.
   if (typeof this.target === 'function') {
@@ -65,14 +65,14 @@ function isNotEligibleIf(target) {
 
 function isEnrolledIf(target) {
   this.target = target;
-  this.prop = 'enrolled'
+  this.prop = 'enrolled';
   this.expected = true;
   return this;
 }
 
 function isUnknownIf(target) {
   this.target = target;
-  this.prop = 'eligible'
+  this.prop = 'eligible';
   this.expected = null;
   return this;
 }
@@ -1850,7 +1850,7 @@ describe('Program eligibility', () => {
       // Existing household assistance should not affect enrollment status.
       input.existingVaPensionHousehold = true;
       check(elig.vaPensionResult, input).isEnrolledIf(
-          'existingVaPensionMe').is(true);
+        'existingVaPensionMe').is(true);
     });
 
     test('Requires veteran status', () => {
