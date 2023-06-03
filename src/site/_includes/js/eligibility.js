@@ -1716,7 +1716,7 @@ function calworksResult(input) {
   program.addCondition(
     new EligCondition(
       `Have a household including a pregnant person or a child under age ` +
-          `${cnst.calworks.MAX_CHILD_AGE + 1}`,
+      `${cnst.calworks.MAX_CHILD_AGE + 1}`,
       meetsFamilyReq));
   program.addCondition(
     new EligCondition(
@@ -1856,16 +1856,17 @@ function feraResult(input) {
   program.addCondition(
     new EligCondition('Be paying for utilities', input.paysUtilities));
   program.addCondition(
-    new EligCondition(`Have a gross income exceeding the CARE program limit of ` +
-          `${usdLimit(incomeLimitCare)} per month`,
-    overCareIncomeLimit));
+    new EligCondition(
+      `Have a gross income exceeding the CARE program limit of ` +
+      `${usdLimit(incomeLimitCare)} per month`,
+      overCareIncomeLimit));
   program.addCondition(
     new EligCondition(`Have a gross income under the FERA program limit of ` +
-          `${usdLimit(incomeLimitFera)} per month`,
+      `${usdLimit(incomeLimitFera)} per month`,
     underFeraIncomeLimit));
   program.addCondition(
     new EligCondition(`Have a household of at least ` +
-          `${cnst.fera.MIN_HOUSEHOLD_SIZE} people`,
+      `${cnst.fera.MIN_HOUSEHOLD_SIZE} people`,
     meetsHouseholdSizeReq));
 
   if (input.existingFeraMe || input.existingFeraHousehold) {
@@ -1899,11 +1900,11 @@ function vaDisabilityResult(input) {
   program.addCondition(
     new EligCondition(
       'Have served on active duty, active duty for training, or inactive ' +
-          'duty training',
+      'duty training',
       meetsDutyReq));
   program.addCondition(
     new EligCondition('Have a discharge status that is not dishonorable, ' +
-          'bad conduct, or other-than-honorable',
+      'bad conduct, or other-than-honorable',
     meetsDischargeReq));
 
   if (input.existingVaDisabilityMe) {
@@ -2246,7 +2247,8 @@ function ssiCapiBaseProgram(input) {
     `Have an adjusted income below ${usdLimit(maxBenefit)} per month`,
     underIncomeLimit));
   program.addCondition(new EligCondition(
-    `Have a total value of assets below ${usdLimit(cnst.ssiCapi.MAX_RESOURCES)}`,
+    `Have a total value of assets ` +
+    `below ${usdLimit(cnst.ssiCapi.MAX_RESOURCES)}`,
     underResourceLimit));
 
   return program;
@@ -2502,7 +2504,8 @@ function wicResult(input) {
       'Have a household including a person breastfeeding an infant under 1 year old',
       hasBreastfeeding),
     new EligCondition(
-      `Have a household including a child under the age of ${cnst.wic.CHILD_EXIT_AGE}`,
+      `Have a household including a child under the ` +
+      `age of ${cnst.wic.CHILD_EXIT_AGE}`,
       hasChild)]);
   if (input.existingWicMe || input.existingWicHousehold) {
     program.markEnrolled();
