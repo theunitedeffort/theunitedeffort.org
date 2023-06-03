@@ -365,7 +365,7 @@ module.exports = function(eleventyConfig) {
         <ul class="elig_flags unenrolled_only"></ul>
         <p>${content}</p>
         ${links.join('')}
-        <h5 class="unenrolled_only">Eligibility Requirements</h5>
+        <h5 class="unenrolled_only">To be eligible, you must:</h5>
         <ul class="elig_conditions unenrolled_only"></ul>
       </li>`;
   });

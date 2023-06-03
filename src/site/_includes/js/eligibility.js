@@ -1552,11 +1552,11 @@ function adsaResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition('Disabled, blind, or deaf', isDisabled));
+    new EligCondition('Be disabled, blind, or deaf', isDisabled));
   program.addCondition(
-    new EligCondition('Uses a service dog', input.usesGuideDog));
+    new EligCondition('Be using a service dog', input.usesGuideDog));
   program.addCondition(
-    new EligCondition('Receives or is eligible for SSI, SSDI, IHSS, or CAPI',
+    new EligCondition('Be receiving or eligible for SSI, SSDI, IHSS, or CAPI',
       isProgramQualified));
   if (input.existingAdsaMe) {
     program.markEnrolled();
@@ -1606,13 +1606,13 @@ function calfreshResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition('U.S. citizen or qualified immigrant',
+    new EligCondition('Be a U.S. citizen or qualified immigrant',
       meetsImmigrationReq));
   program.addConditionsOneOf([
     new EligCondition(
-      `Adjusted income is below ${usdLimit(mceIncomeLimit)} per month`,
+      `Have an adjusted income below ${usdLimit(mceIncomeLimit)} per month`,
       underIncomeLimit),
-    new EligCondition('Receives or is eligible for CalWORKS or GA',
+    new EligCondition('Be receiving or eligible for CalWORKS or GA',
       isCategoricallyEligible),
   ]);
 
@@ -1711,20 +1711,20 @@ function calworksResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition('U.S. citizen or qualified immigrant',
+    new EligCondition('Be a U.S. citizen or qualified immigrant',
       meetsImmigrationReq));
   program.addCondition(
     new EligCondition(
-      `Household has a member who is pregnant or under ` +
-          `${cnst.calworks.MAX_CHILD_AGE + 1}`,
+      `Have a household including a pregnant person or a child under age ` +
+      `${cnst.calworks.MAX_CHILD_AGE + 1}`,
       meetsFamilyReq));
   program.addCondition(
     new EligCondition(
-      `Adjusted income is below ${usdLimit(mbsacIncomeLimit)} per month`,
+      `Have an adjusted income below ${usdLimit(mbsacIncomeLimit)} per month`,
       underIncomeLimit));
   program.addCondition(
     new EligCondition(
-      `Total value of assets is below ${usdLimit(resourceLimit)}`,
+      `Have a total value of assets below ${usdLimit(resourceLimit)}`,
       underResourceLimit));
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
@@ -1747,7 +1747,7 @@ function capiResult(input) {
 
   const program = ssiCapiBaseProgram(input);
   program.addCondition(new EligCondition(
-    'Meets expanded immigration status ' +
+    'Meet expanded immigration status ' +
       '<a href="https://ca.db101.org/ca/programs/income_support/capi/program2b.htm" target="_blank" rel="noopener">requirements</a>',
     meetsImmigrationReq));
   // For this program in particular, we show the complex immigration flag
@@ -1815,14 +1815,14 @@ function careResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition('Is housed', isHoused));
+    new EligCondition('Be housed', isHoused));
   program.addCondition(
-    new EligCondition('Pays utilities', input.paysUtilities));
+    new EligCondition('Be paying for utilities', input.paysUtilities));
   program.addConditionsOneOf([
     new EligCondition(
-      `Gross income is below ${usdLimit(incomeLimit)} per month`,
+      `Have a gross income below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
-    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, ' +
+    new EligCondition('Be receiving or eligible for SSI, LIHEAP, WIC, ' +
         'CalWORKS, CalFresh, Medi-Cal, CFAP, NSLP or SCHIP',
     isCategoricallyEligible),
   ]);
@@ -1852,20 +1852,21 @@ function feraResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition('Is housed', isHoused));
+    new EligCondition('Be housed', isHoused));
   program.addCondition(
-    new EligCondition('Pays utilities', input.paysUtilities));
+    new EligCondition('Be paying for utilities', input.paysUtilities));
   program.addCondition(
-    new EligCondition(`Gross income exceeds CARE program limit of ` +
-          `${usdLimit(incomeLimitCare)} per month`,
-    overCareIncomeLimit));
+    new EligCondition(
+      `Have a gross income exceeding the CARE program limit of ` +
+      `${usdLimit(incomeLimitCare)} per month`,
+      overCareIncomeLimit));
   program.addCondition(
-    new EligCondition(`Gross income is under FERA program limit of ` +
-          `${usdLimit(incomeLimitFera)} per month`,
+    new EligCondition(`Have a gross income under the FERA program limit of ` +
+      `${usdLimit(incomeLimitFera)} per month`,
     underFeraIncomeLimit));
   program.addCondition(
-    new EligCondition(`Household has at least ` +
-          `${cnst.fera.MIN_HOUSEHOLD_SIZE} people`,
+    new EligCondition(`Have a household of at least ` +
+      `${cnst.fera.MIN_HOUSEHOLD_SIZE} people`,
     meetsHouseholdSizeReq));
 
   if (input.existingFeraMe || input.existingFeraHousehold) {
@@ -1892,18 +1893,18 @@ function vaDisabilityResult(input) {
     input.militaryDisabled);
 
   const program = new Program();
-  program.addCondition(new EligCondition('U.S. veteran', input.veteran));
+  program.addCondition(new EligCondition('Be a U.S. veteran', input.veteran));
   program.addCondition(
-    new EligCondition('Has a disability related to military service',
+    new EligCondition('Have a disability related to military service',
       isServiceDisabled));
   program.addCondition(
     new EligCondition(
-      'Served on active duty, active duty for training, or inactive ' +
-          'duty training',
+      'Have served on active duty, active duty for training, or inactive ' +
+      'duty training',
       meetsDutyReq));
   program.addCondition(
-    new EligCondition('Discharge status that is not dishonorable, ' +
-          'bad conduct, or other-than-honorable',
+    new EligCondition('Have a discharge status that is not dishonorable, ' +
+      'bad conduct, or other-than-honorable',
     meetsDischargeReq));
 
   if (input.existingVaDisabilityMe) {
@@ -1947,21 +1948,21 @@ function gaResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition(`Age ${cnst.ga.MIN_ELIGIBLE_AGE} or older`,
+    new EligCondition(`Be age ${cnst.ga.MIN_ELIGIBLE_AGE} or older`,
       meetsAgeReq));
   program.addCondition(
-    new EligCondition(`Has ${cnst.ga.NUM_OF_DEPENDENTS} dependent children`,
+    new EligCondition(`Have no dependent children`,
       hasNoDependents));
   program.addCondition(
     new EligCondition(
-      `Total value of assets is below ${usdLimit(cnst.ga.MAX_RESOURCES)}`,
+      `Have a total value of assets below ${usdLimit(cnst.ga.MAX_RESOURCES)}`,
       underResourceLimit));
   program.addCondition(
     new EligCondition(
-      `Gross income is below ${usdLimit(incomeLimit)} per month`,
+      `Have a gross income below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit));
   program.addCondition(
-    new EligCondition('U.S. citizen or qualified immigrant',
+    new EligCondition('Be a U.S. citizen or qualified immigrant',
       meetsImmigrationReq));
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
@@ -1983,8 +1984,8 @@ function noFeeIdResult(input) {
 
   const program = new Program();
   program.addConditionsOneOf([
-    new EligCondition('Experiencing homelessness', isUnhoused),
-    new EligCondition(`Age ${cnst.noFeeId.MIN_ELIGIBLE_AGE} or older`,
+    new EligCondition('Be experiencing homelessness', isUnhoused),
+    new EligCondition(`Be age ${cnst.noFeeId.MIN_ELIGIBLE_AGE} or older`,
       meetsAgeReq),
   ]);
   return program.getResult();
@@ -2015,10 +2016,10 @@ function reducedFeeIdResult(input) {
 
   const program = new Program();
   program.addCondition(new EligCondition(
-    'Receives or is eligible for CalWORKS, SSI, GA, CalFresh, CFAP, or CAPI',
+    'Be receiving or eligible for CalWORKS, SSI, GA, CalFresh, CFAP, or CAPI',
     isProgramQualified));
   program.addCondition(new EligCondition(
-    'Not eligible for a cheaper no-fee ID card', ineligibleForNoFeeId));
+    'Not be eligible for a cheaper no-fee ID card', ineligibleForNoFeeId));
   return program.getResult();
 }
 
@@ -2035,13 +2036,13 @@ function ihssResult(input) {
   const program = new Program();
   program.addCondition(
     new EligCondition(
-      `Disabled, blind or age ${cnst.ihss.MIN_ELDERLY_AGE} or older`,
+      `Be disabled, blind or age ${cnst.ihss.MIN_ELDERLY_AGE} or older`,
       meetsDisabilityReq));
   program.addCondition(
-    new EligCondition('Is housed', meetsHousedReq));
+    new EligCondition('Be housed', meetsHousedReq));
   // TODO: Add medicalResult(input).eligible once we can screen for Medi-Cal.
   program.addCondition(
-    new EligCondition('Receives Medi-Cal', input.existingMedicalMe));
+    new EligCondition('Be receiving Medi-Cal', input.existingMedicalMe));
 
   if (input.existingIhssMe) {
     program.markEnrolled();
@@ -2087,9 +2088,9 @@ function lifelineResult(input) {
   const program = new Program();
   program.addConditionsOneOf([
     new EligCondition(
-      `Gross income is below ${usdLimit(incomeLimit)} per month`,
+      `Have a gross income below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
-    new EligCondition('Receives or is eligible for SSI, LIHEAP, WIC, ' +
+    new EligCondition('Be receiving or eligible for SSI, LIHEAP, WIC, ' +
         'CalWORKS, CalFresh, Medi-Cal, NSLP, Public Housing Assistance, or ' +
         'VA Pension',
     isProgramQualified),
@@ -2115,10 +2116,10 @@ function liheapResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition('Is housed', meetsHousedReq));
+    new EligCondition('Be housed', meetsHousedReq));
   program.addCondition(
     new EligCondition(
-      `Gross income is below ${usdLimit(incomeLimit)} per month`,
+      `Have a gross income below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit));
 
   if (input.existingLiheapMe || input.existingLiheapHousehold) {
@@ -2131,7 +2132,7 @@ function vtaParatransitResult(input) {
   const program = new Program();
   // TODO: Determine if blindness should be included here.
   program.addCondition(
-    new EligCondition('Disabled', input.disabled));
+    new EligCondition('Be disabled', input.disabled));
 
   if (input.existingVtaParatransitMe) {
     program.markEnrolled();
@@ -2169,14 +2170,14 @@ function housingChoiceResult(input) {
 
   const program = new Program();
   program.addCondition(
-    new EligCondition('U.S. citizen or qualified immigrant',
+    new EligCondition('Be a U.S. citizen or qualified immigrant',
       meetsImmigrationReq));
   program.addCondition(
-    new EligCondition(`Age ${cnst.housingChoice.MIN_ELIGIBLE_AGE} or older`,
+    new EligCondition(`Be age ${cnst.housingChoice.MIN_ELIGIBLE_AGE} or older`,
       meetsAgeReq));
   program.addCondition(
     new EligCondition(
-      `Gross income is below ${usdLimit(incomeLimit)} per month`,
+      `Have a gross income below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit));
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
@@ -2232,21 +2233,22 @@ function ssiCapiBaseProgram(input) {
 
   const program = new Program();
   program.addCondition(new EligCondition(
-    `Disabled, blind or age ${cnst.ssiCapi.MIN_ELDERLY_AGE} or older`,
+    `Be disabled, blind or age ${cnst.ssiCapi.MIN_ELDERLY_AGE} or older`,
     meetsDisabilityReq));
   // Substantial gainful activity test is only applied to disabled or blind
   // applicants.
   // https://www.ssa.gov/ssi/text-disable-ussi.htm
   if (or(input.disabled, input.blind)) {
     program.addCondition(new EligCondition(
-      `Income from employment is below ${usdLimit(sgaLimit)} per month`,
+      `Have income from employment below ${usdLimit(sgaLimit)} per month`,
       noSubstantialGainfulActivity));
   }
   program.addCondition(new EligCondition(
-    `Total adjusted income is below ${usdLimit(maxBenefit)} per month`,
+    `Have an adjusted income below ${usdLimit(maxBenefit)} per month`,
     underIncomeLimit));
   program.addCondition(new EligCondition(
-    `Total value of assets is below ${usdLimit(cnst.ssiCapi.MAX_RESOURCES)}`,
+    `Have a total value of assets ` +
+    `below ${usdLimit(cnst.ssiCapi.MAX_RESOURCES)}`,
     underResourceLimit));
 
   return program;
@@ -2259,7 +2261,7 @@ function ssiResult(input) {
 
   const program = ssiCapiBaseProgram(input);
   program.addCondition(new EligCondition(
-    'U.S. citizen or qualified immigrant',
+    'Be a U.S. citizen or qualified immigrant',
     meetsImmigrationReq));
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
@@ -2286,14 +2288,14 @@ function ssdiResult(input) {
 
   const program = new Program();
   program.addCondition(new EligCondition(
-    'Disabled or blind', meetsDisabilityReq));
+    'Be disabled or blind', meetsDisabilityReq));
   program.addCondition(new EligCondition(
-    `Younger than age ${cnst.ssdi.FULL_RETIREMENT_AGE}`, meetsAgeReq));
+    `Be younger than age ${cnst.ssdi.FULL_RETIREMENT_AGE}`, meetsAgeReq));
   program.addCondition(new EligCondition(
-    `Income from employment is below ${usdLimit(sgaLimit)} per month`,
+    `Have income from employment below ${usdLimit(sgaLimit)} per month`,
     noSubstantialGainfulActivity));
   program.addCondition(new EligCondition(
-    'Paid Social Secuity taxes on past earnings', input.paidSsTaxes));
+    'Have paid Social Secuity taxes on past earnings', input.paidSsTaxes));
 
   // https://www.ssa.gov/benefits/retirement/planner/agereduction.html
   // Anyone 65 today will have been born too late to have the original full
@@ -2428,25 +2430,26 @@ function vaPensionResult(input) {
   const meetsAnyServiceReq = or(...meetsServiceReq);
 
   const program = new Program();
-  program.addCondition(new EligCondition('U.S. veteran', input.veteran));
+  program.addCondition(new EligCondition('Be a U.S. veteran', input.veteran));
   program.addCondition(
-    new EligCondition('Discharged honorably or under honorable conditions',
+    new EligCondition(
+      'Have been discharged honorably or under honorable conditions',
       meetsDischargeReq));
   program.addCondition(new EligCondition(
-    'Meets specific duty type and duration ' +
+    'Meet specific duty type and duration ' +
     '<a href="https://www.va.gov/pension/eligibility/" target="_blank" rel="noopener">requirements</a>',
     meetsAnyServiceReq));
   program.addCondition(new EligCondition(
-    `Adjusted income is below ${usdLimit(maxPayment)} per month`,
+    `Have an adjusted income below ${usdLimit(maxPayment)} per month`,
     underMaprLimit));
   program.addCondition(new EligCondition(
-    `Adjusted yearly income and assets combined are below ` +
+    `Have adjusted yearly income and assets combined below ` +
     `${usdLimit(cnst.vaPension.ANNUAL_NET_WORTH_LIMIT)}`, underNetWorthLimit));
   program.addConditionsOneOf([
-    new EligCondition('Disabled', input.disabled),
-    new EligCondition(`Age ${cnst.vaPension.MIN_ELDERLY_AGE} or older`,
+    new EligCondition('Be disabled', input.disabled),
+    new EligCondition(`Be age ${cnst.vaPension.MIN_ELDERLY_AGE} or older`,
       meetsAgeReq),
-    new EligCondition('Receives or is eligible for SSI or SSDI',
+    new EligCondition('Be receiving or eligible for SSI or SSDI',
       isProgramQualified),
   ]);
   if (input.existingVaPensionMe) {
@@ -2488,20 +2491,21 @@ function wicResult(input) {
   const program = new Program();
   program.addConditionsOneOf([
     new EligCondition(
-      `Gross income is below ${usdLimit(incomeLimit)} per month`,
+      `Have a gross income below ${usdLimit(incomeLimit)} per month`,
       meetsIncomeReq),
     new EligCondition(
-      'Receives or is eligibile for Medi-Cal, CalWORKS, or CalFresh',
+      'Be receiving or eligibile for Medi-Cal, CalWORKS, or CalFresh',
       isProgramQualified)]);
   program.addConditionsOneOf([
     new EligCondition(
-      'Household includes a pregnant or recently pregnant person',
+      'Have a household including a pregnant or recently pregnant person',
       hasPregnant),
     new EligCondition(
-      'Household includes a person breastfeeding an infant under 1 year old',
+      'Have a household including a person breastfeeding an infant under 1 year old',
       hasBreastfeeding),
     new EligCondition(
-      `Household includes a child under the age of ${cnst.wic.CHILD_EXIT_AGE}`,
+      `Have a household including a child under the ` +
+      `age of ${cnst.wic.CHILD_EXIT_AGE}`,
       hasChild)]);
   if (input.existingWicMe || input.existingWicHousehold) {
     program.markEnrolled();
@@ -2519,8 +2523,8 @@ function upliftResult(input) {
 
   const program = new Program();
   program.addConditionsOneOf([
-    new EligCondition('Experiencing homelessness', isUnhoused),
-    new EligCondition(`At risk of losing housing`, input.homelessRisk),
+    new EligCondition('Be experiencing homelessness', isUnhoused),
+    new EligCondition(`Be at risk of losing housing`, input.homelessRisk),
   ]);
   if (input.existingUpliftMe) {
     program.markEnrolled();
@@ -2683,14 +2687,18 @@ function computeEligibility() {
         // For nested lists of conditions, first create a
         // HTML list item to act as a heading for the grouping.
         const combinedMet = or(...condition.map((c) => c.met));
-        listItem.textContent = 'One of:';
+        listItem.textContent = 'Either:';
         addConditionIcon(listItem, combinedMet);
         conditionList.appendChild(listItem);
         // Then, create a list to sit under that heading.
         const subList = document.createElement('ul');
-        for (const conditionPart of condition) {
+        for (const [idx, conditionPart] of condition.entries()) {
+          let suffix = '';
+          if (idx < condition.length - 1) {
+            suffix = '&nbsp;<span class="bold">or</span>';
+          }
           const subListItem = document.createElement('li');
-          subListItem.innerHTML = conditionPart.desc;
+          subListItem.innerHTML = conditionPart.desc + suffix;
           // If the combined group is met, we only notate the components
           // that contribute to the overall group being met. This will avoid
           // showing a potentially confusing unmet "X" within a group that's
