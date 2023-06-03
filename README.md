@@ -27,7 +27,7 @@ To access the data, the site requires _readonly_ access to Airtable via the appr
 Permissions to the Airtable base can be granted by the adminitrators of the [UEO base](https://airtable.com/apphE4mk8YDqyHM0I/).
 Once you have at least read access to the base, you can get a value for `AIRTABLE_API_KEY` by [generating an Airtable personal access token](https://airtable.com/create/tokens/new) with `data.records:read` scope on the UEO Housing Database.
 
-Public transit data is also drawn from [511 SF Bay](https://511.org).  If you want this data in your development site, you will need to provide an addtional environment variable:
+Public transit data is also drawn from [511 SF Bay](https://511.org).  If you want this data in your development site, you will need to provide an addtional optional environment variable:
 
 - `SF_BAY_511_API_KEY`
 
@@ -77,4 +77,4 @@ After setting up the site with Netlify, you will have a CI/CD pipeline set up to
 
 ## Planning and contributing
 
-We collect and prioritise our efforts in [GitHub issues](https://github.com/philhawksworth/the-united-effort-orginization/issues), arranged into [Milestones](https://github.com/philhawksworth/the-united-effort-orginization/milestones) and coordinate our efforts on those issues in a GitHub [Project](https://github.com/users/philhawksworth/projects/1/views/1). To avoid duplicating effort, you should capture your tasks in [an issue](https://github.com/philhawksworth/the-united-effort-orginization/issues) and place it in the `Doing` column of [the Project](https://github.com/users/philhawksworth/projects/1/views/1) when you being working on it.
+We collect and prioritise our efforts in [GitHub issues](https://github.com/philhawksworth/the-united-effort-orginization/issues), arranged into [Milestones](https://github.com/philhawksworth/the-united-effort-orginization/milestones) and coordinate our efforts on those issues in a GitHub [Project](https://github.com/users/philhawksworth/projects/1/views/1). To avoid duplicating effort, you should capture your tasks in [an issue](https://github.com/philhawksworth/the-united-effort-orginization/issues) and mark yourself as the assignee.
