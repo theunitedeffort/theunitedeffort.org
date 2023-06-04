@@ -44,6 +44,7 @@ jobs:
         env:
           AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
           AIRTABLE_BASE_ID: ${{env.AIRTABLE_BASE_ID}}
+          DEBUG: 'Eleventy*'
         uses: cypress-io/github-action@v5
         with:
           build: npm ci
