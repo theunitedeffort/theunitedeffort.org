@@ -41,8 +41,11 @@ jobs:
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
+        env:
+          AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
+          AIRTABLE_BASE_ID: ${{env.AIRTABLE_BASE_ID}}
         uses: cypress-io/github-action@v5
         with:
           build: npm ci
-          start: npm dev
+          start: npm run start
           browser: chrome

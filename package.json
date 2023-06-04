@@ -7,7 +7,8 @@
     "build:assets": "babel src/site/_includes/js -d dist/js --ignore \"src/**/*.test.js\",\"src/**/test\"",
     "build:site": "eleventy",
     "build": "npm-run-all build:assets build:site",
-    "dev": "eleventy --watch --serve",
+    "start": "npm-run-all build:assets dev",
+    "dev": "eleventy --serve",
     "lint": "eslint src",
     "test": "eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest",
     "update:packages": "npm install theunitedeffort/eslint-plugin-builtin-compat --save-dev"
