@@ -4,33 +4,34 @@
     const timeoutMs = timeout || 0;
     liveRegion.innerHTML = '';
     window.setTimeout(function() {
-      liveRegion.innerHTML = '<span class="toggletip_content">'+ message +'</span>';
+      liveRegion.innerHTML = '<span class="toggletip_content">' +
+        message + '</span>';
     }, timeoutMs);
   }
 
   function closeToggletip(liveRegion) {
-    liveRegion.innerHTML = '';   
+    liveRegion.innerHTML = '';
   }
 
   function setUpToggleTips() {
     // Get all the toggletip buttons
-    let toggletipTexts = document.querySelectorAll('[data-toggletip]');
+    const toggletipTexts = document.querySelectorAll('[data-toggletip]');
 
     // Iterate over them
     Array.prototype.forEach.call(toggletipTexts, function(toggletipText) {
       // Store the toggletip message
-      let message = toggletipText.innerHTML;
+      const message = toggletipText.innerHTML;
 
       // Create the container element
-      let container = document.createElement('span');
+      const container = document.createElement('span');
       container.setAttribute('class', 'toggletip_entry');
-      
+
       // Put it before the original element in the DOM
       toggletipText.parentNode.insertBefore(container, toggletipText);
-      
+
       // Create the button element
-      let toggletip = document.createElement('button');
-      let toggletipClass = toggletipText.getAttribute('data-toggletip-class');
+      const toggletip = document.createElement('button');
+      const toggletipClass = toggletipText.getAttribute('data-toggletip-class');
       toggletip.setAttribute('type', 'button');
       toggletip.setAttribute('aria-label', 'more info');
       let className = 'btn';
@@ -38,18 +39,18 @@
         className += ' ' + toggletipClass;
       }
       toggletip.setAttribute('class', className);
-      
+
       // Place the button element in the container
       container.appendChild(toggletip);
-      
+
       // Create the live region
-      let liveRegion = document.createElement('span');
+      const liveRegion = document.createElement('span');
       liveRegion.setAttribute('role', 'status');
       liveRegion.setAttribute('class', 'toggletip_container');
-      
+
       // Place the live region in the container
       container.appendChild(liveRegion);
-      
+
       // Remove the original element
       toggletipText.parentNode.removeChild(toggletipText);
 
@@ -64,17 +65,17 @@
       });
 
       // Close on outside click
-      document.addEventListener('click', function (e) {
+      document.addEventListener('click', function(e) {
         if (e.target !== toggletip && e.target.parentNode !== liveRegion) {
           closeToggletip(liveRegion);
-        }   
+        }
       });
 
       // Close after a hover
       // Use the container here so that a user can mouse over
       // the toggletip content without the content disappearing.
       container.addEventListener('mouseleave', function() {
-        closeToggletip(liveRegion);     
+        closeToggletip(liveRegion);
       });
 
       // Remove toggletip on ESC
@@ -83,9 +84,9 @@
           closeToggletip(liveRegion);
         }
       });
-      
+
       // Remove on focusout
-      container.addEventListener('focusout', function (e) {
+      container.addEventListener('focusout', function(e) {
         // Only remove if the user is actually focusing on a different
         // element.
         if (e.relatedTarget) {

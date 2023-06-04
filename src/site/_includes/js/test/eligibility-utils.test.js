@@ -77,7 +77,7 @@ describe('toCamelCase', () => {
   test('Passes strings with some other separator through unchanged', () => {
     const inputStr = 'this/is/a/test';
     expect(elig.toCamelCase(inputStr)).toBe(inputStr);
-  })
+  });
 });
 
 describe('usdLimit', () => {
@@ -123,13 +123,17 @@ describe('getNumberOfDays', () => {
   });
 
   test('Handles transition off of daylight savings time', () => {
-    expect(elig.getNumberOfDays('1950-09-23T00:00', '1950-09-24T00:00')).toBe(1);
-    expect(elig.getNumberOfDays('1950-09-23T00:00', '1950-09-25T00:00')).toBe(2);
+    expect(
+      elig.getNumberOfDays('1950-09-23T00:00', '1950-09-24T00:00')).toBe(1);
+    expect(
+      elig.getNumberOfDays('1950-09-23T00:00', '1950-09-25T00:00')).toBe(2);
   });
 
   test('Handles transition on to daylight savings time', () => {
-    expect(elig.getNumberOfDays('1950-04-29T00:00', '1950-04-30T00:00')).toBe(1);
-    expect(elig.getNumberOfDays('1950-04-29T00:00', '1950-05-01T00:00')).toBe(2);
+    expect(
+      elig.getNumberOfDays('1950-04-29T00:00', '1950-04-30T00:00')).toBe(1);
+    expect(
+      elig.getNumberOfDays('1950-04-29T00:00', '1950-05-01T00:00')).toBe(2);
   });
 });
 

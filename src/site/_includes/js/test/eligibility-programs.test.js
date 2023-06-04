@@ -31,10 +31,11 @@ function setValue(input, target, value) {
 
 function isEligibleIf(target) {
   this.target = target;
+  this.prop = 'eligible';
   this.expected = true;
   // Special handling for testing with input overlays.
   if (typeof this.target === 'function') {
-    let mergedInput = this.target(this.input);
+    const mergedInput = this.target(this.input);
     expect(this.program(this.input).eligible,
       dependencyMsg(this, this.input)).not.toBe(true);
     verifyOverlay(mergedInput);
@@ -47,10 +48,11 @@ function isEligibleIf(target) {
 
 function isNotEligibleIf(target) {
   this.target = target;
+  this.prop = 'eligible';
   this.expected = false;
   // Special handling for testing with input overlays.
   if (typeof this.target === 'function') {
-    let mergedInput = this.target(this.input);
+    const mergedInput = this.target(this.input);
     expect(this.program(this.input).eligible,
       dependencyMsg(this, this.input)).toBe(true);
     verifyOverlay(mergedInput);
@@ -61,30 +63,38 @@ function isNotEligibleIf(target) {
   return this;
 }
 
+function isEnrolledIf(target) {
+  this.target = target;
+  this.prop = 'enrolled';
+  this.expected = true;
+  return this;
+}
+
 function isUnknownIf(target) {
   this.target = target;
+  this.prop = 'eligible';
   this.expected = null;
   return this;
 }
 
 function dependencyMsg(ctx, input) {
-  let whichStr = 'unmodified input'
+  let whichStr = 'unmodified input';
   if (input._verifyFn) {
     whichStr = `${input._verifyFn.name} returning eligible`;
   }
   return (
-      `Checking ${ctx.program.name} with ${whichStr}\n` +
+    `Checking ${ctx.program.name} with ${whichStr}\n` +
       `${ctx.program.name} returns:\n` +
       `${JSON.stringify(ctx.program(input), null, 2)}`
-    );
+  );
 }
 function msg(ctx, whichStr) {
   return (
-      `Checking ${ctx.program.name} with ${whichStr} value of ` +
+    `Checking ${ctx.program.name} with ${whichStr} value of ` +
       `${ctx.target}: ${JSON.stringify(getValue(ctx.input, ctx.target))}\n` +
       `${ctx.program.name} returns:\n` +
       `${JSON.stringify(ctx.program(ctx.input), null, 2)}`
-    );
+  );
 }
 
 // A bit of a hack to allow for easier income value perturbations in
@@ -98,49 +108,61 @@ function incomeSafeVal(target, value) {
 
 function is(value) {
   const initValue = getValue(this.input, this.target);
-  expect(this.program(this.input).eligible, msg(this, 'initial')).not.toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'initial'))
+    .not.toBe(this.expected);
   setValue(this.input, this.target, value);
-  expect(this.program(this.input).eligible, msg(this, 'modified')).toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'modified'))
+    .toBe(this.expected);
   setValue(this.input, this.target, initValue);
-};
+}
 
 function isAtLeast(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
-  expect(this.program(this.input).eligible, msg(this, 'lower')).not.toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'lower'))
+    .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given')).toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'given'))
+    .toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
-  expect(this.program(this.input).eligible, msg(this, 'higher')).toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'higher'))
+    .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
 function isAtMost(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
-  expect(this.program(this.input).eligible, msg(this, 'higher')).not.toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'higher'))
+    .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given')).toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'given'))
+    .toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
-  expect(this.program(this.input).eligible, msg(this, 'lower')).toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'lower'))
+    .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
 function isOver(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given')).not.toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'given'))
+    .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value + 1));
-  expect(this.program(this.input).eligible, msg(this, 'higher')).toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'higher'))
+    .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
 function isUnder(value) {
   const initValue = getValue(this.input, this.target);
   setValue(this.input, this.target, incomeSafeVal(this.target, value));
-  expect(this.program(this.input).eligible, msg(this, 'given')).not.toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'given'))
+    .not.toBe(this.expected);
   setValue(this.input, this.target, incomeSafeVal(this.target, value - 1));
-  expect(this.program(this.input).eligible, msg(this, 'lower')).toBe(this.expected);
+  expect(this.program(this.input)[this.prop], msg(this, 'lower'))
+    .toBe(this.expected);
   setValue(this.input, this.target, initValue);
 }
 
@@ -151,22 +173,19 @@ function check(program, input) {
     isEligibleIf,
     isNotEligibleIf,
     isUnknownIf,
+    isEnrolledIf,
     is,
     isAtLeast,
     isAtMost,
     isUnder,
     isOver,
   };
-};
-
-function plusDays(date, numDays) {
-  var newDate = new Date(date)
-  newDate.setDate(date.getDate() + numDays);
-  return newDate;
 }
 
-function dayBefore(date) {
-  return plusDays(date, -1);
+function plusDays(date, numDays) {
+  const newDate = new Date(date);
+  newDate.setDate(date.getDate() + numDays);
+  return newDate;
 }
 
 function dayAfter(date) {
@@ -186,9 +205,9 @@ describe('Helper getValue', () => {
         valid: true,
         wages: [[200]],
         deeper: {
-          val: 1
-        }
-      }
+          val: 1,
+        },
+      },
     };
     expect(getValue(testObj, 'income.valid')).toBe(true);
     expect(getValue(testObj, 'income.wages')).toEqual([[200]]);
@@ -209,9 +228,9 @@ describe('Helper setValue', () => {
         valid: true,
         wages: [[200]],
         deeper: {
-          val: 1
-        }
-      }
+          val: 1,
+        },
+      },
     };
     setValue(testObj, 'income.wages', [[140]]);
     expect(testObj.income.wages).toEqual([[140]]);
@@ -303,7 +322,7 @@ describe('Program eligibility', () => {
   let input;
 
   function calfreshMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.calfresh.FED_POVERTY_LEVEL[0] *
       elig.cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR]];
@@ -312,7 +331,7 @@ describe('Program eligibility', () => {
   }
 
   function calworksMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.pregnant = true;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.calworks.MBSAC[0]]];
@@ -322,7 +341,7 @@ describe('Program eligibility', () => {
   }
 
   function capiMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.citizen = false;
     modified.immigrationStatus = 'long_term';
     modified.disabled = true;
@@ -333,7 +352,7 @@ describe('Program eligibility', () => {
   }
 
   function gaMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ga.MONTHLY_INCOME_LIMITS[0]]];
@@ -342,7 +361,7 @@ describe('Program eligibility', () => {
   }
 
   function ihssMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.age = elig.cnst.ihss.MIN_ELDERLY_AGE;
     modified.housingSituation = 'housed';
     modified.existingMedicalMe = true;
@@ -351,7 +370,7 @@ describe('Program eligibility', () => {
   }
 
   function liheapMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.housingSituation = 'housed';
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.liheap.MONTHLY_INCOME_LIMITS[0]]];
@@ -360,7 +379,7 @@ describe('Program eligibility', () => {
   }
 
   function noFeeIdMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.housingSituation = 'no-stable-place';
     modified.age = elig.cnst.noFeeId.MIN_ELIGIBLE_AGE;
     modified._verifyFn = elig.noFeeIdResult;
@@ -368,14 +387,14 @@ describe('Program eligibility', () => {
   }
 
   function noFeeIdMadeIneligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.housingSituation = 'housed';
     modified.age = elig.cnst.noFeeId.MIN_ELIGIBLE_AGE - 1;
     return modified;
   }
 
   function ssdiMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.age = elig.cnst.ssdi.FULL_RETIREMENT_AGE - 1;
     modified.disabled = true;
     modified.income.valid = true;
@@ -386,7 +405,7 @@ describe('Program eligibility', () => {
   }
 
   function ssiMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.disabled = true;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
@@ -395,25 +414,26 @@ describe('Program eligibility', () => {
   }
 
   function vaPensionMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.veteran = true;
     modified.dischargeStatus = 'honorable';
     modified.disabled = true;
     modified.income.valid = true;
-    modified.income.wages = [[elig.cnst.vaPension.ANNUAL_INCOME_LIMITS[0] / 12]];
+    modified.income.wages = (
+      [[elig.cnst.vaPension.ANNUAL_INCOME_LIMITS[0] / 12]]);
     modified.assets = [[elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT -
         12 * modified.income.wages[0][0]]];
     modified.dutyPeriods = [{
       type: 'active-duty',
       start: new Date('1955-11-01T00:00'),
-      end: new Date('1956-11-01T00:00')
+      end: new Date('1956-11-01T00:00'),
     }];
     modified._verifyFn = elig.vaPensionResult;
     return modified;
   }
 
   function wicMadeEligible(baseInput) {
-    let modified = structuredClone(baseInput);
+    const modified = structuredClone(baseInput);
     modified.pregnant = true;
     modified.income.valid = true;
     modified._verifyFn = elig.wicResult;
@@ -427,11 +447,12 @@ describe('Program eligibility', () => {
       {immStatus: 'long_term', expectedElig: true, flagExpected: true},
       {immStatus: 'live_temporarily', expectedElig: false, flagExpected: false},
       {immStatus: 'none_describe', expectedElig: true, flagExpected: true},
-    ]
-    describe.each(cases)('Immigration status "$immStatus"', ({immStatus, expectedElig, flagExpected}) => {
+    ];
+    describe.each(cases)('Immigration status "$immStatus"', (
+      {immStatus, expectedElig, flagExpected}) => {
       beforeEach(() => {
         setupFn();
-      })
+      });
       test(`Eligibility result is ${expectedElig}`, () => {
         input.citizen = false;
         input.immigrationStatus = immStatus;
@@ -549,6 +570,20 @@ describe('Program eligibility', () => {
       existingPhaHousehold: false,
       existingSchipMe: false,
       existingSchipHousehold: false,
+      existingAdsaMe: false,
+      existingAdsaHousehold: false,
+      existingCareMe: false,
+      existingCareHousehold: false,
+      existingFeraMe: false,
+      existingFeraHousehold: false,
+      existingLifelineMe: false,
+      existingLifelineHousehold: false,
+      existingUpliftMe: false,
+      existingUpliftHousehold: false,
+      existingVaDisabilityMe: false,
+      existingVaDisabilityHousehold: false,
+      existingVtaParatransitMe: false,
+      existingVtaParatransitHousehold: false,
     };
   });
 
@@ -556,6 +591,12 @@ describe('Program eligibility', () => {
   describe('ADSA Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.adsaResult(input).eligible).toBe(false);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingAdsaHousehold = true;
+      check(elig.adsaResult, input).isEnrolledIf('existingAdsaMe').is(true);
     });
 
     test('Requires disability, blindness, or deafness', () => {
@@ -593,13 +634,19 @@ describe('Program eligibility', () => {
       expectedIncomeLimit = (
         elig.cnst.calfresh.FED_POVERTY_LEVEL[0] *
         elig.cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR);
-    })
+    });
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(calfreshMadeEligible(input));
     });
 
     test('Not eligible with default input', () => {
       expect(elig.calfreshResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      check(elig.calfreshResult, input).isEnrolledIf('existingCalfreshMe').is(true);
+      check(elig.calfreshResult, input).isEnrolledIf(
+        'existingCalfreshHousehold').is(true);
     });
 
     test('Eligible with U.S. citizenship', () => {
@@ -610,10 +657,14 @@ describe('Program eligibility', () => {
     });
 
     test('Eligible categorically when receiving CalWORKS or GA', () => {
-      check(elig.calfreshResult, input).isEligibleIf('existingCalworksMe').is(true);
-      check(elig.calfreshResult, input).isEligibleIf('existingCalworksHousehold').is(true);
-      check(elig.calfreshResult, input).isEligibleIf('existingGaMe').is(true);
-      check(elig.calfreshResult, input).isEligibleIf('existingGaHousehold').is(true);
+      check(elig.calfreshResult, input).isEligibleIf(
+        'existingCalworksMe').is(true);
+      check(elig.calfreshResult, input).isEligibleIf(
+        'existingCalworksHousehold').is(true);
+      check(elig.calfreshResult, input).isEligibleIf(
+        'existingGaMe').is(true);
+      check(elig.calfreshResult, input).isEligibleIf(
+        'existingGaHousehold').is(true);
 
       check(elig.calfreshResult, input).isEligibleIf(calworksMadeEligible);
       check(elig.calfreshResult, input).isEligibleIf(gaMadeEligible);
@@ -650,9 +701,9 @@ describe('Program eligibility', () => {
     });
 
     testImmigration(() => {
-        input.income.valid = true;
-      },
-      elig.calfreshResult
+      input.income.valid = true;
+    },
+    elig.calfreshResult,
     );
   });
 
@@ -757,6 +808,12 @@ describe('Program eligibility', () => {
       expect(elig.calworksResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      check(elig.calworksResult, input).isEnrolledIf('existingCalworksMe').is(true);
+      check(elig.calworksResult, input).isEnrolledIf(
+        'existingCalworksHousehold').is(true);
+    });
+
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.pregnant = true;
@@ -766,10 +823,10 @@ describe('Program eligibility', () => {
     });
 
     testImmigration(() => {
-        input.income.valid = true;
-        input.pregnant = true;
-      },
-      elig.calworksResult
+      input.income.valid = true;
+      input.pregnant = true;
+    },
+    elig.calworksResult,
     );
 
     test('Eligible when pregnant', () => {
@@ -843,7 +900,6 @@ describe('Program eligibility', () => {
       check(elig.calworksResult, input).isEligibleIf('assets')
         .isAtMost(elig.cnst.calworks.BASE_RESOURCE_LIMIT);
     });
-
   });
 
   describe('CAPI Program', () => {
@@ -853,6 +909,12 @@ describe('Program eligibility', () => {
 
     test('Not eligible with default input', () => {
       expect(elig.capiResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingCapiHousehold = true;
+      check(elig.capiResult, input).isEnrolledIf('existingCapiMe').is(true);
     });
 
     test('Requires valid immigration status', () => {
@@ -865,19 +927,25 @@ describe('Program eligibility', () => {
     });
 
     testImmigration(() => {
-        input.income.valid = true;
-        input.disabled = true;
-      }, elig.capiResult, [
-        {immStatus: 'permanent_resident', expectedElig: true, flagExpected: true},
-        {immStatus: 'long_term', expectedElig: true, flagExpected: true},
-        {immStatus: 'live_temporarily', expectedElig: false, flagExpected: false},
-        {immStatus: 'none_describe', expectedElig: true, flagExpected: true},
-      ]);
+      input.income.valid = true;
+      input.disabled = true;
+    }, elig.capiResult, [
+      {immStatus: 'permanent_resident', expectedElig: true, flagExpected: true},
+      {immStatus: 'long_term', expectedElig: true, flagExpected: true},
+      {immStatus: 'live_temporarily', expectedElig: false, flagExpected: false},
+      {immStatus: 'none_describe', expectedElig: true, flagExpected: true},
+    ]);
   });
 
   describe('CARE Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.careResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      check(elig.careResult, input).isEnrolledIf('existingCareMe').is(true);
+      check(elig.careResult, input).isEnrolledIf(
+        'existingCareHousehold').is(true);
     });
 
     test('Requires utility bill payment', () => {
@@ -949,6 +1017,12 @@ describe('Program eligibility', () => {
       expect(elig.calworksResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      check(elig.feraResult, input).isEnrolledIf('existingFeraMe').is(true);
+      check(elig.feraResult, input).isEnrolledIf(
+        'existingFeraHousehold').is(true);
+    });
+
     test('Requires minimum household size', () => {
       input.income.valid = true;
       input.income.wages = [[expectedLowIncomeLimit + 1]];
@@ -1012,6 +1086,12 @@ describe('Program eligibility', () => {
       expect(elig.gaResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingGaHousehold = true;
+      check(elig.gaResult, input).isEnrolledIf('existingGaMe').is(true);
+    });
+
     test('Requires applicant to be older than a minimum age', () => {
       input.income.valid = true;
       check(elig.gaResult, input).isEligibleIf('age')
@@ -1050,16 +1130,23 @@ describe('Program eligibility', () => {
     });
 
     testImmigration(() => {
-        input.income.valid = true;
-        input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
-      },
-      elig.gaResult
+      input.income.valid = true;
+      input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
+    },
+    elig.gaResult,
     );
   });
 
   describe('Housing Choice Voucher Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.housingChoiceResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      check(elig.housingChoiceResult, input).isEnrolledIf(
+        'existingHousingChoiceMe').is(true);
+      check(elig.housingChoiceResult, input).isEnrolledIf(
+        'existingHousingChoiceHousehold').is(true);
     });
 
     test('Requires applicant to be older than a minimum age', () => {
@@ -1077,10 +1164,10 @@ describe('Program eligibility', () => {
     });
 
     testImmigration(() => {
-        input.income.valid = true;
-        input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
-      },
-      elig.housingChoiceResult
+      input.income.valid = true;
+      input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
+    },
+    elig.housingChoiceResult,
     );
 
     test('Requires gross income at or below income limit', () => {
@@ -1124,6 +1211,12 @@ describe('Program eligibility', () => {
       expect(elig.ihssResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingIhssHousehold = true;
+      check(elig.ihssResult, input).isEnrolledIf('existingIhssMe').is(true);
+    });
+
     test('Requires Medi-Cal', () => {
       input.blind = true;
       input.housingSituation = 'housed';
@@ -1141,19 +1234,19 @@ describe('Program eligibility', () => {
 
     test('Eligible when disabled', () => {
       input.existingMedicalMe = true;
-      input.housingSituation = 'housed'
+      input.housingSituation = 'housed';
       check(elig.ihssResult, input).isEligibleIf('disabled').is(true);
     });
 
     test('Eligible when blind', () => {
       input.existingMedicalMe = true;
-      input.housingSituation = 'housed'
+      input.housingSituation = 'housed';
       check(elig.ihssResult, input).isEligibleIf('blind').is(true);
     });
 
     test('Eligible when elderly', () => {
       input.existingMedicalMe = true;
-      input.housingSituation = 'housed'
+      input.housingSituation = 'housed';
       check(elig.ihssResult, input)
         .isEligibleIf('age').isAtLeast(elig.cnst.ihss.MIN_ELDERLY_AGE);
     });
@@ -1162,6 +1255,13 @@ describe('Program eligibility', () => {
   describe('Lifeline Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.lifelineResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingLifelineHousehold = true;
+      check(elig.lifelineResult, input).isEnrolledIf(
+        'existingLifelineMe').is(true);
     });
 
     test('Eligible when gross income is at or below the limit', () => {
@@ -1229,6 +1329,12 @@ describe('Program eligibility', () => {
       expect(elig.liheapResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      check(elig.liheapResult, input).isEnrolledIf('existingLiheapMe').is(true);
+      check(elig.liheapResult, input).isEnrolledIf(
+        'existingLiheapHousehold').is(true);
+    });
+
     test('Requires being housed', () => {
       input.income.valid = true;
       input.housingSituation = 'no-stable-place';
@@ -1255,7 +1361,7 @@ describe('Program eligibility', () => {
     test('Not eligible with ineligible input', () => {
       expect(elig.noFeeIdResult(noFeeIdMadeIneligible(input)).eligible)
         .toBe(false);
-    })
+    });
 
     test('Not eligible with default input', () => {
       expect(elig.noFeeIdResult(input).eligible).not.toBe(true);
@@ -1313,7 +1419,8 @@ describe('Program eligibility', () => {
     test('Not eligible when no-fee ID is available', () => {
       input = noFeeIdMadeIneligible(input);
       input.existingCalworksMe = true;
-      check(elig.reducedFeeIdResult, input).isNotEligibleIf(noFeeIdMadeEligible);
+      check(elig.reducedFeeIdResult, input).isNotEligibleIf(
+        noFeeIdMadeEligible);
     });
   });
 
@@ -1347,9 +1454,9 @@ describe('Program eligibility', () => {
   // immigration, so re-use the test code for each program.
   describe.each([
     [elig.ssiResult, true, null],
-    [elig.capiResult, false, 'long_term']
+    [elig.capiResult, false, 'long_term'],
   ])('SSI and CAPI Programs (%p)', (resultFn,
-      defaultCitizen, defaultImmigrationStatus) => {
+    defaultCitizen, defaultImmigrationStatus) => {
     beforeEach(() => {
       input.citizen = defaultCitizen;
       input.immigrationStatus = defaultImmigrationStatus;
@@ -1386,7 +1493,7 @@ describe('Program eligibility', () => {
     });
 
     test('Requires assets below resource limit', () => {
-      const testAssets = elig.cnst.ssiCapi.MAX_RESOURCES
+      const testAssets = elig.cnst.ssiCapi.MAX_RESOURCES;
       input.income.valid = true;
       input.disabled = true;
       input.assets = [[testAssets]];
@@ -1430,6 +1537,12 @@ describe('Program eligibility', () => {
       expect(elig.ssiResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingSsiHousehold = true;
+      check(elig.ssiResult, input).isEnrolledIf('existingSsiMe').is(true);
+    });
+
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
       input.disabled = true;
@@ -1438,16 +1551,22 @@ describe('Program eligibility', () => {
     });
 
     testImmigration(() => {
-        input.income.valid = true;
-        input.disabled = true;
-      },
-      elig.ssiResult
+      input.income.valid = true;
+      input.disabled = true;
+    },
+    elig.ssiResult,
     );
   });
 
   describe('SSDI Program', () => {
     test('Eligible with input for other program dependencies', () => {
       verifyOverlay(ssdiMadeEligible(input));
+    });
+
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingSsdiHousehold = true;
+      check(elig.ssdiResult, input).isEnrolledIf('existingSsdiMe').is(true);
     });
 
     test('Requires age under full retirement age', () => {
@@ -1530,6 +1649,12 @@ describe('Program eligibility', () => {
       expect(elig.upliftResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingUpliftHousehold = true;
+      check(elig.upliftResult, input).isEnrolledIf('existingUpliftMe').is(true);
+    });
+
     test('Eligible when unhoused', () => {
       input.housingSituation = 'housed';
       check(elig.upliftResult, input)
@@ -1555,6 +1680,13 @@ describe('Program eligibility', () => {
   describe('VA Disability Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.vaDisabilityResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingVaDisabilityHousehold = true;
+      check(elig.vaDisabilityResult, input).isEnrolledIf(
+        'existingVaDisabilityMe').is(true);
     });
 
     test('Requires veteran status', () => {
@@ -1714,6 +1846,13 @@ describe('Program eligibility', () => {
       expect(elig.vaPensionResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingVaPensionHousehold = true;
+      check(elig.vaPensionResult, input).isEnrolledIf(
+        'existingVaPensionMe').is(true);
+    });
+
     test('Requires veteran status', () => {
       input.income.valid = true;
       input.disabled = true;
@@ -1772,7 +1911,7 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [{
         type: 'active-duty',
         start: new Date('1950-06-30T00:00'),
-        end: new Date('1950-09-27T00:00'),  // 89 day duration
+        end: new Date('1950-09-27T00:00'), // 89 day duration
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
@@ -1783,7 +1922,7 @@ describe('Program eligibility', () => {
       // During wartime, duration long enough, start date too late
       input.dutyPeriods = [{
         type: 'active-duty',
-        start: new Date('1990-08-02T00:00'),  // Too late
+        start: new Date('1990-08-02T00:00'), // Too late
         end: new Date('1990-12-02T00:00'),
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
@@ -1796,7 +1935,7 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [{
         type: 'active-duty',
         start: new Date('1980-09-07T00:00'),
-        end: new Date('1990-08-01T00:00'),  // Just before Gulf War
+        end: new Date('1990-08-01T00:00'), // Just before Gulf War
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
@@ -1806,7 +1945,7 @@ describe('Program eligibility', () => {
 
       // Wrong duty type
       input.dutyPeriods = [{
-        type: 'reserve-duty',  // Invalid duty type
+        type: 'reserve-duty', // Invalid duty type
         start: new Date('1950-01-01T00:00'),
         end: new Date('1980-09-07T00:00'),
       }];
@@ -1827,7 +1966,7 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [{
         type: 'active-duty',
         start: new Date('1990-08-03T00:00'),
-        end: new Date('1992-08-01T00:00'),  // 729 days, note leap year
+        end: new Date('1992-08-01T00:00'), // 729 days, note leap year
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
@@ -1858,7 +1997,7 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [{
         type: 'active-duty',
         start: new Date('1980-09-08T00:00'),
-        end: new Date('1990-08-01T00:00'),  // Just before Gulf War
+        end: new Date('1990-08-01T00:00'), // Just before Gulf War
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: input.dutyPeriods[0].type,
@@ -1906,6 +2045,13 @@ describe('Program eligibility', () => {
       expect(elig.vtaParatransitResult(input).eligible).not.toBe(true);
     });
 
+    test('Can be marked as already enrolled', () => {
+      // Existing household assistance should not affect enrollment status.
+      input.existingVtaParatransitHousehold = true;
+      check(elig.vtaParatransitResult, input).isEnrolledIf(
+        'existingVtaParatransitMe').is(true);
+    });
+
     test('Requires disability', () => {
       check(elig.vtaParatransitResult, input).isEligibleIf('disabled').is(true);
     });
@@ -1918,6 +2064,12 @@ describe('Program eligibility', () => {
 
     test('Not eligible with default input', () => {
       expect(elig.wicResult(input).eligible).not.toBe(true);
+    });
+
+    test('Can be marked as already enrolled', () => {
+      check(elig.wicResult, input).isEnrolledIf('existingWicMe').is(true);
+      check(elig.wicResult, input).isEnrolledIf(
+        'existingWicHousehold').is(true);
     });
 
     test('Eligible when gross income is at or below the income limit', () => {
@@ -1971,7 +2123,7 @@ describe('Program eligibility', () => {
 
     test('Eligible when anyone in the household is breastfeeding a baby under 1 year old', () => {
       input.income.valid = true;
-      input.householdFeeding = [false, false]
+      input.householdFeeding = [false, false];
       check(elig.wicResult, input).isEligibleIf('feeding').is(true);
       check(elig.wicResult, input)
         .isEligibleIf('householdFeeding').is([true, false]);
@@ -1984,5 +2136,4 @@ describe('Program eligibility', () => {
         .is([elig.cnst.wic.CHILD_EXIT_AGE - 1, 99]);
     });
   });
-
 });

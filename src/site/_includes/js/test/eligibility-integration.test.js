@@ -21,7 +21,8 @@ function visiblePage() {
 }
 
 function visibleSection() {
-  const visibleSections = document.querySelectorAll('.elig_section:not(.hidden)');
+  const visibleSections = document.querySelectorAll(
+    '.elig_section:not(.hidden)');
   expect(visibleSections.length).toBe(1);
   return visibleSections[0];
 }
@@ -49,15 +50,15 @@ function getIncomeLists(parent) {
 
 function expectStepsDone(stepIndicatorIds) {
   const steps = getSteps();
-  const allStepIds = Array.from(steps, s => s.id);
+  const allStepIds = Array.from(steps, (s) => s.id);
   if (stepIndicatorIds) {
     expect(allStepIds).toEqual(expect.arrayContaining(stepIndicatorIds));
   }
   for (const step of steps) {
     // Steps can be either 'todo' or 'done'
-    let expected = 'todo'
+    let expected = 'todo';
     if (stepIndicatorIds.includes(step.id)) {
-      expected = 'done'
+      expected = 'done';
     }
     expect(step.classList, `Step indicator "${step.textContent}"`)
       .toContain(expected);
@@ -66,7 +67,7 @@ function expectStepsDone(stepIndicatorIds) {
 
 function expectStepInProgress(stepIndicatorId) {
   const steps = getSteps();
-  const allStepIds = Array.from(steps, s => s.id);
+  const allStepIds = Array.from(steps, (s) => s.id);
   if (stepIndicatorId) {
     expect(allStepIds).toContain(stepIndicatorId);
   }
@@ -81,7 +82,7 @@ function expectStepInProgress(stepIndicatorId) {
 
 function expectStepsDisabled(stepIndicatorIds) {
   const steps = getSteps();
-  const allStepIds = Array.from(steps, s => s.id);
+  const allStepIds = Array.from(steps, (s) => s.id);
   if (stepIndicatorIds) {
     expect(allStepIds).toEqual(expect.arrayContaining(stepIndicatorIds));
   }
@@ -135,8 +136,8 @@ function enterText(elem, text) {
   check(elem).isVisible();
   if (['INPUT', 'TEXTAREA', 'SELECT'].includes(elem.tagName)) {
     elem.value = text.toString();
-    const changeEvent = new Event('change');
-    const inputEvent = new Event('input');
+    const changeEvent = new Event('change', {bubbles: true});
+    const inputEvent = new Event('input', {bubbles: true});
     elem.dispatchEvent(inputEvent);
     elem.dispatchEvent(changeEvent);
   } else {
@@ -219,41 +220,27 @@ function check(idOrElem) {
       if (typeof this.idOrElem === 'string') {
         elem = document.getElementById(this.idOrElem);
       }
-      let elems = [elem]
+      const elems = [elem];
       while (elem.parentElement) {
         elem = elem.parentElement;
         elems.push(elem);
       }
-      const hiddens = elems.map(e => e.classList.contains('hidden'));
+      const hiddens = elems.map((e) => e.classList.contains('hidden'));
       expect(hiddens, `"${this.idOrElem}", nor any ancestor is hidden`)
         .toContain(true);
     },
   };
 }
 
-let eligScript;
 let html;
 
 beforeAll(() => {
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
   window.scrollTo = jest.fn();
-  // This is a bit of a hack to run the eligibility script in the loaded
-  // HTML document.  Loading the file as an external <script> as is done
-  // in production has proven to be difficult because:
-  //   1) We don't necessarily want to use runScripts: "dangerously" as
-  //      there may be third-party external scripts included in the HTML,
-  //      particularly from the base.liquid layout.
-  //   2) The src of the <script> needs to be different for production
-  //      and testing, as root-relative URLS (src="/js/eligibility.js")
-  //      don't seem to work with JSDOM.
-  // There may be a way to set up a test with a node server running and
-  // create a JSDOM object from the url of that server.  We'd still have to
-  // make a custom JSDOM Resource Loader to avoid loading anything *except*
-  // the script we care about: eligibility.js
-  eligScript = fs.readFileSync(
-    path.resolve(__dirname, '../eligibility.js'), 'utf8');
   html = fs.readFileSync(
-    path.resolve(__dirname, '../../../../../test/dist/public-assistance/eligibility/index.html'), 'utf8');
+    path.resolve(__dirname,
+      '../../../../../test/dist/public-assistance/eligibility/index.html'),
+    'utf8');
 });
 
 describe('Navigation and UI', () => {
@@ -305,7 +292,8 @@ describe('Navigation and UI', () => {
           pageId: 'page-head-of-household',
           setUp: function() {
             click(nextButton);
-            document.getElementById('age').value = elig.cnst.calworks.MAX_CHILD_AGE;
+            document.getElementById('age').value = (
+              elig.cnst.calworks.MAX_CHILD_AGE);
             click(nextButton);
           },
         },
@@ -340,12 +328,14 @@ describe('Navigation and UI', () => {
             document.getElementById('veteran').checked = true;
             click(nextButton);
             document.getElementById('served-from').value = '2000-01-01';
-            document.getElementById('served-until').value = '2001-12-30';  // 729 days later
+            // 729 days later:
+            document.getElementById('served-until').value = '2001-12-30';
             document.getElementById('your-duty-type').value = 'active-duty';
             click(nextButton);
           },
           otherChecks: function() {
-            expect(document.getElementById('page-veteran-duty-period').textContent)
+            expect(
+              document.getElementById('page-veteran-duty-period').textContent)
               .toContain('from 1/1/2000 until 12/30/2001');
           },
         },
@@ -371,7 +361,7 @@ describe('Navigation and UI', () => {
       ],
       inProgressStep: 'nav-section-household',
       doneSteps: [
-        'nav-section-yourself'
+        'nav-section-yourself',
       ],
       pages: [
         {
@@ -552,8 +542,6 @@ describe('Navigation and UI', () => {
         {
           pageId: 'page-results',
           setUp: function() {
-            // This eval is needed for window access to the eligibility functions.
-            window.eval(eligScript);
             click(nextButton, 7);
             click(submitButton);
           },
@@ -564,9 +552,9 @@ describe('Navigation and UI', () => {
 
 
   function clickUntilHidden(button) {
-    let start = new Date().getTime();
+    const start = new Date().getTime();
     let prevPageId = visiblePage().id;
-    let pageIdsSeen = [prevPageId];
+    const pageIdsSeen = [prevPageId];
     while (timeout(start) || !button.classList.contains('hidden')) {
       // NOTE: Errors in the click handler do not propagate back to Jest.
       // When calling such handlers in a loop like this, there is the potential
@@ -580,7 +568,7 @@ describe('Navigation and UI', () => {
       expect(thisPageId).not.toBe(prevPageId);
       pageIdsSeen.push(thisPageId);
       prevPageId = thisPageId;
-    };
+    }
     return pageIdsSeen;
   }
 
@@ -593,7 +581,7 @@ describe('Navigation and UI', () => {
 
   function expectPagesUsed(pageIds) {
     // Get back to the beginning.
-    toFormStart()
+    toFormStart();
     // Click through all pages.
     const pageIdsSeen = toFormEnd();
     expect(pageIds.sort()).toEqual(pageIdsSeen.sort());
@@ -610,8 +598,8 @@ describe('Navigation and UI', () => {
 
   describe.each(
     pageTestCases)('Section UI is correct for $sectionId', ({sectionId,
-      backVisible, nextVisible, submitVisible, disabledSteps, inProgressStep,
-      doneSteps, pages}) => {
+    backVisible, nextVisible, submitVisible, disabledSteps, inProgressStep,
+    doneSteps, pages}) => {
     test.each(pages)(`$pageId`, ({pageId, setUp, otherChecks}) => {
       // Navigate to the page of interest and do any other setup.
       if (setUp) {
@@ -636,7 +624,6 @@ describe('Navigation and UI', () => {
   });
 
   test('Can navigate using the back button', () => {
-    const pages = document.querySelectorAll('.elig_page');
     click(nextButton);
     expect(visiblePage().id).toBe('page-yourself-start');
     click(backButton);
@@ -651,7 +638,6 @@ describe('Navigation and UI', () => {
 
   test('Can jump to sections with the step indicator', () => {
     // Get to the very end of the form.
-    window.eval(eligScript);
     toFormEnd();
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
@@ -659,29 +645,29 @@ describe('Navigation and UI', () => {
     for (const step of getSteps()) {
       let expectedSection;
       let expectedPage;
-      switch(step.id) {
-        case 'nav-section-yourself':
-          expectedSection = 'section-yourself';
-          expectedPage = 'page-yourself-start';
-          break;
-        case 'nav-section-household':
-          expectedSection = 'section-household';
-          expectedPage = 'page-household-members';
-          break;
-        case 'nav-section-income':
-          expectedSection = 'section-income';
-          expectedPage = 'page-income';
-          break;
-        case 'nav-section-existing-benefits':
-          expectedSection = 'section-existing-benefits';
-          expectedPage = 'page-existing-benefits';
-          break;
-        case 'nav-section-results':
-          expectedSection = 'section-results';
-          expectedPage = 'page-results';
-          break;
-        default:
-          throw new Error(`Section "${step.id}" needs a test case added.`);
+      switch (step.id) {
+      case 'nav-section-yourself':
+        expectedSection = 'section-yourself';
+        expectedPage = 'page-yourself-start';
+        break;
+      case 'nav-section-household':
+        expectedSection = 'section-household';
+        expectedPage = 'page-household-members';
+        break;
+      case 'nav-section-income':
+        expectedSection = 'section-income';
+        expectedPage = 'page-income';
+        break;
+      case 'nav-section-existing-benefits':
+        expectedSection = 'section-existing-benefits';
+        expectedPage = 'page-existing-benefits';
+        break;
+      case 'nav-section-results':
+        expectedSection = 'section-results';
+        expectedPage = 'page-results';
+        break;
+      default:
+        throw new Error(`Section "${step.id}" needs a test case added.`);
       }
       expect(visibleSection().id).not.toBe(expectedSection);
       click(step);
@@ -710,7 +696,8 @@ describe('Navigation and UI', () => {
     click(visiblePage().querySelector('.field_list_add'));
     select(document.getElementById('your-duty-type-1'), 'active-duty');
     enterText(document.getElementById('served-from-1'), '2000-01-01');
-    enterText(document.getElementById('served-until-1'), '2001-12-30');  // 729 days
+    // 729 days later:
+    enterText(document.getElementById('served-until-1'), '2001-12-30');
     click(nextButton);
     check(thisPage.querySelectorAll('fieldset')[1]).isVisible();
     expect(thisPage.textContent).toContain('from 1/1/2000 until 12/30/2001');
@@ -727,8 +714,8 @@ describe('Navigation and UI', () => {
     // Not active duty
     const otherDutyTypes = Array.from(
       document.getElementById('your-duty-type-1')
-      .querySelectorAll('option:not([value="active-duty"])'),
-      e => e.value);
+        .querySelectorAll('option:not([value="active-duty"])'),
+      (e) => e.value);
     for (const dutyType of otherDutyTypes) {
       click(backButton);
       select(document.getElementById('your-duty-type-1'), dutyType);
@@ -742,7 +729,8 @@ describe('Navigation and UI', () => {
     click(backButton);
     select(document.getElementById('your-duty-type-1'), 'active-duty');
     enterText(document.getElementById('served-from-1'), '2000-01-01');
-    enterText(document.getElementById('served-until-1'), '2001-12-31');  // 730 days
+    // 730 days later:
+    enterText(document.getElementById('served-until-1'), '2001-12-31');
     click(nextButton);
     thisPage = visiblePage();
     check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
@@ -772,7 +760,7 @@ describe('Navigation and UI', () => {
     expect(document.querySelectorAll(selector).length).toBe(1);
     // There should be just one follow-up question corresponding to the one duty
     // period.
-    const qSelector = '#page-veteran-duty-period fieldset'
+    const qSelector = '#page-veteran-duty-period fieldset';
     expect(document.querySelectorAll(qSelector).length).toBe(1);
     addDutyPeriod();
     addDutyPeriod();
@@ -838,7 +826,8 @@ describe('Navigation and UI', () => {
       expect(incomeLists.length).toBe(2);
       for (const incomeList of incomeLists) {
         expect(incomeList.querySelectorAll(selector).length).toBe(0);
-        const addButton = incomeList.parentElement.querySelector('.field_list_add');
+        const addButton = incomeList.parentElement.querySelector(
+          '.field_list_add');
         click(addButton);
         click(addButton);
         const origEntries = incomeList.querySelectorAll(selector);
@@ -939,8 +928,92 @@ describe('Navigation and UI', () => {
     expect(householdAge.value).toBe('43');
   });
 
+  test('Clearing household member name field resets the heading', () => {
+    click(nextButton, 2);
+    addHouseholdMember();
+    const nameInput = document.getElementById('hh-member-name-1');
+    const member = document.querySelectorAll(
+      '#page-household-members ul.dynamic_field_list > li')[1];
+    const heading = member.querySelector('h4');
+    const defaultHeading = 'Household Member 2';
+    const customName = 'Alan';
+    expect(heading.textContent).toBe(defaultHeading);
+    enterText(nameInput, customName);
+    expect(heading.textContent).toBe(customName);
+    enterText(nameInput, '');
+    expect(heading.textContent).toBe(defaultHeading);
+    enterText(nameInput, ' ');
+    expect(heading.textContent).toBe(defaultHeading);
+    enterText(nameInput, customName);
+    expect(heading.textContent).toBe(customName);
+  });
+
+  test('Dynamic field lists are reset on unused pages.', () => {
+    const wagesCheckbox = document.getElementById('income-has-wages');
+    const veteranCheckbox = document.getElementById('veteran');
+    const itemSelector = 'ul.dynamic_field_list > li';
+
+    // Get to the veteran details page
+    click(nextButton);
+    click(veteranCheckbox);
+    click(nextButton);
+    let page = visiblePage();
+    expect(page.id).toBe('page-veteran-details');
+
+    // Add duty period entries
+    click(document.querySelector('#page-veteran-details .field_list_add'), 2);
+    expect(page.querySelectorAll(itemSelector).length).toBe(3);
+
+    // Go back and unselect veteran option
+    click(backButton);
+    click(veteranCheckbox);
+    expect(veteranCheckbox.checked).toBe(false);
+
+    // Get to the wages income details page
+    click(nextButton);
+    addHouseholdMember();
+    click(nextButton, 2);
+    click(wagesCheckbox);
+    click(nextButton);
+
+    // Add data for both household members
+    page = visiblePage();
+    expect(page.id).toBe('page-income-details-wages');
+    const addButtons = page.querySelectorAll('.field_list_add');
+    for (const addButton of addButtons) {
+      click(addButton);
+    }
+    expect(page.querySelectorAll(itemSelector).length).toBe(2);
+    enterText(document.getElementById('income-wages-0'), 50);
+    enterText(document.getElementById('income-wages-member1-0'), 40);
+    expect(page.textContent).toContain('$90');
+
+    // Go back and un-select income from wages
+    click(backButton);
+    click(wagesCheckbox);
+    expect(wagesCheckbox.checked).toBe(false);
+
+    // See results, then return to the veteran and wages income details pages to
+    // ensure the lists have reset to the initial state.
+    toFormEnd();
+    click(submitButton);
+    click(document.getElementById('nav-section-yourself'));
+    click(veteranCheckbox);
+    click(nextButton);
+    page = visiblePage();
+    expect(page.id).toBe('page-veteran-details');
+    expect(page.querySelectorAll(itemSelector).length).toBe(1);
+    click(document.getElementById('nav-section-income'));
+    click(wagesCheckbox);
+    click(nextButton);
+    page = visiblePage();
+    expect(page.id).toBe('page-income-details-wages');
+    expect(page.querySelectorAll(itemSelector).length).toBe(0);
+    expect(page.textContent).toContain('$0');
+  });
+
   test('Pages linked together properly', () => {
-    let expectedPages = [
+    const expectedPages = [
       'page-intro',
       'page-yourself-start',
       'page-household-members',
@@ -976,7 +1049,8 @@ describe('Navigation and UI', () => {
 
     expectedPages.push('page-veteran-duty-period');
     document.getElementById('served-from').value = '2000-01-01';
-    document.getElementById('served-until').value = '2001-12-30';  // 729 days later
+    // 729 days later:
+    document.getElementById('served-until').value = '2001-12-30';
     document.getElementById('your-duty-type').value = 'active-duty';
     expectPagesUsed(expectedPages);
 
@@ -985,7 +1059,7 @@ describe('Navigation and UI', () => {
     expectPagesUsed(expectedPages);
     document.getElementById('pregnant').checked = false;
     document.querySelector(
-    '#page-household-members .field_list_add').click();
+      '#page-household-members .field_list_add').click();
     document.getElementById('hh-member-pregnant-1').checked = true;
     expectPagesUsed(expectedPages);
 
@@ -1046,12 +1120,11 @@ describe('Navigation and UI', () => {
     expectPagesUsed(expectedPages);
 
     const allPages = Array.from(
-      document.querySelectorAll('.elig_page:not(#page-results)'), p => p.id);
+      document.querySelectorAll('.elig_page:not(#page-results)'), (p) => p.id);
     expectPagesUsed(allPages);
   });
 
   test('Hidden yes/no questions can be answered after being revealed', () => {
-    window.eval(eligScript);
     const pagesSeen = toFormEnd();
     click(submitButton);
     // The page of interest should not have been shown this first time around.
@@ -1077,27 +1150,37 @@ describe('buildInputObj', () => {
     document.body.parentElement.innerHTML = html;
   });
 
-  test.each([true, false, null])('Sets paysUtilities with value of %s', (val) => {
+  test.each(
+    [true, false, null],
+  )('Sets paysUtilities with value of %s', (val) => {
     setYesNo('pay-utilities', val);
     expect(getInput()).toHaveProperty('paysUtilities', val);
   });
 
-  test.each([true, false, null])('Sets homelessRisk with value of %s', (val) => {
+  test.each(
+    [true, false, null],
+  )('Sets homelessRisk with value of %s', (val) => {
     setYesNo('risk-homeless', val);
     expect(getInput()).toHaveProperty('homelessRisk', val);
   });
 
-  test.each([true, false, null])('Sets usesGuideDog with value of %s', (val) => {
+  test.each(
+    [true, false, null],
+  )('Sets usesGuideDog with value of %s', (val) => {
     setYesNo('use-guide-dog', val);
     expect(getInput()).toHaveProperty('usesGuideDog', val);
   });
 
-  test.each([true, false, null])('Sets militaryDisabled with value of %s', (val) => {
+  test.each(
+    [true, false, null],
+  )('Sets militaryDisabled with value of %s', (val) => {
     setYesNo('dis-military', val);
     expect(getInput()).toHaveProperty('militaryDisabled', val);
   });
 
-  test.each([true, false, null])('Sets paidSsTaxes with value of %s', (val) => {
+  test.each(
+    [true, false, null],
+  )('Sets paidSsTaxes with value of %s', (val) => {
     setYesNo('ss-taxes', val);
     expect(getInput()).toHaveProperty('paidSsTaxes', val);
   });
@@ -1158,7 +1241,7 @@ describe('buildInputObj', () => {
       homelessRisk: true,
       immigrationStatus: 'permanent_resident',
       usesGuideDog: true,
-      militaryDisabled: true  ,
+      militaryDisabled: true,
       dischargeStatus: 'honorable',
       servedFullDuration: true,
       dutyPeriods: [
@@ -1188,18 +1271,26 @@ describe('buildInputObj', () => {
       assets: [[1000, 99], [2000], [3000]],
       paidSsTaxes: true,
       ssiIncome: [12, 220],
+      existingAdsaHousehold: true,
+      existingAdsaMe: true,
       existingCalfreshHousehold: true,
       existingCalfreshMe: true,
       existingCalworksHousehold: true,
       existingCalworksMe: true,
+      existingCareHousehold: true,
+      existingCareMe: true,
       existingCapiHousehold: true,
       existingCapiMe: true,
       existingCfapHousehold: true,
       existingCfapMe: true,
+      existingFeraHousehold: true,
+      existingFeraMe: true,
       existingGaHousehold: true,
       existingGaMe: true,
       existingIhssHousehold: true,
       existingIhssMe: true,
+      existingLifelineHousehold: true,
+      existingLifelineMe: true,
       existingLiheapHousehold: true,
       existingLiheapMe: true,
       existingMedicalHousehold: true,
@@ -1210,14 +1301,20 @@ describe('buildInputObj', () => {
       existingSsdiMe: true,
       existingSsiHousehold: true,
       existingSsiMe: true,
+      existingUpliftHousehold: true,
+      existingUpliftMe: true,
+      existingVaDisabilityHousehold: true,
+      existingVaDisabilityMe: true,
       existingVaPensionHousehold: true,
       existingVaPensionMe: true,
+      existingVtaParatransitHousehold: true,
+      existingVtaParatransitMe: true,
       existingWicHousehold: true,
       existingWicMe: true,
       existingPhaHousehold: true,
       existingPhaMe: true,
       existingSchipMe: true,
-      existingSchipHousehold: true
+      existingSchipHousehold: true,
     };
 
     document.body.parentElement.innerHTML = html;
@@ -1253,29 +1350,42 @@ describe('buildInputObj', () => {
       '#page-household-members .field_list_add');
     householdMemberAdd.click();
     householdMemberAdd.click();
-    document.getElementById('hh-member-age-1').value = expected.householdAges[0];
-    document.getElementById('hh-member-age-2').value = expected.householdAges[1];
+    document.getElementById('hh-member-age-1').value = (
+      expected.householdAges[0]);
+    document.getElementById('hh-member-age-2').value = (
+      expected.householdAges[1]);
     expect(getInput().householdAges).toEqual(expected.householdAges);
 
-    document.getElementById('hh-member-disabled-1').checked = expected.householdDisabled[0];
-    document.getElementById('hh-member-disabled-2').checked = expected.householdDisabled[1];
+    document.getElementById('hh-member-disabled-1').checked = (
+      expected.householdDisabled[0]);
+    document.getElementById('hh-member-disabled-2').checked = (
+      expected.householdDisabled[1]);
     expect(getInput().householdDisabled).toEqual(expected.householdDisabled);
 
-    document.getElementById('hh-member-pregnant-1').checked = expected.householdPregnant[0];
-    document.getElementById('hh-member-pregnant-2').checked = expected.householdPregnant[1];
+    document.getElementById('hh-member-pregnant-1').checked = (
+      expected.householdPregnant[0]);
+    document.getElementById('hh-member-pregnant-2').checked = (
+      expected.householdPregnant[1]);
     expect(getInput().householdPregnant).toEqual(expected.householdPregnant);
 
-    document.getElementById('hh-member-breastfeeding-1').checked = expected.householdFeeding[0];
-    document.getElementById('hh-member-breastfeeding-2').checked = expected.householdFeeding[1];
+    document.getElementById('hh-member-breastfeeding-1').checked = (
+      expected.householdFeeding[0]);
+    document.getElementById('hh-member-breastfeeding-2').checked = (
+      expected.householdFeeding[1]);
     expect(getInput().householdFeeding).toEqual(expected.householdFeeding);
 
-    document.getElementById('hh-member-spouse-1').checked = expected.householdSpouse[0];
-    document.getElementById('hh-member-spouse-2').checked = expected.householdSpouse[1];
+    document.getElementById('hh-member-spouse-1').checked = (
+      expected.householdSpouse[0]);
+    document.getElementById('hh-member-spouse-2').checked = (
+      expected.householdSpouse[1]);
     expect(getInput().householdSpouse).toEqual(expected.householdSpouse);
 
-    document.getElementById('hh-member-dependent-1').checked = expected.householdDependents[0];
-    document.getElementById('hh-member-dependent-2').checked = expected.householdDependents[1];
-    expect(getInput().householdDependents).toEqual(expected.householdDependents);
+    document.getElementById('hh-member-dependent-1').checked = (
+      expected.householdDependents[0]);
+    document.getElementById('hh-member-dependent-2').checked = (
+      expected.householdDependents[1]);
+    expect(getInput().householdDependents).toEqual(
+      expected.householdDependents);
 
     document.getElementById('unborn-children').value = expected.unbornChildren;
     expect(getInput().unbornChildren).toBe(expected.unbornChildren);
@@ -1301,18 +1411,21 @@ describe('buildInputObj', () => {
     setYesNo('dis-military', expected.militaryDisabled);
     expect(getInput().militaryDisabled).toBe(expected.militaryDisabled);
 
-    document.getElementById('your-discharge-status').value = expected.dischargeStatus;
+    document.getElementById('your-discharge-status').value = (
+      expected.dischargeStatus);
     expect(getInput().dischargeStatus).toBe(expected.dischargeStatus);
 
-    document.getElementById('full-dur-yes').checked = expected.servedFullDuration;
+    document.getElementById('full-dur-yes').checked = (
+      expected.servedFullDuration);
     expect(getInput().servedFullDuration).toBe(expected.servedFullDuration);
 
-    const button = document.querySelector(
-      '#page-veteran-details .field_list_add').click();
-    document.getElementById('your-duty-type').value = expected.dutyPeriods[0].type;
+    document.querySelector('#page-veteran-details .field_list_add').click();
+    document.getElementById('your-duty-type').value = (
+      expected.dutyPeriods[0].type);
     document.getElementById('served-from').value = dutyPeriodStartStrs[0];
     document.getElementById('served-until').value = dutyPeriodEndStrs[0];
-    document.getElementById('your-duty-type-1').value = expected.dutyPeriods[1].type;
+    document.getElementById('your-duty-type-1').value = (
+      expected.dutyPeriods[1].type);
     document.getElementById('served-from-1').value = dutyPeriodStartStrs[1];
     document.getElementById('served-until-1').value = dutyPeriodEndStrs[1];
     expect(getInput().dutyPeriods).toEqual(expected.dutyPeriods);
@@ -1335,82 +1448,181 @@ describe('buildInputObj', () => {
     expect(getInput().paidSsTaxes).toBe(expected.paidSsTaxes);
 
     document.getElementById('income-disability-is-ssi-capi-0').checked = true;
-    document.getElementById('income-disability-is-ssi-capi-member1-0').checked = true;
+    document.getElementById(
+      'income-disability-is-ssi-capi-member1-0').checked = true;
     expect(getInput().ssiIncome).toEqual(expected.ssiIncome);
 
-    document.getElementById('existing-calfresh-household').checked = expected.existingCalfreshHousehold;
-    expect(getInput().existingCalfreshHousehold).toBe(expected.existingCalfreshHousehold);
+    document.getElementById('existing-adsa-household').checked = (
+      expected.existingAdsaHousehold);
+    expect(getInput().existingAdsaHousehold).toBe(
+      expected.existingAdsaHousehold);
 
-    document.getElementById('existing-calfresh-me').checked = expected.existingCalfreshMe;
+    document.getElementById('existing-adsa-me').checked = (
+      expected.existingAdsaMe);
+    expect(getInput().existingAdsaMe).toBe(expected.existingAdsaMe);
+
+    document.getElementById('existing-calfresh-household').checked = (
+      expected.existingCalfreshHousehold);
+    expect(getInput().existingCalfreshHousehold).toBe(
+      expected.existingCalfreshHousehold);
+
+    document.getElementById('existing-calfresh-me').checked = (
+      expected.existingCalfreshMe);
     expect(getInput().existingCalfreshMe).toBe(expected.existingCalfreshMe);
 
-    document.getElementById('existing-calworks-household').checked = expected.existingCalworksHousehold;
-    expect(getInput().existingCalworksHousehold).toBe(expected.existingCalworksHousehold);
+    document.getElementById('existing-calworks-household').checked = (
+      expected.existingCalworksHousehold);
+    expect(getInput().existingCalworksHousehold).toBe(
+      expected.existingCalworksHousehold);
 
-    document.getElementById('existing-calworks-me').checked = expected.existingCalworksMe;
+    document.getElementById('existing-calworks-me').checked = (
+      expected.existingCalworksMe);
     expect(getInput().existingCalworksMe).toBe(expected.existingCalworksMe);
 
-    document.getElementById('existing-capi-household').checked = expected.existingCapiHousehold;
-    expect(getInput().existingCapiHousehold).toBe(expected.existingCapiHousehold);
+    document.getElementById('existing-capi-household').checked = (
+      expected.existingCapiHousehold);
+    expect(getInput().existingCapiHousehold).toBe(
+      expected.existingCapiHousehold);
 
-    document.getElementById('existing-capi-me').checked = expected.existingCapiMe;
+    document.getElementById('existing-capi-me').checked = (
+      expected.existingCapiMe);
     expect(getInput().existingCapiMe).toBe(expected.existingCapiMe);
 
-    document.getElementById('existing-cfap-household').checked = expected.existingCfapHousehold;
-    expect(getInput().existingCfapHousehold).toBe(expected.existingCfapHousehold);
+    document.getElementById('existing-care-household').checked = (
+      expected.existingCareHousehold);
+    expect(getInput().existingCareHousehold).toBe(
+      expected.existingCareHousehold);
 
-    document.getElementById('existing-cfap-me').checked = expected.existingCfapMe;
+    document.getElementById('existing-care-me').checked = (
+      expected.existingCareMe);
+    expect(getInput().existingCareMe).toBe(expected.existingCareMe);
+
+    document.getElementById('existing-cfap-household').checked = (
+      expected.existingCfapHousehold);
+    expect(getInput().existingCfapHousehold).toBe(
+      expected.existingCfapHousehold);
+
+    document.getElementById('existing-cfap-me').checked = (
+      expected.existingCfapMe);
     expect(getInput().existingCfapMe).toBe(expected.existingCfapMe);
 
-    document.getElementById('existing-ga-household').checked = expected.existingGaHousehold;
+    document.getElementById('existing-fera-household').checked = (
+      expected.existingFeraHousehold);
+    expect(getInput().existingFeraHousehold).toBe(
+      expected.existingFeraHousehold);
+
+    document.getElementById('existing-fera-me').checked = (
+      expected.existingFeraMe);
+    expect(getInput().existingFeraMe).toBe(expected.existingFeraMe);
+
+    document.getElementById('existing-ga-household').checked = (
+      expected.existingGaHousehold);
     expect(getInput().existingGaHousehold).toBe(expected.existingGaHousehold);
 
     document.getElementById('existing-ga-me').checked = expected.existingGaMe;
     expect(getInput().existingGaMe).toBe(expected.existingGaMe);
 
-    document.getElementById('existing-ihss-household').checked = expected.existingIhssHousehold;
-    expect(getInput().existingIhssHousehold).toBe(expected.existingIhssHousehold);
+    document.getElementById('existing-ihss-household').checked = (
+      expected.existingIhssHousehold);
+    expect(getInput().existingIhssHousehold).toBe(
+      expected.existingIhssHousehold);
 
-    document.getElementById('existing-ihss-me').checked = expected.existingIhssMe;
+    document.getElementById('existing-ihss-me').checked = (
+      expected.existingIhssMe);
     expect(getInput().existingIhssMe).toBe(expected.existingIhssMe);
 
-    document.getElementById('existing-liheap-household').checked = expected.existingLiheapHousehold;
-    expect(getInput().existingLiheapHousehold).toBe(expected.existingLiheapHousehold);
+    document.getElementById('existing-lifeline-household').checked = (
+      expected.existingLifelineHousehold);
+    expect(getInput().existingLifelineHousehold).toBe(
+      expected.existingLifelineHousehold);
 
-    document.getElementById('existing-liheap-me').checked = expected.existingLiheapMe;
+    document.getElementById('existing-lifeline-me').checked = (
+      expected.existingLifelineMe);
+    expect(getInput().existingLifelineMe).toBe(expected.existingLifelineMe);
+
+    document.getElementById('existing-liheap-household').checked = (
+      expected.existingLiheapHousehold);
+    expect(getInput().existingLiheapHousehold).toBe(
+      expected.existingLiheapHousehold);
+
+    document.getElementById('existing-liheap-me').checked = (
+      expected.existingLiheapMe);
     expect(getInput().existingLiheapMe).toBe(expected.existingLiheapMe);
 
-    document.getElementById('existing-medical-household').checked = expected.existingMedicalHousehold;
-    expect(getInput().existingMedicalHousehold).toBe(expected.existingMedicalHousehold);
+    document.getElementById('existing-medical-household').checked = (
+      expected.existingMedicalHousehold);
+    expect(getInput().existingMedicalHousehold).toBe(
+      expected.existingMedicalHousehold);
 
-    document.getElementById('existing-medical-me').checked = expected.existingMedicalMe;
+    document.getElementById('existing-medical-me').checked = (
+      expected.existingMedicalMe);
     expect(getInput().existingMedicalMe).toBe(expected.existingMedicalMe);
 
-    document.getElementById('existing-nslp-household').checked = expected.existingNslpHousehold;
-    expect(getInput().existingNslpHousehold).toBe(expected.existingNslpHousehold);
+    document.getElementById('existing-nslp-household').checked = (
+      expected.existingNslpHousehold);
+    expect(getInput().existingNslpHousehold).toBe(
+      expected.existingNslpHousehold);
 
-    document.getElementById('existing-nslp-me').checked = expected.existingNslpMe;
+    document.getElementById('existing-nslp-me').checked = (
+      expected.existingNslpMe);
     expect(getInput().existingNslpMe).toBe(expected.existingNslpMe);
 
-    document.getElementById('existing-ssdi-household').checked = expected.existingSsdiHousehold;
-    expect(getInput().existingSsdiHousehold).toBe(expected.existingSsdiHousehold);
+    document.getElementById('existing-ssdi-household').checked = (
+      expected.existingSsdiHousehold);
+    expect(getInput().existingSsdiHousehold).toBe(
+      expected.existingSsdiHousehold);
 
-    document.getElementById('existing-ssdi-me').checked = expected.existingSsdiMe;
+    document.getElementById('existing-ssdi-me').checked = (
+      expected.existingSsdiMe);
     expect(getInput().existingSsdiMe).toBe(expected.existingSsdiMe);
 
-    document.getElementById('existing-ssi-household').checked = expected.existingSsiHousehold;
+    document.getElementById('existing-ssi-household').checked = (
+      expected.existingSsiHousehold);
     expect(getInput().existingSsiHousehold).toBe(expected.existingSsiHousehold);
 
     document.getElementById('existing-ssi-me').checked = expected.existingSsiMe;
     expect(getInput().existingSsiMe).toBe(expected.existingSsiMe);
 
-    document.getElementById('existing-va-pension-household').checked = expected.existingVaPensionHousehold;
-    expect(getInput().existingVaPensionHousehold).toBe(expected.existingVaPensionHousehold);
+    document.getElementById('existing-uplift-household').checked = (
+      expected.existingUpliftHousehold);
+    expect(getInput().existingUpliftHousehold).toBe(
+      expected.existingUpliftHousehold);
 
-    document.getElementById('existing-va-pension-me').checked = expected.existingVaPensionMe;
+    document.getElementById('existing-uplift-me').checked = (
+      expected.existingUpliftMe);
+    expect(getInput().existingUpliftMe).toBe(expected.existingUpliftMe);
+
+    document.getElementById('existing-va-disability-household').checked = (
+      expected.existingVaDisabilityHousehold);
+    expect(getInput().existingVaDisabilityHousehold).toBe(
+      expected.existingVaDisabilityHousehold);
+
+    document.getElementById('existing-va-disability-me').checked = (
+      expected.existingVaDisabilityMe);
+    expect(getInput().existingVaDisabilityMe)
+      .toBe(expected.existingVaDisabilityMe);
+
+    document.getElementById('existing-va-pension-household').checked = (
+      expected.existingVaPensionHousehold);
+    expect(getInput().existingVaPensionHousehold).toBe(
+      expected.existingVaPensionHousehold);
+
+    document.getElementById('existing-va-pension-me').checked = (
+      expected.existingVaPensionMe);
     expect(getInput().existingVaPensionMe).toBe(expected.existingVaPensionMe);
 
-    document.getElementById('existing-wic-household').checked = expected.existingWicHousehold;
+    document.getElementById('existing-vta-paratransit-household').checked = (
+      expected.existingVtaParatransitHousehold);
+    expect(getInput().existingVtaParatransitHousehold).toBe(
+      expected.existingVtaParatransitHousehold);
+
+    document.getElementById('existing-vta-paratransit-me').checked = (
+      expected.existingVtaParatransitMe);
+    expect(getInput().existingVtaParatransitMe)
+      .toBe(expected.existingVtaParatransitMe);
+
+    document.getElementById('existing-wic-household').checked = (
+      expected.existingWicHousehold);
     expect(getInput().existingWicHousehold).toBe(expected.existingWicHousehold);
 
     document.getElementById('existing-wic-me').checked = expected.existingWicMe;
@@ -1419,14 +1631,18 @@ describe('buildInputObj', () => {
     document.getElementById('existing-pha-me').checked = expected.existingPhaMe;
     expect(getInput().existingPhaMe).toBe(expected.existingPhaMe);
 
-    document.getElementById('existing-pha-household').checked = expected.existingPhaHousehold;
+    document.getElementById('existing-pha-household').checked = (
+      expected.existingPhaHousehold);
     expect(getInput().existingPhaHousehold).toBe(expected.existingPhaHousehold);
 
-    document.getElementById('existing-schip-me').checked = expected.existingSchipMe;
+    document.getElementById('existing-schip-me').checked = (
+      expected.existingSchipMe);
     expect(getInput().existingSchipMe).toBe(expected.existingSchipMe);
 
-    document.getElementById('existing-schip-household').checked = expected.existingSchipHousehold;
-    expect(getInput().existingSchipHousehold).toBe(expected.existingSchipHousehold);
+    document.getElementById('existing-schip-household').checked = (
+      expected.existingSchipHousehold);
+    expect(getInput().existingSchipHousehold).toBe(
+      expected.existingSchipHousehold);
 
     expect(getInput()).toEqual(expected);
   });

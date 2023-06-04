@@ -67,7 +67,7 @@ describe('modifyIds', () => {
     const inputs = parent.querySelectorAll('input');
     expect(inputs[0].name).toBe('button-group-v2');
     expect(inputs[1].name).toBe('button-group-v2');
-  })
+  });
 });
 
 describe('clearInputs', () => {
@@ -202,7 +202,7 @@ describe('getValueOrNull', () => {
   });
 
   test.each(
-    ['checkbox', 'radio']
+    ['checkbox', 'radio'],
   )('Gets the value of a %s element', (type) => {
     document.body.innerHTML = `
       <input type="${type}" id="test-${type}">`;
@@ -272,6 +272,5 @@ describe('getValueOrNull', () => {
     expect(elig.getValueOrNull('bad-question')).toBe(null);
     document.getElementById(`bad-question-non`).checked = true;
     expect(elig.getValueOrNull('bad-question')).toBe(null);
-
   });
 });

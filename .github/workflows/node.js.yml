@@ -5,27 +5,31 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main", "prod"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main", "prod"]
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/node-setup
+        with:
+          node-version: 18.x
+      - run: npm run lint
+
   tests:
     name: Tests
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [18.x, 19.x]
+        node-version: [18.x, 20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm test
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/node-setup
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm test

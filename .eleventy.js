@@ -11,7 +11,11 @@ module.exports = function(eleventyConfig) {
 
   // Pass through static assets and client-side js files.
   eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
-  eleventyConfig.addPassthroughCopy({ "src/site/_includes/js/*.js": "/js" });
+  if (process.env.CONTEXT === 'dev' ) {
+    // For builds that are not local development builds, the js files will
+    // come from Babel instead (via babel.config.json and package.json)
+    eleventyConfig.addPassthroughCopy({ "src/site/_includes/js/*.js": "/js" });
+  }
 
   // Eleventy Serverless plugin
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {

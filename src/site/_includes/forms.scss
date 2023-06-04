@@ -111,6 +111,9 @@
       .elig_conditions {
         padding: 0;
         margin-left: 1em;
+        li {
+          margin-bottom: 0.5em;
+        }
       }
 
       .elig_flags {
@@ -314,7 +317,7 @@
       columns: 8em 3;
     }
 
-    #not-found-contact-us {
+    form.contact_us {
       display: block;
       input,
       textarea {
