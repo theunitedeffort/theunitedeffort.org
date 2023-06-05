@@ -38,13 +38,17 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+      - name: Create .env file
+        run: |
+          touch .env
+          echo AIRTABLE_API_KEY=${{secrets.AIRTABLE_API_KEY}} >> .env
+          echo AIRTABLE_BASE_ID=${{env.AIRTABLE_BASE_ID}} >> .env
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
-        env:
-          AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
-          AIRTABLE_BASE_ID: ${{env.AIRTABLE_BASE_ID}}
-          DEBUG: 'Eleventy*'
+        # env:
+        #   AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
+        #   AIRTABLE_BASE_ID: ${{env.AIRTABLE_BASE_ID}}
         uses: cypress-io/github-action@v5
         with:
           build: npm ci
