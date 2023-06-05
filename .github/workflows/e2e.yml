@@ -3,8 +3,6 @@ name: End to End Tests
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
 
 jobs:
   cypress-run:
@@ -30,6 +28,7 @@ jobs:
         with:
           name: cypress-screenshots
           path: cypress/screenshots
+          if-no-files-found: ignore
       - name: Upload videos
         uses: actions/upload-artifact@v3
         with:
