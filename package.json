@@ -30,6 +30,7 @@
     "@stryker-mutator/core": "^6.4.2",
     "@stryker-mutator/jest-runner": "^6.4.2",
     "cypress": "^12.12.0",
+    "dotenv": "^16.1.4",
     "eslint": "^8.41.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-builtin-compat": "github:theunitedeffort/eslint-plugin-builtin-compat",
