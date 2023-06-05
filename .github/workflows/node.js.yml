@@ -36,9 +36,9 @@ jobs:
 
   cypress-run:
     runs-on: ubuntu-22.04
-    # env:
-    #   AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
-    #   AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
+    env:
+      AIRTABLE_API_KEY: example2
+      AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
     steps:
       - uses: actions/checkout@v3
       - name: Create .env file
