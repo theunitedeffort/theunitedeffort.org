@@ -1,0 +1,25 @@
+name: Cypress End to End
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main", "prod"]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-22.04
+    env:
+      AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
+      AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
+    steps:
+      - uses: actions/checkout@v3
+      # Install NPM dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          build: npm ci
+          start: npm run start
+          wait-on: 'http://localhost:8080'
+          browser: chrome
