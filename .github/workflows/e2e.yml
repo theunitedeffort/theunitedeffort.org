@@ -1,10 +1,8 @@
-name: Cypress End to End
+name: End to End Tests
 
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main", "prod"]
 
 jobs:
   cypress-run:
