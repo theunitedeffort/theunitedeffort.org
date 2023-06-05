@@ -41,13 +41,6 @@ jobs:
       AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
     steps:
       - uses: actions/checkout@v3
-      # - name: Create .env file
-      #   run: |
-      #     touch .env
-      #     echo AIRTABLE_API_KEY=example >> .env
-      #     echo AIRTABLE_BASE_ID=${{vars.AIRTABLE_BASE_ID}} >> .env
-      # - name: Check .env file
-      #   run: cat .env
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
