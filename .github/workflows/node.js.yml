@@ -48,4 +48,5 @@ jobs:
         with:
           build: npm ci
           start: npm run start
+          wait-on: 'http://localhost:8080'
           browser: chrome
