@@ -1,0 +1,36 @@
+name: End to End Tests
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-22.04
+    env:
+      AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
+      AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
+    steps:
+      - uses: actions/checkout@v3
+      # Install NPM dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          build: npm ci
+          start: npm run start
+          wait-on: 'http://localhost:8080'
+          browser: chrome
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v3
+        # add the line below to store screenshots only on failures
+        # if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore
+      - name: Upload videos
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-videos
+          path: cypress/videos
