@@ -8,8 +8,24 @@ describe('Eligibility Assessment Tool', () => {
     cy.visit('/public-assistance/eligibility/')
   });
 
-  it('goes to the next page', () => {
-    cy.contains('button', 'Next').click();
+  it('gets to final results page with no data entry', () => {
+    cy.get('#page-intro').should('be.visible');
+    cy.get('#next-button').click();
+    cy.get('#page-yourself-start').should('be.visible');
+    cy.get('#next-button').click();
+    cy.get('#page-household-members').should('be.visible');
+    cy.get('#next-button').click();
+    cy.get('#page-household-situation').should('be.visible');
+    cy.get('#next-button').click();
+    cy.get('#page-income').should('be.visible');
+    cy.get('#next-button').click();
+    cy.get('#page-ss-taxes').should('be.visible');
+    cy.get('#next-button').click();
+    cy.get('#page-income-assets').should('be.visible');
+    cy.get('#next-button').click();
+    cy.get('#page-existing-benefits').should('be.visible');
+    cy.get('#submit-button').click();
+    cy.get('#page-results').should('be.visible');
   });
 
 });
