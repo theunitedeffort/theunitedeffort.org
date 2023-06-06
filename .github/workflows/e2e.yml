@@ -5,13 +5,14 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+env:
+  AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
+  AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
+  CYPRESS_RECORD_KEY: ${{secrets.CYPRESS_RECORD_KEY}}
+
 jobs:
   chrome-browser-tests:
     runs-on: ubuntu-22.04
-    env:
-      AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
-      AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
-      CYPRESS_RECORD_KEY: ${{secrets.CYPRESS_RECORD_KEY}}
     steps:
       - uses: actions/checkout@v3
       # Install NPM dependencies, cache them correctly
@@ -23,8 +24,6 @@ jobs:
           wait-on: 'http://localhost:8080'
           record: true
           browser: chrome
-        env:
-          CYPRESS_RECORD_KEY: ${{secrets.CYPRESS_RECORD_KEY}}
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
         # add the line below to store screenshots only on failures
