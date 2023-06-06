@@ -23,6 +23,8 @@ jobs:
           wait-on: 'http://localhost:8080'
           record: true
           browser: chrome
+        env:
+          CYPRESS_RECORD_KEY: ${{secrets.CYPRESS_RECORD_KEY}}
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
         # add the line below to store screenshots only on failures
