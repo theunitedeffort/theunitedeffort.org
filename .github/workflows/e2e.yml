@@ -29,13 +29,13 @@ jobs:
         # add the line below to store screenshots only on failures
         # if: failure()
         with:
-          name: cypress-screenshots
+          name: chrome-screenshots
           path: cypress/screenshots
           if-no-files-found: ignore
       - name: Upload videos
         uses: actions/upload-artifact@v3
         with:
-          name: cypress-videos
+          name: chrome-videos
           path: cypress/videos
 
   firefox-browser-tests:
@@ -59,13 +59,13 @@ jobs:
         # add the line below to store screenshots only on failures
         # if: failure()
         with:
-          name: cypress-screenshots
+          name: firefox-screenshots
           path: cypress/screenshots
           if-no-files-found: ignore
       - name: Upload videos
         uses: actions/upload-artifact@v3
         with:
-          name: cypress-videos
+          name: firefox-videos
           path: cypress/videos
 
   edge-browser-tests:
@@ -89,11 +89,11 @@ jobs:
         # add the line below to store screenshots only on failures
         # if: failure()
         with:
-          name: cypress-screenshots
+          name: edge-screenshots
           path: cypress/screenshots
           if-no-files-found: ignore
       - name: Upload videos
         uses: actions/upload-artifact@v3
         with:
-          name: cypress-videos
+          name: edge-videos
           path: cypress/videos
