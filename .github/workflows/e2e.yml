@@ -5,12 +5,14 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+env:
+  AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
+  AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
+  CYPRESS_RECORD_KEY: ${{secrets.CYPRESS_RECORD_KEY}}
+
 jobs:
   chrome-browser-tests:
     runs-on: ubuntu-22.04
-    env:
-      AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
-      AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
     steps:
       - uses: actions/checkout@v3
       # Install NPM dependencies, cache them correctly
@@ -18,9 +20,9 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
-          build: npm ci
           start: npm run start
           wait-on: 'http://localhost:8080'
+          record: true
           browser: chrome
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
@@ -48,9 +50,9 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
-          build: npm ci
           start: npm run start
           wait-on: 'http://localhost:8080'
+          record: true
           browser: firefox
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
@@ -78,9 +80,9 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
-          build: npm ci
           start: npm run start
           wait-on: 'http://localhost:8080'
+          record: true
           browser: edge
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
