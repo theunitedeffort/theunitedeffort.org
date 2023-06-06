@@ -83,7 +83,7 @@ jobs:
           build: npm ci
           start: npm run start
           wait-on: 'http://localhost:8080'
-          browser: firefox
+          browser: edge
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
         # add the line below to store screenshots only on failures
