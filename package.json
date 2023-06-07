@@ -9,7 +9,7 @@
     "build": "npm-run-all build:assets build:site",
     "start": "npm-run-all build:assets dev",
     "dev": "eleventy --serve",
-    "lint": "eslint src",
+    "lint": "eslint src cypress",
     "test": "eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest",
     "update:packages": "npm install theunitedeffort/eslint-plugin-builtin-compat --save-dev"
   },
@@ -33,6 +33,7 @@
     "eslint": "^8.41.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-builtin-compat": "github:theunitedeffort/eslint-plugin-builtin-compat",
+    "eslint-plugin-cypress": "^2.13.3",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
     "jest-expect-message": "^1.1.3",
