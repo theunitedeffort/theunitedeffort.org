@@ -230,19 +230,20 @@ pageClass: "page-public-assistance"
             is selected.
             {% endcomment %}
             <li>
-              <input id="hh-member-spouse" type="checkbox" onchange="checkSpouseDependent()">
+              <input id="hh-member-spouse" type="checkbox">
               <label for="hh-member-spouse">This person is my spouse</label>
             </li>
             <script>
               window.onload = function checkSpouseDependent() {
                 const spouseCheckbox = document.getElementById('hh-member-spouse');
                 const dependentCheckbox = document.getElementById('hh-member-dependent');
-
-                if (spouseCheckbox.checked) {
-                  dependentCheckbox.checked = false;
-                  dependentCheckbox.disabled = true;
-                } else {
-                  dependentCheckbox.disabled = false;
+                spouseCheckbox.onchange = function changeCheckbox() {
+                  if (spouseCheckbox.checked) {
+                    dependentCheckbox.checked = false;
+                    dependentCheckbox.disabled = true;
+                  } else {
+                    dependentCheckbox.disabled = false;
+                  }
                 }
               }
             </script>
