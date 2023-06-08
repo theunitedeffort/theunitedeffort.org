@@ -234,7 +234,7 @@ pageClass: "page-public-assistance"
               <label for="hh-member-spouse">This person is my spouse</label>
             </li>
             <script>
-              function checkSpouseDependent() {
+              window.onload = function checkSpouseDependent() {
                 const spouseCheckbox = document.getElementById('hh-member-spouse');
                 const dependentCheckbox = document.getElementById('hh-member-dependent');
                 spouseCheckbox.addEventListener('change', function() {
