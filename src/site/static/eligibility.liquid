@@ -237,7 +237,7 @@ pageClass: "page-public-assistance"
               function checkSpouseDependent() {
                 const spouseCheckbox = document.getElementById('hh-member-spouse');
                 const dependentCheckbox = document.getElementById('hh-member-dependent');
-                spouseCheckbox.addEventListener('change', function() => {
+                spouseCheckbox.addEventListener('change', function() {
                   if (spouseCheckbox.checked) {
                     dependentCheckbox.checked = false;
                     dependentCheckbox.disabled = true;
