@@ -234,14 +234,16 @@ pageClass: "page-public-assistance"
               <label for="hh-member-spouse">This person is my spouse</label>
             </li>
             <script>
-              const spouseCheckbox = document.getElementById('hh-member-spouse');
-              const dependentCheckbox = document.getElementById('hh-member-dependent');
+              function checkSpouseDependent() {
+                const spouseCheckbox = document.getElementById('hh-member-spouse');
+                const dependentCheckbox = document.getElementById('hh-member-dependent');
 
-              if (spouseCheckbox.checked) {
-                dependentCheckbox.checked = false;
-                dependentCheckbox.disabled = true;
-              } else {
-                dependentCheckbox.disabled = false;
+                if (spouseCheckbox.checked) {
+                  dependentCheckbox.checked = false;
+                  dependentCheckbox.disabled = true;
+                } else {
+                  dependentCheckbox.disabled = false;
+                }
               }
             </script>
           </ul>
