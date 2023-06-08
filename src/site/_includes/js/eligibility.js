@@ -2804,19 +2804,6 @@ function computeEligibility() {
   }
 }
 
-// Disables hh-member-dependent if hh-member-spouse checked
-function checkSpouseDependent() {
-  const spouseCheckbox = document.getElementById('hh-member-spouse');
-  const dependentCheckbox = document.getElementById('hh-member-dependent');
-
-  if (spouseCheckbox.checked) {
-    dependentCheckbox.checked = false;
-    dependentCheckbox.disabled = true;
-  } else {
-    dependentCheckbox.disabled = false;
-  }
-}
-
 // Script entry point.
 function init() {
   linkPages();
