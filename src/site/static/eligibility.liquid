@@ -234,8 +234,8 @@ pageClass: "page-public-assistance"
               <label for="hh-member-spouse">This person is my spouse</label>
             </li>
             <script>
-            const spousecheck = document.getElementById('hh-member-spous');
-            const depcheck = document.getElementById('hh-member-dependent');
+            var spousecheck = document.getElementById('hh-member-spouse');
+            var depcheck = document.getElementById('hh-member-dependent');
             
             spousecheck.onclick = function() {
               if (spousecheck.checked) {
