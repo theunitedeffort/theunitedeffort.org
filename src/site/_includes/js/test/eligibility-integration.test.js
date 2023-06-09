@@ -915,6 +915,25 @@ describe('Navigation and UI', () => {
     expect(spouse3.checked).toBe(false);
   });
 
+  test('Selecting a spouse unselects dependent and vice versa', () => {
+    click(nextButton, 2);
+    addHouseholdMember();
+    const spouse1 = document.getElementById('hh-member-spouse-1');
+    const dependent1 = document.getElementById('hh-member-dependent-1');
+    click(dependent1);
+    expect(spouse1.checked).toBe(false);
+    expect(dependent1.checked).toBe(true);
+    click(spouse1);
+    expect(dependent1.checked).toBe(false);
+    expect(spouse1.checked).toBe(true);
+    click(dependent1);
+    expect(spouse1.checked).toBe(false);
+    expect(dependent1.checked).toBe(true);
+    click(dependent1);
+    expect(spouse1.checked).toBe(false);
+    expect(dependent1.checked).toBe(false);
+  });
+
   test('Setting one age field updates the value of the other age field', () => {
     const yourselfAge = document.getElementById('age');
     const householdAge = document.getElementById('hh-myself-age');
