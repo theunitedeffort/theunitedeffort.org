@@ -233,21 +233,6 @@ pageClass: "page-public-assistance"
               <input id="hh-member-spouse" type="checkbox">
               <label for="hh-member-spouse">This person is my spouse</label>
             </li>
-            <script>
-            window.onload = function() {
-              const spousecheck = document.getElementById('hh-member-spouse');
-              const depcheck = document.getElementById('hh-member-dependent');
-              
-              spousecheck.onclick = function() {
-                if (spousecheck.checked) {
-                  depcheck.checked = false;
-                  depcheck.disabled = true;
-                } else {
-                  depcheck.disabled = false;
-                }
-              };
-            }
-            </script>
           </ul>
         </div>
       {% endcapture %}
