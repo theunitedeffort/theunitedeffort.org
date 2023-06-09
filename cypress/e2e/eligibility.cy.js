@@ -1,3 +1,27 @@
+function inputMoneyFor(alias) {
+  const firstBtnRegex = /enter ((income)|(an asset))/i;
+  const btnRegex = /add another ((entry)|(asset))/i;
+  const inputRegex = /income|value/i;
+  cy.get(alias).contains(firstBtnRegex).click();
+  cy.get(alias).contains(btnRegex).click();
+  cy.get(alias).contains(btnRegex).click();
+  cy.get(alias).findAllByLabelText(inputRegex).eq(0).type('1000');
+  cy.get(alias).findAllByLabelText(inputRegex).eq(1).type('450');
+  cy.get(alias).findAllByLabelText(inputRegex).eq(2).type('50');
+}
+
+function inputMoney() {
+  cy.get('@page').contains('fieldset', 'Myself').as('myself');
+  cy.get('@page').contains('fieldset', 'Alan').as('member2');
+  inputMoneyFor('@myself');
+  cy.get('@page').should('include.text', '$1,500');
+  cy.get('@myself').findAllByText(/remove/i).eq(1).click();
+  cy.get('@page').should('include.text', '$1,050');
+  inputMoneyFor('@member2');
+  cy.get('@page').should('include.text', '$2,550');
+  cy.get('@member2').findAllByText(/remove/i).eq(1).click();
+  cy.get('@page').should('include.text', '$2,100');
+}
 
 describe('Eligibility Assessment Tool', () => {
   beforeEach(() => {
@@ -92,18 +116,80 @@ describe('Eligibility Assessment Tool', () => {
       .findByLabelText(/no/i).click();
     cy.get('#next-button').click();
 
-    cy.get('#page-income').should('be.visible');
+    cy.get('#page-income').as('page').should('be.visible');
+    const incomeTypes = [
+      /wages/i,
+      /self-employment/i,
+      /disability/i,
+      /unemployment benefits/i,
+      /retirement benefits/i,
+      /veteran.s benefits/i,
+      /worker.s compensation/i,
+      /child support/i,
+      /other source/i,
+    ];
+    cy.wrap(incomeTypes).each((incomeType) => {
+      cy.get('@page').findByLabelText(incomeType).click();
+    });
+    cy.get('@page').findByLabelText(/no income/i).click();
+    cy.wrap(incomeTypes).each((incomeType) => {
+      cy.get('@page').findByLabelText(incomeType).should('be.disabled');
+      cy.get('@page').findByLabelText(incomeType).should('not.be.selected');
+    });
+    cy.get('@page').findByLabelText(/no income/i).click();
+    cy.wrap(incomeTypes).each((incomeType) => {
+      cy.get('@page').findByLabelText(incomeType).click();
+    });
     cy.get('#next-button').click();
 
-    cy.get('#page-ss-taxes').should('be.visible');
+    cy.get('#page-income-details-wages').as('page').should('be.visible');
+    inputMoney();
     cy.get('#next-button').click();
 
-    cy.get('#page-income-assets').should('be.visible');
+    cy.get('#page-income-details-self-employed').as('page').should('be.visible');
+    inputMoney();
     cy.get('#next-button').click();
 
-    cy.get('#page-existing-benefits').should('be.visible');
+    cy.get('#page-income-details-disability').as('page').should('be.visible');
+    inputMoney();
+    cy.get('#next-button').click();
+
+    cy.get('#page-income-details-unemployment').as('page').should('be.visible');
+    inputMoney();
+    cy.get('#next-button').click();
+
+    cy.get('#page-income-details-retirement').as('page').should('be.visible');
+    inputMoney();
+    cy.get('#next-button').click();
+
+    cy.get('#page-income-details-veterans').as('page').should('be.visible');
+    inputMoney();
+    cy.get('#next-button').click();
+
+    cy.get('#page-income-details-workers-comp').as('page').should('be.visible');
+    inputMoney();
+    cy.get('#next-button').click();
+
+    cy.get('#page-income-details-child-support').as('page').should('be.visible');
+    inputMoney();
+    cy.get('#next-button').click();
+
+    cy.get('#page-income-details-other').as('page').should('be.visible');
+    inputMoney();
+    cy.get('#next-button').click();
+
+    cy.get('#page-ss-taxes').as('page').should('be.visible');
+    cy.get('@page').contains('div', 'paid Social Security taxes')
+      .findByLabelText(/yes/i).click();
+    cy.get('#next-button').click();
+
+    cy.get('#page-income-assets').as('page').should('be.visible');
+    inputMoney();
+    cy.get('#next-button').click();
+
+    cy.get('#page-existing-benefits').as('page').should('be.visible');
     cy.get('#submit-button').click();
 
-    cy.get('#page-results').should('be.visible');
+    cy.get('#page-results').as('page').should('be.visible');
   });
 });
