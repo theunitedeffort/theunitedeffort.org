@@ -602,6 +602,9 @@ function onChangeSpouse(event) {
   if (event.target.checked) {
     event.target.dependentParameter.checked = false;
   } 
+  if (event.target.dependentParameter.checked) {
+    event.target.checked = false;
+  }
 }
 function onChangeNoIncome(event) {
   const wrapper = document.getElementById('income-types');
