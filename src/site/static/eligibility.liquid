@@ -40,7 +40,7 @@ pageClass: "page-public-assistance"
       <div>
         <div>
           <label for="age">How old are you?</label>
-          <input id="age" type="number" maxlength="3" min="1" max="130" /> years
+          <input id="age" class="short" type="number" maxlength="3" min="1" max="130" /> years
         </div>
 
         <p>Select any of the following that describe you:</p>
@@ -205,7 +205,7 @@ pageClass: "page-public-assistance"
         </div>
         <div>
           <label for="hh-member-age">Age</label>
-          <input id="hh-member-age" type="number" min="1" max="130"> years
+          <input id="hh-member-age" class="short" type="number" min="1" max="130"> years
         </div>
         <div>
           <ul id="hh-member-types" class="multiselect">
@@ -240,7 +240,7 @@ pageClass: "page-public-assistance"
         <h4>Myself</h4>
         <div>
           <label for="hh-myself-age">Age</label>
-          <input id="hh-myself-age" type="number" min="1" max="130"> years
+          <input id="hh-myself-age" class="short" type="number" min="1" max="130"> years
         </div>
       {% enddynamicFieldList %}
     {% endeligPage %}
