@@ -545,10 +545,11 @@ function onHouseholdMemberAdd(event) {
   // Add listener to the new member's spouse checkbox
   const spouseInput = newMember.querySelector('[id^="hh-member-spouse"]');
   spouseInput.addEventListener('click', onChangeSpouse);
-  spouseInput.dependentParameter = newMember.querySelector('[id^="hh-member-dependent"]');
+  // Add listener to the new member's dependent checkbox
   const dependentInput = newMember.querySelector('[id^="hh-member-dependent"]');
   dependentInput.addEventListener('click', onChangeDependent);
-  dependentInput.spouseParameter = newMember.querySelector('[id^="hh-member-spouse"]');
+  spouseInput.dependentParameter = dependentInput;
+  dependentInput.spouseParameter = spouseInput;
   // Add listener to the name input so the heading can be updated.
   const nameInput = newMember.querySelector('[id^="hh-member-name"]');
   nameInput.addEventListener('change', onChangeName);
