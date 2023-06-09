@@ -601,9 +601,6 @@ function onChangeSpouse(event) {
         input.checked = false;
       }
     }
-  }
-
-  if (event.target.checked) {
     event.target.dependentParameter.checked = false;
   }
 }
