@@ -195,7 +195,6 @@ pageClass: "page-public-assistance"
     {% eligPage "household-members" %}
       <p>
         Enter details for each person living in your household. Include all adults and children who live in your home and share income and household expenses like bills and food. 
-        <strong>Please note that for each individual you may only check one option out of being a spouse or dependent.</strong>
       </p>
 
       {% capture hhTemplate %}
@@ -236,7 +235,6 @@ pageClass: "page-public-assistance"
             </li>
           </ul>
         </div>
-        <p>Please select at most one out of the final two options</p>
       {% endcapture %}
       {% dynamicFieldList "Add a new household member", "", hhTemplate %}
         <h4>Myself</h4>
