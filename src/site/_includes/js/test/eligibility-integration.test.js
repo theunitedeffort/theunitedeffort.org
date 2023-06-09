@@ -922,13 +922,13 @@ describe('Navigation and UI', () => {
     const dependent1 = document.getElementById('hh-member-dependent-1');
     click(dependent1);
     expect(spouse1.checked).toBe(false);
-    expect(dependent1.checked).toBe(true)
+    expect(dependent1.checked).toBe(true);
     click(spouse1);
     expect(dependent1.checked).toBe(false);
     expect(spouse1.checked).toBe(true);
     click(dependent1);
     expect(spouse1.checked).toBe(false);
-    expect(dependent1.checked).toBe(true)
+    expect(dependent1.checked).toBe(true);
     click(dependent1);
     expect(spouse1.checked).toBe(false);
     expect(dependent1.checked).toBe(false);
