@@ -546,6 +546,9 @@ function onHouseholdMemberAdd(event) {
   const spouseInput = newMember.querySelector('[id^="hh-member-spouse"]');
   spouseInput.addEventListener('click', onChangeSpouse);
   spouseInput.dependentParameter = newMember.querySelector('[id^="hh-member-dependent"]');
+  const dependentInput = newMember.querySelector('[id^="hh-member-dependent"]');
+  spouseInput.addEventListener('click', onChangeDependent);
+  spouseInput.spouseParameter = newMember.querySelector('[id^="hh-member-spouse"]');
   // Add listener to the name input so the heading can be updated.
   const nameInput = newMember.querySelector('[id^="hh-member-name"]');
   nameInput.addEventListener('change', onChangeName);
@@ -602,10 +605,14 @@ function onChangeSpouse(event) {
   if (event.target.checked) {
     event.target.dependentParameter.checked = false;
   } 
-  if (event.target.dependentParameter.checked) {
-    event.target.checked = false;
+}
+
+function onChangeDependent(event) {
+  if (event.target.checked) {
+    event.target.spouseParameter.checked = false;
   }
 }
+
 function onChangeNoIncome(event) {
   const wrapper = document.getElementById('income-types');
   const allIncomeTypes = wrapper.querySelectorAll('input[type=checkbox]');
