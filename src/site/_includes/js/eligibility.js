@@ -603,7 +603,7 @@ function onChangeSpouse(event) {
   if (spouseInput.checked) {
     dependentInput.checked = false;
   } 
-
+}
 function onChangeNoIncome(event) {
   const wrapper = document.getElementById('income-types');
   const allIncomeTypes = wrapper.querySelectorAll('input[type=checkbox]');
