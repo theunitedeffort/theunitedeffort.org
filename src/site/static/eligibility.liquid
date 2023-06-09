@@ -6,32 +6,30 @@ permalink:
 pageClass: "page-public-assistance"
 ---
 
-<h1>{{ title }}
-  <span class="subtitle">In Santa Clara County</span>
-</h1>
+<h1>{{title}}
+<span class="subtitle">In Santa Clara County</span></h1>
 
 <p>
-  Use this tool to find assistance programs for which you may qualify.
-  <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span>
-  Some of the assistance programs in this tool only apply to residents of Santa Clara County, CA.
+  Use this tool to find assistance programs for which you may qualify. <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span> Some of the assistance programs in this tool only apply to residents of Santa Clara County, CA.
 </p>
 
 <div id="form-top" class="step_indicator">
-  <ul></ul>
+  <ul>
+  </ul>
 </div>
 
 <form id="eligibility">
   {% eligSection "intro" %}
     {% eligPage "intro" %}
-      <p>
-        Fill in each field to the best of your knowledge. The more information you provide, the more accurate your eligibility recommendations will be.  The data you enter is never stored or transmitted and is completely private.
-      </p>
-      <p>
-        After entering all your information, you will be provided with a list of assistance programs you can consider applying for.  You can always re-visit a section by clicking on that section's name, even after you've seen your results.  Note that if you use your browser's back button, you will lose your progress.
-      </p>
-      <p>
-        Ready?  Press Next to begin.
-      </p>
+    <p>
+      Fill in each field to the best of your knowledge. The more information you provide, the more accurate your eligibility recommendations will be.  The data you enter is never stored or transmitted and is completely private.
+    </p>
+    <p>
+      After entering all your information, you will be provided with a list of assistance programs you can consider applying for.  You can always re-visit a section by clicking on that section's name, even after you've seen your results.  Note that if you use your browser's back button, you will lose your progress.
+    </p>
+    <p>
+      Ready?  Press Next to begin.
+    </p>
     {% endeligPage %}
   {% endeligSection %}
 
@@ -42,12 +40,7 @@ pageClass: "page-public-assistance"
       <div>
         <div>
           <label for="age">How old are you?</label>
-          <input
-            id="age"
-            type="number"
-            maxlength="3"
-            min="1"
-            max="130" /> years
+          <input id="age" type="number" maxlength="3" min="1" max="130" /> years
         </div>
 
         <p>Select any of the following that describe you:</p>
@@ -55,9 +48,7 @@ pageClass: "page-public-assistance"
           <ul id="yourself-details" class="multiselect">
             <li>
               <input id="not-citizen" type="checkbox" />
-              <label for="not-citizen">I am
-                <span class="italic">not</span>
-                a U.S. citizen</label>
+              <label for="not-citizen">I am <span class="italic">not</span> a U.S. citizen</label>
             </li>
             <li>
               <input id="disabled" type="checkbox" />
@@ -154,17 +145,10 @@ pageClass: "page-public-assistance"
       <h3>About Your Military Service</h3>
       <fieldset>
         <p>
-          This question is about your
-          <span class="bold">active duty period</span>
-          from
-          <span id="served-from-ref" class="bold"></span>
-          until
-          <span id="served-until-ref" class="bold"></span>.
+          This question is about your <span class="bold">active duty period</span> from <span id="served-from-ref" class="bold"></span> until <span id="served-until-ref" class="bold"></span>.
         </p>
         <div>
-          <p>
-            <span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span>
-          </p>
+          <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
           {% singleselect "mil-svc-duration" %}
             {% option "full-dur-yes" %}
               Yes
@@ -183,9 +167,7 @@ pageClass: "page-public-assistance"
     {% eligPage "immigration-status" %}
       <h3>About Your Immigration Status</h3>
 
-      <p>Select
-        <span class="bold">one</span>
-        of the following that most accurately describes you:
+      <p>Select <span class="bold">one</span> of the following that most accurately describes you:
       </p>
       <div>
         {% singleselect "immig_status" %}
@@ -212,25 +194,19 @@ pageClass: "page-public-assistance"
 
     {% eligPage "household-members" %}
       <p>
-        Enter details for each person living in your household. Include all adults and children who live in your home and share income and household expenses like bills and food.
+        Enter details for each person living in your household. Include all adults and children who live in your home and share income and household expenses like bills and food. 
+        <strong>Please note that for each individual you may only check one option out of being a spouse or dependent.</strong>
       </p>
 
       {% capture hhTemplate %}
         <h4>Household Member 2</h4>
         <div>
           <label for="hh-member-name">First Name</label>
-          <input
-            id="hh-member-name"
-            type="text"
-            class="short">
+          <input id="hh-member-name" type="text" class="short">
         </div>
         <div>
           <label for="hh-member-age">Age</label>
-          <input
-            id="hh-member-age"
-            type="number"
-            min="1"
-            max="130"> years
+          <input id="hh-member-age" type="number" min="1" max="130"> years
         </div>
         <div>
           <ul id="hh-member-types" class="multiselect">
@@ -260,16 +236,13 @@ pageClass: "page-public-assistance"
             </li>
           </ul>
         </div>
+        <p>Please select at most one out of the final two options</p>
       {% endcapture %}
       {% dynamicFieldList "Add a new household member", "", hhTemplate %}
         <h4>Myself</h4>
         <div>
           <label for="hh-myself-age">Age</label>
-          <input
-            id="hh-myself-age"
-            type="number"
-            min="1"
-            max="130"> years
+          <input id="hh-myself-age" type="number" min="1" max="130"> years
         </div>
       {% enddynamicFieldList %}
     {% endeligPage %}
@@ -278,10 +251,7 @@ pageClass: "page-public-assistance"
       <p>How many unborn children are in your household?</p>
       <div>
         <label for="unborn-children">Total unborn children</label>
-        <input
-          type="number"
-          id="unborn-children"
-          class="short">
+        <input type="number" id="unborn-children" class="short">
       </div>
     {% endeligPage %}
 
@@ -331,8 +301,7 @@ pageClass: "page-public-assistance"
     <h2>Income & Assets</h2>
     {% eligPage "income" %}
       <p>
-        Select all sources of income for you and your household. Include income from
-        <span class="bold">all members of your household, including yourself</span>.
+        Select all sources of income for you and your household. Include income from <span class="bold">all members of your household, including yourself</span>.
       </p>
       <div>
         <ul id="income-types" class="multiselect">
@@ -346,9 +315,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-disability" type="checkbox">
-            <label for="income-has-disability">Disability benefits
-              <span class="subtitle">Including SSI/SSP, SSDI, SDI, and CAPI</span>
-            </label>
+            <label for="income-has-disability">Disability benefits <span class="subtitle">Including SSI/SSP, SSDI, SDI, and CAPI</span></label>
           </li>
           <li>
             <input id="income-has-unemployment" type="checkbox">
@@ -356,9 +323,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-retirement" type="checkbox">
-            <label for="income-has-retirement">Retirement benefits
-              <span class="subtitle">Including pensions and Social Security retirement</span>
-            </label>
+            <label for="income-has-retirement">Retirement benefits <span class="subtitle">Including pensions and Social Security retirement</span></label>
           </li>
           <li>
             <input id="income-has-veterans" type="checkbox">
@@ -374,9 +339,7 @@ pageClass: "page-public-assistance"
           </li>
           <li>
             <input id="income-has-other" type="checkbox">
-            <label for="income-has-other">Other source of income not listed here
-              <span class="subtitle">Including cash assistance, interest, and investment income</span>
-            </label>
+            <label for="income-has-other">Other source of income not listed here <span class="subtitle">Including cash assistance, interest, and investment income</span></label>
           </li>
           <li>
             <input id="income-has-none" type="checkbox">
@@ -387,11 +350,11 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
 
     {% eligPage "income-details-wages" %}
-      {% render "eligibility-income-details" desc: "job wages, tips, or commission", heading: "Job", id: "wages" %}
+      {% render "eligibility-income-details" desc: "job wages, tips, or commission", heading: "Job", id: "wages"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-self-employed" %}
-      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employed" %}
+      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employed"  %}
     {% endeligPage %}
 
     {% capture disabilityIncomeChecks %}
@@ -405,34 +368,32 @@ pageClass: "page-public-assistance"
     {% endeligPage %}
 
     {% eligPage "income-details-unemployment" %}
-      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Payment", id: "unemployment" %}
+      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Payment", id: "unemployment"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-retirement" %}
-      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Payment", id: "retirement" %}
+      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Payment", id: "retirement"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-veterans" %}
-      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Payment", id: "veterans" %}
+      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Payment", id: "veterans"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-workers-comp" %}
-      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Payment", id: "workers-comp" %}
+      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Payment", id: "workers-comp"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-child-support" %}
-      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Payment", id: "child-support" %}
+      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Payment", id: "child-support"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-other" %}
-      {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other" %}
+      {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other"  %}
     {% endeligPage %}
 
     {% eligPage "ss-taxes" %}
       <div>
-        <p>In the last 10 years, have you worked
-          <span class="bold">and</span>
-          paid Social Security taxes on your earnings?</p>
+        <p>In the last 10 years, have you worked <span class="bold">and</span> paid Social Security taxes on your earnings?</p>
         {% yesNo "ss-taxes" %}
       </div>
     {% endeligPage %}
@@ -452,43 +413,37 @@ pageClass: "page-public-assistance"
         Mark any public assistance and benefits you or your household already receive.
       </p>
 
-      {% capture columns -%}
+     {% capture columns -%}
         me: Me
         household: Someone in my household
-      {%- endcapture %}
+     {%- endcapture %}
 
-      {% capture rows -%}
+     {% capture rows -%}
         adsa: Assistance Dog Special Allowance (ADSA)
-        calfresh: CalFresh
-        <span class="subtitle">Also known as Supplemental Nutrition Assistance Program (SNAP) or Food Stamps</span>
-        calworks: California Work Opportunity and Responsibility to Kids (CalWORKs)
-        <span class="subtitle">Also known as Temporary Assistance for Needy Families (TANF)</span>
+        calfresh: CalFresh <span class="subtitle">Also known as Supplemental Nutrition Assistance Program (SNAP) or Food Stamps</span>
+        calworks: California Work Opportunity and Responsibility to Kids (CalWORKs) <span class="subtitle">Also known as Temporary Assistance for Needy Families (TANF)</span>
         capi: Cash Assistance Program for Immigrants (CAPI)
         care: California Alternate Rates for Energy (CARE)
-                        cfap: California Food Assistance Program (CFAP)
-        <span class="subtitle">Alternative to CalFresh, also known as Food Stamps</span>
+        cfap: California Food Assistance Program (CFAP) <span class="subtitle">Alternative to CalFresh, also known as Food Stamps</span>
         fera: Family Electric Rate Assistance (FERA)
-        pha: Federal Public Housing Assistance
-        <span class="subtitle">Also known as Section 8, Housing Choice Voucher, or Property Voucher</span>
+        pha: Federal Public Housing Assistance <span class="subtitle">Also known as Section 8, Housing Choice Voucher, or Property Voucher</span>
         ga: General Assistance (GA)
         ihss: In-Home Supportive Services (IHSS)
-                        liheap: Low Income Home Energy Assistance Program (LIHEAP)
-                        lifeline: California LifeLine
-                        medical: Medi-Cal
-        <span class="subtitle">Also known as California’s Medicaid program</span>
+        liheap: Low Income Home Energy Assistance Program (LIHEAP)
+        lifeline: California LifeLine
+        medical: Medi-Cal <span class="subtitle">Also known as California’s Medicaid program</span>
         nslp: National School Lunch Program (NSLP)
-        schip: State Children's Health Insurance Program (SCHIP)
-        <span class="subtitle">Also known as Healthy Families A & B</span>
+        schip: State Children's Health Insurance Program (SCHIP) <span class="subtitle">Also known as Healthy Families A & B</span>
         ssi: Supplemental Security Income (SSI)
         ssdi: Social Security Disability Insurance (SSDI)
-                        uplift: Universal Pass for Life Improvement From Transportation (UPLIFT)
-                        wic: Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)
-                        va-disability: VA Disability Compensation
-                        va-pension: Veterans Pension or Survivors Pension
-                        vta-paratransit: VTA ACCESS Paratransit
-      {%- endcapture %}
+        uplift: Universal Pass for Life Improvement From Transportation (UPLIFT)
+        wic: Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)
+        va-disability: VA Disability Compensation
+        va-pension: Veterans Pension or Survivors Pension
+        vta-paratransit: VTA ACCESS Paratransit
+     {%- endcapture %}
 
-      {% checkboxTable "existing", columns, rows %}
+     {% checkboxTable "existing", columns, rows %}
 
     {% endeligPage %}
   {% endeligSection %}
@@ -520,7 +475,7 @@ pageClass: "page-public-assistance"
             CalFresh provides monthly food benefits to certain low-income individuals and families.
           {% endprogram %}
 
-          {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm" %}
+          {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm"%}
             CalWORKs provides cash aid and services to certain low-income families with children in the home.
           {% endprogram %}
 
@@ -596,9 +551,7 @@ pageClass: "page-public-assistance"
 
       <div class="programs programs__ineligible">
         <p class="has_results">
-          We checked the programs below, but based on your responses, you are likely
-          <span class="bold">not</span>
-          eligible for them.  If you think you should be eligible for one of these programs, contact the program provider for an eligibility assessment.
+          We checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  If you think you should be eligible for one of these programs, contact the program provider for an eligibility assessment.
         </p>
         <ul></ul>
       </div>
@@ -614,26 +567,15 @@ pageClass: "page-public-assistance"
         The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
       </p>
       <p>
-        If you have any questions about these programs, you can email
-        <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a>
-        or get in touch with the program provider directly.
+        If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
       </p>
     {% endeligPage %}
   {% endeligSection %}
 
   <div id="controls">
-    <button
-      type="button"
-      class="btn btn_secondary hidden"
-      id="back-button">Back</button>
-    <button
-      type="button"
-      class="btn btn_primary"
-      id="next-button">Next</button>
-    <button
-      type="button"
-      class="btn btn_primary hidden"
-      id="submit-button">Finish</button>
+    <button type="button" class="btn btn_secondary hidden" id="back-button">Back</button>
+    <button type="button" class="btn btn_primary" id="next-button">Next</button>
+    <button type="button" class="btn btn_primary hidden" id="submit-button">Finish</button>
   </div>
 </form>
 <p class="float_right">
@@ -642,5 +584,5 @@ pageClass: "page-public-assistance"
 
 <script src="/js/eligibility.js"></script>
 <script>
-  init();
+init();
 </script>
