@@ -599,7 +599,7 @@ function onChangeSpouse(event) {
   }
 
   const spouseInput = event.target;
-  const dependentInput = spouseInput.closest('li').querySelector('[id^="hh-member-dependent"]');
+  const dependentInput = event.querySelector('[id^="hh-member-dependent"]');
   if (spouseInput.checked) {
     dependentInput.checked = false;
   } 
