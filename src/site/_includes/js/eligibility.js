@@ -547,8 +547,8 @@ function onHouseholdMemberAdd(event) {
   spouseInput.addEventListener('click', onChangeSpouse);
   spouseInput.dependentParameter = newMember.querySelector('[id^="hh-member-dependent"]');
   const dependentInput = newMember.querySelector('[id^="hh-member-dependent"]');
-  spouseInput.addEventListener('click', onChangeDependent);
-  spouseInput.spouseParameter = newMember.querySelector('[id^="hh-member-spouse"]');
+  dependentInput.addEventListener('click', onChangeDependent);
+  dependentInput.spouseParameter = newMember.querySelector('[id^="hh-member-spouse"]');
   // Add listener to the name input so the heading can be updated.
   const nameInput = newMember.querySelector('[id^="hh-member-name"]');
   nameInput.addEventListener('change', onChangeName);
