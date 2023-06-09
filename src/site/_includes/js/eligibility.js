@@ -604,7 +604,7 @@ function onChangeSpouse(event) {
 
   if (event.target.checked) {
     event.target.dependentParameter.checked = false;
-  } 
+  }
 }
 
 function onChangeDependent(event) {
