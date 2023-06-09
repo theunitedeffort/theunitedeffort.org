@@ -600,7 +600,7 @@ function onChangeSpouse(event) {
   }
 
   if (event.target.checked) {
-    dependentParameter.checked = false;
+    event.target.dependentParameter.checked = false;
   } 
 }
 function onChangeNoIncome(event) {
