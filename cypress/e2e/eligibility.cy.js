@@ -23,6 +23,40 @@ function inputMoney() {
   cy.get('@page').should('include.text', '$2,100');
 }
 
+function yourselfChecks() {
+  cy.get('@yourself').should('be.enabled');
+  cy.get('@household').should('be.disabled');
+  cy.get('@income').should('be.disabled');
+  cy.get('@existing').should('be.disabled');
+  cy.get('@results').should('be.disabled');
+}
+
+function householdChecks() {
+  cy.get('@yourself').should('be.enabled');
+  cy.get('@household').should('be.enabled');
+  cy.get('@income').should('be.disabled');
+  cy.get('@existing').should('be.disabled');
+  cy.get('@results').should('be.disabled');
+}
+
+function incomeChecks() {
+  cy.get('@yourself').should('be.enabled');
+  cy.get('@household').should('be.enabled');
+  cy.get('@income').should('be.enabled');
+  cy.get('@existing').should('be.disabled');
+  cy.get('@results').should('be.disabled');
+}
+
+function nextShouldBe(selector, nextAlias='@next') {
+  cy.get(nextAlias).click();
+  cy.get(selector).should('be.visible');
+  cy.get('@back').click();
+  cy.get('@page').should('be.visible');
+  cy.get(nextAlias).click();
+  cy.get(selector).as('page').should('be.visible');
+}
+
+
 describe('Eligibility Assessment Tool', () => {
   beforeEach(() => {
     cy.visit('/public-assistance/eligibility/');
@@ -31,29 +65,38 @@ describe('Eligibility Assessment Tool', () => {
   // This is a bit of a smoke test, just verifying overall functionality.
   it('gets to final results page with data entry', () => {
     cy.get('#page-intro').should('be.visible');
+    cy.contains('button', 'Yourself').as('yourself').should('be.disabled');
+    cy.contains('button', 'Household').as('household').should('be.disabled');
+    cy.contains('button', 'Income & Assets').as('income').should('be.disabled');
+    cy.contains('button', 'Existing Benefits').as('existing')
+      .should('be.disabled');
+    cy.contains('button', 'Results').as('results').should('be.disabled');
     cy.contains('button', 'Next').as('next').click();
+    cy.contains('button', 'Back').as('back');
+    cy.contains('button', 'Finish').as('finish');
 
     cy.get('#page-yourself-start').as('page').should('be.visible');
+    yourselfChecks();
     cy.get('@page').findByLabelText(/How old are you/i).type('15');
     cy.get('@page').findByLabelText(/I am not a U.S. citizen/i).click();
     cy.get('@page').findByLabelText(/I am disabled/i).click();
     cy.get('@page').findByLabelText(/I am a U.S. veteran/i).click();
     cy.get('@page').findByLabelText(/I am pregnant/i).click();
-    cy.get('@next').click();
 
-    cy.get('#page-head-of-household').as('page').should('be.visible');
+    nextShouldBe('#page-head-of-household');
+    yourselfChecks();
     cy.get('@page').contains('div', 'head of your household')
       .findByLabelText(/yes/i).click();
-    cy.get('@next').click();
 
-    cy.get('#page-disability-details').as('page').should('be.visible');
+    nextShouldBe('#page-disability-details');
+    yourselfChecks();
     cy.get('@page').contains('div', 'use a guide, signal or service dog')
       .findByLabelText(/yes/i).click();
     cy.get('@page').contains('div', 'related to your military service')
       .findByLabelText(/yes/i).click();
-    cy.get('@next').click();
 
-    cy.get('#page-veteran-details').as('page').should('be.visible');
+    nextShouldBe('#page-veteran-details');
+    yourselfChecks();
     cy.get('@page').findByLabelText(/your discharge status/i).as('select')
       .select('Honorable');
     cy.get('@page').contains('button', 'Add another').click();
@@ -65,18 +108,18 @@ describe('Eligibility Assessment Tool', () => {
     cy.get('@period2').findByLabelText(/duty type/i).select('Reserve duty');
     cy.get('@period2').findByLabelText(/served from/i).type('1960-01-01');
     cy.get('@period2').findByLabelText(/until/i).type('1970-01-01');
-    cy.get('#next-button').click();
 
-    cy.get('#page-veteran-duty-period').as('page').should('be.visible');
+    nextShouldBe('#page-veteran-duty-period');
+    yourselfChecks();
     cy.get('@page').contains('fieldset', 'from 1/1/2020 until 1/2/2020')
       .findByLabelText(/yes/i).click();
-    cy.get('#next-button').click();
 
-    cy.get('#page-immigration-status').as('page').should('be.visible');
+    nextShouldBe('#page-immigration-status');
+    yourselfChecks();
     cy.get('@page').findByLabelText(/temporarily/i).click();
-    cy.get('#next-button').click();
 
-    cy.get('#page-household-members').as('page').should('be.visible');
+    nextShouldBe('#page-household-members');
+    householdChecks();
     cy.get('@page').contains('button', 'Add a new').as('add').click();
     cy.get('@add').click();
     cy.get('@page').contains('li', /myself/i).as('myself');
@@ -97,26 +140,26 @@ describe('Eligibility Assessment Tool', () => {
     cy.get('@member2Spouse').should('not.be.selected');
     cy.get('@member2').contains('remove').click();
     cy.get('@page').should('not.include.text', 'Ruth');
-    cy.get('#next-button').click();
 
-    cy.get('#page-household-unborn-members').as('page').should('be.visible');
+    nextShouldBe('#page-household-unborn-members');
+    householdChecks();
     cy.get('@page').findByLabelText(/unborn children/i).type('2');
-    cy.get('#next-button').click();
 
-    cy.get('#page-household-situation').as('page').should('be.visible');
+    nextShouldBe('#page-household-situation');
+    householdChecks();
     cy.findByLabelText(/apartment/i).click();
-    cy.get('#next-button').click();
 
-    cy.get('#page-household-housed').as('page').should('be.visible');
+    nextShouldBe('#page-household-housed');
+    householdChecks();
     cy.get('@page').contains('div', 'pay a gas or electric bill')
       .findByLabelText(/yes/i).click();
     cy.get('@page').contains('div', 'have cooking facilities')
       .findByLabelText(/no/i).click();
     cy.get('@page').contains('div', 'at risk of losing your home')
       .findByLabelText(/no/i).click();
-    cy.get('#next-button').click();
 
-    cy.get('#page-income').as('page').should('be.visible');
+    nextShouldBe('#page-income');
+    incomeChecks();
     const incomeTypes = [
       /wages/i,
       /self-employment/i,
@@ -140,56 +183,79 @@ describe('Eligibility Assessment Tool', () => {
     cy.wrap(incomeTypes).each((incomeType) => {
       cy.get('@page').findByLabelText(incomeType).click();
     });
-    cy.get('#next-button').click();
 
-    cy.get('#page-income-details-wages').as('page').should('be.visible');
+    nextShouldBe('#page-income-details-wages');
+    incomeChecks();
     inputMoney();
-    cy.get('#next-button').click();
 
-    cy.get('#page-income-details-self-employed').as('page').should('be.visible');
+    nextShouldBe('#page-income-details-self-employed');
+    incomeChecks();
     inputMoney();
-    cy.get('#next-button').click();
 
-    cy.get('#page-income-details-disability').as('page').should('be.visible');
+    nextShouldBe('#page-income-details-disability');
+    incomeChecks();
     inputMoney();
-    cy.get('#next-button').click();
 
-    cy.get('#page-income-details-unemployment').as('page').should('be.visible');
+    nextShouldBe('#page-income-details-unemployment');
+    incomeChecks();
     inputMoney();
-    cy.get('#next-button').click();
 
-    cy.get('#page-income-details-retirement').as('page').should('be.visible');
+    nextShouldBe('#page-income-details-retirement');
+    incomeChecks();
     inputMoney();
-    cy.get('#next-button').click();
 
-    cy.get('#page-income-details-veterans').as('page').should('be.visible');
+    nextShouldBe('#page-income-details-veterans');
+    incomeChecks();
     inputMoney();
-    cy.get('#next-button').click();
 
-    cy.get('#page-income-details-workers-comp').as('page').should('be.visible');
+    nextShouldBe('#page-income-details-workers-comp');
+    incomeChecks();
     inputMoney();
-    cy.get('#next-button').click();
 
-    cy.get('#page-income-details-child-support').as('page').should('be.visible');
+    nextShouldBe('#page-income-details-child-support');
+    incomeChecks();
     inputMoney();
-    cy.get('#next-button').click();
 
-    cy.get('#page-income-details-other').as('page').should('be.visible');
+    nextShouldBe('#page-income-details-other');
+    incomeChecks();
     inputMoney();
-    cy.get('#next-button').click();
 
-    cy.get('#page-ss-taxes').as('page').should('be.visible');
+    nextShouldBe('#page-ss-taxes');
+    incomeChecks();
     cy.get('@page').contains('div', 'paid Social Security taxes')
       .findByLabelText(/yes/i).click();
-    cy.get('#next-button').click();
 
-    cy.get('#page-income-assets').as('page').should('be.visible');
+    nextShouldBe('#page-income-assets');
+    incomeChecks();
     inputMoney();
-    cy.get('#next-button').click();
 
-    cy.get('#page-existing-benefits').as('page').should('be.visible');
-    cy.get('#submit-button').click();
+    nextShouldBe('#page-existing-benefits');
+    cy.get('@yourself').should('be.enabled');
+    cy.get('@household').should('be.enabled');
+    cy.get('@income').should('be.enabled');
+    cy.get('@existing').should('be.enabled');
+    cy.get('@results').should('be.disabled');
+    cy.get('@page')
+      .findByRole('checkbox', {name: /general assistance .* me/i}).click();
+    cy.get('@page')
+      .findByRole('checkbox', {name: /lifeline .* household/i}).click();
 
-    cy.get('#page-results').as('page').should('be.visible');
+    nextShouldBe('#page-results', '@finish');
+    cy.get('@yourself').should('be.enabled');
+    cy.get('@household').should('be.enabled');
+    cy.get('@income').should('be.enabled');
+    cy.get('@existing').should('be.enabled');
+    cy.get('@results').should('be.enabled');
+
+    cy.get('@yourself').click()
+    cy.get('#page-yourself-start').should('be.visible');
+    cy.get('@household').click()
+    cy.get('#page-household-members').should('be.visible');
+    cy.get('@income').click()
+    cy.get('#page-income').should('be.visible');
+    cy.get('@existing').click()
+    cy.get('#page-existing-benefits').should('be.visible');
+    cy.get('@results').click()
+    cy.get('#page-results').should('be.visible');
   });
 });
