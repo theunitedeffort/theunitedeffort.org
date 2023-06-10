@@ -274,3 +274,84 @@ describe('getValueOrNull', () => {
     expect(elig.getValueOrNull('bad-question')).toBe(null);
   });
 });
+
+describe('sortByProgramName', () => {
+  test('Sorts alphabetically regardless of case', () => {
+    document.body.innerHTML = `
+      <ul id="list">
+        <li><h4>Banana</h4></li>
+        <li><h4>zucchini</h4></li>
+        <li><h4>apple</h4></li>
+        <li><h4>Banana</h4></li>
+      </ul>`;
+    const listElem = document.getElementById('list');
+    elig.sortByProgramName(listElem);
+    expect(Array.from(listElem.children, (i) => i.textContent)).toEqual([
+      'apple',
+      'Banana',
+      'Banana',
+      'zucchini',
+    ]);
+  });
+
+  test('Handles empty lists', () => {
+    document.body.innerHTML = `
+      <ul id="list">
+      </ul>`;
+    const listElem = document.getElementById('list');
+    elig.sortByProgramName(listElem);
+    expect(listElem.children.length).toBe(0);
+  });
+
+  test('Does not modify singleton lists', () => {
+    document.body.innerHTML = `
+      <ul id="list">
+        <li><h4>the cheese</h4></li>
+      </ul>`;
+    const listElem = document.getElementById('list');
+    elig.sortByProgramName(listElem);
+    expect(Array.from(listElem.children, (i) => i.textContent)).toEqual([
+      'the cheese',
+    ]);
+  });
+});
+
+describe('renderFlags', () => {
+  let expectedStrs = {};
+  beforeEach(() => {
+    expectedStrs[elig.FlagCodes.MORE_INFO_NEEDED] = 'need more information';
+    expectedStrs[elig.FlagCodes.COMPLEX_IMMIGRATION] = (
+      'immigrant eligibility rules');
+    expectedStrs[elig.FlagCodes.COMPLEX_RETIREMENT_AGE] = 'full retirement age';
+  });
+
+  test.each(Object.values(elig.FlagCodes))('Renders %s flag', (flag) => {
+    document.body.innerHTML = `
+      <ul id="flag-list">
+      </ul>`;
+    const listElem = document.getElementById('flag-list');
+    elig.renderFlags([flag], listElem);
+    const expectedSubstr = expectedStrs[flag] || '';
+    if (expectedSubstr === '') {
+      expect(listElem.children.length).toBe(0);
+    } else {
+      expect(listElem.children[0].textContent).toContain(expectedSubstr);
+    }
+  });
+
+  test('Renders multiple flags', () => {
+    document.body.innerHTML = `
+      <ul id="flag-list">
+      </ul>`;
+    const listElem = document.getElementById('flag-list');
+    elig.renderFlags([
+      elig.FlagCodes.COMPLEX_IMMIGRATION,
+      elig.FlagCodes.COMPLEX_RETIREMENT_AGE,
+      ], listElem);
+    expect(listElem.children.length).toBe(2);
+  });
+});
+
+describe('renderConditions', () => {
+
+});

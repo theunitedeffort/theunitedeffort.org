@@ -1455,12 +1455,12 @@ class MonthlyIncomeLimits {
 // Flags that can be associated with a Program to alter the display
 // of that Program's eligibility result to the user.
 const FlagCodes = {
-  UNKNOWN: 0,
-  NEAR_INCOME_LIMIT: 1,
-  TOO_COMPLEX: 2,
-  COMPLEX_IMMIGRATION: 3,
-  COMPLEX_RETIREMENT_AGE: 4,
-  MORE_INFO_NEEDED: 5,
+  UNKNOWN: 'UNKNOWN',
+  NEAR_INCOME_LIMIT: 'NEAR_INCOME_LIMIT',
+  TOO_COMPLEX: 'TOO_COMPLEX',
+  COMPLEX_IMMIGRATION: 'COMPLEX_IMMIGRATION',
+  COMPLEX_RETIREMENT_AGE: 'COMPLEX_RETIREMENT_AGE',
+  MORE_INFO_NEEDED: 'MORE_INFO_NEEDED',
 };
 
 // A single eligibility condition that can be displayed to the user.  Note
@@ -2669,6 +2669,93 @@ function setUnenrolledVisibility(program, showUnenrolledInfo) {
   }
 }
 
+function sortByProgramName(listElem) {
+  const items = [...listElem.children];
+  items.sort((a, b) => {
+    const titleA = a.querySelector('h4').textContent.toLowerCase();
+    const titleB = b.querySelector('h4').textContent.toLowerCase();
+    if (titleA < titleB) {
+      return -1;
+    }
+    if (titleA > titleB) {
+      return 1;
+    }
+    return 0;
+  });
+  for (const item of items) {
+    listElem.appendChild(item);
+  }
+}
+
+function renderConditions(conditions, listElem) {
+  for (const condition of conditions) {
+    const listItem = document.createElement('li');
+    if (condition instanceof Array) {
+      // For nested lists of conditions, first create a
+      // HTML list item to act as a heading for the grouping.
+      const combinedMet = or(...condition.map((c) => c.met));
+      listItem.textContent = 'Either:';
+      addConditionIcon(listItem, combinedMet);
+      listElem.appendChild(listItem);
+      // Then, create a list to sit under that heading.
+      const subList = document.createElement('ul');
+      for (const [idx, conditionPart] of condition.entries()) {
+        let suffix = '';
+        if (idx < condition.length - 1) {
+          suffix = '&nbsp;<span class="bold">or</span>';
+        }
+        const subListItem = document.createElement('li');
+        subListItem.innerHTML = conditionPart.desc + suffix;
+        // If the combined group is met, we only notate the components
+        // that contribute to the overall group being met. This will avoid
+        // showing a potentially confusing unmet "X" within a group that's
+        // met (because the group is OR'd together). If the combined
+        // group is not met, we show everything.
+        addConditionIcon(subListItem, conditionPart.met,
+          {displayUnmet: !combinedMet, displayUnk: !combinedMet});
+        subList.appendChild(subListItem);
+      }
+      listElem.appendChild(subList);
+    } else {
+      listItem.innerHTML = condition.desc;
+      addConditionIcon(listItem, condition.met);
+      listElem.appendChild(listItem);
+    }
+  }
+}
+
+function renderFlags(flags, listElem) {
+  for (const flag of flags) {
+    let flagMsg = '';
+    switch (flag) {
+    case FlagCodes.MORE_INFO_NEEDED:
+      flagMsg = 'We need more information from you to make an eligibility ' +
+        'recommendation. ' +
+        '<button type="button" class="link back_to_form" ' +
+        'data-section-id="section-yourself">' +
+        'Back to the form</button>';
+      break;
+    case FlagCodes.COMPLEX_IMMIGRATION:
+      flagMsg = 'The immigrant eligibility rules for this program are ' +
+        'complex, and not all immigrants are eligible.';
+      break;
+    case FlagCodes.COMPLEX_RETIREMENT_AGE:
+      flagMsg = 'To be eligible for this program, you must be younger than ' +
+        'the Social Security Administration\'s ' +
+        '<a href="https://www.ssa.gov/benefits/retirement/planner/ageincrease.html" ' +
+        'target="_blank" rel="noopener">full retirement age</a>, which ' +
+        'changes slightly depending on exactly when you were born.';
+      break;
+    }
+    if (flagMsg) {
+      const flagItem = document.createElement('li');
+      flagItem.classList.add('note');
+      flagItem.innerHTML = flagMsg;
+      listElem.appendChild(flagItem);
+    }
+  }
+}
+
 // Determines eligibility for programs based on user form input values.
 function computeEligibility() {
   // Ensure any inputs on unused pages are cleared out prior to eligibility
@@ -2692,73 +2779,13 @@ function computeEligibility() {
     while (flagList.firstChild) {
       flagList.removeChild(flagList.firstChild);
     }
-    // Render each program's conditions.
-    for (const condition of result.conditions) {
-      const listItem = document.createElement('li');
-      if (condition instanceof Array) {
-        // For nested lists of conditions, first create a
-        // HTML list item to act as a heading for the grouping.
-        const combinedMet = or(...condition.map((c) => c.met));
-        listItem.textContent = 'Either:';
-        addConditionIcon(listItem, combinedMet);
-        conditionList.appendChild(listItem);
-        // Then, create a list to sit under that heading.
-        const subList = document.createElement('ul');
-        for (const [idx, conditionPart] of condition.entries()) {
-          let suffix = '';
-          if (idx < condition.length - 1) {
-            suffix = '&nbsp;<span class="bold">or</span>';
-          }
-          const subListItem = document.createElement('li');
-          subListItem.innerHTML = conditionPart.desc + suffix;
-          // If the combined group is met, we only notate the components
-          // that contribute to the overall group being met. This will avoid
-          // showing a potentially confusing unmet "X" within a group that's
-          // met (because the group is OR'd together). If the combined
-          // group is not met, we show everything.
-          addConditionIcon(subListItem, conditionPart.met,
-            {displayUnmet: !combinedMet, displayUnk: !combinedMet});
-          subList.appendChild(subListItem);
-        }
-        conditionList.appendChild(subList);
-      } else {
-        listItem.innerHTML = condition.desc;
-        addConditionIcon(listItem, condition.met);
-        conditionList.appendChild(listItem);
-      }
-    }
-    // Render each program's flags.
-    for (const flag of result.flags) {
-      let flagMsg = '';
-      switch (flag) {
-      case FlagCodes.MORE_INFO_NEEDED:
-        flagMsg = 'We need more information from you to make an eligibility ' +
-          'recommendation. ' +
-          '<button type="button" class="link back_to_form" ' +
-          'data-section-id="section-yourself">' +
-          'Back to the form</button>';
-        break;
-      case FlagCodes.COMPLEX_IMMIGRATION:
-        flagMsg = 'The immigrant eligibility rules for this program are ' +
-          'complex, and not all immigrants are eligible.';
-        break;
-      case FlagCodes.COMPLEX_RETIREMENT_AGE:
-        flagMsg = 'To be eligible for this program, you must be younger than ' +
-          'the Social Security Administration\'s ' +
-          '<a href="https://www.ssa.gov/benefits/retirement/planner/ageincrease.html" ' +
-          'target="_blank" rel="noopener">full retirement age</a>, which ' +
-          'changes slightly depending on exactly when you were born.';
-        break;
-      }
-      if (flagMsg) {
-        const flagItem = document.createElement('li');
-        flagItem.classList.add('note');
-        flagItem.innerHTML = flagMsg;
-        flagList.appendChild(flagItem);
-      }
-    }
+
+    renderConditions(result.conditions, conditionList);
+    renderFlags(result.flags, flagList);
+
     const revisitButtons = document.querySelectorAll('button.back_to_form');
     for (const button of revisitButtons) {
+      // TODO: Could be multiple listeners registered here.
       button.addEventListener('click', toSection);
     }
     if (result.enrolled) {
@@ -2796,23 +2823,7 @@ function computeEligibility() {
         noResultMsg.classList.remove('hidden');
       }
     }
-
-    // Sort list items alphabetically.
-    const items = [...list.children];
-    items.sort((a, b) => {
-      const titleA = a.querySelector('h4').textContent;
-      const titleB = b.querySelector('h4').textContent;
-      if (titleA < titleB) {
-        return -1;
-      }
-      if (titleA > titleB) {
-        return 1;
-      }
-      return 0;
-    });
-    for (const item of items) {
-      list.appendChild(item);
-    }
+    sortByProgramName(list);
   }
 }
 
@@ -2885,5 +2896,8 @@ if (typeof module !== 'undefined' && module.exports) {
     clearInputs,
     init,
     buildInputObj,
+    sortByProgramName,
+    renderConditions,
+    renderFlags,
   };
 }
