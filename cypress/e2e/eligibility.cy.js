@@ -247,15 +247,15 @@ describe('Eligibility Assessment Tool', () => {
     cy.get('@existing').should('be.enabled');
     cy.get('@results').should('be.enabled');
 
-    cy.get('@yourself').click()
+    cy.get('@yourself').click();
     cy.get('#page-yourself-start').should('be.visible');
-    cy.get('@household').click()
+    cy.get('@household').click();
     cy.get('#page-household-members').should('be.visible');
-    cy.get('@income').click()
+    cy.get('@income').click();
     cy.get('#page-income').should('be.visible');
-    cy.get('@existing').click()
+    cy.get('@existing').click();
     cy.get('#page-existing-benefits').should('be.visible');
-    cy.get('@results').click()
+    cy.get('@results').click();
     cy.get('#page-results').should('be.visible');
   });
 });
