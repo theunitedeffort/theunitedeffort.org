@@ -88,14 +88,13 @@ pageClass: "page-public-assistance"
 
     {% eligPage "disability-details" %}
       <h3>About Your Disability</h3>
-
       <div>
         <p>Do you use a guide, signal or service dog?</p>
         {% yesNo "use-guide-dog" %}
-        <div id="military-disability-wrapper" class="hidden">
-          <p>Is your disability related to your military service?</p>
-          {% yesNo "dis-military" %}
-        </div>
+      </div>
+      <div id="military-disability-wrapper" class="hidden">
+        <p>Is your disability related to your military service?</p>
+        {% yesNo "dis-military" %}
       </div>
     {% endeligPage %}
 
@@ -286,8 +285,12 @@ pageClass: "page-public-assistance"
       <div>
         <p>Does your household pay a gas or electric bill?</p>
         {% yesNo "pay-utilities" %}
+      </div>
+      <div>
         <p>Do you have cooking facilities and a place to store food in your home?</p>
         {% yesNo "has-kitchen" %}
+      </div>
+      <div>
         <p>Do you feel you are at risk of losing your home?</p>
         {% yesNo "risk-homeless" %}
       </div>
