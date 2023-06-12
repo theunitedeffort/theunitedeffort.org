@@ -284,9 +284,9 @@ describe('sortByProgramName', () => {
         <li><h4>apple</h4></li>
         <li><h4>Banana</h4></li>
       </ul>`;
-    const listElem = document.getElementById('list');
-    elig.sortByProgramName(listElem);
-    expect(Array.from(listElem.children, (i) => i.textContent)).toEqual([
+    elig.sortByProgramName(document.getElementById('list'));
+    const listItems = document.querySelectorAll('#list > li');
+    expect(Array.from(listItems, (i) => i.textContent)).toEqual([
       'apple',
       'Banana',
       'Banana',
@@ -298,9 +298,9 @@ describe('sortByProgramName', () => {
     document.body.innerHTML = `
       <ul id="list">
       </ul>`;
-    const listElem = document.getElementById('list');
-    elig.sortByProgramName(listElem);
-    expect(listElem.children.length).toBe(0);
+    elig.sortByProgramName(document.getElementById('list'));
+    const listItems = document.querySelectorAll('#list > li');
+    expect(listItems.length).toBe(0);
   });
 
   test('Does not modify singleton lists', () => {
@@ -308,9 +308,9 @@ describe('sortByProgramName', () => {
       <ul id="list">
         <li><h4>the cheese</h4></li>
       </ul>`;
-    const listElem = document.getElementById('list');
-    elig.sortByProgramName(listElem);
-    expect(Array.from(listElem.children, (i) => i.textContent)).toEqual([
+    elig.sortByProgramName(document.getElementById('list'));
+    const listItems = document.querySelectorAll('#list > li');
+    expect(Array.from(listItems, (i) => i.textContent)).toEqual([
       'the cheese',
     ]);
   });
@@ -329,13 +329,14 @@ describe('renderFlags', () => {
     document.body.innerHTML = `
       <ul id="flag-list">
       </ul>`;
-    const listElem = document.getElementById('flag-list');
-    elig.renderFlags([flag], listElem);
+    elig.renderFlags([flag], document.getElementById('flag-list'));
+    const listItems = document.querySelectorAll('#flag-list > li');
     const expectedSubstr = expectedStrs[flag] || '';
     if (expectedSubstr === '') {
-      expect(listElem.children.length).toBe(0);
+      expect(listItems.length).toBe(0);
     } else {
-      expect(listElem.children[0].textContent).toContain(expectedSubstr);
+      expect(listItems.length).toBe(1);
+      expect(listItems[0].textContent).toContain(expectedSubstr);
     }
   });
 
@@ -343,15 +344,76 @@ describe('renderFlags', () => {
     document.body.innerHTML = `
       <ul id="flag-list">
       </ul>`;
-    const listElem = document.getElementById('flag-list');
     elig.renderFlags([
       elig.FlagCodes.COMPLEX_IMMIGRATION,
       elig.FlagCodes.COMPLEX_RETIREMENT_AGE,
-      ], listElem);
-    expect(listElem.children.length).toBe(2);
+      ], document.getElementById('flag-list'));
+    const listItems = document.querySelectorAll('#flag-list > li');
+    expect(listItems.length).toBe(2);
   });
 });
 
 describe('renderConditions', () => {
+  test('Renders a list of AND conditions', () => {
+    document.body.innerHTML = `
+      <ul id="cond-list">
+      </ul>`;
+    const conditions = [
+      new elig.EligCondition('condition 1', true),
+      new elig.EligCondition('condition 2', null),
+      new elig.EligCondition('condition 3', false),
+    ];
+    elig.renderConditions(conditions, document.getElementById('cond-list'));
+    const listItems = document.querySelectorAll('#cond-list > li');
+    expect(Array.from(listItems, (i) => i.textContent)).toEqual([
+      'condition 1',
+      'condition 2',
+      'condition 3',
+    ]);
+    expect(Array.from(listItems, (i) => i.className)).toEqual([
+      'condition condition__met',
+      'condition condition__unk',
+      'condition condition__unmet',
+    ]);
+  });
 
+  test('Renders a list of OR conditions with all met', () => {
+    document.body.innerHTML = `
+      <ul id="cond-list">
+      </ul>`;
+    const conditions = [
+      new elig.EligCondition('condition 1', true),
+      [
+        new elig.EligCondition('condition 2', true),
+        new elig.EligCondition('condition 3', true),
+      ],
+    ];
+    elig.renderConditions(conditions, document.getElementById('cond-list'));
+    const topListItems = document.querySelectorAll('#cond-list > li');
+    expect(Array.from(topListItems, (i) => i.textContent)).toEqual([
+      'condition 1',
+      'Either:',
+    ]);
+    expect(Array.from(topListItems, (i) => i.className)).toEqual([
+      'condition condition__met',
+      'condition condition__met',
+    ]);
+    const nestListItems = document.querySelectorAll('#cond-list > ul > li');
+    expect(Array.from(nestListItems, (i) => i.textContent)).toEqual([
+      'condition 2\xa0or',
+      'condition 3',
+    ]);
+    expect(Array.from(nestListItems, (i) => i.className)).toEqual([
+      'condition condition__met',
+      'condition condition__met',
+    ]);
+  });
+
+  test('Renders a list of OR conditions with some met', () => {
+
+  });
+
+  test('Renders a list of OR conditions with none met', () => {
+
+  });
 });

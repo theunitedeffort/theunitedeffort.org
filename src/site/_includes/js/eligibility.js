@@ -2839,6 +2839,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     cnst,
     FlagCodes,
+    EligCondition,
     hasNulls,
     add,
     or,
