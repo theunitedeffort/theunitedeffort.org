@@ -1161,7 +1161,7 @@ describe('Navigation and UI', () => {
     expect(visiblePage().id).toBe('page-results');
   });
 
-  test.only('Programs are displayed correctly in the results page', () => {
+  test('Programs are displayed correctly in the results page', () => {
     // Start with everything unknown or ineligible.
     toFormEnd();
     click(submitButton);
