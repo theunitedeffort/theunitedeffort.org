@@ -659,11 +659,11 @@ function onChangeName(event) {
 function addConditionIcon(listItem, met,
   {displayMet=true, displayUnmet=true, displayUnk=true}={}) {
   let cls = '';
-  if (met == null && displayUnk) {
+  if (met === null && displayUnk) {
     cls = 'condition__unk';
-  } else if (!met && displayUnmet) {
+  } else if (met === false && displayUnmet) {
     cls = 'condition__unmet';
-  } else if (met && displayMet) {
+  } else if (met === true && displayMet) {
     cls = 'condition__met';
   }
   listItem.className = `condition ${cls}`;
@@ -2898,6 +2898,7 @@ if (typeof module !== 'undefined' && module.exports) {
     init,
     buildInputObj,
     sortByProgramName,
+    addConditionIcon,
     renderConditions,
     renderFlags,
   };
