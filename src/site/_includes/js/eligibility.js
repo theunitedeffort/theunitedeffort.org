@@ -2773,6 +2773,7 @@ function computeEligibility() {
     const conditionList = program.querySelector('.elig_conditions');
     const flagList = program.querySelector('.elig_flags');
     // Reset the program's displayed conditions and flags.
+    // TODO: Test this behavior
     while (conditionList.firstChild) {
       conditionList.removeChild(conditionList.firstChild);
     }
@@ -2785,7 +2786,6 @@ function computeEligibility() {
 
     const revisitButtons = document.querySelectorAll('button.back_to_form');
     for (const button of revisitButtons) {
-      // TODO: Could be multiple listeners registered here.
       button.addEventListener('click', toSection);
     }
     if (result.enrolled) {
