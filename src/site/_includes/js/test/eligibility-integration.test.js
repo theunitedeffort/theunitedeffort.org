@@ -1266,6 +1266,32 @@ describe('Navigation and UI', () => {
     expect(lifeline).not.toBeNull();
     expect(enrolled.querySelectorAll(unenrolledOnlyVisible).length)
       .toBe(0);
+
+    // Go back to having no eligible programs and check that the "no results"
+    // text shows up.
+    click(document.getElementById('nav-section-yourself'));
+    // Reset disabled checkbox.
+    click(document.getElementById('disabled'));
+    click(nextButton, 6);
+    // Reset existing lifeline checkbox.
+    click(document.getElementById('existing-lifeline-me'));
+    click(submitButton);
+    expect(visiblePage().id).toBe('page-results');
+
+    eligibleItems = eligible.querySelectorAll(itemSelector);
+    enrolledItems = enrolled.querySelectorAll(itemSelector);
+
+    expect(eligibleItems.length).toBe(0);
+    expect(eligible.querySelectorAll(textForResults).length)
+      .toBe(0);
+    expect(eligible.querySelectorAll(textForNoResults).length)
+      .toBeGreaterThan(0);
+
+    expect(enrolledItems.length).toBe(0);
+    expect(enrolled.querySelectorAll(textForResults).length)
+      .toBe(0);
+    expect(enrolled.querySelectorAll(textForNoResults).length)
+      .toBe(0);
   });
 });
 
