@@ -1160,6 +1160,113 @@ describe('Navigation and UI', () => {
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
   });
+
+  test.only('Programs are displayed correctly in the results page', () => {
+    // Start with everything unknown or ineligible.
+    toFormEnd();
+    click(submitButton);
+    expect(visiblePage().id).toBe('page-results');
+
+    const itemSelector = ':scope > ul > li';
+    const unenrolledOnlyVisible = '.unenrolled_only:not(.hidden)';
+    const textForResults = '.has_results:not(.hidden)';
+    const textForNoResults = '.no_results:not(.hidden)';
+    const eligible = document.querySelector('.programs__eligible');
+    const unknown = document.querySelector('.programs__unknown');
+    const ineligible = document.querySelector('.programs__ineligible');
+    const enrolled = document.querySelector('.programs__enrolled');
+    let eligibleItems = eligible.querySelectorAll(itemSelector);
+    let unknownItems = unknown.querySelectorAll(itemSelector);
+    let ineligibleItems = ineligible.querySelectorAll(itemSelector);
+    let enrolledItems = enrolled.querySelectorAll(itemSelector);
+
+    expect(eligibleItems.length).toBe(0);
+    expect(eligible.querySelectorAll(textForResults).length)
+      .toBe(0);
+    expect(eligible.querySelectorAll(textForNoResults).length)
+      .toBeGreaterThan(0);
+
+    expect(ineligibleItems.length).toBeGreaterThan(0);
+    expect(ineligible.querySelectorAll(textForResults).length)
+      .toBeGreaterThan(0);
+    expect(ineligible.querySelectorAll(textForNoResults).length)
+      .toBe(0);
+    expect(ineligible.querySelectorAll(unenrolledOnlyVisible).length)
+      .toBeGreaterThan(0);
+
+    expect(unknownItems.length).toBeGreaterThan(0);
+    expect(unknown.querySelectorAll(textForResults).length)
+      .toBeGreaterThan(0);
+    expect(unknown.querySelectorAll(textForNoResults).length)
+      .toBe(0);
+    expect(unknown.querySelectorAll(unenrolledOnlyVisible).length)
+      .toBeGreaterThan(0);
+
+    expect(enrolledItems.length).toBe(0);
+    expect(enrolled.querySelectorAll(textForResults).length)
+      .toBe(0);
+    expect(enrolled.querySelectorAll(textForNoResults).length)
+      .toBe(0);
+    expect(enrolled.querySelectorAll(unenrolledOnlyVisible).length)
+      .toBe(0);
+
+    click(document.getElementById('nav-section-yourself'));
+    // Make eligible for VTA ACCESS.
+    click(document.getElementById('disabled'));
+    click(nextButton);
+    // Make ineligible for ADSA.
+    click(document.getElementById('use-guide-dog-no'));
+    click(nextButton, 6);
+    click(document.getElementById('existing-lifeline-me'));
+    click(submitButton);
+    expect(visiblePage().id).toBe('page-results');
+
+    eligibleItems = eligible.querySelectorAll(itemSelector);
+    unknownItems = unknown.querySelectorAll(itemSelector);
+    ineligibleItems = ineligible.querySelectorAll(itemSelector);
+    enrolledItems = enrolled.querySelectorAll(itemSelector);
+    expect(eligibleItems.length).toBe(1);
+    expect(eligible.querySelectorAll(textForResults).length)
+      .toBeGreaterThan(0);
+    expect(eligible.querySelectorAll(textForNoResults).length)
+      .toBe(0);
+    const vtaAccess = eligible.querySelector('#program-vta-paratransit');
+    expect(vtaAccess).not.toBeNull();
+    expect(eligible.querySelectorAll(unenrolledOnlyVisible).length)
+      .toBeGreaterThan(0);
+
+    expect(ineligibleItems.length).toBeGreaterThan(0);
+    expect(ineligible.querySelectorAll(textForResults).length)
+      .toBeGreaterThan(0);
+    expect(ineligible.querySelectorAll(textForNoResults).length)
+      .toBe(0);
+    const adsa = ineligible.querySelector('#program-adsa');
+    expect(adsa).not.toBeNull();
+    expect(ineligible.querySelectorAll(unenrolledOnlyVisible).length)
+      .toBeGreaterThan(0);
+
+    expect(unknownItems.length).toBeGreaterThan(0);
+    expect(unknown.querySelectorAll(textForResults).length)
+      .toBeGreaterThan(0);
+    expect(unknown.querySelectorAll(textForNoResults).length)
+      .toBe(0);
+    const noFeeId = unknown.querySelector('#program-no-fee-id');
+    expect(noFeeId).not.toBeNull();
+    expect(unknown.querySelectorAll(unenrolledOnlyVisible).length)
+      .toBeGreaterThan(0);
+    // Flag should be rendered.
+    expect(noFeeId.textContent).toContain('need more information');
+
+    expect(enrolledItems.length).toBe(1);
+    expect(enrolled.querySelectorAll(textForResults).length)
+      .toBeGreaterThan(0);
+    expect(enrolled.querySelectorAll(textForNoResults).length)
+      .toBe(0);
+    const lifeline = enrolled.querySelector('#program-lifeline');
+    expect(lifeline).not.toBeNull();
+    expect(enrolled.querySelectorAll(unenrolledOnlyVisible).length)
+      .toBe(0);
+  });
 });
 
 test.todo('Unused pages are cleared before eligibility assessment');
