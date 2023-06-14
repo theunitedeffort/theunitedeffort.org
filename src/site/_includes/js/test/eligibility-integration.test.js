@@ -1217,6 +1217,7 @@ describe('Navigation and UI', () => {
     }
 
     const itemSelector = ':scope > ul > li';
+    const moreInfoStr = 'need more information';
 
     // Start with everything unknown or ineligible.
     toFormEnd();
@@ -1235,15 +1236,23 @@ describe('Navigation and UI', () => {
     expectResults(unknown);
     expectDetailsVisible(unknown, true);
     expectProgramsSorted(unknown);
+    let noFeeId = unknown.querySelector('#program-no-fee-id');
+    expect(noFeeId).not.toBeNull();
+    // Flag should be rendered.
+    expect(noFeeId.textContent).toContain(moreInfoStr);
     expectNoResults(enrolled);
 
     click(document.getElementById('nav-section-yourself'));
-    // Make eligible for VTA ACCESS.
-    click(document.getElementById('disabled'));
+    // Make eligible for no fee ID.
+    enterText(document.getElementById('age'),
+      elig.cnst.noFeeId.MIN_ELIGIBLE_AGE);
+    click(nextButton, 2);
+    // Make ineligible for CARE.
+    click(document.getElementById('housed'));
     click(nextButton);
-    // Make ineligible for ADSA.
-    click(document.getElementById('use-guide-dog-no'));
-    click(nextButton, 6);
+    click(document.getElementById('pay-utilities-no'));
+    click(nextButton, 4);
+    // Make LifeLine already enrolled.
     click(document.getElementById('existing-lifeline-me'));
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
@@ -1251,32 +1260,28 @@ describe('Navigation and UI', () => {
     expectResults(eligible, 1);
     expectDetailsVisible(eligible, true);
     expectProgramsSorted(eligible);
-    const vtaAccess = eligible.querySelector('#program-vta-paratransit');
-    expect(vtaAccess).not.toBeNull();
+    noFeeId = eligible.querySelector('#program-no-fee-id');
+    expect(noFeeId).not.toBeNull();
+    // Flag should not be rendered.
+    expect(noFeeId.textContent).not.toContain(moreInfoStr);
     expectResults(ineligible);
     expectDetailsVisible(ineligible, true);
     expectProgramsSorted(ineligible);
-    const adsa = ineligible.querySelector('#program-adsa');
-    expect(adsa).not.toBeNull();
+    expect(ineligible.querySelector('#program-care')).not.toBeNull();
     expectResults(unknown);
     expectDetailsVisible(unknown, true);
     expectProgramsSorted(unknown);
-    const noFeeId = unknown.querySelector('#program-no-fee-id');
-    expect(noFeeId).not.toBeNull();
-    // Flag should be rendered.
-    expect(noFeeId.textContent).toContain('need more information');
     expectResults(enrolled, 1);
     expectDetailsVisible(enrolled, false);
     expectProgramsSorted(enrolled);
-    const lifeline = enrolled.querySelector('#program-lifeline');
-    expect(lifeline).not.toBeNull();
+    expect(enrolled.querySelector('#program-lifeline')).not.toBeNull();
 
     // Go back to having no eligible programs and check that the "no results"
     // text shows up.
     click(document.getElementById('nav-section-yourself'));
-    // Reset disabled checkbox.
-    click(document.getElementById('disabled'));
-    click(nextButton, 6);
+    // Reset age.
+    enterText(document.getElementById('age'), '');
+    click(nextButton, 7);
     // Reset existing lifeline checkbox.
     click(document.getElementById('existing-lifeline-me'));
     click(submitButton);

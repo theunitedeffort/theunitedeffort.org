@@ -810,6 +810,7 @@ function updateDynamicFieldListButton(button) {
   if (items.length) {
     button.textContent = button.dataset.nonEmptyText;
   } else {
+    // TODO: Add test coverage for this branch.
     button.textContent = (
       button.dataset.emptyText || button.dataset.nonEmptyText);
   }
@@ -2552,6 +2553,7 @@ function clearUnusedPages() {
   }
   // Walk the form to find out which pages are used.
   let page = pages[0];
+  // Stryker disable next-line BlockStatement: Results in infinite loop.
   do {
     page.used = true;
     page = page.next();
@@ -2677,6 +2679,8 @@ function sortByProgramName(listElem) {
     if (titleA < titleB) {
       return -1;
     }
+    // Stryker disable next-line: The compareFn should be well-formed, but this
+    // branch is not taken by the V8 JavaScript engine.
     if (titleA > titleB) {
       return 1;
     }
@@ -2773,10 +2777,12 @@ function computeEligibility() {
     const conditionList = program.querySelector('.elig_conditions');
     const flagList = program.querySelector('.elig_flags');
     // Reset the program's displayed conditions and flags.
-    // TODO: Test this behavior
+    // Stryker disable next-line BlockStatement: Results in infinite loop.
     while (conditionList.firstChild) {
+      // TODO: Test this behavior
       conditionList.removeChild(conditionList.firstChild);
     }
+    // Stryker disable next-line BlockStatement: Results in infinite loop.
     while (flagList.firstChild) {
       flagList.removeChild(flagList.firstChild);
     }
