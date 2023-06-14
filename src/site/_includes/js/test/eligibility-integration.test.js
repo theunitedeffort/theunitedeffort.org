@@ -1160,6 +1160,135 @@ describe('Navigation and UI', () => {
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
   });
+
+  test('Can return to the form via the "more info needed" note', () => {
+    toFormEnd();
+    click(submitButton);
+    expect(visiblePage().id).toBe('page-results');
+    click(document.querySelector('button.back_to_form'));
+    expect(visiblePage().id).toBe('page-yourself-start');
+  });
+
+  test('Programs are displayed correctly in the results page', () => {
+    function classVisible(rootElem, className, expectVisible) {
+      const numElems = rootElem.querySelectorAll(`.${className}`).length;
+      const numVisibleElems = rootElem.querySelectorAll(
+        `.${className}:not(.hidden)`).length;
+      if (expectVisible && numElems > 0) {
+        expect(numVisibleElems).toBeGreaterThan(0);
+      } else {
+        expect(numVisibleElems).toBe(0);
+      }
+    }
+
+    function expectResultsTextVisible(rootElem, expectVisible) {
+      classVisible(rootElem, 'has_results', expectVisible);
+    }
+
+    function expectNoResultsTextVisible(rootElem, expectVisible) {
+      classVisible(rootElem, 'no_results', expectVisible);
+    }
+
+    function expectDetailsVisible(rootElem, expectVisible) {
+      classVisible(rootElem, 'unenrolled_only', expectVisible);
+    }
+
+    function expectNoResults(rootElem) {
+      expect(rootElem.querySelectorAll(itemSelector).length).toBe(0);
+      expectResultsTextVisible(rootElem, false);
+      expectNoResultsTextVisible(rootElem, true);
+    }
+
+    function expectResults(rootElem, numExpected=null) {
+      const numItems = rootElem.querySelectorAll(itemSelector).length;
+      if (numExpected === null) {
+        expect(numItems).toBeGreaterThan(0);
+      } else {
+        expect(numItems).toBe(numExpected);
+      }
+      expectResultsTextVisible(rootElem, true);
+      expectNoResultsTextVisible(rootElem, false);
+    }
+
+    function expectProgramsSorted(rootElem) {
+      const titles = Array.from(rootElem.querySelectorAll(itemSelector),
+        (i) => i.querySelector('h4').textContent);
+      expect([].concat(titles).sort()).toEqual(titles);
+    }
+
+    const itemSelector = ':scope > ul > li';
+    const moreInfoStr = 'need more information';
+
+    // Start with everything unknown or ineligible.
+    toFormEnd();
+    click(submitButton);
+    expect(visiblePage().id).toBe('page-results');
+
+    const eligible = document.querySelector('.programs__eligible');
+    const unknown = document.querySelector('.programs__unknown');
+    const ineligible = document.querySelector('.programs__ineligible');
+    const enrolled = document.querySelector('.programs__enrolled');
+
+    expectNoResults(eligible);
+    expectResults(ineligible);
+    expectDetailsVisible(ineligible, true);
+    expectProgramsSorted(ineligible);
+    expectResults(unknown);
+    expectDetailsVisible(unknown, true);
+    expectProgramsSorted(unknown);
+    let noFeeId = unknown.querySelector('#program-no-fee-id');
+    expect(noFeeId).not.toBeNull();
+    // Flag should be rendered.
+    expect(noFeeId.textContent).toContain(moreInfoStr);
+    expectNoResults(enrolled);
+
+    click(document.getElementById('nav-section-yourself'));
+    // Make eligible for no fee ID.
+    enterText(document.getElementById('age'),
+      elig.cnst.noFeeId.MIN_ELIGIBLE_AGE);
+    click(nextButton, 2);
+    // Make ineligible for CARE.
+    click(document.getElementById('housed'));
+    click(nextButton);
+    click(document.getElementById('pay-utilities-no'));
+    click(nextButton, 4);
+    // Make LifeLine already enrolled.
+    click(document.getElementById('existing-lifeline-me'));
+    click(submitButton);
+    expect(visiblePage().id).toBe('page-results');
+
+    expectResults(eligible, 1);
+    expectDetailsVisible(eligible, true);
+    expectProgramsSorted(eligible);
+    noFeeId = eligible.querySelector('#program-no-fee-id');
+    expect(noFeeId).not.toBeNull();
+    // Flag should not be rendered.
+    expect(noFeeId.textContent).not.toContain(moreInfoStr);
+    expectResults(ineligible);
+    expectDetailsVisible(ineligible, true);
+    expectProgramsSorted(ineligible);
+    expect(ineligible.querySelector('#program-care')).not.toBeNull();
+    expectResults(unknown);
+    expectDetailsVisible(unknown, true);
+    expectProgramsSorted(unknown);
+    expectResults(enrolled, 1);
+    expectDetailsVisible(enrolled, false);
+    expectProgramsSorted(enrolled);
+    expect(enrolled.querySelector('#program-lifeline')).not.toBeNull();
+
+    // Go back to having no eligible programs and check that the "no results"
+    // text shows up.
+    click(document.getElementById('nav-section-yourself'));
+    // Reset age.
+    enterText(document.getElementById('age'), '');
+    click(nextButton, 7);
+    // Reset existing lifeline checkbox.
+    click(document.getElementById('existing-lifeline-me'));
+    click(submitButton);
+    expect(visiblePage().id).toBe('page-results');
+    expectNoResults(eligible);
+    expectNoResults(enrolled);
+  });
 });
 
 test.todo('Unused pages are cleared before eligibility assessment');

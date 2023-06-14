@@ -274,3 +274,226 @@ describe('getValueOrNull', () => {
     expect(elig.getValueOrNull('bad-question')).toBe(null);
   });
 });
+
+describe('sortByProgramName', () => {
+  test('Sorts alphabetically regardless of case', () => {
+    document.body.innerHTML = `
+      <ul id="list">
+        <li><h4>Banana</h4></li>
+        <li><h4>zucchini</h4></li>
+        <li><h4>apple</h4></li>
+        <li><h4>Banana</h4></li>
+      </ul>`;
+    elig.sortByProgramName(document.getElementById('list'));
+    const listItems = document.querySelectorAll('#list > li');
+    expect(Array.from(listItems, (i) => i.textContent)).toEqual([
+      'apple',
+      'Banana',
+      'Banana',
+      'zucchini',
+    ]);
+  });
+
+  test('Handles empty lists', () => {
+    document.body.innerHTML = `
+      <ul id="list">
+      </ul>`;
+    elig.sortByProgramName(document.getElementById('list'));
+    const listItems = document.querySelectorAll('#list > li');
+    expect(listItems.length).toBe(0);
+  });
+
+  test('Does not modify singleton lists', () => {
+    document.body.innerHTML = `
+      <ul id="list">
+        <li><h4>the cheese</h4></li>
+      </ul>`;
+    elig.sortByProgramName(document.getElementById('list'));
+    const listItems = document.querySelectorAll('#list > li');
+    expect(Array.from(listItems, (i) => i.textContent)).toEqual([
+      'the cheese',
+    ]);
+  });
+});
+
+describe('renderFlags', () => {
+  const expectedStrs = {};
+  beforeEach(() => {
+    expectedStrs[elig.FlagCodes.MORE_INFO_NEEDED] = 'need more information';
+    expectedStrs[elig.FlagCodes.COMPLEX_IMMIGRATION] = (
+      'immigrant eligibility rules');
+    expectedStrs[elig.FlagCodes.COMPLEX_RETIREMENT_AGE] = 'full retirement age';
+  });
+
+  test.each(Object.values(elig.FlagCodes))('Renders %s flag', (flag) => {
+    document.body.innerHTML = `
+      <ul id="flag-list">
+      </ul>`;
+    elig.renderFlags([flag], document.getElementById('flag-list'));
+    const listItems = document.querySelectorAll('#flag-list > li');
+    const expectedSubstr = expectedStrs[flag] || '';
+    if (expectedSubstr === '') {
+      expect(listItems.length).toBe(0);
+    } else {
+      expect(listItems.length).toBe(1);
+      expect(listItems[0].textContent).toContain(expectedSubstr);
+    }
+  });
+
+  test('Renders multiple flags', () => {
+    document.body.innerHTML = `
+      <ul id="flag-list">
+      </ul>`;
+    elig.renderFlags([
+      elig.FlagCodes.COMPLEX_IMMIGRATION,
+      elig.FlagCodes.COMPLEX_RETIREMENT_AGE,
+    ], document.getElementById('flag-list'));
+    const listItems = document.querySelectorAll('#flag-list > li');
+    expect(listItems.length).toBe(2);
+  });
+});
+
+describe('addConditionIcon', () => {
+  test.each([
+    {
+      met: true,
+      displayMet: true,
+      displayUnmet: true,
+      displayUnk: true,
+      expected: 'condition condition__met',
+    },
+    {
+      met: true,
+      displayMet: false,
+      displayUnmet: true,
+      displayUnk: true,
+      expected: 'condition ',
+    },
+    {
+      met: false,
+      displayMet: true,
+      displayUnmet: true,
+      displayUnk: true,
+      expected: 'condition condition__unmet',
+    },
+    {
+      met: false,
+      displayMet: true,
+      displayUnmet: false,
+      displayUnk: true,
+      expected: 'condition ',
+    },
+    {
+      met: null,
+      displayMet: true,
+      displayUnmet: true,
+      displayUnk: true,
+      expected: 'condition condition__unk',
+    },
+    {
+      met: null,
+      displayMet: true,
+      displayUnmet: true,
+      displayUnk: false,
+      expected: 'condition ',
+    },
+  ])('Displays icon for $met condition with displayMet=$displayMet, displayUnmet=$displayUnmet, displayUnk=$displayUnk',
+    ({met, displayMet, displayUnmet, displayUnk, expected}) => {
+      document.body.innerHTML = `
+      <ul>
+        <li id="item">Example</li>
+      </ul>`;
+      const item = document.getElementById('item');
+      elig.addConditionIcon(item, met, {
+        displayMet: displayMet,
+        displayUnmet: displayUnmet,
+        displayUnk: displayUnk,
+      });
+      expect(item.className).toBe(expected);
+    });
+});
+
+describe('renderConditions', () => {
+  test('Renders a list of AND conditions', () => {
+    document.body.innerHTML = `
+      <ul id="cond-list">
+      </ul>`;
+    const conditions = [
+      new elig.EligCondition('condition 1', true),
+      new elig.EligCondition('condition 2', null),
+      new elig.EligCondition('condition 3', false),
+    ];
+    elig.renderConditions(conditions, document.getElementById('cond-list'));
+    const listItems = document.querySelectorAll('#cond-list > li');
+    expect(Array.from(listItems, (i) => i.textContent)).toEqual([
+      'condition 1',
+      'condition 2',
+      'condition 3',
+    ]);
+    expect(Array.from(listItems, (i) => i.className)).toEqual([
+      'condition condition__met',
+      'condition condition__unk',
+      'condition condition__unmet',
+    ]);
+  });
+
+  test.each([
+    {
+      met: [true, true],
+      classes: ['condition condition__met', 'condition condition__met'],
+      overallClass: 'condition condition__met',
+    },
+    {
+      met: [false, true],
+      // The individual failing condition should not render as condition__unmet
+      // when the overall grouping is met.
+      classes: ['condition ', 'condition condition__met'],
+      overallClass: 'condition condition__met',
+    },
+    {
+      met: [null, true],
+      // The individual failing condition should not render as condition__unmet
+      // when the overall grouping is met.
+      classes: ['condition ', 'condition condition__met'],
+      overallClass: 'condition condition__met',
+    },
+    {
+      met: [false, false],
+      classes: ['condition condition__unmet', 'condition condition__unmet'],
+      overallClass: 'condition condition__unmet',
+    },
+    {
+      met: [null, null],
+      classes: ['condition condition__unk', 'condition condition__unk'],
+      overallClass: 'condition condition__unk',
+    },
+  ])('Renders a list of OR conditions with values $met',
+    ({met, classes, overallClass}) => {
+      document.body.innerHTML = `
+      <ul id="cond-list">
+      </ul>`;
+      const conditions = [
+        new elig.EligCondition('condition 1', true),
+        [
+          new elig.EligCondition('condition 2', met[0]),
+          new elig.EligCondition('condition 3', met[1]),
+        ],
+      ];
+      elig.renderConditions(conditions, document.getElementById('cond-list'));
+      const topListItems = document.querySelectorAll('#cond-list > li');
+      expect(Array.from(topListItems, (i) => i.textContent)).toEqual([
+        'condition 1',
+        'Either:',
+      ]);
+      expect(Array.from(topListItems, (i) => i.className)).toEqual([
+        'condition condition__met',
+        overallClass,
+      ]);
+      const nestListItems = document.querySelectorAll('#cond-list > ul > li');
+      expect(Array.from(nestListItems, (i) => i.textContent)).toEqual([
+        'condition 2\xa0or',
+        'condition 3',
+      ]);
+      expect(Array.from(nestListItems, (i) => i.className)).toEqual(classes);
+    });
+});
