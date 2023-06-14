@@ -177,25 +177,28 @@
   
   .condition::before {
     content: "";
-    width: 1em;
     display: inline-block;
-    margin-left: -1em;
+    position: absolute;
+    top: 0.1em;
+    left: -1.6em;
+    background-image: url("/images/panorama_fish_eye_grey_24dp.svg");
+    background-repeat: no-repeat;
+    background-size: 1.3em;
+    background-position: 0;
+    width: 1.3em;
+    height: 1.3em;
   }
 
   .condition__met::before {
-    content: "\2713";
-    color: var(--color-green);
+    background-image: url("/images/check_circle_green_24dp.svg");
   }
 
   .condition__unmet::before {
-    content: "\2717";
-    color: var(--color-red);
+    background-image: url("/images/cancel_red_24dp.svg");
   }
 
   .condition__unk::before {
-    content: "?";
-    font-weight: 600;
-    color: var(--color-gray-600);
+    background-image: url("/images/help_grey_24dp.svg");
   }
   
   .rent_tables {
