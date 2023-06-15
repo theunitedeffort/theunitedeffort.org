@@ -159,6 +159,10 @@
         white-space: break-spaces;
       }
 
+      label.disabled {
+        color: var(--color-gray-500);
+      }
+
       legend {
         margin: 0;
       }

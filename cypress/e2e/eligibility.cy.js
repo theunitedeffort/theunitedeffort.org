@@ -78,10 +78,25 @@ describe('Eligibility Assessment Tool', () => {
     cy.get('#page-yourself-start').as('page').should('be.visible');
     yourselfChecks();
     cy.get('@page').findByLabelText(/How old are you/i).type('15');
-    cy.get('@page').findByLabelText(/I am not a U.S. citizen/i).click();
-    cy.get('@page').findByLabelText(/I am disabled/i).click();
-    cy.get('@page').findByLabelText(/I am a U.S. veteran/i).click();
-    cy.get('@page').findByLabelText(/I am pregnant/i).click();
+
+    const yourselfDetails = [
+      /i am not a u.s. citizen/i,
+      /i am disabled/i,
+      /i am a u.s. veteran/i,
+      /i am pregnant/i,
+    ];
+    cy.wrap(yourselfDetails).each((yourselfDetail) => {
+      cy.get('@page').findByLabelText(yourselfDetail).click();
+    });
+    cy.get('@page').findByLabelText(/none of these describe me/i).click();
+    cy.wrap(yourselfDetails).each((yourselfDetail) => {
+      cy.get('@page').findByLabelText(yourselfDetail).should('be.disabled');
+      cy.get('@page').findByLabelText(yourselfDetail).should('not.be.selected');
+    });
+    cy.get('@page').findByLabelText(/none of these describe me/i).click();
+    cy.wrap(yourselfDetails).each((yourselfDetail) => {
+      cy.get('@page').findByLabelText(yourselfDetail).click();
+    });
 
     nextShouldBe('#page-head-of-household');
     yourselfChecks();
