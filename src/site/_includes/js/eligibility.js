@@ -4,6 +4,7 @@ const cnst = {
   calfresh: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
     // Section 2.1
+    // Effective through 9/30/23
     FED_POVERTY_LEVEL: [ // USD per month
       1133,
       1526,
@@ -25,6 +26,7 @@ const cnst = {
   calworks: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
     // Section 1.2
+    // Effective through 6/30/23
     MBSAC: [ // USD per month
       807,
       1324,
@@ -39,7 +41,9 @@ const cnst = {
     ],
     MBSAC_ADDL_PERSON: 32, // USD per month per person
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
-    // Section 14.1
+    // Section 14.1 (seems out of date)
+    // https://www.sfhsa.org/sites/default/files/media/document/2023-04/factsheet_calworks_english_02.2023.pdf
+    // Effective through ?
     BASE_RESOURCE_LIMIT: 10888, // USD
     DISABLED_ELDERLY_RESOURCE_LIMIT: 16333, // USD
     MIN_ELDERLY_AGE: 60, // Years
@@ -59,36 +63,39 @@ const cnst = {
   },
   care: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
+    // Effective through 5/31/2024
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      36620,
-      36620,
-      46060,
-      55500,
-      64940,
-      74380,
-      83820,
-      93260,
+      39440,
+      39440,
+      49720,
+      60000,
+      70280,
+      80560,
+      90840,
+      101120,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 9440, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10280, // USD per year per person
   },
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
+    // Effective through 5/31/2024
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      57575, // Min household size 3.
-      57575, // Min household size 3.
-      57575,
-      69375,
-      81175,
-      92975,
-      104775,
-      116575,
+      62150, // Min household size 3.
+      62150, // Min household size 3.
+      62150,
+      75000,
+      87850,
+      100700,
+      113550,
+      126400,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11800, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 12850, // USD per year per person
     MIN_HOUSEHOLD_SIZE: 3, // People
   },
   ga: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
     // Section 4.2, UNSHARED Housing in section 4.2.1
+    // Effective through ?
     MONTHLY_INCOME_LIMITS: [ // USD per month
       343,
       460,
@@ -114,23 +121,25 @@ const cnst = {
     // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
     MIN_ELIGIBLE_AGE: 18,
     // For income limits additional person calculations
-    // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+    // https://www.huduser.gov/portal/datasets/il/il2023/2023IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2023&yy=23&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
     INCOME_ROUND_UP_TO_NEAREST: 50, // USD
     BASE_HOUSEHOLD_SIZE: 4, // People
     FAMILY_SIZE_ADJ_8: 1.32,
     INCREMENTAL_ADJ: 0.08,
     // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
     // See "very low income" here:
-    // https://www.huduser.gov/portal/datasets/il/il2022/2022summary.odn?states=6.0&data=2022&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2022&selection_type=county
+    // https://www.huduser.gov/portal/datasets/il/il2023/2023summary.odn?states=6.0&data=2023&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2023&selection_type=county
+    // https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/
+    // Effective through 5/14/24 (or perhaps HUD fiscal year end 9/30/23?)
     ANNUAL_INCOME_LIMITS: [ // USD per month
-      59000,
-      67400,
-      75850,
-      84250,
-      91000,
-      97750,
-      104500,
-      111250,
+      62450,
+      71400,
+      80300,
+      89200,
+      96350,
+      103500,
+      110650,
+      117750,
     ],
   },
   ihss: {
@@ -139,7 +148,7 @@ const cnst = {
   },
   lifeline: {
     // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
-    // Effective June 1, 2023 to May 31, 2024
+    // Effective through 5/31/24
     ANNUAL_INCOME_LIMITS: [ // USD per year
       32500,
       32500,
@@ -150,13 +159,9 @@ const cnst = {
   },
   liheap: {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
-    //
     // LIHEAP income limits are set at 60% of State Median Income:
     //   https://www.acf.hhs.gov/ocs/policy-guidance/liheap-im-2022-04-state-median-income-estimates-optional-use-ffy-2022-and
-    //
-    // Calculating income limit for various household sizes by multiplying the
-    // 4-person limit by various values:
-    //   https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf
+    // Effective through 9/30/23? (FY23)
     MONTHLY_INCOME_LIMITS: [ // USD per month
       2700.17,
       3531.0,
@@ -169,6 +174,8 @@ const cnst = {
       7321.78,
       7477.56,
     ],
+    // 3% of 4-person limit, as documented here:
+    // https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf#page=4
     MONTHLY_INCOME_LIMIT_ADDL_PERSON: 155.78, // USD per month
   },
   noFeeId: {
@@ -182,15 +189,18 @@ const cnst = {
   },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
+    // Effective through 12/31/23?
     SGA_NON_BLIND: 1470, // USD per month
     SGA_BLIND: 2460, // USD per month
     // https://www.ssa.gov/pubs/EN-05-11125.pdf
     // Note these max benefit amounts include the California state supplement.
     // TODO: Handle other living categories (e.g. non-medical out-of-home care).
+    // Effective through 12/31/23?
     MAX_BENEFIT_NON_BLIND: 1133.73, // USD per month
     MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1251.74, // USD per month
     MAX_BENEFIT_BLIND: 1211, // USD per month
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
+    // Effective through 12/31/23?
     MAX_RESOURCES: 2000, // USD
     // https://www.ssa.gov/oact/cola/incomexcluded.html
     MAX_UNEARNED_INCOME_EXCLUSION: 20, // USD per month
@@ -219,9 +229,11 @@ const cnst = {
       ['1990-08-02', ''], // Gulf war, no end date yet.
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
+    // Effective through 11/30/23
     ANNUAL_NET_WORTH_LIMIT: 150538, // USD per year
     // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
+    // Effective through 11/30/23
     ANNUAL_INCOME_LIMITS: [ // USD per year
       16037,
       21001,
@@ -231,17 +243,18 @@ const cnst = {
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
+    // Effective through 6/30/24
     MONTHLY_INCOME_LIMITS: [ // USD per month
-      2096,
-      2823,
-      3551,
-      4279,
-      5006,
-      5734,
-      6462,
-      7189,
+      2248,
+      3041,
+      3833,
+      4625,
+      5418,
+      6210,
+      7003,
+      7795,
     ],
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 728, // USD per month per person
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 793, // USD per month per person
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
     CHILD_EXIT_AGE: 5, // Birthday at which a child is ineligible.
   },
