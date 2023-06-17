@@ -2750,7 +2750,7 @@ function renderFlags(flags, listElem) {
     case FlagCodes.MORE_INFO_NEEDED:
       flagMsg = 'We need more information from you to make an eligibility ' +
         'recommendation. ' +
-        '<button type="button" class="link back_to_form" ' +
+        '<button type="button" class="link back_to_form noprint" ' +
         'data-section-id="section-yourself">' +
         'Back to the form</button>';
       break;

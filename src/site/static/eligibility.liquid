@@ -13,7 +13,7 @@ pageClass: "page-public-assistance"
   Use this tool to find assistance programs you may qualify for. <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span> Some of the assistance programs in this tool only apply to residents of Santa Clara County, CA.
 </p>
 
-<div id="form-top" class="step_indicator">
+<div id="form-top" class="step_indicator noprint">
   <ul>
   </ul>
 </div>
@@ -455,7 +455,15 @@ pageClass: "page-public-assistance"
   {% endeligSection %}
 
   {% eligSection "results" %}
-    <h2>Results</h2>
+    <div class="flex">
+      <h2>Results</h2>
+      <button type="button" class="btn btn_secondary noprint" onclick="window.print()">
+        <svg role="img" aria-hidden="true" focusable="false" class="icon ">
+          <use xlink:href="/images/sprites.svg#print"></use>
+        </svg>
+        Print results
+      </button>
+    </div>
     {% eligPage "results" %}
       <div class="programs programs__eligible">
         <p class="has_results">
@@ -579,13 +587,13 @@ pageClass: "page-public-assistance"
   {% endeligSection %}
 
   <div id="controls">
-    <button type="button" class="btn btn_secondary hidden" id="back-button">Back</button>
-    <button type="button" class="btn btn_primary" id="next-button">Next</button>
-    <button type="button" class="btn btn_primary hidden" id="submit-button">Finish</button>
+    <button type="button" class="btn btn_secondary hidden noprint" id="back-button">Back</button>
+    <button type="button" class="btn btn_primary noprint" id="next-button">Next</button>
+    <button type="button" class="btn btn_primary hidden noprint" id="submit-button">Finish</button>
   </div>
 </form>
 <p class="float_right">
-  <a href="/public-assistance/eligibility/feedback">Send feedback</a>
+  <a href="/public-assistance/eligibility/feedback" class="noprint">Send feedback</a>
 </p>
 
 <script src="/js/eligibility.js"></script>
