@@ -165,6 +165,11 @@
 
       legend {
         margin: 0;
+        border: 0;
+      }
+
+      fieldset {
+        width: 100%;
       }
 
       .programs {
@@ -432,6 +437,12 @@
       }
       fieldset {
         width: 48%;
+      }
+
+      form#eligibility {
+        fieldset {
+          width: 100%;
+        }
       }
     }
 
