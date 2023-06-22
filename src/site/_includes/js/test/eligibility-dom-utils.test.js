@@ -400,9 +400,9 @@ describe('addConditionIcon', () => {
   ])('Displays icon for $met condition with displayMet=$displayMet, displayUnmet=$displayUnmet, displayUnk=$displayUnk',
     ({met, displayMet, displayUnmet, displayUnk, expected}) => {
       document.body.innerHTML = `
-      <ul>
-        <li id="item">Example</li>
-      </ul>`;
+        <ul>
+          <li id="item">Example</li>
+        </ul>`;
       const item = document.getElementById('item');
       elig.addConditionIcon(item, met, {
         displayMet: displayMet,
@@ -470,8 +470,8 @@ describe('renderConditions', () => {
   ])('Renders a list of OR conditions with values $met',
     ({met, classes, overallClass}) => {
       document.body.innerHTML = `
-      <ul id="cond-list">
-      </ul>`;
+        <ul id="cond-list">
+        </ul>`;
       const conditions = [
         new elig.EligCondition('condition 1', true),
         [
@@ -495,5 +495,139 @@ describe('renderConditions', () => {
         'condition 3',
       ]);
       expect(Array.from(nestListItems, (i) => i.className)).toEqual(classes);
+    });
+});
+
+describe('showResultText', () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="test">
+        <p id="shown-for-results" class="has_results">There are results</p>
+        <p id="hidden-for-results" class="no_results">No results found</p>
+      </div>`;
+  });
+
+  test('Shows only text for results when results are present', () => {
+    elig.showResultText(document.getElementById('test'), true);
+    expect(document.getElementById('shown-for-results').classList)
+      .not.toContain('hidden');
+    expect(document.getElementById('hidden-for-results').classList)
+      .toContain('hidden');
+  });
+
+  test('Shows only text for no results when results are not present', () => {
+    elig.showResultText(document.getElementById('test'), false);
+    expect(document.getElementById('shown-for-results').classList)
+      .toContain('hidden');
+    expect(document.getElementById('hidden-for-results').classList)
+      .not.toContain('hidden');
+  });
+});
+
+describe('renderResultsSummaryFooter', () => {
+  let footer;
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="footer">
+      </div>`;
+    footer = document.getElementById('footer');
+  });
+
+  test('Old contents get cleared', () => {
+    footer.appendChild(document.createTextNode('remove me'));
+    const paragraph = document.createElement('p');
+    paragraph.textContent = 'goodbye';
+    footer.appendChild(paragraph);
+    expect(footer.textContent).toContain('remove me');
+    expect(footer.textContent).toContain('goodbye');
+    elig.renderResultsSummaryFooter(footer, 0, 0, 0);
+    expect(footer.textContent).not.toContain('remove me');
+    expect(footer.textContent).not.toContain('goodbye');
+  });
+
+  test.each([
+    {
+      numUnknown: 4,
+      numIneligible: 0,
+      numEnrolled: 0,
+      expected: (
+        'We need additional information from you to assess 4 programs. '),
+    },
+    {
+      numUnknown: 1,
+      numIneligible: 0,
+      numEnrolled: 0,
+      expected: 'We need additional information from you to assess 1 program. ',
+    },
+    {
+      numUnknown: 0,
+      numIneligible: 5,
+      numEnrolled: 0,
+      expected: 'There are also 5 programs you likely do not qualify for. ',
+    },
+    {
+      numUnknown: 0,
+      numIneligible: 1,
+      numEnrolled: 0,
+      expected: 'There is also 1 program you likely do not qualify for. ',
+    },
+    {
+      numUnknown: 0,
+      numIneligible: 0,
+      numEnrolled: 3,
+      expected: 'There are also 3 programs you\'re already enrolled in. ',
+    },
+    {
+      numUnknown: 0,
+      numIneligible: 0,
+      numEnrolled: 1,
+      expected: 'There is also 1 program you\'re already enrolled in. ',
+    },
+    {
+      numUnknown: 0,
+      numIneligible: 2,
+      numEnrolled: 1,
+      expected: (
+        'There are also 2 programs you likely do not qualify for and ' +
+        '1 program you\'re already enrolled in. '),
+    },
+    {
+      numUnknown: 0,
+      numIneligible: 1,
+      numEnrolled: 9,
+      expected: (
+        'There is also 1 program you likely do not qualify for and ' +
+        '9 programs you\'re already enrolled in. '),
+    },
+    {
+      numUnknown: 0,
+      numIneligible: 1,
+      numEnrolled: 1,
+      expected: (
+        'There is also 1 program you likely do not qualify for and ' +
+        '1 program you\'re already enrolled in. '),
+    },
+    {
+      numUnknown: 0,
+      numIneligible: 7,
+      numEnrolled: 9,
+      expected: (
+        'There are also 7 programs you likely do not qualify for and ' +
+        '9 programs you\'re already enrolled in. '),
+    },
+    {
+      numUnknown: 3,
+      numIneligible: 7,
+      numEnrolled: 9,
+      expected: (
+        'We need additional information from you to assess 3 programs. ' +
+        'There are also 7 programs you likely do not qualify for and ' +
+        '9 programs you\'re already enrolled in. '),
+    },
+  ])('Text renders correctly for numUnknown=$numUnknown, numIneligible=$numIneligible, numEnrolled=$numEnrolled',
+    ({numUnknown, numIneligible, numEnrolled, expected}) => {
+      elig.renderResultsSummaryFooter(footer, numUnknown, numIneligible,
+        numEnrolled);
+      expect(footer.textContent).toEqual(expected);
     });
 });

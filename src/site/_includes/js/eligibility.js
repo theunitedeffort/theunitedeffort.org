@@ -2782,8 +2782,6 @@ function renderFlags(flags, listElem) {
 function showResultText(container, hasResults) {
   const resultsMsgs = container.querySelectorAll('.has_results');
   const noResultsMsgs = container.querySelectorAll('.no_results');
-
-  // Show/hide info text depending on whether there are items in the list.
   for (const resultMsg of resultsMsgs) {
     if (hasResults) {
       resultMsg.classList.remove('hidden');
@@ -2820,28 +2818,40 @@ function renderResultsSummaryList(list, eligiblePrograms) {
 
 function renderResultsSummaryFooter(container, numUnknown, numIneligible,
   numEnrolled) {
+  function countStr(num) {
+    let ending = 's';
+    if (Number(num) === 1) {
+      ending = '';
+    }
+    return `${num} program${ending}`;
+  }
+
   // Reset container element
   container.textContent = '';
-  // TODO: programs vs program
+  // Render discription text
   if (numUnknown) {
     container.appendChild(document.createTextNode(
       'We need additional information from you to assess '));
     const link = document.createElement('a');
     link.href = '#unknown-programs';
-    link.textContent = `${numUnknown} programs`;
+    link.textContent = countStr(numUnknown);
     link.addEventListener('click', onAnchorClick);
     container.appendChild(link);
     container.appendChild(document.createTextNode('. '));
   }
   if (numIneligible || numEnrolled) {
-    container.appendChild(document.createTextNode('There are also '));
+    const singular = (Number(numIneligible) === 1 ||
+      (!numIneligible && Number(numEnrolled) === 1));
+    container.appendChild(document.createTextNode(
+      `There ${singular ? 'is' : 'are'} also `));
     if (numIneligible) {
       const link = document.createElement('a');
       link.href = '#ineligible-programs';
-      link.textContent = `${numIneligible} programs`;
+      link.textContent = countStr(numIneligible);
       link.addEventListener('click', onAnchorClick);
       container.appendChild(link);
-      container.appendChild(document.createTextNode(' you likely do not qualify for'));
+      container.appendChild(document.createTextNode(
+        ' you likely do not qualify for'));
       if (numEnrolled) {
         container.appendChild(document.createTextNode(' and '));
       }
@@ -2849,10 +2859,11 @@ function renderResultsSummaryFooter(container, numUnknown, numIneligible,
     if (numEnrolled) {
       const link = document.createElement('a');
       link.href = '#enrolled-programs';
-      link.textContent = `${numEnrolled} programs`;
+      link.textContent = countStr(numEnrolled);
       link.addEventListener('click', onAnchorClick);
       container.appendChild(link);
-      container.appendChild(document.createTextNode(` you're already enrolled in`));
+      container.appendChild(document.createTextNode(
+        ` you're already enrolled in`));
     }
     container.appendChild(document.createTextNode('. '));
   }
@@ -2939,7 +2950,7 @@ function computeEligibility() {
     document.querySelectorAll('#eligible-programs > ul > li'),
     document.querySelectorAll('#unknown-programs > ul > li'),
     document.querySelectorAll('#ineligible-programs > ul > li'),
-    document.querySelectorAll('#enrolled-programs > ul > li')
+    document.querySelectorAll('#enrolled-programs > ul > li'),
   );
 }
 
@@ -3023,5 +3034,8 @@ if (typeof module !== 'undefined' && module.exports) {
     addConditionIcon,
     renderConditions,
     renderFlags,
+    showResultText,
+    renderResultsSummaryList,
+    renderResultsSummaryFooter,
   };
 }
