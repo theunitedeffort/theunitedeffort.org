@@ -2843,7 +2843,7 @@ function renderResultsSummaryFooter(container, numUnknown, numIneligible,
     const singular = (Number(numIneligible) === 1 ||
       (!numIneligible && Number(numEnrolled) === 1));
     container.appendChild(document.createTextNode(
-      `There ${singular ? 'is' : 'are'} also `));
+      `There ${singular ? 'is' : 'are'}${numUnknown ? ' also' : ''} `));
     if (numIneligible) {
       const link = document.createElement('a');
       link.href = '#ineligible-programs';

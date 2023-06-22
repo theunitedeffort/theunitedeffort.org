@@ -563,32 +563,32 @@ describe('renderResultsSummaryFooter', () => {
       numUnknown: 0,
       numIneligible: 5,
       numEnrolled: 0,
-      expected: 'There are also 5 programs you likely do not qualify for. ',
+      expected: 'There are 5 programs you likely do not qualify for. ',
     },
     {
       numUnknown: 0,
       numIneligible: 1,
       numEnrolled: 0,
-      expected: 'There is also 1 program you likely do not qualify for. ',
+      expected: 'There is 1 program you likely do not qualify for. ',
     },
     {
       numUnknown: 0,
       numIneligible: 0,
       numEnrolled: 3,
-      expected: 'There are also 3 programs you\'re already enrolled in. ',
+      expected: 'There are 3 programs you\'re already enrolled in. ',
     },
     {
       numUnknown: 0,
       numIneligible: 0,
       numEnrolled: 1,
-      expected: 'There is also 1 program you\'re already enrolled in. ',
+      expected: 'There is 1 program you\'re already enrolled in. ',
     },
     {
       numUnknown: 0,
       numIneligible: 2,
       numEnrolled: 1,
       expected: (
-        'There are also 2 programs you likely do not qualify for and ' +
+        'There are 2 programs you likely do not qualify for and ' +
         '1 program you\'re already enrolled in. '),
     },
     {
@@ -596,7 +596,7 @@ describe('renderResultsSummaryFooter', () => {
       numIneligible: 1,
       numEnrolled: 9,
       expected: (
-        'There is also 1 program you likely do not qualify for and ' +
+        'There is 1 program you likely do not qualify for and ' +
         '9 programs you\'re already enrolled in. '),
     },
     {
@@ -604,7 +604,7 @@ describe('renderResultsSummaryFooter', () => {
       numIneligible: 1,
       numEnrolled: 1,
       expected: (
-        'There is also 1 program you likely do not qualify for and ' +
+        'There is 1 program you likely do not qualify for and ' +
         '1 program you\'re already enrolled in. '),
     },
     {
@@ -612,7 +612,7 @@ describe('renderResultsSummaryFooter', () => {
       numIneligible: 7,
       numEnrolled: 9,
       expected: (
-        'There are also 7 programs you likely do not qualify for and ' +
+        'There are 7 programs you likely do not qualify for and ' +
         '9 programs you\'re already enrolled in. '),
     },
     {
