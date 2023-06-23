@@ -1245,17 +1245,20 @@ describe('Navigation and UI', () => {
 
     const itemSelector = ':scope > ul > li';
     const moreInfoStr = 'need more information';
+    const noFeeIdSelector = '#program-no-fee-id';
 
     // Start with everything unknown or ineligible.
     toFormEnd();
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
 
-    const eligible = document.querySelector('.programs__eligible');
-    const unknown = document.querySelector('.programs__unknown');
-    const ineligible = document.querySelector('.programs__ineligible');
-    const enrolled = document.querySelector('.programs__enrolled');
+    const eligible = document.getElementById('eligible-programs');
+    const unknown = document.getElementById('unknown-programs');
+    const ineligible = document.getElementById('ineligible-programs');
+    const enrolled = document.getElementById('enrolled-programs');
+    const summary = document.getElementById('elig-summary');
 
+    expectNoResults(summary);
     expectNoResults(eligible);
     expectResults(ineligible);
     expectDetailsVisible(ineligible, true);
@@ -1263,7 +1266,7 @@ describe('Navigation and UI', () => {
     expectResults(unknown);
     expectDetailsVisible(unknown, true);
     expectProgramsSorted(unknown);
-    let noFeeId = unknown.querySelector('#program-no-fee-id');
+    let noFeeId = unknown.querySelector(noFeeIdSelector);
     expect(noFeeId).not.toBeNull();
     // Flag should be rendered.
     expect(noFeeId.textContent).toContain(moreInfoStr);
@@ -1284,10 +1287,17 @@ describe('Navigation and UI', () => {
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
 
+    expectResults(summary, 1);
+    const firstItem = summary.querySelector(itemSelector);
+    expect(firstItem.querySelector('a').hash).toEqual(noFeeIdSelector);
+    expect(summary.textContent).toContain('No-Fee ID Card');
+    expect(summary.textContent).toContain('checked 20 programs');
+    expect(summary.textContent).toContain('1 you may qualify for');
+    expect(summary.textContent).toContain('1 program you\'re already enrolled');
     expectResults(eligible, 1);
     expectDetailsVisible(eligible, true);
     expectProgramsSorted(eligible);
-    noFeeId = eligible.querySelector('#program-no-fee-id');
+    noFeeId = eligible.querySelector(noFeeIdSelector);
     expect(noFeeId).not.toBeNull();
     // Flag should not be rendered.
     expect(noFeeId.textContent).not.toContain(moreInfoStr);
@@ -1313,6 +1323,7 @@ describe('Navigation and UI', () => {
     click(document.getElementById('existing-lifeline-me'));
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
+    expectNoResults(summary);
     expectNoResults(eligible);
     expectNoResults(enrolled);
   });

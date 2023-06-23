@@ -464,19 +464,20 @@ pageClass: "page-public-assistance"
         Print results
       </button>
     </div>
+    <div id="elig-summary">
+      <p>
+        We checked <span id="summary-num-programs"></span> programs<span class="has_results"> and found <span id="summary-num-eligible" class="bold"></span> you may qualify for and are not yet receiving.</span><span class="no_results">, but based on your responses we were <span class="bold">not able to find any matching programs for you.</span></span>
+      </p>
+      <ul></ul>
+      <p><span id="summary-footer"></span> You can see the whole list of programs we checked below.</p>
+    </div>
     {% eligPage "results" %}
-      <div class="programs programs__eligible">
-        <p class="has_results">
-          You may qualify for the following programs.  Please use the links below each program to get further details and find out how to apply.
-        </p>
-        <p class="no_results">
-          Based on your responses, we were not able to find any matching programs for you.  You can see the whole list of programs we checked below.
-        </p>
+      <div id="eligible-programs" class="programs programs__eligible">
         <ul></ul>
       </div>
 
       <h3>Other Programs</h3>
-      <div class="programs programs__unknown">
+      <div id="unknown-programs" class="programs programs__unknown">
         <p class="has_results">
           With the information provided, we are unable to determine if you may be eligible for the following programs.
         </p>
@@ -563,14 +564,14 @@ pageClass: "page-public-assistance"
         </ul>
       </div>
 
-      <div class="programs programs__ineligible">
+      <div id="ineligible-programs" class="programs programs__ineligible">
         <p class="has_results">
           We checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  If you think you should be eligible for one of these programs, contact the program provider for an eligibility assessment.
         </p>
         <ul></ul>
       </div>
 
-      <div class="programs programs__enrolled">
+      <div id="enrolled-programs" class="programs programs__enrolled">
         <p class="has_results">
           You noted that you are already benefitting from the programs below, so we did not assess your eligibility for these.
         </p>

@@ -551,6 +551,12 @@ function onInput(event) {
   addEventListener('beforeunload', confirmExit);
 }
 
+function onAnchorClick(event) {
+  const dest = document.querySelector(event.target.hash);
+  dest.scrollIntoView({behavior: 'smooth'});
+  event.preventDefault();
+}
+
 function onHouseholdMemberAdd(event) {
   // Get the household member that was just added.
   const newMember = event.target.closest('.elig_page').querySelector(
@@ -2775,7 +2781,116 @@ function renderFlags(flags, listElem) {
   }
 }
 
-// Determines eligibility for programs based on user form input values.
+function showResultText(container, hasResults) {
+  const resultsMsgs = container.querySelectorAll('.has_results');
+  const noResultsMsgs = container.querySelectorAll('.no_results');
+  for (const resultMsg of resultsMsgs) {
+    if (hasResults) {
+      resultMsg.classList.remove('hidden');
+    } else {
+      resultMsg.classList.add('hidden');
+    }
+  }
+  for (const noResultMsg of noResultsMsgs) {
+    if (hasResults) {
+      noResultMsg.classList.add('hidden');
+    } else {
+      noResultMsg.classList.remove('hidden');
+    }
+  }
+}
+
+function renderResultsSummaryList(list, eligiblePrograms) {
+  // Reset list element
+  // Stryker disable next-line BlockStatement: Results in infinite loop.
+  while (list.firstChild) {
+    list.removeChild(list.firstChild);
+  }
+  // Render each list item
+  for (const program of eligiblePrograms) {
+    const listItem = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = `#${program.id}`;
+    link.textContent = program.querySelector('h4').textContent;
+    link.addEventListener('click', onAnchorClick);
+    listItem.appendChild(link);
+    list.appendChild(listItem);
+  }
+}
+
+function renderResultsSummaryFooter(container, numUnknown, numIneligible,
+  numEnrolled) {
+  function countStr(num) {
+    let ending = 's';
+    if (Number(num) === 1) {
+      ending = '';
+    }
+    return `${num} program${ending}`;
+  }
+
+  // Reset container element
+  container.textContent = '';
+  // Render discription text
+  if (numUnknown) {
+    container.appendChild(document.createTextNode(
+      'We need additional information from you to assess '));
+    const link = document.createElement('a');
+    link.href = '#unknown-programs';
+    link.textContent = countStr(numUnknown);
+    link.addEventListener('click', onAnchorClick);
+    container.appendChild(link);
+    container.appendChild(document.createTextNode('. '));
+  }
+  if (numIneligible || numEnrolled) {
+    const singular = (Number(numIneligible) === 1 ||
+      (!numIneligible && Number(numEnrolled) === 1));
+    container.appendChild(document.createTextNode(
+      `There ${singular ? 'is' : 'are'}${numUnknown ? ' also' : ''} `));
+    if (numIneligible) {
+      const link = document.createElement('a');
+      link.href = '#ineligible-programs';
+      link.textContent = countStr(numIneligible);
+      link.addEventListener('click', onAnchorClick);
+      container.appendChild(link);
+      container.appendChild(document.createTextNode(
+        ' you likely do not qualify for'));
+      if (numEnrolled) {
+        container.appendChild(document.createTextNode(' and '));
+      }
+    }
+    if (numEnrolled) {
+      const link = document.createElement('a');
+      link.href = '#enrolled-programs';
+      link.textContent = countStr(numEnrolled);
+      link.addEventListener('click', onAnchorClick);
+      container.appendChild(link);
+      container.appendChild(document.createTextNode(
+        ` you're already enrolled in`));
+    }
+    container.appendChild(document.createTextNode('. '));
+  }
+}
+
+function renderResultsSummary(eligiblePrograms, unknownPrograms,
+  ineligiblePrograms, enrolledPrograms) {
+  const numEligible = eligiblePrograms.length;
+  const numUnknown = unknownPrograms.length;
+  const numIneligible = ineligiblePrograms.length;
+  const numEnrolled = enrolledPrograms.length;
+  const numPrograms = numEligible + numUnknown + numIneligible + numEnrolled;
+
+  document.getElementById('summary-num-programs').textContent = numPrograms;
+  document.getElementById('summary-num-eligible').textContent = numEligible;
+  showResultText(document.getElementById('elig-summary'), numEligible);
+  renderResultsSummaryList(document.querySelector('#elig-summary > ul'),
+    eligiblePrograms);
+  // Render the footer summarizing unknown, ineligible, and enrolled programs.
+  renderResultsSummaryFooter(document.getElementById('summary-footer'),
+    numUnknown, numIneligible, numEnrolled);
+}
+
+// Determines eligibility for programs based on user form input values and
+// renders the results.
 function computeEligibility() {
   // Ensure any inputs on unused pages are cleared out prior to eligibility
   // computation.
@@ -2783,10 +2898,10 @@ function computeEligibility() {
 
   const input = buildInputObj();
   const allPrograms = document.querySelectorAll('.programs > ul > li');
-  const eligibleList = document.querySelector('.programs__eligible > ul');
-  const ineligibleList = document.querySelector('.programs__ineligible > ul');
-  const unknownList = document.querySelector('.programs__unknown > ul');
-  const enrolledList = document.querySelector('.programs__enrolled > ul');
+  const eligibleList = document.querySelector('#eligible-programs > ul');
+  const ineligibleList = document.querySelector('#ineligible-programs > ul');
+  const unknownList = document.querySelector('#unknown-programs > ul');
+  const enrolledList = document.querySelector('#enrolled-programs > ul');
   for (const program of allPrograms) {
     const result = program.result(input);
     const conditionList = program.querySelector('.elig_conditions');
@@ -2826,26 +2941,19 @@ function computeEligibility() {
 
   for (const container of document.querySelectorAll('.programs')) {
     const list = container.querySelector('ul');
-    const resultsMsgs = container.querySelectorAll('.has_results');
-    const noResultsMsgs = container.querySelectorAll('.no_results');
-
-    // Show/hide info text depending on whether there are items in the list.
-    for (const resultMsg of resultsMsgs) {
-      if (list.children.length) {
-        resultMsg.classList.remove('hidden');
-      } else {
-        resultMsg.classList.add('hidden');
-      }
-    }
-    for (const noResultMsg of noResultsMsgs) {
-      if (list.children.length) {
-        noResultMsg.classList.add('hidden');
-      } else {
-        noResultMsg.classList.remove('hidden');
-      }
-    }
+    // TODO: Don't get all list children, just child <li>
+    showResultText(container, list.children.length);
     sortByProgramName(list);
   }
+
+  // It's important we render the summary after populating each list of programs
+  // and sorting those lists.
+  renderResultsSummary(
+    document.querySelectorAll('#eligible-programs > ul > li'),
+    document.querySelectorAll('#unknown-programs > ul > li'),
+    document.querySelectorAll('#ineligible-programs > ul > li'),
+    document.querySelectorAll('#enrolled-programs > ul > li'),
+  );
 }
 
 // Script entry point.
@@ -2922,5 +3030,7 @@ if (typeof module !== 'undefined' && module.exports) {
     addConditionIcon,
     renderConditions,
     renderFlags,
+    showResultText,
+    renderResultsSummaryFooter,
   };
 }
