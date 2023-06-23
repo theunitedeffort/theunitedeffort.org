@@ -868,6 +868,7 @@ describe('Navigation and UI', () => {
     const incomeCheckboxes = document.querySelectorAll(
       '[id^="income-has-"]:not(#income-has-none)');
     const noIncomeCheckbox = document.getElementById('income-has-none');
+    expect(incomeCheckboxes.length).toBeGreaterThan(0);
     click(nextButton, 4);
     expect(visiblePage().id).toBe('page-income');
     for (const checkbox of incomeCheckboxes) {
@@ -884,6 +885,32 @@ describe('Navigation and UI', () => {
     click(noIncomeCheckbox);
     expect(noIncomeCheckbox.checked).toBe(false);
     for (const checkbox of incomeCheckboxes) {
+      expect(checkbox.disabled).toBe(false);
+      expect(checkbox.checked).toBe(false);
+    }
+  });
+
+  test('Selecting "none of the above" clears and disables all yourself descriptors', () => {
+    const yourselfCheckboxes = document.querySelectorAll(
+      '#yourself-details input[type="checkbox"]:not(#yourself-details-none)');
+    expect(yourselfCheckboxes.length).toBeGreaterThan(0);
+    const noneCheckbox = document.getElementById('yourself-details-none');
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-yourself-start');
+    for (const checkbox of yourselfCheckboxes) {
+      expect(checkbox.disabled).toBe(false);
+      checkbox.checked = true;
+    }
+    // Use click() here rather than .checked so that the proper event fires.
+    click(noneCheckbox);
+    expect(noneCheckbox.checked).toBe(true);
+    for (const checkbox of yourselfCheckboxes) {
+      expect(checkbox.disabled).toBe(true);
+      expect(checkbox.checked).toBe(false);
+    }
+    click(noneCheckbox);
+    expect(noneCheckbox.checked).toBe(false);
+    for (const checkbox of yourselfCheckboxes) {
       expect(checkbox.disabled).toBe(false);
       expect(checkbox.checked).toBe(false);
     }

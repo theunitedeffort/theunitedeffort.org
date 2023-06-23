@@ -187,6 +187,8 @@
     background-position: 0;
     width: 1.3em;
     height: 1.3em;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .condition__met::before {
@@ -442,6 +444,8 @@
     background-color: var(--color-blue-light);
     border-radius: 6px;
     padding: 1em;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 
     &::before {
       content: "Note: ";

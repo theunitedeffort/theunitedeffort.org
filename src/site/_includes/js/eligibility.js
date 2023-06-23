@@ -630,20 +630,20 @@ function onChangeDependent(event) {
   }
 }
 
-function onChangeNoIncome(event) {
-  const wrapper = document.getElementById('income-types');
-  const allIncomeTypes = wrapper.querySelectorAll('input[type=checkbox]');
-  for (const incomeType of allIncomeTypes) {
-    if (incomeType == event.target) {
+function onToggleMultiselect(event) {
+  const list = event.target.closest('.multiselect');
+  const options = list.querySelectorAll('input[type=checkbox]');
+  for (const option of options) {
+    if (option == event.target) {
       continue;
     }
-    const label = wrapper.querySelector(`label[for="${incomeType.id}"]`);
+    const label = list.querySelector(`label[for="${option.id}"]`);
     if (event.target.checked) {
-      incomeType.checked = false;
-      incomeType.setAttribute('disabled', 'disabled');
+      option.checked = false;
+      option.setAttribute('disabled', 'disabled');
       label.classList.add('disabled');
     } else {
-      incomeType.removeAttribute('disabled');
+      option.removeAttribute('disabled');
       label.classList.remove('disabled');
     }
   }
@@ -1048,8 +1048,10 @@ function addListeners() {
   for (const incomeList of incomeLists) {
     incomeList.addEventListener('input', updateIncomeTotal);
   }
+  document.getElementById('yourself-details-none').addEventListener('click',
+    onToggleMultiselect);
   document.getElementById('income-has-none').addEventListener('click',
-    onChangeNoIncome);
+    onToggleMultiselect);
   document.getElementById('age').addEventListener('change', onChangeAge);
   document.getElementById('hh-myself-age').addEventListener('change',
     onChangeAge);
@@ -2754,7 +2756,7 @@ function renderFlags(flags, listElem) {
     case FlagCodes.MORE_INFO_NEEDED:
       flagMsg = 'We need more information from you to make an eligibility ' +
         'recommendation. ' +
-        '<button type="button" class="link back_to_form" ' +
+        '<button type="button" class="link back_to_form noprint" ' +
         'data-section-id="section-yourself">' +
         'Back to the form</button>';
       break;

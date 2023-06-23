@@ -13,7 +13,7 @@ pageClass: "page-public-assistance"
   Use this tool to find assistance programs you may qualify for. <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span> Some of the assistance programs in this tool only apply to residents of Santa Clara County, CA.
 </p>
 
-<div id="form-top" class="step_indicator">
+<div id="form-top" class="step_indicator noprint">
   <ul>
   </ul>
 </div>
@@ -48,32 +48,36 @@ pageClass: "page-public-assistance"
         <div>
           <ul id="yourself-details" class="multiselect">
             <li>
-              <input id="not-citizen" type="checkbox" />
+              <input id="not-citizen" type="checkbox">
               <label for="not-citizen">I am <span class="italic">not</span> a U.S. citizen</label>
             </li>
             <li>
-              <input id="disabled" type="checkbox" />
+              <input id="disabled" type="checkbox">
               <label for="disabled">I am disabled</label>
             </li>
             <li>
-              <input id="blind" type="checkbox" />
+              <input id="blind" type="checkbox">
               <label for="blind">I am blind</label>
             </li>
             <li>
-              <input id="deaf" type="checkbox" />
+              <input id="deaf" type="checkbox">
               <label for="deaf">I am deaf or hard of hearing</label>
             </li>
             <li>
-              <input id="veteran" type="checkbox" />
+              <input id="veteran" type="checkbox">
               <label for="veteran">I am a U.S. veteran</label>
             </li>
             <li>
-              <input id="pregnant" type="checkbox" />
+              <input id="pregnant" type="checkbox">
               <label for="pregnant">I am pregnant or was pregnant within the last 6 months</label>
             </li>
             <li>
-              <input id="feeding" type="checkbox" />
+              <input id="feeding" type="checkbox">
               <label for="feeding">I am breastfeeding a child younger than 1 year old</label>
+            </li>
+            <li>
+              <input id="yourself-details-none" type="checkbox">
+              <label for="yourself-details-none">None of these describe me</label>
             </li>
           </ul>
         </div>
@@ -451,7 +455,15 @@ pageClass: "page-public-assistance"
   {% endeligSection %}
 
   {% eligSection "results" %}
-    <h2>Results</h2>
+    <div class="flex">
+      <h2>Results</h2>
+      <button type="button" class="btn btn_secondary noprint" onclick="window.print()">
+        <svg role="img" aria-hidden="true" focusable="false" class="icon ">
+          <use xlink:href="/images/sprites.svg#print"></use>
+        </svg>
+        Print results
+      </button>
+    </div>
     <div id="elig-summary">
       <p>
         We checked <span id="summary-num-programs"></span> programs<span class="has_results"> and found <span id="summary-num-eligible" class="bold"></span> you may qualify for and are not yet receiving.</span><span class="no_results">, but based on your responses we were <span class="bold">not able to find any matching programs for you.</span></span>
@@ -576,13 +588,13 @@ pageClass: "page-public-assistance"
   {% endeligSection %}
 
   <div id="controls">
-    <button type="button" class="btn btn_secondary hidden" id="back-button">Back</button>
-    <button type="button" class="btn btn_primary" id="next-button">Next</button>
-    <button type="button" class="btn btn_primary hidden" id="submit-button">Finish</button>
+    <button type="button" class="btn btn_secondary hidden noprint" id="back-button">Back</button>
+    <button type="button" class="btn btn_primary noprint" id="next-button">Next</button>
+    <button type="button" class="btn btn_primary hidden noprint" id="submit-button">Finish</button>
   </div>
 </form>
 <p class="float_right">
-  <a href="/public-assistance/eligibility/feedback">Send feedback</a>
+  <a href="/public-assistance/eligibility/feedback" class="noprint">Send feedback</a>
 </p>
 
 <script src="/js/eligibility.js"></script>
