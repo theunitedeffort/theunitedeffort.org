@@ -14,7 +14,7 @@ const fetchDataFromAirtable = async () => {
     .all()
     .then((records) => {
       records.forEach(function(record) {
-        if (record.get('Show on website')) {
+        if (true || record.get('Show on website')) {
           data.push(record.fields);
         }
       });
