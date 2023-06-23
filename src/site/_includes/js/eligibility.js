@@ -2210,7 +2210,7 @@ function housingChoiceResult(input) {
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
-  if (input.existingHousingChoiceMe || input.existingHousingChoiceHousehold) {
+  if (input.existingPhaMe || input.existingPhaHousehold) {
     program.markEnrolled();
   }
   return program.getResult();

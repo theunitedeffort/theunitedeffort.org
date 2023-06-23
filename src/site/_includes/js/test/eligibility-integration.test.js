@@ -1491,6 +1491,7 @@ describe('buildInputObj', () => {
       existingSchipMe: true,
       existingSchipHousehold: true,
     };
+    Object.preventExtensions(expected);
 
     document.body.parentElement.innerHTML = html;
     elig.init();
