@@ -256,6 +256,7 @@ describe('Eligibility Assessment Tool', () => {
       .findByRole('checkbox', {name: /lifeline .* household/i}).click();
 
     nextShouldBe('#page-results', '@finish');
+    // TODO: Verify anchor links work and scroll properly.  e.g. summary links.
     cy.get('@yourself').should('be.enabled');
     cy.get('@household').should('be.enabled');
     cy.get('@income').should('be.enabled');
