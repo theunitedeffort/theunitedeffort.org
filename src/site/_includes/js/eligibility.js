@@ -3031,7 +3031,6 @@ if (typeof module !== 'undefined' && module.exports) {
     renderConditions,
     renderFlags,
     showResultText,
-    renderResultsSummaryList,
     renderResultsSummaryFooter,
   };
 }
