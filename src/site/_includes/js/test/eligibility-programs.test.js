@@ -585,6 +585,7 @@ describe('Program eligibility', () => {
       existingVtaParatransitMe: false,
       existingVtaParatransitHousehold: false,
     };
+    Object.preventExtensions(input);
   });
 
   // TODO: add tests for MORE_INFO_NEEDED flag for all programs.
@@ -1144,9 +1145,9 @@ describe('Program eligibility', () => {
 
     test('Can be marked as already enrolled', () => {
       check(elig.housingChoiceResult, input).isEnrolledIf(
-        'existingHousingChoiceMe').is(true);
+        'existingPhaMe').is(true);
       check(elig.housingChoiceResult, input).isEnrolledIf(
-        'existingHousingChoiceHousehold').is(true);
+        'existingPhaHousehold').is(true);
     });
 
     test('Requires applicant to be older than a minimum age', () => {
