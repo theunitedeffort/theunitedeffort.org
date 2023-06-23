@@ -11,6 +11,7 @@
     "dev": "eleventy --serve",
     "lint": "eslint src cypress",
     "test": "eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest",
+    "test:e2e": "cypress run",
     "update:packages": "npm install theunitedeffort/eslint-plugin-builtin-compat --save-dev"
   },
   "keywords": [],

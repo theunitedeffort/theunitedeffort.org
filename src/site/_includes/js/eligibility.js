@@ -2960,12 +2960,6 @@ function init() {
   initUi();
   addListeners();
   mapResultFunctions();
-  // document.getElementById('disabled').click();
-  // document.getElementById('income-has-none').click();
-  for (let i = 0; i < 8; i++) {
-    document.getElementById('next-button').click();
-  }
-  document.getElementById('submit-button').click();
 }
 
 if (typeof module !== 'undefined' && module.exports) {
