@@ -59,7 +59,7 @@ function nextShouldBe(selector, nextAlias='@next') {
 
 describe('Eligibility Assessment Tool', () => {
   beforeEach(() => {
-    cy.visit('/public-assistance/eligibility/');
+    cy.visit('/benefits-eligibility/');
   });
 
   // This is a bit of a smoke test, just verifying overall functionality.

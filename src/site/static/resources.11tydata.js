@@ -14,7 +14,13 @@ const fetchDataFromAirtable = async () => {
     .all()
     .then((records) => {
       records.forEach(function(record) {
-        if (record.get('Show on website')) {
+        // TODO: Remove this context check after migration from
+        // public assistance programs to resources is complete.
+        // This check exists so we can view a development
+        // version of the site with all the newly-migrated resources
+        // but still hide them from the production site.
+        if (process.env.CONTEXT !== 'production' ||
+            record.get('Show on website')) {
           data.push(record.fields);
         }
       });
