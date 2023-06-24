@@ -239,7 +239,7 @@ beforeAll(() => {
   window.scrollTo = jest.fn();
   html = fs.readFileSync(
     path.resolve(__dirname,
-      '../../../../../test/dist/public-assistance/eligibility/index.html'),
+      '../../../../../test/dist/benefits-eligibility/index.html'),
     'utf8');
 });
 
