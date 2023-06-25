@@ -1107,7 +1107,6 @@ function mapResultFunctions() {
   document.getElementById('program-ssdi').result = ssdiResult;
   document.getElementById('program-va-pension').result = vaPensionResult;
   document.getElementById('program-wic').result = wicResult;
-  document.getElementById('program-uplift').result = upliftResult;
 }
 
 // Switches to the first form page in the document.
@@ -2547,25 +2546,6 @@ function wicResult(input) {
   return program.getResult();
 }
 
-function upliftResult(input) {
-  const isUnhoused = isOneOf(input.housingSituation, [
-    'vehicle',
-    'transitional',
-    'hotel',
-    'shelter',
-    'no-stable-place']);
-
-  const program = new Program();
-  program.addConditionsOneOf([
-    new EligCondition('Be experiencing homelessness', isUnhoused),
-    new EligCondition(`Be at risk of losing housing`, input.homelessRisk),
-  ]);
-  if (input.existingUpliftMe) {
-    program.markEnrolled();
-  }
-  return program.getResult();
-}
-
 function clearUnusedPages() {
   const pages = [...document.querySelectorAll('div.elig_page')];
   // Reset usage tracking.
@@ -2625,7 +2605,6 @@ function buildInputObj() {
     housingSituation: getValueOrNull('housing-situation'),
     paysUtilities: getValueOrNull('pay-utilities'),
     hasKitchen: getValueOrNull('has-kitchen-yes'),
-    homelessRisk: getValueOrNull('risk-homeless'),
     immigrationStatus: getValueOrNull('immig_status'),
     usesGuideDog: getValueOrNull('use-guide-dog'),
     militaryDisabled: getValueOrNull('dis-military'),
@@ -3012,7 +2991,6 @@ if (typeof module !== 'undefined' && module.exports) {
     ssiCapiAdjustedIncome,
     ssiResult,
     ssdiResult,
-    upliftResult,
     vaDisabilityResult,
     vaPensionCountableIncome,
     vaPensionHouseholdSize,

@@ -295,10 +295,6 @@ pageClass: "page-benefits-eligibility"
         <p>Do you have cooking facilities and a place to store food in your home?</p>
         {% yesNo "has-kitchen" %}
       </div>
-      <div>
-        <p>Do you feel you are at risk of losing your home?</p>
-        {% yesNo "risk-homeless" %}
-      </div>
     {% endeligPage %}
   {% endeligSection %}
 
@@ -442,7 +438,6 @@ pageClass: "page-benefits-eligibility"
         schip: State Children's Health Insurance Program (SCHIP) <span class="subtitle">Also known as Healthy Families A & B</span>
         ssi: Supplemental Security Income (SSI)
         ssdi: Social Security Disability Insurance (SSDI)
-        uplift: Universal Pass for Life Improvement From Transportation (UPLIFT)
         wic: Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)
         va-disability: VA Disability Compensation
         va-pension: Veterans Pension or Survivors Pension
@@ -556,10 +551,6 @@ pageClass: "page-benefits-eligibility"
 
           {% program "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
             WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods.
-          {% endprogram %}
-
-          {% program "Universal Pass for Life Improvement From Transportation (UPLIFT)", "uplift", "", "https://scc.bitfocus.com/uplift" %}
-            UPLIFT provides quarterly VTA transit passes to adults who are homeless or at risk of becoming homeless.  Passes are distributed through participating case management agencies.
           {% endprogram %}
         </ul>
       </div>

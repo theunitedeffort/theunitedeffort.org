@@ -1291,7 +1291,7 @@ describe('Navigation and UI', () => {
     const firstItem = summary.querySelector(itemSelector);
     expect(firstItem.querySelector('a').hash).toEqual(noFeeIdSelector);
     expect(summary.textContent).toContain('No-Fee ID Card');
-    expect(summary.textContent).toContain('checked 20 programs');
+    expect(summary.textContent).toContain('checked 19 programs');
     expect(summary.textContent).toContain('1 you may qualify for');
     expect(summary.textContent).toContain('1 program you\'re already enrolled');
     expectResults(eligible, 1);
@@ -1341,13 +1341,6 @@ describe('buildInputObj', () => {
   )('Sets paysUtilities with value of %s', (val) => {
     setYesNo('pay-utilities', val);
     expect(getInput()).toHaveProperty('paysUtilities', val);
-  });
-
-  test.each(
-    [true, false, null],
-  )('Sets homelessRisk with value of %s', (val) => {
-    setYesNo('risk-homeless', val);
-    expect(getInput()).toHaveProperty('homelessRisk', val);
   });
 
   test.each(
@@ -1424,7 +1417,6 @@ describe('buildInputObj', () => {
       housingSituation: 'housed',
       paysUtilities: true,
       hasKitchen: true,
-      homelessRisk: true,
       immigrationStatus: 'permanent_resident',
       usesGuideDog: true,
       militaryDisabled: true,
@@ -1487,8 +1479,6 @@ describe('buildInputObj', () => {
       existingSsdiMe: true,
       existingSsiHousehold: true,
       existingSsiMe: true,
-      existingUpliftHousehold: true,
-      existingUpliftMe: true,
       existingVaDisabilityHousehold: true,
       existingVaDisabilityMe: true,
       existingVaPensionHousehold: true,
@@ -1585,9 +1575,6 @@ describe('buildInputObj', () => {
 
     document.getElementById('has-kitchen-yes').checked = expected.hasKitchen;
     expect(getInput().hasKitchen).toBe(expected.hasKitchen);
-
-    setYesNo('risk-homeless', expected.homelessRisk);
-    expect(getInput().homelessRisk).toBe(expected.homelessRisk);
 
     document.getElementById(expected.immigrationStatus).checked = true;
     expect(getInput().immigrationStatus).toBe(expected.immigrationStatus);
@@ -1769,15 +1756,6 @@ describe('buildInputObj', () => {
 
     document.getElementById('existing-ssi-me').checked = expected.existingSsiMe;
     expect(getInput().existingSsiMe).toBe(expected.existingSsiMe);
-
-    document.getElementById('existing-uplift-household').checked = (
-      expected.existingUpliftHousehold);
-    expect(getInput().existingUpliftHousehold).toBe(
-      expected.existingUpliftHousehold);
-
-    document.getElementById('existing-uplift-me').checked = (
-      expected.existingUpliftMe);
-    expect(getInput().existingUpliftMe).toBe(expected.existingUpliftMe);
 
     document.getElementById('existing-va-disability-household').checked = (
       expected.existingVaDisabilityHousehold);
