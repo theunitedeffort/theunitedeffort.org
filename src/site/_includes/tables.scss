@@ -20,14 +20,22 @@ th[scope=colgroup] {
 
 table.deflist {
   font-size: 1em;
+  width: 100%;
+  table-layout: fixed;
   td {
     border: none;
     padding-left: 0;
     vertical-align: top;
+    width: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   td:first-child {
     font-weight: 600;
     white-space: nowrap;
+    word-wrap: normal;
+    overflow-wrap: normal;
+    width: 8em;
   }
   ul {
     margin: 0;

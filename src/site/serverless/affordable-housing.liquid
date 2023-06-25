@@ -209,9 +209,14 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
 <section id="results" class="anchor_context" aria-label="Housing Results">
   <div class="align-end flex stack-reversed">
-    <p class="noprint bold">
-    {{num_results_snippet}}
-    </p>
+    <div>
+      <p class="noprint bold">
+        {{num_results_snippet}}
+      </p>
+      <!-- <p class="collapse_top align_left">
+        <a href="/housing/affordable-housing/feedback" class="noprint">Report an error</a>
+      </p> -->
+    </div>
     <div>
       {% if num_results > 0 %}
         <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/housing/affordable-housing/table?{{query | queryString}}">
@@ -234,6 +239,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% if num_filters_applied > 0 %}
     <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
+    <p>
+      <a href="/housing/affordable-housing/feedback" class="noprint">Report an error</a>
+    </p>
 
   <div class="flex results_container">
     <div id="map-toggle" class="noprint hidden">

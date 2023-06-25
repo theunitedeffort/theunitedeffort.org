@@ -1,0 +1,18 @@
+---
+layout: "layouts/base.liquid"
+title: "Affordable Housing Feedback"
+pageClass: "page-housing"
+permalink: "/housing/affordable-housing/feedback/index.html"
+---
+
+<h1>{{title}}</h1>
+
+<p>
+  Is something not right? Could we improve our benefits eligibility assessment tool? Let us know here.
+</p>
+
+{% render "contact-form" name: "affordable_housing_feedback" action: "/housing/affordable-housing/feedback-sent" %}
+
+<p>
+  If you prefer, you can also <a href="/contact">contact us</a> another way.
+</p>

@@ -69,6 +69,10 @@ img {
   text-align: center;
 }
 
+.align_left {
+  text-align: left;
+}
+
 header,
 footer,
 main,
@@ -221,6 +225,11 @@ body.max_width {
 .collapse_top {
   margin-top: 0;
   padding-top: 0;
+}
+
+.collapse_bottom {
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 iframe {
