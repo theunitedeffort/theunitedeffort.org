@@ -128,7 +128,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
 <section aria-label="Housing Filter Options">
 <form action="/housing/affordable-housing/filter" action="get" id="housing-search" class="housing_search" onsubmit="ShowLoading();">
-  
+
   {% assign filterValues = housing.filterValues | updateFilterState: query %}
 
   {% for section in filterValues %}
@@ -209,14 +209,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
 <section id="results" class="anchor_context" aria-label="Housing Results">
   <div class="align-end flex stack-reversed">
-    <div>
-      <p class="noprint bold">
-        {{num_results_snippet}}
-      </p>
-      <!-- <p class="collapse_top align_left">
-        <a href="/housing/affordable-housing/feedback" class="noprint">Report an error</a>
-      </p> -->
-    </div>
+    <p class="noprint bold">
+      {{num_results_snippet}}
+    </p>
     <div>
       {% if num_results > 0 %}
         <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/housing/affordable-housing/table?{{query | queryString}}">
