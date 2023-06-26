@@ -170,8 +170,6 @@ describe('Eligibility Assessment Tool', () => {
       .findByLabelText(/yes/i).click();
     cy.get('@page').contains('div', 'have cooking facilities')
       .findByLabelText(/no/i).click();
-    cy.get('@page').contains('div', 'at risk of losing your home')
-      .findByLabelText(/no/i).click();
 
     nextShouldBe('#page-income');
     incomeChecks();

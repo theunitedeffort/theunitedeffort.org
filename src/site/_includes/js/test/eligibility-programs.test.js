@@ -518,7 +518,6 @@ describe('Program eligibility', () => {
       housingSituation: null,
       paysUtilities: null,
       hasKitchen: false,
-      homelessRisk: null,
       immigrationStatus: null,
       usesGuideDog: null,
       militaryDisabled: null,
@@ -578,8 +577,6 @@ describe('Program eligibility', () => {
       existingFeraHousehold: false,
       existingLifelineMe: false,
       existingLifelineHousehold: false,
-      existingUpliftMe: false,
-      existingUpliftHousehold: false,
       existingVaDisabilityMe: false,
       existingVaDisabilityHousehold: false,
       existingVtaParatransitMe: false,
@@ -1642,39 +1639,6 @@ describe('Program eligibility', () => {
       input.age = elig.cnst.ssdi.TRANSITION_RETIREMENT_AGE + 1;
       expect(elig.ssdiResult(input).flags)
         .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
-    });
-  });
-
-  describe('UPLIFT Program', () => {
-    test('Not eligible with default input', () => {
-      expect(elig.upliftResult(input).eligible).not.toBe(true);
-    });
-
-    test('Can be marked as already enrolled', () => {
-      // Existing household assistance should not affect enrollment status.
-      input.existingUpliftHousehold = true;
-      check(elig.upliftResult, input).isEnrolledIf('existingUpliftMe').is(true);
-    });
-
-    test('Eligible when unhoused', () => {
-      input.housingSituation = 'housed';
-      check(elig.upliftResult, input)
-        .isEligibleIf('housingSituation').is('vehicle');
-      input.housingSituation = 'unlisted-stable-place';
-      check(elig.upliftResult, input)
-        .isEligibleIf('housingSituation').is('transitional');
-      check(elig.upliftResult, input)
-        .isEligibleIf('housingSituation').is('hotel');
-      check(elig.upliftResult, input)
-        .isEligibleIf('housingSituation').is('shelter');
-      check(elig.upliftResult, input)
-        .isEligibleIf('housingSituation').is('no-stable-place');
-    });
-
-    test('Eligible when at risk of homelessness', () => {
-      input.housingSituation = 'housed';
-      check(elig.upliftResult, input)
-        .isEligibleIf('homelessRisk').is(true);
     });
   });
 
