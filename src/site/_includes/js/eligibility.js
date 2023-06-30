@@ -26,20 +26,22 @@ const cnst = {
   calworks: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
     // Section 1.2
-    // Effective through 6/30/23
+    // https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACLs/2023/23-48.pdf?ver=2023-05-25-094822-990#page=4
+    // Region 1
+    // Effective through 6/30/24
     MBSAC: [ // USD per month
-      807,
-      1324,
-      1641,
-      1947,
-      2221,
-      2499,
-      2746,
-      2988,
-      3242,
-      3519,
+      862,
+      1415,
+      1753,
+      2080,
+      2373,
+      2670,
+      2934,
+      3193,
+      3464,
+      3760,
     ],
-    MBSAC_ADDL_PERSON: 32, // USD per month per person
+    MBSAC_ADDL_PERSON: 34, // USD per month per person
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
     // Section 14.1 (seems out of date)
     // https://www.sfhsa.org/sites/default/files/media/document/2023-04/factsheet_calworks_english_02.2023.pdf
