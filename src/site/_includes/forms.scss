@@ -363,6 +363,10 @@
         width: 5em;
       }
 
+      input[type=number].long {
+        width: 7em;
+      }
+
 
       input.inline {
         display: inline-block;

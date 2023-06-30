@@ -517,10 +517,10 @@ module.exports = function(eleventyConfig) {
     let tooltip = '';
     if (fields[fieldName].description) {
       const descStr = fields[fieldName].description.replace(/\n/g, '<br/>');
-      tooltip = `<span class="tooltip_entry">
-  <span class="icon_query"></span>
-  <span class="tooltip_content">${descStr}</span>
-  </span>`;
+      tooltip = `
+        <p data-toggletip data-toggletip-class="icon_query">
+          ${descStr}
+        </p>`;
     }
     return `${tag} ${tooltip}`;
   };
