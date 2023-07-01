@@ -4,6 +4,7 @@ title: Check for Affordable Housing Updates
 permalink: 
   build: "/contrib/affordable-housing/changes/index.html"
 pageClass: "smaller max_width"
+pageHead: '<script src="/js/accessibility.js" defer></script>'
 maxUnits: 6
 maxOfferings: 5
 maxHouseholdSize: 12
@@ -36,7 +37,7 @@ maxHouseholdSize: 12
         <a href="." id="skip-property">Skip this property</a>
         <h3>Step 1</h3>
         <p>The <a href="" target="_blank" rel="noopener" class="property-link">official information</a><sup>&#8599;</sup> about this property is shown to the right.</p>
-        <p>If the offical information seems to be broken or shows the wrong page, find a better link for this property and put it in the URL field <a href="#fldei8N0xw2VhjX9V">below</a>. The content to the right will automatically update.</p>
+        <p>If the offical information seems to be broken or shows the wrong page, find a better link for this property and put it in the URL field <a href="#fldwAZrsok7XlFuID">below</a>. The content to the right will automatically update.</p>
         <p>Still not working?  You'll have to <a href="" target="_blank" rel="noopener" class="property-link">visit the page</a><sup>&#8599;</sup> manually.</p>
         <h3>Step 2</h3>
         <p>Make any edits necessary to make the information below match the offical property manager's information.</p>
@@ -131,10 +132,7 @@ maxHouseholdSize: 12
                     {% indexedFormField unitIdx, unitsFields, "STATUS", "short" %}
 
                     <span class="label">Occupancy Limits</span>
-                    <span class="tooltip_entry">
-                      <span class="icon_query"></span>
-                      <span class="tooltip_content">The minimum and maximum number of people allowed to live in this unit.</span>
-                    </span>
+                    <p data-toggletip data-toggletip-class="icon_query">The minimum and maximum number of people allowed to live in this unit.</p>
                     <br/>
                     {% indexedFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "short inline" %} to 
                     {% indexedFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "short inline" %} people<br/>
@@ -147,10 +145,7 @@ maxHouseholdSize: 12
                       {% endif %}
                     {% endfor %}
                     <input type="checkbox" id="is-alternate-min-income:{{unitIdx}}" class="form_conditional is_alternate_min_income" data-primary-field="MIN_INCOME_RENT_FACTOR:{{unitIdx}}" data-alternate-field="{{alternateMinIncomeStr}}" data-conflict-resolution="alternate"> <label for="is-alternate-min-income:{{unitIdx}}">The minimum income is not calculated based on rent for this unit</label>
-                    <span class="tooltip_entry">
-                      <span class="icon_query"></span>
-                      <span class="tooltip_content">Most properties calculate the minimum income for a unit type by multiplying the yearly rent by a scale factor.  For example, "2.5 times 12 months' rent".  You should use this type of minimum income in this form whenever possible.<br/><br/> However, in rare cases, a property will not give a scale factor and will <span class="bold">only</span> give the dollar amount. </span>
-                    </span><br/>
+                    <p data-toggletip data-toggletip-class="icon_query">Most properties calculate the minimum income for a unit type by multiplying the yearly rent by a scale factor.  For example, "2.5 times 12 months' rent".  You should use this type of minimum income in this form whenever possible.<br/><br/> However, in rare cases, a property will not give a scale factor and will <span class="bold">only</span> give the dollar amount. </p><br/>
                     <div class="min_income">
                       {% indexedFieldLabel unitIdx, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %}<br/> 
                       {% indexedFormField unitIdx, unitsFields, "MIN_INCOME_RENT_FACTOR", "inline" %} times yearly rent<br/>
@@ -218,10 +213,7 @@ maxHouseholdSize: 12
                             </table>
                             <div class="max_income_alternate" hidden>
                               <span class="label">Maximum Income Range<span>
-                              <span class="tooltip_entry">
-                                <span class="icon_query"></span>
-                                <span class="tooltip_content">Most properties list the maximum allowed income based on household size.<br/>However, if the maximum income is just given as a simple range of values (e.g. Maximum Income $54,000 - $77,000), then enter the range here.</span>
-                              </span>
+                              <p data-toggletip data-toggletip-class="icon_query">Most properties list the maximum allowed income based on household size.<br/>However, if the maximum income is just given as a simple range of values (e.g. Maximum Income $54,000 - $77,000), then enter the range here.</p>
                               <br/>
                               {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD", "extra_long inline" %} to
                               {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD", "extra_long inline" %} $/year

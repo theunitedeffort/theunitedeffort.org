@@ -1,10 +1,10 @@
 const USER_NAME_KEY = 'userName';
-const APT_NAME_FIELD_ID = 'fldMcM49qaNr3EQ2a';
-const POPULATIONS_SERVED_FIELD_ID = 'fldkzU54q8lYtIH7G';
-const PROPERTY_URL_FIELD_ID = 'fldei8N0xw2VhjX9V';
-const UNIT_TYPE_FIELD_ID = 'fldJ4fP1y13NE6ywu';
-const UNIT_STATUS_FIELD_ID = 'fldTNeFcJ3dhDKLqZ';
-const AMI_PERCENT_FIELD_ID = 'fldBHf0GmnBHnZBFI';
+const APT_NAME_FIELD_ID = 'fld4uDIBhYSt70nBS';
+const POPULATIONS_SERVED_FIELD_ID = 'fldCRLJwhWq0x4eGo';
+const PROPERTY_URL_FIELD_ID = 'fldwAZrsok7XlFuID';
+const UNIT_TYPE_FIELD_ID = 'fldOZPpp6jwtSXZ4G';
+const UNIT_STATUS_FIELD_ID = 'fldYIOfAhlGXRBcYb';
+const AMI_PERCENT_FIELD_ID = 'fldGCPA4UF4nBQ2dU';
 const MAX_NUM_UNITS = document.querySelectorAll(
   `#all-units > div[id^="unit-"]`).length;
 const MAX_NUM_OFFERINGS = document.querySelector(
