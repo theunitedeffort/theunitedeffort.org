@@ -1,6 +1,6 @@
 const Airtable = require('airtable');
 const base = new Airtable(
-  {apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+  {apiKey: process.env.AIRTABLE_WRITE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const HOUSING_CHANGE_QUEUE_TABLE = "tblKO2Ea4NGEoDGND";
 const HOUSING_DATABASE_TABLE = "tblq3LUpHcY0ISzxZ";
@@ -275,11 +275,11 @@ exports.handler = async function(event) {
     // If there is a matching queue record for this housing ID, update it to
     // be in progress.
     if (data.queue.thisItem.recordId) {
-      // console.log("updating in progress status for ID: " + housingId);
-      // await markInProgressInQueue(data.queue.thisItem.recordId);
-      // // TODO: Get these updated counts from the queue?
-      // data.queue.numInProgress += 1;
-      // data.queue.numTodo -= 1;
+      console.log("updating in progress status for ID: " + housingId);
+      await markInProgressInQueue(data.queue.thisItem.recordId);
+      // TODO: Get these updated counts from the queue?
+      data.queue.numInProgress += 1;
+      data.queue.numTodo -= 1;
     }
   }
 

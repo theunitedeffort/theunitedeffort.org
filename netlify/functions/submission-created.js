@@ -1,5 +1,7 @@
 var Airtable = require('airtable');
-var base = new Airtable({ apiKey: process.env.AIRTABLE_WRITE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+var base = new Airtable(
+  {apiKey: process.env.AIRTABLE_WRITE_API_KEY}).base(
+  process.env.AIRTABLE_BASE_ID);
 
 const AFFORDABLE_HOUSING_CHANGES_TABLE = "tblXy0hiHoda5UVSR";
 const AFFORDABLE_HOUSING_CHANGES_QUEUE_TABLE = "tblKO2Ea4NGEoDGND";
@@ -37,9 +39,9 @@ exports.handler = async function(event) {
     console.log("form response record created");
     if (recordId) {
       // TODO: check that the form response was in fact recorded successfully.
-      // console.log("updating queue");
-      // await markCompleteInQueue(recordId);
-      // console.log("queue updated");
+      console.log("updating queue");
+      await markCompleteInQueue(recordId);
+      console.log("queue updated");
     } else {
       console.log("no queue record id to update");
     }
