@@ -30,7 +30,8 @@ permalink: /resources/index.html
         {% if link.Markdown %}
           <li>{{ link.Markdown | markdownify }}</li>
         {% else %}
-          <li><a href="{{link.URL}}" target="_BLANK" rel="noopener">{{ link.Title }}</a></li>
+          {% assign prefix = link.URL | slice: 0, 4 %}
+          <li><a href="{{link.URL}}" {% if prefix == 'http' %}target="_BLANK" {% endif %}rel="noopener">{{ link.Title }}</a>{% if prefix == 'http' %}<sup>&#8599;</sup>{% endif %}</li>
         {% endif %}
       {% endfor %}
     </ul>

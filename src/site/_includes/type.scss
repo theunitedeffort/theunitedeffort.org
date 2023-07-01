@@ -1,7 +1,8 @@
   h1,
   h2,
   h3,
-  h4 {
+  h4,
+  h5 {
     color: var(--color-gray-200);
     font-family: var(--font-headline);
     font-weight: 850;
@@ -29,6 +30,10 @@
   
   h3 {
     font-size: 1.3em;
+  }
+
+  h4 {
+    font-size: 1em;
   }
   
   main p,
@@ -93,6 +98,9 @@
   
   address {
     font-style: normal;
+    h2 {
+      font-size: 1.3em
+    }
   }
   
   .badge {
@@ -167,6 +175,33 @@
     display: inline-block;
   }
   
+  .condition::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 0.1em;
+    left: -1.6em;
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24"%3E%3Cpath fill="none" d="M0 0h24v24H0z"/%3E%3Cpath d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" style="fill:%23888;fill-opacity:1"/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-size: 1.3em;
+    background-position: 0;
+    width: 1.3em;
+    height: 1.3em;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .condition__met::before {
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24"%3E%3Cpath fill="none" d="M0 0h24v24H0z"/%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" style="fill:%2395be40;fill-opacity:1"/%3E%3C/svg%3E');
+  }
+
+  .condition__unmet::before {
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24"%3E%3Cpath fill="none" d="M0 0h24v24H0z"/%3E%3Cpath d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z" style="fill:%23bd052e;fill-opacity:1"/%3E%3C/svg%3E');
+  }
+
+  .condition__unk::before {
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24"%3E%3Cpath fill="none" d="M0 0h24v24H0z"/%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" style="fill:%23888;fill-opacity:1"/%3E%3C/svg%3E');
+  }
   
   .rent_tables {
     h2 {
@@ -280,7 +315,8 @@
   .queue_status {
     width: 50%;
   }
-  
+
+
   p[data-toggletip] {
     font-size: 0.7em;
     margin-top: 0;
@@ -389,6 +425,13 @@
     font-style: italic;
   }
 
+  .subtitle {
+    display: block;
+    font-size: 0.8em;
+    color: var(--color-gray-500);
+    font-weight: 400;
+  }
+
   code {
     background-color: var(--color-gray-900);
     border-radius: 3px;
@@ -401,6 +444,8 @@
     background-color: var(--color-blue-light);
     border-radius: 6px;
     padding: 1em;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 
     &::before {
       content: "Note: ";

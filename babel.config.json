@@ -1,0 +1,4 @@
+{
+  "presets": ["@babel/preset-env"]
+  // TODO: Add polyfilling via core-js and webpack.
+}

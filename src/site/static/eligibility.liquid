@@ -1,0 +1,594 @@
+---
+layout: layouts/base.liquid
+title: Find Assistance Programs For You
+permalink:
+  build: "/benefits-eligibility/index.html"
+pageClass: "page-benefits-eligibility"
+---
+
+<h1>{{title}}
+<span class="subtitle">In Santa Clara County</span></h1>
+
+<p>
+  Use this tool to find assistance programs you may qualify for. <span class="bold">The information you enter here is completely private and will not be transmitted or stored in any way.</span> Some of the assistance programs in this tool only apply to residents of Santa Clara County, CA.
+</p>
+
+<div id="form-top" class="step_indicator noprint">
+  <ul>
+  </ul>
+</div>
+
+<form id="eligibility">
+  {% eligSection "intro" %}
+    {% eligPage "intro" %}
+    <p>
+      This form will ask you questions about you, your household, and your income. Answer each question to the best of your knowledge. After finishing this form, the results page will display a list of assistance programs you may consider applying for.
+    </p>
+    <p>You can always re-visit a section by clicking on that section in the progress bar, even after you've seen your results.  Note that if you use your browser's back button, you will lose your progress.
+    </p>
+    <p>
+      <span class="bold">The data you enter is never stored, transmitted, or shared with any agency and is completely private</span>.
+    <p>
+      Ready?  Press Next to begin.
+    </p>
+    {% endeligPage %}
+  {% endeligSection %}
+
+  {% eligSection "yourself" %}
+    <h2>Yourself</h2>
+
+    {% eligPage "yourself-start" %}
+      <div>
+        <div>
+          <label for="age">How old are you?</label>
+          <input id="age" class="short" type="number" maxlength="3" min="1" max="130" /> years
+        </div>
+
+        <p>Select any of the following that describe you:</p>
+        <div>
+          <ul id="yourself-details" class="multiselect">
+            <li>
+              <input id="not-citizen" type="checkbox">
+              <label for="not-citizen">I am <span class="italic">not</span> a U.S. citizen</label>
+            </li>
+            <li>
+              <input id="disabled" type="checkbox">
+              <label for="disabled">I am disabled</label>
+            </li>
+            <li>
+              <input id="blind" type="checkbox">
+              <label for="blind">I am blind</label>
+            </li>
+            <li>
+              <input id="deaf" type="checkbox">
+              <label for="deaf">I am deaf or hard of hearing</label>
+            </li>
+            <li>
+              <input id="veteran" type="checkbox">
+              <label for="veteran">I am a U.S. veteran</label>
+            </li>
+            <li>
+              <input id="pregnant" type="checkbox">
+              <label for="pregnant">I am pregnant or was pregnant within the last 6 months</label>
+            </li>
+            <li>
+              <input id="feeding" type="checkbox">
+              <label for="feeding">I am breastfeeding a child younger than 1 year old</label>
+            </li>
+            <li>
+              <input id="yourself-details-none" type="checkbox">
+              <label for="yourself-details-none">None of these describe me</label>
+            </li>
+          </ul>
+        </div>
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "head-of-household" %}
+      <div>
+        <p>Are you the head of your household?</p>
+        {% yesNo "head-household" %}
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "disability-details" %}
+      <h3>About Your Disability</h3>
+      <div>
+        <p>Do you use a guide, signal or service dog?</p>
+        {% yesNo "use-guide-dog" %}
+      </div>
+      <div id="military-disability-wrapper" class="hidden">
+        <p>Is your disability related to your military service?</p>
+        {% yesNo "dis-military" %}
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "veteran-details" %}
+      <h3>About Your Military Service</h3>
+
+      <div>
+        <label for="your-discharge-status">What is your discharge status?</label>
+        <select id="your-discharge-status">
+          <option value="">--Please choose an option--</option>
+          <option value="honorable">Honorable</option>
+          <option value="general">General under honorable conditions</option>
+          <option value="oth">Other than honorable (OTH)</option>
+          <option value="bad-conduct">Bad conduct</option>
+          <option value="dishonorable">Dishonorable</option>
+        </select>
+      </div>
+
+      <div>
+        <p>Enter details for your duty periods below:</p>
+        {% dynamicFieldList "Add another duty period" %}
+          <h4>Duty Period 1</h4>
+          <div>
+            <label for="your-duty-type">Duty type</label>
+            <select id="your-duty-type">
+              <option value="">--Please choose an option--</option>
+              <option value="active-duty">Active duty</option>
+              <option value="active-training">Active duty for training</option>
+              <option value="inactive-training">Inactive duty training</option>
+              <option value="reserve-duty">Reserve duty</option>
+              <option value="guard-duty">National Guard duty</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="served-from">Served From</label>
+            <input type="date" id="served-from" />
+
+            <label for="served-until">Until</label>
+            <input type="date" id="served-until" />
+          </div>
+        {% enddynamicFieldList %}
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "veteran-duty-period" %}
+      <h3>About Your Military Service</h3>
+      <fieldset>
+        <p>
+          This question is about your <span class="bold">active duty period</span> from <span id="served-from-ref" class="bold"></span> until <span id="served-until-ref" class="bold"></span>.
+        </p>
+        <div>
+          <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
+          {% singleselect "mil-svc-duration" %}
+            {% option "full-dur-yes" %}
+              Yes
+            {% endoption %}
+            {% option "full-dur-no" %}
+              No
+            {% endoption %}
+            {% option "full-dur-not-called" %}
+              I was not called or ordered to this active duty period
+            {% endoption %}
+          {% endsingleselect %}
+        </div>
+      </fieldset>
+    {% endeligPage %}
+
+    {% eligPage "immigration-status" %}
+      <h3>About Your Immigration Status</h3>
+
+      <p>Select <span class="bold">one</span> of the following that most accurately describes you:
+      </p>
+      <div>
+        {% singleselect "immig_status" %}
+          {% option "permanent_resident" %}
+            I have a Permanent Resident Card
+          {% endoption %}
+          {% option "long_term" %}
+            I am living in the U.S. long-term but do not have a Permanent Resident card
+          {% endoption %}
+          {% option "live_temporarily" %}
+            I am visiting or living in the U.S. temporarily
+          {% endoption %}
+          {% option "none_describe" %}
+            None of these describe my situation
+          {% endoption %}
+        {% endsingleselect %}
+      </div>
+    {% endeligPage %}
+  {% endeligSection %}
+
+
+  {% eligSection "household" %}
+    <h2>Household</h2>
+
+    {% eligPage "household-members" %}
+      <p>
+        Enter details for each person living in your household. Include all adults and children who live in your home and share income and household expenses like bills and food. 
+      </p>
+
+      {% capture hhTemplate %}
+        <h4>Household Member 2</h4>
+        <div>
+          <label for="hh-member-name">First Name</label>
+          <input id="hh-member-name" type="text" class="short">
+        </div>
+        <div>
+          <label for="hh-member-age">Age</label>
+          <input id="hh-member-age" class="short" type="number" min="1" max="130"> years
+        </div>
+        <div>
+          <ul id="hh-member-types" class="multiselect">
+            <li>
+              <input id="hh-member-disabled" type="checkbox">
+              <label for="hh-member-disabled">This person is disabled</label>
+            </li>
+            <li>
+              <input id="hh-member-pregnant" type="checkbox" />
+              <label for="hh-member-pregnant">This person is pregnant or was pregnant within the last 6 months</label>
+            </li>
+            <li>
+              <input id="hh-member-breastfeeding" type="checkbox" />
+              <label for="hh-member-breastfeeding">This person is breastfeeding a child younger than 1 year old</label>
+            </li>
+            <li>
+              <input id="hh-member-dependent" type="checkbox">
+              <label for="hh-member-dependent">This person is my dependent</label>
+            </li>
+            {% comment %}
+            TODO (#413): disable and clear hh-member-dependent if hh-member-spouse
+            is selected.
+            {% endcomment %}
+            <li>
+              <input id="hh-member-spouse" type="checkbox">
+              <label for="hh-member-spouse">This person is my spouse</label>
+            </li>
+          </ul>
+        </div>
+      {% endcapture %}
+      {% dynamicFieldList "Add a new household member", "", hhTemplate %}
+        <h4>Myself</h4>
+        <div>
+          <label for="hh-myself-age">Age</label>
+          <input id="hh-myself-age" class="short" type="number" min="1" max="130"> years
+        </div>
+      {% enddynamicFieldList %}
+    {% endeligPage %}
+
+    {% eligPage "household-unborn-members" %}
+      <p>How many unborn children are in your household?</p>
+      <div>
+        <label for="unborn-children">Total unborn children</label>
+        <input type="number" id="unborn-children" class="short">
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "household-situation" %}
+      <p>Select the option below that best describes your current housing situation:</p>
+      <div>
+        {% singleselect "housing-situation" %}
+          {% option "housed" %}
+            I live in a mobile home, apartment, condo, townhouse, or house
+          {% endoption %}
+          {% option "vehicle" %}
+            I live in an RV, travel trailer, or other vehicle
+          {% endoption %}
+          {% option "transitional" %}
+            I live in transitional housing
+          {% endoption %}
+          {% option "hotel" %}
+            I live in a hotel or motel room
+          {% endoption %}
+          {% option "shelter" %}
+            I live in a shelter, interim housing, or emergency housing
+          {% endoption %}
+          {% option "unlisted-stable-place" %}
+            I have a stable place to live, but it is not listed here
+          {% endoption %}
+          {% option "no-stable-place" %}
+            I do not have a stable place to live
+          {% endoption %}
+        {% endsingleselect %}
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "household-housed" %}
+      <div>
+        <p>Does your household pay a gas or electric bill?</p>
+        {% yesNo "pay-utilities" %}
+      </div>
+      <div>
+        <p>Do you have cooking facilities and a place to store food in your home?</p>
+        {% yesNo "has-kitchen" %}
+      </div>
+    {% endeligPage %}
+  {% endeligSection %}
+
+
+  {% eligSection "income" %}
+    <h2>Income & Assets</h2>
+    {% eligPage "income" %}
+      <p>
+        Select all sources of income for you and your household. Include income from <span class="bold">all members of your household, including yourself</span>.
+      </p>
+      <div>
+        <ul id="income-types" class="multiselect">
+          <li>
+            <input id="income-has-wages" type="checkbox">
+            <label for="income-has-wages">Job wages, tips, or commission</label>
+          </li>
+          <li>
+            <input id="income-has-self-employed" type="checkbox">
+            <label for="income-has-self-employed">Income from self-employment</label>
+          </li>
+          <li>
+            <input id="income-has-disability" type="checkbox">
+            <label for="income-has-disability">Disability benefits <span class="subtitle">Including SSI/SSP, SSDI, SDI, and CAPI</span></label>
+          </li>
+          <li>
+            <input id="income-has-unemployment" type="checkbox">
+            <label for="income-has-unemployment">Unemployment benefits</label>
+          </li>
+          <li>
+            <input id="income-has-retirement" type="checkbox">
+            <label for="income-has-retirement">Retirement benefits <span class="subtitle">Including pensions and Social Security retirement</span></label>
+          </li>
+          <li>
+            <input id="income-has-veterans" type="checkbox">
+            <label for="income-has-veterans">Veteran’s benefits</label>
+          </li>
+          <li>
+            <input id="income-has-workers-comp" type="checkbox">
+            <label for="income-has-workers-comp">Worker’s compensation</label>
+          </li>
+          <li>
+            <input id="income-has-child-support" type="checkbox">
+            <label for="income-has-child-support">Child support and alimony</label>
+          </li>
+          <li>
+            <input id="income-has-other" type="checkbox">
+            <label for="income-has-other">Other source of income not listed here <span class="subtitle">Including cash assistance, interest, and investment income</span></label>
+          </li>
+          <li>
+            <input id="income-has-none" type="checkbox">
+            <label for="income-has-none">My household has no income of any kind</label>
+          </li>
+        </ul>
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "income-details-wages" %}
+      {% render "eligibility-income-details" desc: "job wages, tips, or commission", heading: "Job", id: "wages"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-self-employed" %}
+      {% render "eligibility-income-details" desc: "self-employment", heading: "Job", id: "self-employed"  %}
+    {% endeligPage %}
+
+    {% capture disabilityIncomeChecks %}
+      <div>
+        <input type="checkbox" id="income-disability-is-ssi-capi">
+        <label for="income-disability-is-ssi-capi">This is an SSI/SSP or CAPI payment</label>
+      </div>
+    {% endcapture %}
+    {% eligPage "income-details-disability" %}
+      {% render "eligibility-income-details" desc: "disability benefits", heading: "Payment", id: "disability", extraContent: disabilityIncomeChecks %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-unemployment" %}
+      {% render "eligibility-income-details" desc: "unemployment benefits", heading: "Payment", id: "unemployment"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-retirement" %}
+      {% render "eligibility-income-details" desc: "retirement benefits", heading: "Payment", id: "retirement"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-veterans" %}
+      {% render "eligibility-income-details" desc: "veteran's benefits", heading: "Payment", id: "veterans"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-workers-comp" %}
+      {% render "eligibility-income-details" desc: "worker's compensation", heading: "Payment", id: "workers-comp"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-child-support" %}
+      {% render "eligibility-income-details" desc: "child support and alimony", heading: "Payment", id: "child-support"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-other" %}
+      {% render "eligibility-income-details" desc: "other sources", heading: "Source", id: "other"  %}
+    {% endeligPage %}
+
+    {% eligPage "ss-taxes" %}
+      <div>
+        <p>In the last 10 years, have you worked <span class="bold">and</span> paid Social Security taxes on your earnings?</p>
+        {% yesNo "ss-taxes" %}
+      </div>
+    {% endeligPage %}
+
+    {% eligPage "income-assets" %}
+      {% capture assetPreamble %}
+        Enter the values of all assets or resources you and your household have.  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
+      {% endcapture %}
+      {% render "eligibility-income-details" desc: "assets", heading: "Asset", id: "assets", preamble: assetPreamble, buttonText: "Add another asset", emptyButtonText: "Enter an asset for this person", entryLabel: "Value", sumDesc: "Combined household assets", sumUnit: " " %}
+    {% endeligPage %}
+  {% endeligSection %}
+
+  {% eligSection "existing-benefits" %}
+    <h2>Existing Benefits</h2>
+    {% eligPage "existing-benefits" %}
+      <p>
+        Mark any public assistance and benefits you or your household already receive.
+      </p>
+
+     {% capture columns -%}
+        me: Me
+        household: Someone in my household
+     {%- endcapture %}
+
+     {% capture rows -%}
+        adsa: Assistance Dog Special Allowance (ADSA)
+        calfresh: CalFresh <span class="subtitle">Also known as Supplemental Nutrition Assistance Program (SNAP) or Food Stamps</span>
+        calworks: California Work Opportunity and Responsibility to Kids (CalWORKs) <span class="subtitle">Also known as Temporary Assistance for Needy Families (TANF)</span>
+        capi: Cash Assistance Program for Immigrants (CAPI)
+        care: California Alternate Rates for Energy (CARE)
+        cfap: California Food Assistance Program (CFAP) <span class="subtitle">Alternative to CalFresh, also known as Food Stamps</span>
+        fera: Family Electric Rate Assistance (FERA)
+        pha: Federal Public Housing Assistance <span class="subtitle">Also known as Section 8, Housing Choice Voucher, or Property Voucher</span>
+        ga: General Assistance (GA)
+        ihss: In-Home Supportive Services (IHSS)
+        liheap: Low Income Home Energy Assistance Program (LIHEAP)
+        lifeline: California LifeLine
+        medical: Medi-Cal <span class="subtitle">Also known as California’s Medicaid program</span>
+        nslp: National School Lunch Program (NSLP)
+        schip: State Children's Health Insurance Program (SCHIP) <span class="subtitle">Also known as Healthy Families A & B</span>
+        ssi: Supplemental Security Income (SSI)
+        ssdi: Social Security Disability Insurance (SSDI)
+        wic: Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)
+        va-disability: VA Disability Compensation
+        va-pension: Veterans Pension or Survivors Pension
+        vta-paratransit: VTA ACCESS Paratransit
+     {%- endcapture %}
+
+     {% checkboxTable "existing", columns, rows %}
+
+    {% endeligPage %}
+  {% endeligSection %}
+
+  {% eligSection "results" %}
+    <div class="flex">
+      <h2>Results</h2>
+      <button type="button" class="btn btn_secondary noprint" onclick="window.print()">
+        <svg role="img" aria-hidden="true" focusable="false" class="icon ">
+          <use xlink:href="/images/sprites.svg#print"></use>
+        </svg>
+        Print results
+      </button>
+    </div>
+    <div id="elig-summary">
+      <p>
+        We checked <span id="summary-num-programs"></span> programs<span class="has_results"> and found <span id="summary-num-eligible" class="bold"></span> you may qualify for and are not yet receiving.</span><span class="no_results">, but based on your responses we were <span class="bold">not able to find any matching programs for you.</span></span>
+      </p>
+      <ul></ul>
+      <p><span id="summary-footer"></span> You can see the whole list of programs we checked below.</p>
+    </div>
+    {% eligPage "results" %}
+      <div id="eligible-programs" class="programs programs__eligible">
+        <ul></ul>
+      </div>
+
+      <h3>Other Programs</h3>
+      <div id="unknown-programs" class="programs programs__unknown">
+        <p class="has_results">
+          With the information provided, we are unable to determine if you may be eligible for the following programs.
+        </p>
+        <ul>
+          {% program "Assistance Dog Special Allowance (ADSA)", "adsa", "https://www.cdss.ca.gov/assistance-dogs" %}
+            ADSA provides certain people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
+          {% endprogram %}
+
+          {% program "CalFresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
+            CalFresh provides monthly food benefits to certain low-income individuals and families.
+          {% endprogram %}
+
+          {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm"%}
+            CalWORKs provides cash aid and services to certain low-income families with children in the home.
+          {% endprogram %}
+
+          {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
+            CAPI provides monthly cash benefits to certain elderly, blind, or disabled legal immigrants.
+          {% endprogram %}
+
+          {% program "California Alternate Rates for Energy (CARE)", "care", "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/california-alternate-rates-for-energy" %}
+            CARE provides a discount on electricity and natural gas bills for certain low-income individuals and families.
+          {% endprogram %}
+
+          {% program "Family Electric Rate Assistance (FERA)", "fera", "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/family-electric-rate-assistance-program" %}
+            FERA provides a discount on electricity bills for certain low-income families.
+          {% endprogram %}
+
+          {% program "VA Disability Compensation", "va-disability", "https://www.va.gov/disability/how-to-file-claim/", "https://www.va.gov/disability/" %}
+            VA disability compensation provides a monthly payment to certain injured or disabled veterans.
+          {% endprogram %}
+
+          {% program "General Assistance (GA)", "ga", "https://socialservices.sccgov.org/how-do-i/apply-for-benefits", "https://socialservices.sccgov.org/financial-assistance/financial-assistance-adults-without-dependent-children-general-assistance" %}
+            GA provides cash assistance and employment services to certain low-income individuals with no dependent children.
+          {% endprogram %}
+
+          {% program "No-Fee ID Card", "no-fee-id", "/resources/how-to-apply-for-california-identification-card/#what-is-a-no-fee-and-reduced-fee-id-card", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+            Unhoused or elderly individuals may get an identification card from the Department of Motor Vehicles without having to pay the usual fee.
+          {% endprogram %}
+
+          {% program "Reduced Fee ID Card", "reduced-fee-id", "/resources/how-to-apply-for-california-identification-card/#what-is-a-no-fee-and-reduced-fee-id-card", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
+            Low-income individuals may get a discount on the fee for an identification card from the Department of Motor Vehicles.
+          {% endprogram %}
+
+          {% program "In-Home Supportive Services (IHSS)", "ihss", "https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients", "https://ca.db101.org/ca/programs/health_coverage/medi_cal/ihss/program.htm" %}
+            IHSS provides in-home personal assistance to certain low-income individuals who are blind, disabled, or elderly so they can continue to live at home safely.
+          {% endprogram %}
+
+          {% program "California LifeLine", "lifeline", "https://www.californialifeline.com/en/eligibility_requirements#link4", "https://www.californialifeline.com/en" %}
+            Lifeline provides a discount on home phone and cell phone bills for certain low-income households.  In some situations, the program will cover the full cost of phone bills and provide a new phone for free.
+          {% endprogram %}
+
+          {% program "Low Income Home Energy Assistance Program (LIHEAP)", "liheap", "https://www.csd.ca.gov/Pages/Services.aspx?SCU=Santa%20Clara%20County&PT=CM", "https://www.csd.ca.gov/Pages/Assistance-PayingMyEnergyBills.aspx" %}
+            LIHEAP provides one-time assistance with paying energy bills, home weatherization, and energy-related home repairs to certain low-income households.
+          {% endprogram %}
+
+          {% program "VTA ACCESS Paratransit", "vta-paratransit", "https://www.vta.org/go/paratransit#accordion-applying-for-vta-access-paratransit-service", "https://www.vta.org/sites/default/files/2022-05/Paratransit-Rider%27s-Guide_LMR2022.pdf" %}
+            VTA ACCESS Paratransit provides door-to-door transportation service as well as free VTA bus and light rail transit passes for certain disabled individuals.
+          {% endprogram %}
+
+          {% program "Housing Choice Voucher Interest List", "housing-choice", "https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/", "https://www.scchousingauthority.org/section-8/" %}
+            The Housing Choice Voucher program helps certain low-income individuals and families pay for rental housing. This was previously known as the "Section 8 Program."  Eligible individuals will be added to a Housing Choice Voucher interest list to await random selection into a separate voucher waiting list when it reopens.
+          {% endprogram %}
+
+          {% program "Supplemental Security Income (SSI)", "ssi", "https://www.ssa.gov/benefits/ssi/", "https://ca.db101.org/ca/programs/income_support/ssi/program.htm" %}
+            SSI is a federal program that provides a monthly cash benefit to certain low-income individuals who are disabled, blind, or elderly.
+          {% endprogram %}
+
+          {% program "Social Security Disability Insurance (SSDI)", "ssdi", "https://www.ssa.gov/applyfordisability/", "https://ca.db101.org/ca/programs/income_support/ssdi2/program.htm" %}
+            SSDI is a federal program that provides a monthly cash benefit to certain disabled individuals who have worked and paid Social Security taxes in the past.
+          {% endprogram %}
+
+          {% program "VA Pension", "va-pension", "https://www.va.gov/pension/how-to-apply/", "https://www.va.gov/pension/" %}
+            VA Pension is a program that provides ongoing cash payments for eligible veterans.
+          {% endprogram %}
+
+          {% program "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
+            WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods.
+          {% endprogram %}
+        </ul>
+      </div>
+
+      <div id="ineligible-programs" class="programs programs__ineligible">
+        <p class="has_results">
+          We checked the programs below, but based on your responses, you are likely <span class="bold">not</span> eligible for them.  If you think you should be eligible for one of these programs, contact the program provider for an eligibility assessment.
+        </p>
+        <ul></ul>
+      </div>
+
+      <div id="enrolled-programs" class="programs programs__enrolled">
+        <p class="has_results">
+          You noted that you are already benefitting from the programs below, so we did not assess your eligibility for these.
+        </p>
+        <ul></ul>
+      </div>
+
+      <p>
+        The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
+      </p>
+      <p>
+        If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
+      </p>
+    {% endeligPage %}
+  {% endeligSection %}
+
+  <div id="controls">
+    <button type="button" class="btn btn_secondary hidden noprint" id="back-button">Back</button>
+    <button type="button" class="btn btn_primary noprint" id="next-button">Next</button>
+    <button type="button" class="btn btn_primary hidden noprint" id="submit-button">Finish</button>
+  </div>
+</form>
+<p class="float_right">
+  <a href="/benefits-eligibility/feedback" class="noprint">Send feedback</a>
+</p>
+
+<script src="/js/eligibility.js"></script>
+<script>
+init();
+</script>

@@ -1,0 +1,33 @@
+{% assign buttonStr = buttonText | default: "Add another entry" %}
+{% assign emptyButtonStr = emptyButtonText | default: "Enter income for this person" %}
+{% assign perTime = sumUnit | default: " per month" %}
+{%- capture defaultSumDesc -%}
+  Combined household income from {{desc}}
+{%- endcapture -%}
+{%- capture defaultPreamble -%}
+  Enter all income coming from <span class="bold">{{desc}}</span> for everyone in your household.  Amounts should be before tax and other deductions.
+{%- endcapture -%}
+
+<h3>{{desc | capitalize}}</h3>
+<p>
+  {{preamble | default: defaultPreamble}}
+</p>
+<div class="income_details_wrapper">
+  <fieldset>
+    <legend>Myself</legend>
+    {% capture template %}
+      <h4>{{heading}} 1</h4>
+      <div>
+        <label for="income-{{id}}">{{entryLabel | default: "Income"}}</label>
+        $ <input id="income-{{id}}" type="number" class="long">{{perTime}}
+      </div>
+      {{extraContent}}
+    {% endcapture %}
+
+    {% dynamicFieldList buttonStr, emptyButtonStr, template %}
+    {% enddynamicFieldList %}
+  </fieldset>
+</div>
+<p>
+  {{sumDesc | default: defaultSumDesc}}: <span class="bold">$<span class="total">0</span>{{perTime}}</span>
+</p>

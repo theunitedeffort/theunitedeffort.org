@@ -1,12 +1,12 @@
 [build]
-commad = "npm run build"
+command = "npm run build"
 publish = "dist"
-fucntions = "netlify/functions"
+functions = "netlify/functions"
 
 [dev]
-commad = "npm run dev"
+command = "npm run dev"
 publish = "dist"
-fucntions = "netlify/functions"
+functions = "netlify/functions"
 
 [[redirects]]
 from = "/housing/affordable-housing/tracker"
@@ -55,4 +55,9 @@ status = 200
 [[redirects]]
 from = "/housing"
 to = "/housing/affordable-housing"
+status = 301
+
+[[redirects]]
+from = "/public-assistance"
+to = "/resources"
 status = 301

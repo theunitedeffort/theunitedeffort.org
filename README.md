@@ -22,43 +22,87 @@ Data for these page views are drawn from Airtable via the [Airtable API](https:/
 To access the data, the site requires _readonly_ access to Airtable via the appropriate Airtable base ID and the Airtable API key. Provide these via environment variables: 
 
 - `AIRTABLE_API_KEY`
-- `AIRTABLE_BASE_ID` (`apphE4mk8YDqyHM0I`)
+- `AIRTABLE_BASE_ID=apphE4mk8YDqyHM0I`
 
-Permissions to the Airtable base can be granted by the adminitrators of [UEO Airbase](https://airtable.com/apphE4mk8YDqyHM0I/)
+Permissions to the Airtable base can be granted by the adminitrators of the [UEO base](https://airtable.com/apphE4mk8YDqyHM0I/).
+Once you have at least read access to the base, you can get a value for `AIRTABLE_API_KEY` by [generating an Airtable personal access token](https://airtable.com/create/tokens/new) with `data.records:read` scope on the UEO Housing Database.
+
+Public transit data is also drawn from [511 SF Bay](https://511.org).  If you want this data in your development site, you will need to provide an addtional optional environment variable:
+
+- `SF_BAY_511_API_KEY`
+
+You can get such an API key by [requesting it from 511](https://511.org/open-data/token).
 
 ## Local development
+### Prerequisites
+This project requires Node.js and npm.  It's recommended that you use a node version manager such as nvm to install Node.js and npm. You can find detailed instructions for installation via a node version manager on the [npm website](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm#using-a-node-version-manager-to-install-nodejs-and-npm) or use the simplified instructions below.
 
+#### Linux and Mac ([Full instructions](https://github.com/nvm-sh/nvm#installing-and-updating))
+Install nvm:
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+```
+
+Then close and re-open your terminal window. Next, install Node.js using nvm:
+
+```
+nvm install node
+```
+
+#### Windows ([Full instructions](https://github.com/coreybutler/nvm-windows#installation--upgrades))
+Download and run the latest [nvm-setup.exe](https://github.com/coreybutler/nvm-windows/releases)
+
+Open a terminal as Administrator, then install Node.js:
+
+```
+nvm install latest
+nvm use latest
+```
+
+### Environment setup
 To make your own copy of this site and begin development, follow these instructions:
 
-```bash
-# clone this repo
-git clone https://github.com/philhawksworth/the-united-effort-orginization
 
-# move into the working directory and install dependencies
-cd the-united-effort-orginization
+#### Clone this repo
+```
+git clone https://github.com/theunitedeffort/theunitedeffort.org
+```
+
+#### Install dependencies
+```
+cd theunitedeffort.org
 npm install
+```
 
-# install Netlify CLI for centralized env var management
-# and serverless function views
+#### Install Netlify CLI
+```
 npm i -g netlify-cli
+```
 
-# Set up a new Netlify site for deployment and local dev coordination
-netlify init  
+#### Store environment variables
+First store the `AIRTABLE_BASE_ID` variable:
 
-# set environment variables
-netlify env:set AIRTABLE_BASE_ID apphE4mk8YDqyHM0I
-netlify env:set AIRTABLE_API_KEY {YOUR ENV VAR VALUE}
+```
+echo AIRTABLE_BASE_ID=apphE4mk8YDqyHM0I > .env
+```
 
-# run local development build and server
+Next, store the `AIRTABLE_API_KEY` variable as your [personal access token](https://github.com/theunitedeffort/theunitedeffort.org#data-source). Since everyone's Airtable personal access token is different, you will have to modify the below command to replace `{YOUR_ACCESS_TOKEN}` with your actual access token.  For example, if your Airtable personal access token was `abc123`, then the command would be `echo AIRTABLE_API_KEY=abc123 > .env`
+
+```
+echo AIRTABLE_API_KEY={YOUR_ACCESS_TOKEN} > .env
+```
+
+#### Run local development build and server
+```bash
 netlify dev
 ```
 
 ## Hosting and Deployment
 
-The site is hosted on [Netlfy](https://netlify.com/) and is managed in a Netlify team called `United Effort Org`.
+The site is hosted on [Netlify](https://netlify.com/) and is managed in a Netlify team called `United Effort Org`.
 
-After setting up the site with Netlify, you will have a CI/CD pipeline set up to deploy on each push to your production git branch. Pushing changes to `main` will automatically build and deploy the site.
+After setting up the site with Netlify, you will have a CI/CD pipeline set up to deploy on each push to your production git branch. Pushing changes to `prod` will automatically build and deploy the site.
 
 ## Planning and contributing
 
-We collect and prioritise our efforts in [GitHub issues](https://github.com/philhawksworth/the-united-effort-orginization/issues), arranged into [Milestones](https://github.com/philhawksworth/the-united-effort-orginization/milestones) and coordinate our efforts on those issues in a GitHub [Project](https://github.com/users/philhawksworth/projects/1/views/1). To avoid duplicating effort, you should capture your tasks in [an issue](https://github.com/philhawksworth/the-united-effort-orginization/issues) and place it in the `Doing` column of [the Project](https://github.com/users/philhawksworth/projects/1/views/1) when you being working on it.
+We collect and prioritise our efforts in [GitHub issues](https://github.com/philhawksworth/the-united-effort-orginization/issues), arranged into [Milestones](https://github.com/philhawksworth/the-united-effort-orginization/milestones) and coordinate our efforts on those issues in a GitHub [Project](https://github.com/users/philhawksworth/projects/1/views/1). To avoid duplicating effort, you should capture your tasks in [an issue](https://github.com/philhawksworth/the-united-effort-orginization/issues) and mark yourself as the assignee.

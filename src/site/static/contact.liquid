@@ -1,0 +1,33 @@
+---
+layout: "layouts/base.liquid"
+title: "Contact Us"
+pageClass: ""
+permalink: /contact/index.html
+---
+
+{% assign email = "help@theunitedeffort.org" %}
+{% assign phone = "650-996-9607" %}
+<h1>{{title}}</h1>
+
+<p>
+  We are here to help.  Feel free to contact us at any time and we will do our best to assist you.
+</p>
+
+<address>
+  <h2>Email</h2>
+  <p>
+    <a href="mailto:{{email}}" target="_blank" rel="noopener">{{email}}</a>
+  </p>
+
+  <h2>Call</h2>
+  <p>
+    <a href="tel:{{phone | replace: "-", ""}}">{{phone}}</a>
+  </p>
+
+  <h2>Mail</h2>
+  <p>
+    The United Effort Organization, Inc.<br/>
+    340 E Middlefield Road<br/>
+    Mountain View, CA 94043<br/>
+  </p>
+</address>
