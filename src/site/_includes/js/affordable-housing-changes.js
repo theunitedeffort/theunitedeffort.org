@@ -2,6 +2,10 @@ const USER_NAME_KEY = 'userName';
 const APT_NAME_FIELD_ID = 'fld4uDIBhYSt70nBS';
 const POPULATIONS_SERVED_FIELD_ID = 'fldCRLJwhWq0x4eGo';
 const PROPERTY_URL_FIELD_ID = 'fldwAZrsok7XlFuID';
+const SUPPLEMENTAL_URL_1_FIELD_ID = 'fldGwXBbflIAOlFub';
+const SUPPLEMENTAL_URL_2_FIELD_ID = 'fldVMm4oxKCBEruAW';
+const SUPPLEMENTAL_URL_3_FIELD_ID = 'flduI9U48PIxslF8E';
+const SUPPLEMENTAL_URL_4_FIELD_ID = 'fldqgW9NDlMYpR6m2';
 const UNIT_TYPE_FIELD_ID = 'fldOZPpp6jwtSXZ4G';
 const UNIT_STATUS_FIELD_ID = 'fldYIOfAhlGXRBcYb';
 const AMI_PERCENT_FIELD_ID = 'fldGCPA4UF4nBQ2dU';
@@ -133,7 +137,7 @@ function updatePropertyLink() {
   // If the URL does not start with https:// or http://,
   // assume https:// and prepend it to the user's input.
   if (this.value.search(/https?:\/\//) != 0) {
-    this.setAttribute('value', `https://${this.value}`);
+    this.value = `https://${this.value}`;
   }
   for (const link of links) {
     link.setAttribute('href', this.value);
@@ -145,11 +149,20 @@ function updatePropertyLink() {
   iframe.src = this.value.replace(/https?:/, '');
 }
 
+function updateSupplementalLink(event) {
+  const parent = event.target.parentNode;
+  const anchor = parent.querySelector('a.supplemental_url');
+  if (event.target.value.search(/https?:\/\//) != 0) {
+    event.target.value = `https://${event.target.value}`;
+  }
+  anchor.setAttribute('href', event.target.value);
+}
+
 // Shows the second address field.
-function updateSecondAddressVisibility() {
-  document.getElementById('second-address').removeAttribute('hidden');
-  document.getElementById('show-second-address').setAttribute('hidden',
-    'hidden');
+function showExtraField(event) {
+  document.getElementById(event.target.dataset.controls)
+    .removeAttribute('hidden');
+  event.target.setAttribute('hidden', 'hidden');
 }
 
 // Updates the heading for this unit to match the unit type selected.
@@ -660,8 +673,9 @@ function addListeners() {
   userNameInput.addEventListener('keydown', handleUserNameKeydown);
 
   // Form interactions
-  document.getElementById('show-second-address').addEventListener('click',
-    updateSecondAddressVisibility);
+  for (const button of document.querySelectorAll('.show_extra_field')) {
+    button.addEventListener('click', showExtraField);
+  }
   for (const button of document.querySelectorAll('button.collapse_control')) {
     button.addEventListener('click', toggleCollapsible);
   }
@@ -692,6 +706,14 @@ function addListeners() {
     updatePageTitle);
   document.getElementById(PROPERTY_URL_FIELD_ID).addEventListener('change',
     updatePropertyLink);
+  document.getElementById(SUPPLEMENTAL_URL_1_FIELD_ID).addEventListener('change',
+    updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_2_FIELD_ID).addEventListener('change',
+    updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_3_FIELD_ID).addEventListener('change',
+    updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_4_FIELD_ID).addEventListener('change',
+    updateSupplementalLink);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`)
     .addEventListener('change', updateAgeVisibility);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`)
