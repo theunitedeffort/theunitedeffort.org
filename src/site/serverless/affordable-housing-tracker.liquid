@@ -109,9 +109,9 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
             <a class="noprint" href="/housing/affordable-housing/{{apartment.id}}" target="_blank" rel="noopener">{{ apartment.aptName }}</a>
             <span class="only_print bold">{{apartment.aptName}}</span>
           </p>
-          {% if apartment.address and apartment.address != '' %}
+          {% if apartment.addresses[0] and apartment.addresses[0] != '' %}
             <p>
-              {{ apartment.address }}
+              {{ apartment.addresses[0] }}
             </p>
           {% endif %}
           {% if apartment.city and apartment.city != '' %}
@@ -119,16 +119,21 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
               {{ apartment.city }}
             </p>
           {% endif %}
-          {% if apartment.email and apartment.email != '' %}
-            <p>
-              <span class="italic">{{ apartment.email }}</span>
-            </p>
-          {% endif %}
-          {% if apartment.phone and apartment.phone != '' %}
-            <p>
-              {{ apartment.phone }}
-            </p>
-          {% endif %}
+          {% for email in apartment.emails %}
+            {% if email and email != '' %}
+              <p>
+                <span class="italic">{{ email }}</span>
+              </p>
+            {% endif %}
+          {% endfor %}
+          {% for phone in apartment.phones %}
+            {% if phone and phone != '' %}
+              {%- assign formattedPhone = phone | formatPhone -%}
+              <p>
+                {{ formattedPhone }}
+              </p>
+            {% endif %}
+          {% endfor %}
         </td>
         <td><span class="date_placeholder"></span><span class="date_placeholder"></span><span class="date_placeholder"></span></td>
         <td class="nowrap checklist">

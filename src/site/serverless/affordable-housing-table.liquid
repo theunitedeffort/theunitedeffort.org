@@ -52,7 +52,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
           <a class="noprint" href="/housing/affordable-housing/{{apartment.id}}" target="_blank" rel="noopener">{{ apartment.aptName }}</a>
           <span class="only_print">{{apartment.aptName}}</span>
         </td>
-        <td>{{ apartment.address }}</td>
+        <td>{{ apartment.addresses[0] }}</td>
         <td>{{ apartment.city }}</td>
         <td>
           {% assign waitlistStatuses = apartment.units | map: "openStatus" | compact | uniq %}
@@ -106,7 +106,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
             {% endif %}
           {% endif %}
         </td>
-        <td class="nowrap">{{ apartment.phone }}</td>
+        <td class="nowrap">{{ apartment.phones | join: '<br style="mso-data-placement:same-cell;"/>' }}</td>
         <td>
           {% if apartment.populationsServed contains "Seniors" %}
             Yes{% if apartment.minAge > 0 %}, {{ apartment.minAge }}+{% endif %}
