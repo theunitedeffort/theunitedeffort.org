@@ -40,6 +40,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
       <th>Rent</th>
       <th>Min Income</th>
       <th>Max Income</th>
+      <th>AMI</th>
       <th>Phone #</th>
       <th>Must be Senior</th>
     </tr>
@@ -89,7 +90,6 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
           {% assign maxIncomes = apartment.units | map: "maxIncome" %}
           {% assign maxIncomeLows = maxIncomes | map: "low" | compact | uniq | sort %}
           {% assign maxIncomeHighs = maxIncomes | map: "high" | compact | uniq | sort %}
-          {% assign percentAmis = apartment.units | map: "incomeBracket" | compact | uniq | sort %}
           {% if maxIncomeLows.size > 0 and maxIncomeHighs.size > 0 %}
             {% assign maxIncomeLow = maxIncomeLows | first %}
             {% assign maxIncomeHigh = maxIncomeHighs | last %}
@@ -98,11 +98,15 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
             {% else %}
               {{ maxIncomeLow | money }} - {{ maxIncomeHigh | money }}
             {% endif %}
-          {% elsif percentAmis.size > 0 %}
+          {% endif %}
+        </td>
+        <td>
+          {% assign percentAmis = apartment.units | map: "incomeBracket" | compact | uniq | sort %}
+          {% if percentAmis.size > 0 %}
             {% if percentAmis.size == 1 %}
-              {{ percentAmis | first }}% AMI
+              {{ percentAmis | first }}%
             {% elsif percentAmis.size >= 2 %}
-              {{ percentAmis | first }}% - {{ percentAmis | last }}% AMI
+              {{ percentAmis | first }}% - {{ percentAmis | last }}%
             {% endif %}
           {% endif %}
         </td>
