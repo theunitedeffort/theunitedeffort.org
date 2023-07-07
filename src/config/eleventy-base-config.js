@@ -783,6 +783,10 @@ module.exports = function(eleventyConfig) {
     return housingListCopy.filter((a) => a.units.length);
   });
 
+  eleventyConfig.addFilter('formatPhone', function(phoneStr) {
+    return phoneStr.replaceAll('(', '').replaceAll(') ', '-');
+  });
+
   eleventyConfig.addFilter('except', function(collection, value) {
     return collection.filter((x) => x != value);
   });
