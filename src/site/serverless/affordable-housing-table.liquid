@@ -46,8 +46,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
     </tr>
   </thead>
   <tbody>
-    {% assign sortedHousingdb = housingdb | sort: "aptName" %}
-    {% for apartment in sortedHousingdb %}
+    {% for apartment in housingdb %}
       <tr>
         <td>
           <a class="noprint" href="/housing/affordable-housing/{{apartment.id}}" target="_blank" rel="noopener">{{ apartment.aptName }}</a>

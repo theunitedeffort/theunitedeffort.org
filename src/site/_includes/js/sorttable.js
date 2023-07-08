@@ -246,8 +246,10 @@ const sorttable = {
     return aa-bb;
   },
   sort_alpha: function(a, b) {
-    if (a[0]==b[0]) return 0;
-    if (a[0]<b[0]) return -1;
+    const lowerA = a[0].toLowerCase();
+    const lowerB = b[0].toLowerCase();
+    if (lowerA==lowerB) return 0;
+    if (lowerA<lowerB) return -1;
     return 1;
   },
   sort_ddmm: function(a, b) {
