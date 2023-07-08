@@ -128,7 +128,8 @@ function handleUserNameKeydown(e) {
 // Updates the main header of the page to match the value of the element
 // receiving the event.
 function updatePageTitle(event) {
-  document.getElementById('apt-name-header').textContent = event.currentTarget.value;
+  document.getElementById('apt-name-header').textContent = (
+    event.currentTarget.value);
 }
 
 // Updates the href attribute of any links with class 'property-link' to
@@ -180,7 +181,8 @@ function updateUnitHeading(event) {
 
 // Updates the heading for this rent offering to include the AMI % category.
 function updateOfferingHeading(event) {
-  const heading = event.currentTarget.closest('fieldset').querySelector('.section_title');
+  const heading = (
+    event.currentTarget.closest('fieldset').querySelector('.section_title'));
   let offeringStr = '';
   if (event.currentTarget.value) {
     offeringStr = `: ${event.currentTarget.value}% AMI`;
@@ -194,7 +196,8 @@ function updateSelectColor(event) {
     if (option.selected) {
       const color = option.dataset.color;
       if (color) {
-        event.currentTarget.style.backgroundColor = `var(--airtable-color-${color})`;
+        event.currentTarget.style.backgroundColor = (
+          `var(--airtable-color-${color})`);
       } else {
         event.currentTarget.style.backgroundColor = '';
       }
@@ -709,14 +712,14 @@ function addListeners() {
     updatePageTitle);
   document.getElementById(PROPERTY_URL_FIELD_ID).addEventListener('change',
     updatePropertyLink);
-  document.getElementById(SUPPLEMENTAL_URL_1_FIELD_ID).addEventListener('change',
-    updateSupplementalLink);
-  document.getElementById(SUPPLEMENTAL_URL_2_FIELD_ID).addEventListener('change',
-    updateSupplementalLink);
-  document.getElementById(SUPPLEMENTAL_URL_3_FIELD_ID).addEventListener('change',
-    updateSupplementalLink);
-  document.getElementById(SUPPLEMENTAL_URL_4_FIELD_ID).addEventListener('change',
-    updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_1_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_2_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_3_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_4_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`)
     .addEventListener('change', updateAgeVisibility);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`)
