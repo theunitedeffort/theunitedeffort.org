@@ -1,3 +1,5 @@
+'use strict';
+
 /* global transitStops, aptLocations, google */
 (function() {
   const MAP_CENTER_LAT = 37.233907; // Center of Santa Clara County.
@@ -365,8 +367,8 @@
     });
 
     google.maps.event.addListener(infowindow, 'closeclick', function() {
-      if (this.listItem) {
-        this.listItem.classList.remove('highlighted');
+      if (event.currentTarget.listItem) {
+        event.currentTarget.listItem.classList.remove('highlighted');
       }
     });
 
