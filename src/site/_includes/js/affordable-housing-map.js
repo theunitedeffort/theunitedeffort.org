@@ -366,9 +366,9 @@
       }
     });
 
-    google.maps.event.addListener(infowindow, 'closeclick', function() {
-      if (event.currentTarget.listItem) {
-        event.currentTarget.listItem.classList.remove('highlighted');
+    google.maps.event.addListener(infowindow, 'closeclick', () => {
+      if (infowindow.listItem) {
+        infowindow.listItem.classList.remove('highlighted');
       }
     });
 
