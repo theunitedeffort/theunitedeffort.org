@@ -327,9 +327,13 @@ describe('Navigation and UI', () => {
             click(nextButton);
             document.getElementById('veteran').checked = true;
             click(nextButton);
-            document.getElementById('served-from').value = '2000-01-01';
+            document.getElementById('served-from-year').value = '2000';
+            document.getElementById('served-from-month').value = '01';
+            document.getElementById('served-from-day').value = '01';
             // 729 days later:
-            document.getElementById('served-until').value = '2001-12-30';
+            document.getElementById('served-until-year').value = '2001';
+            document.getElementById('served-until-month').value = '12';
+            document.getElementById('served-until-day').value = '30';
             document.getElementById('your-duty-type').value = 'active-duty';
             click(nextButton);
           },
@@ -682,8 +686,12 @@ describe('Navigation and UI', () => {
     click(nextButton);
     // Follow up question should be shown
     select(document.getElementById('your-duty-type'), 'active-duty');
-    enterText(document.getElementById('served-from'), '2020-01-01');
-    enterText(document.getElementById('served-until'), '2020-01-02');
+    enterText(document.getElementById('served-from-year'), '2020');
+    enterText(document.getElementById('served-from-month'), '01');
+    enterText(document.getElementById('served-from-day'), '01');
+    enterText(document.getElementById('served-until-year'), '2020');
+    enterText(document.getElementById('served-until-month'), '01');
+    enterText(document.getElementById('served-until-day'), '02');
     click(nextButton);
     let thisPage = visiblePage();
     expect(thisPage.id).toBe('page-veteran-duty-period');
@@ -695,9 +703,13 @@ describe('Navigation and UI', () => {
     // Add a new duty period to use for the remainder of the test
     click(visiblePage().querySelector('.field_list_add'));
     select(document.getElementById('your-duty-type-1'), 'active-duty');
-    enterText(document.getElementById('served-from-1'), '2000-01-01');
+    enterText(document.getElementById('served-from-year-1'), '2000');
+    enterText(document.getElementById('served-from-month-1'), '01');
+    enterText(document.getElementById('served-from-day-1'), '01');
     // 729 days later:
-    enterText(document.getElementById('served-until-1'), '2001-12-30');
+    enterText(document.getElementById('served-until-year-1'), '2001');
+    enterText(document.getElementById('served-until-month-1'), '12');
+    enterText(document.getElementById('served-until-day-1'), '30');
     click(nextButton);
     check(thisPage.querySelectorAll('fieldset')[1]).isVisible();
     expect(thisPage.textContent).toContain('from 1/1/2000 until 12/30/2001');
@@ -728,9 +740,13 @@ describe('Navigation and UI', () => {
     // Duty period is too long
     click(backButton);
     select(document.getElementById('your-duty-type-1'), 'active-duty');
-    enterText(document.getElementById('served-from-1'), '2000-01-01');
+    enterText(document.getElementById('served-from-year-1'), '2000');
+    enterText(document.getElementById('served-from-month-1'), '01');
+    enterText(document.getElementById('served-from-day-1'), '01');
     // 730 days later:
-    enterText(document.getElementById('served-until-1'), '2001-12-31');
+    enterText(document.getElementById('served-until-year-1'), '2001');
+    enterText(document.getElementById('served-until-month-1'), '12');
+    enterText(document.getElementById('served-until-day-1'), '31');
     click(nextButton);
     thisPage = visiblePage();
     check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
@@ -739,8 +755,12 @@ describe('Navigation and UI', () => {
     // Service occured too long ago
     click(backButton);
     select(document.getElementById('your-duty-type-1'), 'active-duty');
-    enterText(document.getElementById('served-from-1'), '1980-09-07');
-    enterText(document.getElementById('served-until-1'), '1980-09-08');
+    enterText(document.getElementById('served-from-year-1'), '1980');
+    enterText(document.getElementById('served-from-month-1'), '09');
+    enterText(document.getElementById('served-from-day-1'), '07');
+    enterText(document.getElementById('served-until-year-1'), '1980');
+    enterText(document.getElementById('served-until-month-1'), '09');
+    enterText(document.getElementById('served-until-day-1'), '08');
     click(nextButton);
     thisPage = visiblePage();
     check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
@@ -1094,9 +1114,13 @@ describe('Navigation and UI', () => {
     expectPagesUsed(expectedPages);
 
     expectedPages.push('page-veteran-duty-period');
-    document.getElementById('served-from').value = '2000-01-01';
+    document.getElementById('served-from-year').value = '2000';
+    document.getElementById('served-from-month').value = '01';
+    document.getElementById('served-from-day').value = '01';
     // 729 days later:
-    document.getElementById('served-until').value = '2001-12-30';
+    document.getElementById('served-until-year').value = '2001';
+    document.getElementById('served-until-month').value = '12';
+    document.getElementById('served-until-day').value = '30';
     document.getElementById('your-duty-type').value = 'active-duty';
     expectPagesUsed(expectedPages);
 
@@ -1394,8 +1418,6 @@ describe('buildInputObj', () => {
   });
 
   test('Sets all data from page elements', () => {
-    const dutyPeriodStartStrs = ['1960-01-25', ''];
-    const dutyPeriodEndStrs = ['1961-12-31', ''];
     const expected = {
       age: '42',
       citizen: false,
@@ -1424,8 +1446,8 @@ describe('buildInputObj', () => {
       servedFullDuration: true,
       dutyPeriods: [
         {
-          end: new Date(`${dutyPeriodEndStrs[0]}T00:00`),
-          start: new Date(`${dutyPeriodStartStrs[0]}T00:00`),
+          end: new Date(`1961-12-31T00:00`),
+          start: new Date(`1960-01-25T00:00`),
           type: 'active-duty',
         },
         {
@@ -1596,12 +1618,20 @@ describe('buildInputObj', () => {
     document.querySelector('#page-veteran-details .field_list_add').click();
     document.getElementById('your-duty-type').value = (
       expected.dutyPeriods[0].type);
-    document.getElementById('served-from').value = dutyPeriodStartStrs[0];
-    document.getElementById('served-until').value = dutyPeriodEndStrs[0];
+    document.getElementById('served-from-year').value = '1960';
+    document.getElementById('served-from-month').value = '01';
+    document.getElementById('served-from-day').value = '25';
+    document.getElementById('served-until-year').value = '1961';
+    document.getElementById('served-until-month').value = '12';
+    document.getElementById('served-until-day').value = '31';
     document.getElementById('your-duty-type-1').value = (
       expected.dutyPeriods[1].type);
-    document.getElementById('served-from-1').value = dutyPeriodStartStrs[1];
-    document.getElementById('served-until-1').value = dutyPeriodEndStrs[1];
+    document.getElementById('served-from-year-1').value = '';
+    document.getElementById('served-from-month-1').value = '';
+    document.getElementById('served-from-day-1').value = '';
+    document.getElementById('served-until-year-1').value = '';
+    document.getElementById('served-until-month-1').value = '';
+    document.getElementById('served-until-day-1').value = '';
     expect(getInput().dutyPeriods).toEqual(expected.dutyPeriods);
 
     addIncome('wages', expected.income.wages);
