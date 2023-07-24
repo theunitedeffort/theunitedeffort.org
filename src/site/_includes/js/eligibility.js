@@ -1075,16 +1075,17 @@ function addListeners() {
   for (const incomeList of incomeLists) {
     incomeList.addEventListener('input', updateIncomeTotal);
   }
-  const intInputs = document.querySelectorAll('input[type="number"]');
-  // TODO: add dynamic numerical inputs like income and assets.
-  for (const intInput of intInputs) {
-    intInput.addEventListener('keydown', saveValidInput);
-    intInput.addEventListener('input', preventInvalidInput);
+  const dateInputs = document.querySelectorAll(
+    '.dategroup_item input[type="number"]');
+  for (const dateInput of dateInputs) {
+    dateInput.addEventListener('keydown', saveValidInput);
+    dateInput.addEventListener('input', preventInvalidInput);
   }
 
-  const yearItems = document.querySelectorAll('.dategroup_item input.date_year');
-  for (const yearItem of yearItems) {
-    yearItem.addEventListener('change', onYearChange);
+  const yearInputs = document.querySelectorAll(
+    '.dategroup_item input.date_year');
+  for (const yearInput of yearInputs) {
+    yearInput.addEventListener('change', onYearChange);
   }
   document.getElementById('yourself-details-none').addEventListener('click',
     onToggleMultiselect);

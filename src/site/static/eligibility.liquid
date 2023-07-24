@@ -41,7 +41,7 @@ pageClass: "page-benefits-eligibility"
       <div>
         <div>
           <label for="age">How old are you?</label>
-          <input id="age" class="short" type="number" min="1" max="130" /> years
+          <input id="age" class="short" type="number" maxlength="3" min="1" max="130" /> years
         </div>
 
         <p>Select any of the following that describe you:</p>
@@ -254,7 +254,7 @@ pageClass: "page-benefits-eligibility"
       <p>How many unborn children are in your household?</p>
       <div>
         <label for="unborn-children">Total unborn children</label>
-        <input type="number" min="0" id="unborn-children" class="short">
+        <input type="number" id="unborn-children" class="short">
       </div>
     {% endeligPage %}
 
