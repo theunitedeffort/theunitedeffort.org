@@ -506,7 +506,8 @@ module.exports = function(eleventyConfig) {
       <div id="${id}" class="dategroup">
       <div class="dategroup_item">
         <label for="${id}-month">Month</label>
-        <input type="number" min="0" max="12" class="date_month" id="${id}-month">
+        <input type="number" min="0" max="12"
+          class="date_month" id="${id}-month">
       </div>
       <div class="dategroup_item">
         <label for="${id}-day">Day</label>
@@ -514,7 +515,8 @@ module.exports = function(eleventyConfig) {
       </div>
       <div class="dategroup_item">
         <label for="${id}-year">Year</label>
-        <input type="number" min="0" max="${new Date().getFullYear()}" class="date_year" id="${id}-year">
+        <input type="number" min="0" max="${new Date().getFullYear()}"
+          class="date_year" id="${id}-year">
       </div>
     </div>`;
   });

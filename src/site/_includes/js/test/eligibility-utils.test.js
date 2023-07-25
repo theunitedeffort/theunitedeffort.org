@@ -156,6 +156,23 @@ describe('dateOrToday', () => {
   });
 });
 
+describe('getDateStr', () => {
+  test('Returns a full date string for valid input', () => {
+    expect(elig.getDateStr('2023', '07', '23')).toBe('2023-07-23');
+    expect(elig.getDateStr('2023', '8', '2')).toBe('2023-08-02');
+  });
+
+  test('Returns an empty string if any date component is missing or zero', () => {
+    expect(elig.getDateStr('', '07', '23')).toBe('');
+    expect(elig.getDateStr('2023', '', '23')).toBe('');
+    expect(elig.getDateStr('2023', '07', '')).toBe('');
+  });
+
+  it('Returns return an empty string if all inputs are missing', () => {
+    expect(elig.getDateStr('', '', '')).toBe('');
+  });
+});
+
 describe('withinInterval', () => {
   let intervals;
   beforeEach(() => {

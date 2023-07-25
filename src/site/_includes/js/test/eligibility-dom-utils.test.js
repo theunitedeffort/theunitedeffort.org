@@ -251,6 +251,30 @@ describe('getValueOrNull', () => {
     expect(elig.getValueOrNull(testId)).toBe(false);
   });
 
+  test('Gets the value of a dategroup', () => {
+    document.body.innerHTML = `
+      <div id="test-date" class="dategroup">
+        <div class="dategroup_item">
+          <input type="number" class="date_month" id="test-date-month">
+        </div>
+        <div class="dategroup_item">
+          <input type="number" class="date_day" id="test-date-day">
+        </div>
+        <div class="dategroup_item">
+          <input type="number" class="date_year" id="test-date-year">
+        </div>
+      </div>`;
+
+    const testId = 'test-date';
+    expect(elig.getValueOrNull(testId)).toBe(null);
+    document.getElementById(`${testId}-month`).value = '03';
+    expect(elig.getValueOrNull(testId)).toBe(null);
+    document.getElementById(`${testId}-day`).value = '25';
+    expect(elig.getValueOrNull(testId)).toBe(null);
+    document.getElementById(`${testId}-year`).value = '2025';
+    expect(elig.getValueOrNull(testId)).toBe('2025-03-25');
+  });
+
   test('Returns null for unsupported elements', () => {
     document.body.innerHTML = `
       <ul id="test-ul" class="unsupported">
