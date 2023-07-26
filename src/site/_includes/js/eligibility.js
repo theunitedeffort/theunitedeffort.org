@@ -822,6 +822,11 @@ function addDynamicFieldListItem(event) {
   }
   // Add our new item to the list.
   list.appendChild(newItem);
+  // Add listeners to any new numerical inputs
+  for (const numInput of newItem.querySelectorAll('input[type="number"]')) {
+    numInput.addEventListener('keydown', saveValidInput);
+    numInput.addEventListener('input', preventInvalidInput);
+  }
   updateDynamicFieldListButton(event.target);
 }
 
@@ -1082,7 +1087,6 @@ function addListeners() {
     incomeList.addEventListener('input', updateIncomeTotal);
   }
   const intInputs = document.querySelectorAll('input[type="number"]');
-  // TODO: add dynamic numerical inputs like income and assets.
   for (const intInput of intInputs) {
     intInput.addEventListener('keydown', saveValidInput);
     intInput.addEventListener('input', preventInvalidInput);
