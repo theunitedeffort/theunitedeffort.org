@@ -502,6 +502,7 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addShortcode('dategroup', function(id, labelText) {
+    /* eslint-disable max-len */
     return `
       <div role="group" aria-label="${labelText}">
         <span class="label">${labelText}</span>
@@ -523,6 +524,7 @@ module.exports = function(eleventyConfig) {
           </div>
         </div>
       </div>`;
+    /* eslint-enable max-len */
   });
 
   // Generates a label tag for the given 'fieldName'.
