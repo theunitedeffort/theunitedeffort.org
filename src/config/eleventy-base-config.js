@@ -508,7 +508,7 @@ module.exports = function(eleventyConfig) {
         <span class="label">${labelText}</span>
         <div id="${id}" class="dategroup">
           <div class="dategroup_item">
-            <label for="${id}-month"><span class="visually_hidden">${labelText}</span>Month</label>
+            <label for="${id}-month"><span class="visually_hidden">${labelText} </span>Month</label>
             <input type="number" min="0" max="12"
               class="date_month" id="${id}-month">
           </div>

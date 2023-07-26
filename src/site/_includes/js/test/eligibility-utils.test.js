@@ -162,7 +162,7 @@ describe('getDateStr', () => {
     expect(elig.getDateStr('2023', '8', '2')).toBe('2023-08-02');
   });
 
-  test('Returns an empty string if any date component is missing or zero', () => {
+  test('Returns an empty string if any date component is missing', () => {
     expect(elig.getDateStr('', '07', '23')).toBe('');
     expect(elig.getDateStr('2023', '', '23')).toBe('');
     expect(elig.getDateStr('2023', '07', '')).toBe('');
