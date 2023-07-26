@@ -682,8 +682,15 @@ function saveValidInput(event) {
 
 function preventInvalidInput(event) {
   const field = event.currentTarget;
-  if(field.willValidate && !field.validity.valid) {
+  if (field.willValidate && !field.validity.valid) {
     field.value = field.prevValue;
+  }
+}
+
+function onMonthDayChange(event) {
+  const field = event.currentTarget;
+  if (field.value == '0') {
+    field.value = '';
   }
 }
 
@@ -694,8 +701,7 @@ function onYearChange(event) {
   // Should be good for the next 80 years or so...
   if (field.value <= (currentYear - 2000)) {
     prefix = '20';
-  }
-  else if (field.value <= 99) {
+  } else if (field.value <= 99) {
     prefix = '19';
   }
   field.value = `${prefix}${field.value.padStart(2, '0')}`;
@@ -1082,9 +1088,20 @@ function addListeners() {
     intInput.addEventListener('input', preventInvalidInput);
   }
 
-  const yearItems = document.querySelectorAll('.dategroup_item input.date_year');
-  for (const yearItem of yearItems) {
-    yearItem.addEventListener('change', onYearChange);
+  const monthInputs = document.querySelectorAll(
+    '.dategroup_item input.date_month');
+  for (const monthInput of monthInputs) {
+    monthInput.addEventListener('change', onMonthDayChange);
+  }
+  const dayInputs = document.querySelectorAll(
+    '.dategroup_item input.date_day');
+  for (const dayInput of dayInputs) {
+    dayInput.addEventListener('change', onMonthDayChange);
+  }
+  const yearInputs = document.querySelectorAll(
+    '.dategroup_item input.date_year');
+  for (const yearInput of yearInputs) {
+    yearInput.addEventListener('change', onYearChange);
   }
   document.getElementById('yourself-details-none').addEventListener('click',
     onToggleMultiselect);
@@ -3019,6 +3036,7 @@ if (typeof module !== 'undefined' && module.exports) {
     getNumberOfDays,
     formatUsDate,
     dateOrToday,
+    getDateStr,
     withinInterval,
     indexOfAll,
     isOneOf,

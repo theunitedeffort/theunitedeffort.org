@@ -128,17 +128,32 @@ function click(elem, times=1) {
 function select(elem, option) {
   expect(elem.querySelector(`[value="${option}"]`),
     `No such option "${option}" for id "${elem.id}"`).not.toBe(null);
-  enterText(elem, option);
+  check(elem).isVisible();
+  if (elem.tagName == 'SELECT') {
+    elem.value = option.toString();
+    const inputEvent = new Event('input', {bubbles: true});
+    const changeEvent = new Event('change', {bubbles: true});
+    elem.dispatchEvent(inputEvent);
+    elem.dispatchEvent(changeEvent);
+  } else {
+    throw new Error(`Can not select an item on a ${elem.type} element`);
+  }
 }
 
 // Enters text into an element, but _only_ if it's visible to the user.
 function enterText(elem, text) {
   check(elem).isVisible();
-  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(elem.tagName)) {
-    elem.value = text.toString();
+  if (['INPUT', 'TEXTAREA'].includes(elem.tagName)) {
+    const inputStr = text.toString();
+    elem.value = '';
+    for (const char of inputStr) {
+      const keydownEvent = new Event('keydown', {bubbles: true});
+      elem.dispatchEvent(keydownEvent);
+      elem.value += char;
+      const inputEvent = new Event('input', {bubbles: true});
+      elem.dispatchEvent(inputEvent);
+    }
     const changeEvent = new Event('change', {bubbles: true});
-    const inputEvent = new Event('input', {bubbles: true});
-    elem.dispatchEvent(inputEvent);
     elem.dispatchEvent(changeEvent);
   } else {
     throw new Error(`Can not type input on a ${elem.type} element`);
@@ -1012,6 +1027,58 @@ describe('Navigation and UI', () => {
     expect(heading.textContent).toBe(defaultHeading);
     enterText(nameInput, customName);
     expect(heading.textContent).toBe(customName);
+  });
+
+  test('Date inputs disallow invalid input', () => {
+    click(nextButton);
+    document.getElementById('veteran').checked = true;
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-veteran-details');
+    // Month
+    const monthInput = document.getElementById('served-from-month');
+    enterText(monthInput, '0');
+    expect(monthInput.value).toBe('');
+    enterText(monthInput, '13');
+    expect(monthInput.value).toBe('1');
+    enterText(monthInput, '-2');
+    expect(monthInput.value).toBe('2');
+    enterText(monthInput, '12');
+    expect(monthInput.value).toBe('12');
+    enterText(monthInput, '1');
+    expect(monthInput.value).toBe('1');
+    enterText(monthInput, '01');
+    expect(monthInput.value).toBe('01');
+    // Day
+    const dayInput = document.getElementById('served-from-day');
+    enterText(dayInput, '0');
+    expect(dayInput.value).toBe('');
+    enterText(dayInput, '32');
+    expect(dayInput.value).toBe('3');
+    enterText(dayInput, '-1');
+    expect(dayInput.value).toBe('1');
+    enterText(dayInput, '31');
+    expect(dayInput.value).toBe('31');
+    enterText(dayInput, '1');
+    expect(dayInput.value).toBe('1');
+    enterText(dayInput, '01');
+    expect(dayInput.value).toBe('01');
+    // Year
+    const yearInput = document.getElementById('served-from-year');
+    const thisYear = new Date().getFullYear();
+    enterText(yearInput, '0');
+    expect(yearInput.value).toBe('2000');
+    enterText(yearInput, '33');
+    expect(yearInput.value).toBe('1933');
+    enterText(yearInput, '99');
+    expect(yearInput.value).toBe('1999');
+    enterText(yearInput, '-1');
+    expect(yearInput.value).toBe('2001');
+    enterText(yearInput, '3024');
+    expect(yearInput.value).toBe('302');
+    enterText(yearInput, thisYear + 1);
+    expect(yearInput.value).toBe(thisYear.toString().slice(0, 3));
+    enterText(yearInput, thisYear);
+    expect(yearInput.value).toBe(thisYear.toString());
   });
 
   test('Dynamic field lists are reset on unused pages.', () => {

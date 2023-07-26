@@ -135,12 +135,10 @@ pageClass: "page-benefits-eligibility"
           </div>
 
           <div>
-            <span class="label">Service start date</span>
-            {% dategroup "served-from" %}
+            {% dategroup "served-from", "Service start date" %}
           </div>
           <div>
-            <span class="label">Service end date</span>
-            {% dategroup "served-until" %}
+            {% dategroup "served-until", "Service end date" %}
           </div>
         {% enddynamicFieldList %}
       </div>
