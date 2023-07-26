@@ -104,8 +104,42 @@
         margin: 0;
       }
 
-      .elig_page div {
-        margin: 1em 0;
+      select {
+        background-color: var(--color-white);
+      }
+
+      input.date_day,
+      input.date_month {
+        width: 3.25em;
+      }
+
+      input.date_year {
+        width: 4.5em;
+      }
+
+      .elig_page {
+        div {
+          margin: 1em 0;
+        }
+
+        div[role="group"] {
+          margin: 0;
+        }
+
+        .dategroup {
+          margin: 0;
+          display: inline-block;
+        }
+
+        .dategroup_item {
+          margin: 0 0 0 0.2em;
+          display: inline-block;
+          label {
+            display: block;
+            font-size: 0.8em;
+            font-weight: 400;
+          }
+        }
       }
 
       .elig_conditions {

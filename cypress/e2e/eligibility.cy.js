@@ -117,12 +117,25 @@ describe('Eligibility Assessment Tool', () => {
     cy.get('@page').contains('button', 'Add another').click();
     cy.get('@page').contains('li', /duty period 1/i).as('period1');
     cy.get('@period1').findByLabelText(/duty type/i).select('Active duty');
-    cy.get('@period1').findByLabelText(/served from/i).type('2020-01-01');
-    cy.get('@period1').findByLabelText(/until/i).type('2020-01-02');
+    cy.get('@period1').findByRole('group', {name: /start date/i}).as('start1');
+    cy.get('@start1').findByLabelText(/month/i).type('1');
+    cy.get('@start1').findByLabelText(/day/i).type('1');
+    cy.get('@start1').findByLabelText(/year/i).type('2020');
+    cy.get('@period1').findByRole('group', {name: /end date/i}).as('end1');
+    cy.get('@end1').findByLabelText(/month/i).type('1');
+    cy.get('@end1').findByLabelText(/day/i).type('2');
+    cy.get('@end1').findByLabelText(/year/i).type('2020');
+
     cy.get('@page').contains('li', /duty period 2/i).as('period2');
     cy.get('@period2').findByLabelText(/duty type/i).select('Reserve duty');
-    cy.get('@period2').findByLabelText(/served from/i).type('1960-01-01');
-    cy.get('@period2').findByLabelText(/until/i).type('1970-01-01');
+    cy.get('@period2').findByRole('group', {name: /start date/i}).as('start2');
+    cy.get('@start2').findByLabelText(/month/i).type('1');
+    cy.get('@start2').findByLabelText(/day/i).type('1');
+    cy.get('@start2').findByLabelText(/year/i).type('1960');
+    cy.get('@period2').findByRole('group', {name: /end date/i}).as('end2');
+    cy.get('@end2').findByLabelText(/month/i).type('1');
+    cy.get('@end2').findByLabelText(/day/i).type('2');
+    cy.get('@end2').findByLabelText(/year/i).type('1970');
 
     nextShouldBe('#page-veteran-duty-period');
     yourselfChecks();

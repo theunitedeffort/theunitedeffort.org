@@ -676,6 +676,37 @@ function onChangeName(event) {
   }
 }
 
+function saveValidInput(event) {
+  event.currentTarget.prevValue = event.currentTarget.value;
+}
+
+function preventInvalidInput(event) {
+  const field = event.currentTarget;
+  if (field.willValidate && !field.validity.valid) {
+    field.value = field.prevValue;
+  }
+}
+
+function onMonthDayChange(event) {
+  const field = event.currentTarget;
+  if (field.value == '0') {
+    field.value = '';
+  }
+}
+
+function onYearChange(event) {
+  const field = event.currentTarget;
+  let prefix = '';
+  const currentYear = Number.parseInt(new Date().getFullYear());
+  // Should be good for the next 80 years or so...
+  if (field.value <= (currentYear - 2000)) {
+    prefix = '20';
+  } else if (field.value <= 99) {
+    prefix = '19';
+  }
+  field.value = `${prefix}${field.value.padStart(2, '0')}`;
+}
+
 // Helper function to add the correct class name to a displayed condition.
 function addConditionIcon(listItem, met,
   {displayMet=true, displayUnmet=true, displayUnk=true}={}) {
@@ -1050,6 +1081,28 @@ function addListeners() {
   for (const incomeList of incomeLists) {
     incomeList.addEventListener('input', updateIncomeTotal);
   }
+  const dateInputs = document.querySelectorAll(
+    '.dategroup_item input[type="number"]');
+  for (const dateInput of dateInputs) {
+    dateInput.addEventListener('keydown', saveValidInput);
+    dateInput.addEventListener('input', preventInvalidInput);
+  }
+
+  const monthInputs = document.querySelectorAll(
+    '.dategroup_item input.date_month');
+  for (const monthInput of monthInputs) {
+    monthInput.addEventListener('change', onMonthDayChange);
+  }
+  const dayInputs = document.querySelectorAll(
+    '.dategroup_item input.date_day');
+  for (const dayInput of dayInputs) {
+    dayInput.addEventListener('change', onMonthDayChange);
+  }
+  const yearInputs = document.querySelectorAll(
+    '.dategroup_item input.date_year');
+  for (const yearInput of yearInputs) {
+    yearInput.addEventListener('change', onYearChange);
+  }
   document.getElementById('yourself-details-none').addEventListener('click',
     onToggleMultiselect);
   document.getElementById('income-has-none').addEventListener('click',
@@ -1332,6 +1385,11 @@ function getValueOrNull(id) {
         val = false;
       }
     }
+  } else if (elem.classList.contains('dategroup')) {
+    const day = elem.querySelector('input.date_day');
+    const month = elem.querySelector('input.date_month');
+    const year = elem.querySelector('input.date_year');
+    val = getDateStr(year.value, month.value, day.value);
   } else {
     val = elem.value;
   }
@@ -1339,6 +1397,17 @@ function getValueOrNull(id) {
     return null;
   }
   return val;
+}
+
+// Returns a full date string similar to what an input type="date" would give
+// as its value.
+// If any of the three input strings are empty or 0, an empty string is
+// returned.  No other validation is performed.
+function getDateStr(yearStr, monthStr, dayStr) {
+  if (yearStr && monthStr && dayStr) {
+    return `${yearStr}-${monthStr.padStart(2, '0')}-${dayStr.padStart(2, '0')}`;
+  }
+  return '';
 }
 
 function getDateOrNan(id) {
@@ -2656,11 +2725,11 @@ function buildInputObj() {
   for (const item of dutyPeriodItems) {
     inputData.dutyPeriods.push({
       type: getValueOrNull(
-        item.querySelector('select[id^="your-duty-type"]').id),
+        item.querySelector('[id^="your-duty-type"]').id),
       start: getDateOrNan(
-        item.querySelector('input[id^="served-from"]').id),
+        item.querySelector('[id^="served-from"]').id),
       end: getDateOrNan(
-        item.querySelector('input[id^="served-until"]').id),
+        item.querySelector('[id^="served-until"]').id),
     });
   }
 
@@ -2967,6 +3036,7 @@ if (typeof module !== 'undefined' && module.exports) {
     getNumberOfDays,
     formatUsDate,
     dateOrToday,
+    getDateStr,
     withinInterval,
     indexOfAll,
     isOneOf,

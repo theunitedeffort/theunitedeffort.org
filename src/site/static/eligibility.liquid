@@ -135,11 +135,10 @@ pageClass: "page-benefits-eligibility"
           </div>
 
           <div>
-            <label for="served-from">Served From</label>
-            <input type="date" id="served-from" />
-
-            <label for="served-until">Until</label>
-            <input type="date" id="served-until" />
+            {% dategroup "served-from", "Service start date" %}
+          </div>
+          <div>
+            {% dategroup "served-until", "Service end date" %}
           </div>
         {% enddynamicFieldList %}
       </div>
