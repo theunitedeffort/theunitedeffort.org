@@ -122,6 +122,10 @@
           margin: 1em 0;
         }
 
+        div[role="group"] {
+          margin: 0;
+        }
+
         .dategroup {
           margin: 0;
           display: inline-block;

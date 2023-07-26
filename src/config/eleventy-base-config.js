@@ -501,24 +501,28 @@ module.exports = function(eleventyConfig) {
       </li>`;
   });
 
-  eleventyConfig.addShortcode('dategroup', function(id) {
+  eleventyConfig.addShortcode('dategroup', function(id, labelText) {
     return `
-      <div id="${id}" class="dategroup">
-      <div class="dategroup_item">
-        <label for="${id}-month">Month</label>
-        <input type="number" min="0" max="12"
-          class="date_month" id="${id}-month">
-      </div>
-      <div class="dategroup_item">
-        <label for="${id}-day">Day</label>
-        <input type="number" min="0" max="31" class="date_day" id="${id}-day">
-      </div>
-      <div class="dategroup_item">
-        <label for="${id}-year">Year</label>
-        <input type="number" min="0" max="${new Date().getFullYear()}"
-          class="date_year" id="${id}-year">
-      </div>
-    </div>`;
+      <div role="group" aria-label="${labelText}">
+        <span class="label">${labelText}</span>
+        <div id="${id}" class="dategroup">
+          <div class="dategroup_item">
+            <label for="${id}-month"><span class="visually_hidden">${labelText}</span>Month</label>
+            <input type="number" min="0" max="12"
+              class="date_month" id="${id}-month">
+          </div>
+          <div class="dategroup_item">
+            <label for="${id}-day">Day</label>
+            <input type="number" min="0" max="31"
+              class="date_day" id="${id}-day">
+          </div>
+          <div class="dategroup_item">
+            <label for="${id}-year">Year</label>
+            <input type="number" min="0" max="${new Date().getFullYear()}"
+              class="date_year" id="${id}-year">
+          </div>
+        </div>
+      </div>`;
   });
 
   // Generates a label tag for the given 'fieldName'.
