@@ -1,0 +1,131 @@
+[
+    {
+    "name": "Assistance Dog Special Allowance (ADSA)",
+    "id": "adsa",
+    "applyUrl": "https://www.cdss.ca.gov/assistance-dogs",
+    "summary": "ADSA provides certain people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs."
+  },
+  {
+    "name": "CalFresh",
+    "id": "calfresh",
+    "applyUrl": "https://www.cdss.ca.gov/calfresh",
+    "summary": "CalFresh provides monthly food benefits to certain low-income individuals and families."
+  },
+  {
+    "name": "California Work Opportunity and Responsibility to Kids (CalWORKs)",
+    "id": "calworks",
+    "applyUrl": "https://www.cdss.ca.gov/calworks",
+    "infoUrl": "https://ca.db101.org/ca/programs/income_support/calworks/program.htm",
+    "summary": "CalWORKs provides cash aid and services to certain low-income families with children in the home."
+  },
+  {
+    "name": "Cash Assistance Program for Immigrants (CAPI)",
+    "id": "capi",
+    "applyUrl": "https://www.cdss.ca.gov/capi",
+    "infoUrl": "https://ca.db101.org/ca/programs/income_support/capi/program.htm",
+    "summary": "CAPI provides monthly cash benefits to certain elderly, blind, or disabled legal immigrants."
+  },
+  {
+    "name": "California Alternate Rates for Energy (CARE)",
+    "id": "care",
+    "applyUrl": "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/california-alternate-rates-for-energy",
+    "summary": "CARE provides a discount on electricity and natural gas bills for certain low-income individuals and families."
+  },
+  {
+    "name": "Family Electric Rate Assistance (FERA)",
+    "id": "fera",
+    "applyUrl": "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/family-electric-rate-assistance-program",
+    "summary": "FERA provides a discount on electricity bills for certain low-income families."
+  },
+  {
+    "name": "VA Disability Compensation",
+    "id": "va-disability",
+    "applyUrl": "https://www.va.gov/disability/how-to-file-claim/",
+    "infoUrl": "https://www.va.gov/disability/",
+    "summary": "VA disability compensation provides a monthly payment to certain injured or disabled veterans."
+  },
+  {
+    "name": "General Assistance (GA)",
+    "id": "ga",
+    "applyUrl": "https://socialservices.sccgov.org/how-do-i/apply-for-benefits",
+    "infoUrl": "https://socialservices.sccgov.org/financial-assistance/financial-assistance-adults-without-dependent-children-general-assistance",
+    "summary": "GA provides cash assistance and employment services to certain low-income individuals with no dependent children."
+  },
+  {
+    "name": "No-Fee ID Card",
+    "id": "no-fee-id",
+    "applyUrl": "/resources/how-to-apply-for-california-identification-card/#what-is-a-no-fee-and-reduced-fee-id-card",
+    "infoUrl": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/",
+    "summary": "Unhoused or elderly individuals may get an identification card from the Department of Motor Vehicles without having to pay the usual fee."
+  },
+  {
+    "name": "Reduced Fee ID Card",
+    "id": "reduced-fee-id",
+    "applyUrl": "/resources/how-to-apply-for-california-identification-card/#what-is-a-no-fee-and-reduced-fee-id-card",
+    "infoUrl": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/",
+    "summary": "Low-income individuals may get a discount on the fee for an identification card from the Department of Motor Vehicles."
+  },
+  {
+    "name": "In-Home Supportive Services (IHSS)",
+    "id": "ihss",
+    "applyUrl": "https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients",
+    "infoUrl": "https://ca.db101.org/ca/programs/health_coverage/medi_cal/ihss/program.htm",
+    "summary": "IHSS provides in-home personal assistance to certain low-income individuals who are blind, disabled, or elderly so they can continue to live at home safely."
+  },
+  {
+    "name": "California LifeLine",
+    "id": "lifeline",
+    "applyUrl": "https://www.californialifeline.com/en/eligibility_requirements#link4",
+    "infoUrl": "https://www.californialifeline.com/en",
+    "summary": "Lifeline provides a discount on home phone and cell phone bills for certain low-income households.  In some situations, the program will cover the full cost of phone bills and provide a new phone for free."
+  },
+  {
+    "name": "Low Income Home Energy Assistance Program (LIHEAP)",
+    "id": "liheap",
+    "applyUrl": "https://www.csd.ca.gov/Pages/Services.aspx?SCU=Santa%20Clara%20County&PT=CM",
+    "infoUrl": "https://www.csd.ca.gov/Pages/Assistance-PayingMyEnergyBills.aspx",
+    "summary": "LIHEAP provides one-time assistance with paying energy bills, home weatherization, and energy-related home repairs to certain low-income households."
+  },
+  {
+    "name": "VTA ACCESS Paratransit",
+    "id": "vta-paratransit",
+    "applyUrl": "https://www.vta.org/go/paratransit#accordion-applying-for-vta-access-paratransit-service",
+    "infoUrl": "https://www.vta.org/sites/default/files/2022-05/Paratransit-Rider%27s-Guide_LMR2022.pdf",
+    "summary": "VTA ACCESS Paratransit provides door-to-door transportation service as well as free VTA bus and light rail transit passes for certain disabled individuals."
+  },
+  {
+    "name": "Housing Choice Voucher Interest List",
+    "id": "housing-choice",
+    "applyUrl": "https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/",
+    "infoUrl": "https://www.scchousingauthority.org/section-8/",
+    "summary": "The Housing Choice Voucher program helps certain low-income individuals and families pay for rental housing. This was previously known as the \"Section 8 Program.\"  Eligible individuals will be added to a Housing Choice Voucher interest list to await random selection into a separate voucher waiting list when it reopens."
+  },
+  {
+    "name": "Supplemental Security Income (SSI)",
+    "id": "ssi",
+    "applyUrl": "https://www.ssa.gov/benefits/ssi/",
+    "infoUrl": "https://ca.db101.org/ca/programs/income_support/ssi/program.htm",
+    "summary": "SSI is a federal program that provides a monthly cash benefit to certain low-income individuals who are disabled, blind, or elderly."
+  },
+  {
+    "name": "Social Security Disability Insurance (SSDI)",
+    "id": "ssdi",
+    "applyUrl": "https://www.ssa.gov/applyfordisability/",
+    "infoUrl": "https://ca.db101.org/ca/programs/income_support/ssdi2/program.htm",
+    "summary": "SSDI is a federal program that provides a monthly cash benefit to certain disabled individuals who have worked and paid Social Security taxes in the past."
+  },
+  {
+    "name": "VA Pension",
+    "id": "va-pension",
+    "applyUrl": "https://www.va.gov/pension/how-to-apply/",
+    "infoUrl": "https://www.va.gov/pension/",
+    "summary": "VA Pension is a program that provides ongoing cash payments for eligible veterans."
+  },
+  {
+    "name": "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)",
+    "id": "wic",
+    "applyUrl": "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle",
+    "infoUrl": "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx",
+    "summary": "WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods."
+  }
+]
