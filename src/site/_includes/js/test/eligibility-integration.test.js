@@ -1029,6 +1029,69 @@ describe('Navigation and UI', () => {
     expect(heading.textContent).toBe(customName);
   });
 
+  test('Numerical inputs disallow invalid input', () => {
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-yourself-start');
+    const yourselfAge = document.getElementById('age');
+    enterText(yourselfAge, '-1');
+    expect(yourselfAge.value).toBe('1');
+    enterText(yourselfAge, '0');
+    expect(yourselfAge.value).toBe('');
+    enterText(yourselfAge, '131');
+    expect(yourselfAge.value).toBe('13');
+    enterText(yourselfAge, '54');
+    expect(yourselfAge.value).toBe('54');
+
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-household-members');
+    const householdAge = document.getElementById('hh-myself-age');
+    enterText(householdAge, '-1');
+    expect(householdAge.value).toBe('1');
+    enterText(householdAge, '0');
+    expect(householdAge.value).toBe('');
+    enterText(householdAge, '131');
+    expect(householdAge.value).toBe('13');
+    enterText(householdAge, '54');
+    expect(householdAge.value).toBe('54');
+
+    addHouseholdMember();
+    const otherAge = document.getElementById('hh-member-age-1');
+    enterText(otherAge, '-1');
+    expect(otherAge.value).toBe('1');
+    enterText(otherAge, '0');
+    expect(otherAge.value).toBe('0');
+    enterText(otherAge, '131');
+    expect(otherAge.value).toBe('13');
+    enterText(otherAge, '54');
+    expect(otherAge.value).toBe('54');
+
+    click(document.getElementById('hh-member-pregnant-1'));
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-household-unborn-members');
+    const unborn = document.getElementById('unborn-children');
+    enterText(unborn, '-1');
+    expect(unborn.value).toBe('1');
+    enterText(unborn, '0');
+    expect(unborn.value).toBe('0');
+    enterText(unborn, '4');
+    expect(unborn.value).toBe('4');
+
+    click(nextButton, 2);
+    expect(visiblePage().id).toBe('page-income');
+    click(document.getElementById('income-has-wages'));
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-income-details-wages');
+    const addButton = visiblePage().querySelector('.field_list_add');
+    click(addButton);
+    const wages = document.getElementById('income-wages-0');
+    enterText(wages, '-1');
+    expect(wages.value).toBe('1');
+    enterText(wages, '0');
+    expect(wages.value).toBe('0');
+    enterText(wages, '123');
+    expect(wages.value).toBe('123');
+  });
+
   test('Date inputs disallow invalid input', () => {
     click(nextButton);
     document.getElementById('veteran').checked = true;

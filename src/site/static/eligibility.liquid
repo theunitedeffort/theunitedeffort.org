@@ -41,7 +41,7 @@ pageClass: "page-benefits-eligibility"
       <div>
         <div>
           <label for="age">How old are you?</label>
-          <input id="age" class="short" type="number" maxlength="3" min="1" max="130" /> years
+          <input id="age" class="short" type="number" min="1" max="130" /> years
         </div>
 
         <p>Select any of the following that describe you:</p>
@@ -208,7 +208,7 @@ pageClass: "page-benefits-eligibility"
         </div>
         <div>
           <label for="hh-member-age">Age</label>
-          <input id="hh-member-age" class="short" type="number" min="1" max="130"> years
+          <input id="hh-member-age" class="short" type="number" min="0" max="130"> years
         </div>
         <div>
           <ul id="hh-member-types" class="multiselect">
@@ -228,10 +228,6 @@ pageClass: "page-benefits-eligibility"
               <input id="hh-member-dependent" type="checkbox">
               <label for="hh-member-dependent">This person is my dependent</label>
             </li>
-            {% comment %}
-            TODO (#413): disable and clear hh-member-dependent if hh-member-spouse
-            is selected.
-            {% endcomment %}
             <li>
               <input id="hh-member-spouse" type="checkbox">
               <label for="hh-member-spouse">This person is my spouse</label>
@@ -252,7 +248,7 @@ pageClass: "page-benefits-eligibility"
       <p>How many unborn children are in your household?</p>
       <div>
         <label for="unborn-children">Total unborn children</label>
-        <input type="number" id="unborn-children" class="short">
+        <input type="number" min="0" id="unborn-children" class="short">
       </div>
     {% endeligPage %}
 

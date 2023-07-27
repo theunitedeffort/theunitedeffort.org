@@ -822,6 +822,11 @@ function addDynamicFieldListItem(event) {
   }
   // Add our new item to the list.
   list.appendChild(newItem);
+  // Add listeners to any new numerical inputs
+  for (const numInput of newItem.querySelectorAll('input[type="number"]')) {
+    numInput.addEventListener('keydown', saveValidInput);
+    numInput.addEventListener('input', preventInvalidInput);
+  }
   updateDynamicFieldListButton(event.target);
 }
 
@@ -1081,11 +1086,10 @@ function addListeners() {
   for (const incomeList of incomeLists) {
     incomeList.addEventListener('input', updateIncomeTotal);
   }
-  const dateInputs = document.querySelectorAll(
-    '.dategroup_item input[type="number"]');
-  for (const dateInput of dateInputs) {
-    dateInput.addEventListener('keydown', saveValidInput);
-    dateInput.addEventListener('input', preventInvalidInput);
+  const intInputs = document.querySelectorAll('input[type="number"]');
+  for (const intInput of intInputs) {
+    intInput.addEventListener('keydown', saveValidInput);
+    intInput.addEventListener('input', preventInvalidInput);
   }
 
   const monthInputs = document.querySelectorAll(
