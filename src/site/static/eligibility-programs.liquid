@@ -15,19 +15,18 @@ pageClass: "page-benefits-eligibility"
 <p>
   <a href="/benefits-eligibility">Check your eligibility now</a>
 </p>
-<div>
-  <ul>
-    {% assign sortedPrograms = programs | sort: "name" %}
-    {% for program in sortedPrograms %}
-      <li>
-        <h2>{{program.name}}</h2>
-        <p>{{program.summary}}</p>
-        {% if program.infoUrl %}
-          <p>
-            <a href="{{infoUrl}}" target="_blank" rel="noopener">Learn more</a>
-          </p>
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
-</div>
+<ul class="no_bullets">
+  {% assign sortedPrograms = programs | sort: "name" %}
+  {% for program in sortedPrograms %}
+    <li class="program_summary_item">
+      <h2>{{program.name}}</h2>
+      <p>{{program.summary}}</p>
+      {% assign learnMoreUrl = program.infoUrl | default: program.applyUrl %}
+      {% if learnMoreUrl %}
+        <p>
+          <a href="{{learnMoreUrl}}" target="_blank" rel="noopener">Learn more</a>
+        </p>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
