@@ -5,9 +5,9 @@ module.exports = function(eleventyConfig) {
 
   return {
     dir: {
-      input: 'src/site/static/eligibility.liquid',
+      input: 'src/site/static/benefits-eligibility',
       output: 'test/dist',
-      includes: '../_includes',
+      includes: '../../_includes',
     },
   };
 };
