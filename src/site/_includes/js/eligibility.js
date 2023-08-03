@@ -815,6 +815,14 @@ function updateDynamicFieldListButton(button) {
   }
 }
 
+function onNoAssetCheck(event){
+  console.log("pass");
+  const assetLists = document.querySelectorAll('#page-income-assets ul.dynamic_field_list');
+  for (const list of assetLists) {
+    resetDynamicFieldLists(list);
+  }
+}
+
 function updateIncomeTotal(event) {
   const page = event.target.closest('.elig_page');
   const totalDisplay = page.querySelector('.total');
@@ -1030,6 +1038,9 @@ function addListeners() {
   }
   document.getElementById('income-has-none').addEventListener('click',
     onChangeNoIncome);
+
+  document.getElementById('income-assets-none').addEventListener('click',
+    onNoAssetCheck);
   document.getElementById('age').addEventListener('change', onChangeAge);
   document.getElementById('hh-myself-age').addEventListener('change',
     onChangeAge);
