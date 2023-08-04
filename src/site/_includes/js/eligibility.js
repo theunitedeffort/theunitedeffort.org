@@ -1100,6 +1100,9 @@ function addListeners() {
     intInput.addEventListener('input', preventInvalidInput);
   }
 
+  document.getElementById('income-assets-none').addEventListener('click',
+  onNoAssetCheck);
+
   const monthInputs = document.querySelectorAll(
     '.dategroup_item input.date_month');
   for (const monthInput of monthInputs) {
