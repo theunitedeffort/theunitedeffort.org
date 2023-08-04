@@ -5,6 +5,7 @@ const config = {
   coverageAnalysis: "perTest",
   disableTypeChecks: false,
   mutate: ["src/site/_includes/js/eligibility.js"],
+  timeoutMS: 15000,
 };
 
 module.exports = config;

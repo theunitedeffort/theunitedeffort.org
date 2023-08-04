@@ -501,6 +501,32 @@ module.exports = function(eleventyConfig) {
       </li>`;
   });
 
+  eleventyConfig.addShortcode('dategroup', function(id, labelText) {
+    /* eslint-disable max-len */
+    return `
+      <div role="group" aria-label="${labelText}">
+        <span class="label">${labelText}</span>
+        <div id="${id}" class="dategroup">
+          <div class="dategroup_item">
+            <label for="${id}-month"><span class="visually_hidden">${labelText} </span>Month</label>
+            <input type="number" min="0" max="12"
+              class="date_month" id="${id}-month">
+          </div>
+          <div class="dategroup_item">
+            <label for="${id}-day">Day</label>
+            <input type="number" min="0" max="31"
+              class="date_day" id="${id}-day">
+          </div>
+          <div class="dategroup_item">
+            <label for="${id}-year">Year</label>
+            <input type="number" min="0" max="${new Date().getFullYear()}"
+              class="date_year" id="${id}-year">
+          </div>
+        </div>
+      </div>`;
+    /* eslint-enable max-len */
+  });
+
   // Generates a label tag for the given 'fieldName'.
   //
   // The parameter 'fields' is
@@ -517,10 +543,10 @@ module.exports = function(eleventyConfig) {
     let tooltip = '';
     if (fields[fieldName].description) {
       const descStr = fields[fieldName].description.replace(/\n/g, '<br/>');
-      tooltip = `<span class="tooltip_entry">
-  <span class="icon_query"></span>
-  <span class="tooltip_content">${descStr}</span>
-  </span>`;
+      tooltip = `
+        <p data-toggletip data-toggletip-class="icon_query">
+          ${descStr}
+        </p>`;
     }
     return `${tag} ${tooltip}`;
   };
@@ -781,6 +807,10 @@ module.exports = function(eleventyConfig) {
     // Some properties may have had all their associated units filtered out,
     // so remove those before returning the final list of filtered properties.
     return housingListCopy.filter((a) => a.units.length);
+  });
+
+  eleventyConfig.addFilter('formatPhone', function(phoneStr) {
+    return phoneStr.replaceAll('(', '').replaceAll(') ', '-');
   });
 
   eleventyConfig.addFilter('except', function(collection, value) {

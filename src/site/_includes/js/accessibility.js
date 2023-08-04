@@ -1,3 +1,5 @@
+'use strict';
+
 (function() {
   // https://inclusive-components.design/tooltips-toggletips/
   function openToggletip(liveRegion, message, timeout) {

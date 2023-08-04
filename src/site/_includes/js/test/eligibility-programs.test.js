@@ -518,7 +518,6 @@ describe('Program eligibility', () => {
       housingSituation: null,
       paysUtilities: null,
       hasKitchen: false,
-      homelessRisk: null,
       immigrationStatus: null,
       usesGuideDog: null,
       militaryDisabled: null,
@@ -578,13 +577,12 @@ describe('Program eligibility', () => {
       existingFeraHousehold: false,
       existingLifelineMe: false,
       existingLifelineHousehold: false,
-      existingUpliftMe: false,
-      existingUpliftHousehold: false,
       existingVaDisabilityMe: false,
       existingVaDisabilityHousehold: false,
       existingVtaParatransitMe: false,
       existingVtaParatransitHousehold: false,
     };
+    Object.preventExtensions(input);
   });
 
   // TODO: add tests for MORE_INFO_NEEDED flag for all programs.
@@ -1144,9 +1142,9 @@ describe('Program eligibility', () => {
 
     test('Can be marked as already enrolled', () => {
       check(elig.housingChoiceResult, input).isEnrolledIf(
-        'existingHousingChoiceMe').is(true);
+        'existingPhaMe').is(true);
       check(elig.housingChoiceResult, input).isEnrolledIf(
-        'existingHousingChoiceHousehold').is(true);
+        'existingPhaHousehold').is(true);
     });
 
     test('Requires applicant to be older than a minimum age', () => {
@@ -1183,9 +1181,9 @@ describe('Program eligibility', () => {
     // Test ensures the calculation was done correctly by checking against the
     // values given by the HUD income limit calculator.
     test('Extended income limit is computed correctly', () => {
-      // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
-      const expectedAnnualLimitNinePpl = 117950;
-      const expectedAnnualLimitTwentyFivePpl = 225800;
+      // https://www.huduser.gov/portal/datasets/il/il2023/2023IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2023&yy=23&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+      const expectedAnnualLimitNinePpl = 124900;
+      const expectedAnnualLimitTwentyFivePpl = 239100;
 
       input.income.valid = true;
       input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
@@ -1641,39 +1639,6 @@ describe('Program eligibility', () => {
       input.age = elig.cnst.ssdi.TRANSITION_RETIREMENT_AGE + 1;
       expect(elig.ssdiResult(input).flags)
         .not.toContain(elig.FlagCodes.COMPLEX_RETIREMENT_AGE);
-    });
-  });
-
-  describe('UPLIFT Program', () => {
-    test('Not eligible with default input', () => {
-      expect(elig.upliftResult(input).eligible).not.toBe(true);
-    });
-
-    test('Can be marked as already enrolled', () => {
-      // Existing household assistance should not affect enrollment status.
-      input.existingUpliftHousehold = true;
-      check(elig.upliftResult, input).isEnrolledIf('existingUpliftMe').is(true);
-    });
-
-    test('Eligible when unhoused', () => {
-      input.housingSituation = 'housed';
-      check(elig.upliftResult, input)
-        .isEligibleIf('housingSituation').is('vehicle');
-      input.housingSituation = 'unlisted-stable-place';
-      check(elig.upliftResult, input)
-        .isEligibleIf('housingSituation').is('transitional');
-      check(elig.upliftResult, input)
-        .isEligibleIf('housingSituation').is('hotel');
-      check(elig.upliftResult, input)
-        .isEligibleIf('housingSituation').is('shelter');
-      check(elig.upliftResult, input)
-        .isEligibleIf('housingSituation').is('no-stable-place');
-    });
-
-    test('Eligible when at risk of homelessness', () => {
-      input.housingSituation = 'housed';
-      check(elig.upliftResult, input)
-        .isEligibleIf('homelessRisk').is(true);
     });
   });
 

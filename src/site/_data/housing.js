@@ -31,9 +31,12 @@ const fetchApartmentRecords = async () => {
       'UNITS',
       'APT_NAME',
       'ADDRESS',
+      'SECOND_ADDRESS',
       'CITY',
       'PHONE',
+      'SECOND_PHONE',
       'EMAIL',
+      'SECOND_EMAIL',
       'PROPERTY_URL',
       ...[...Array(4).keys()].map((n) => `SUPPLEMENTAL_URL_${n + 1}`),
       'LOC_COORDS',
@@ -55,16 +58,19 @@ const fetchApartmentRecords = async () => {
           apartments.push({
             id: record.get('DISPLAY_ID'),
             aptName: record.get('APT_NAME'),
-            address: record.get('ADDRESS'),
+            addresses: [record.get('ADDRESS'), record.get('SECOND_ADDRESS')]
+              .filter((a) => a),
             city: record.get('CITY'),
             locCoords: record.get('LOC_COORDS'),
             verifiedLocCoords: record.get('VERIFIED_LOC_COORDS'),
-            phone: record.get('PHONE'),
+            phones: [record.get('PHONE'), record.get('SECOND_PHONE')]
+              .filter((p) => p),
             website: record.get('PROPERTY_URL'),
             supplementalUrls: [...Array(4).keys()]
               .map((n) => record.get(`SUPPLEMENTAL_URL_${n + 1}`))
               .filter((u) => u),
-            email: record.get('EMAIL'),
+            emails: [record.get('EMAIL'), record.get('SECOND_EMAIL')]
+              .filter((e) => e),
             numTotalUnits: record.get('NUM_TOTAL_UNITS'),
             populationsServed: record.get('POPULATIONS_SERVED') || [],
             minAge: record.get('MIN_RESIDENT_AGE'),

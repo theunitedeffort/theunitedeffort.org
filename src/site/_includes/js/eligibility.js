@@ -4,6 +4,7 @@ const cnst = {
   calfresh: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
     // Section 2.1
+    // Effective through 9/30/23
     FED_POVERTY_LEVEL: [ // USD per month
       1133,
       1526,
@@ -25,21 +26,26 @@ const cnst = {
   calworks: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
     // Section 1.2
+    // https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACLs/2023/23-48.pdf?ver=2023-05-25-094822-990#page=4
+    // Region 1
+    // Effective through 6/30/24
     MBSAC: [ // USD per month
-      807,
-      1324,
-      1641,
-      1947,
-      2221,
-      2499,
-      2746,
-      2988,
-      3242,
-      3519,
+      862,
+      1415,
+      1753,
+      2080,
+      2373,
+      2670,
+      2934,
+      3193,
+      3464,
+      3760,
     ],
-    MBSAC_ADDL_PERSON: 32, // USD per month per person
+    MBSAC_ADDL_PERSON: 34, // USD per month per person
     // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
-    // Section 14.1
+    // Section 14.1 (seems out of date)
+    // https://www.sfhsa.org/sites/default/files/media/document/2023-04/factsheet_calworks_english_02.2023.pdf
+    // Effective through ?
     BASE_RESOURCE_LIMIT: 10888, // USD
     DISABLED_ELDERLY_RESOURCE_LIMIT: 16333, // USD
     MIN_ELDERLY_AGE: 60, // Years
@@ -59,36 +65,39 @@ const cnst = {
   },
   care: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
+    // Effective through 5/31/2024
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      36620,
-      36620,
-      46060,
-      55500,
-      64940,
-      74380,
-      83820,
-      93260,
+      39440,
+      39440,
+      49720,
+      60000,
+      70280,
+      80560,
+      90840,
+      101120,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 9440, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10280, // USD per year per person
   },
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
+    // Effective through 5/31/2024
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      57575, // Min household size 3.
-      57575, // Min household size 3.
-      57575,
-      69375,
-      81175,
-      92975,
-      104775,
-      116575,
+      62150, // Min household size 3.
+      62150, // Min household size 3.
+      62150,
+      75000,
+      87850,
+      100700,
+      113550,
+      126400,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11800, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 12850, // USD per year per person
     MIN_HOUSEHOLD_SIZE: 3, // People
   },
   ga: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
     // Section 4.2, UNSHARED Housing in section 4.2.1
+    // Effective through ?
     MONTHLY_INCOME_LIMITS: [ // USD per month
       343,
       460,
@@ -114,23 +123,25 @@ const cnst = {
     // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
     MIN_ELIGIBLE_AGE: 18,
     // For income limits additional person calculations
-    // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+    // https://www.huduser.gov/portal/datasets/il/il2023/2023IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2023&yy=23&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
     INCOME_ROUND_UP_TO_NEAREST: 50, // USD
     BASE_HOUSEHOLD_SIZE: 4, // People
     FAMILY_SIZE_ADJ_8: 1.32,
     INCREMENTAL_ADJ: 0.08,
     // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
     // See "very low income" here:
-    // https://www.huduser.gov/portal/datasets/il/il2022/2022summary.odn?states=6.0&data=2022&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2022&selection_type=county
+    // https://www.huduser.gov/portal/datasets/il/il2023/2023summary.odn?states=6.0&data=2023&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2023&selection_type=county
+    // https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/
+    // Effective through 5/14/24 (or perhaps HUD fiscal year end 9/30/23?)
     ANNUAL_INCOME_LIMITS: [ // USD per month
-      59000,
-      67400,
-      75850,
-      84250,
-      91000,
-      97750,
-      104500,
-      111250,
+      62450,
+      71400,
+      80300,
+      89200,
+      96350,
+      103500,
+      110650,
+      117750,
     ],
   },
   ihss: {
@@ -139,7 +150,7 @@ const cnst = {
   },
   lifeline: {
     // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
-    // Effective June 1, 2023 to May 31, 2024
+    // Effective through 5/31/24
     ANNUAL_INCOME_LIMITS: [ // USD per year
       32500,
       32500,
@@ -150,13 +161,9 @@ const cnst = {
   },
   liheap: {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
-    //
     // LIHEAP income limits are set at 60% of State Median Income:
     //   https://www.acf.hhs.gov/ocs/policy-guidance/liheap-im-2022-04-state-median-income-estimates-optional-use-ffy-2022-and
-    //
-    // Calculating income limit for various household sizes by multiplying the
-    // 4-person limit by various values:
-    //   https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf
+    // Effective through 9/30/23? (FY23)
     MONTHLY_INCOME_LIMITS: [ // USD per month
       2700.17,
       3531.0,
@@ -169,6 +176,8 @@ const cnst = {
       7321.78,
       7477.56,
     ],
+    // 3% of 4-person limit, as documented here:
+    // https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf#page=4
     MONTHLY_INCOME_LIMIT_ADDL_PERSON: 155.78, // USD per month
   },
   noFeeId: {
@@ -182,15 +191,18 @@ const cnst = {
   },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
+    // Effective through 12/31/23?
     SGA_NON_BLIND: 1470, // USD per month
     SGA_BLIND: 2460, // USD per month
     // https://www.ssa.gov/pubs/EN-05-11125.pdf
     // Note these max benefit amounts include the California state supplement.
     // TODO: Handle other living categories (e.g. non-medical out-of-home care).
+    // Effective through 12/31/23?
     MAX_BENEFIT_NON_BLIND: 1133.73, // USD per month
     MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1251.74, // USD per month
     MAX_BENEFIT_BLIND: 1211, // USD per month
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
+    // Effective through 12/31/23?
     MAX_RESOURCES: 2000, // USD
     // https://www.ssa.gov/oact/cola/incomexcluded.html
     MAX_UNEARNED_INCOME_EXCLUSION: 20, // USD per month
@@ -219,9 +231,11 @@ const cnst = {
       ['1990-08-02', ''], // Gulf war, no end date yet.
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
+    // Effective through 11/30/23
     ANNUAL_NET_WORTH_LIMIT: 150538, // USD per year
     // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
+    // Effective through 11/30/23
     ANNUAL_INCOME_LIMITS: [ // USD per year
       16037,
       21001,
@@ -231,17 +245,18 @@ const cnst = {
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
+    // Effective through 6/30/24
     MONTHLY_INCOME_LIMITS: [ // USD per month
-      2096,
-      2823,
-      3551,
-      4279,
-      5006,
-      5734,
-      6462,
-      7189,
+      2248,
+      3041,
+      3833,
+      4625,
+      5418,
+      6210,
+      7003,
+      7795,
     ],
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 728, // USD per month per person
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 793, // USD per month per person
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
     CHILD_EXIT_AGE: 5, // Birthday at which a child is ineligible.
   },
@@ -538,6 +553,12 @@ function onInput(event) {
   addEventListener('beforeunload', confirmExit);
 }
 
+function onAnchorClick(event) {
+  const dest = document.querySelector(event.target.hash);
+  dest.scrollIntoView({behavior: 'smooth'});
+  event.preventDefault();
+}
+
 function onHouseholdMemberAdd(event) {
   // Get the household member that was just added.
   const newMember = event.target.closest('.elig_page').querySelector(
@@ -611,20 +632,20 @@ function onChangeDependent(event) {
   }
 }
 
-function onChangeNoIncome(event) {
-  const wrapper = document.getElementById('income-types');
-  const allIncomeTypes = wrapper.querySelectorAll('input[type=checkbox]');
-  for (const incomeType of allIncomeTypes) {
-    if (incomeType == event.target) {
+function onToggleMultiselect(event) {
+  const list = event.target.closest('.multiselect');
+  const options = list.querySelectorAll('input[type=checkbox]');
+  for (const option of options) {
+    if (option == event.target) {
       continue;
     }
-    const label = wrapper.querySelector(`label[for="${incomeType.id}"]`);
+    const label = list.querySelector(`label[for="${option.id}"]`);
     if (event.target.checked) {
-      incomeType.checked = false;
-      incomeType.setAttribute('disabled', 'disabled');
+      option.checked = false;
+      option.setAttribute('disabled', 'disabled');
       label.classList.add('disabled');
     } else {
-      incomeType.removeAttribute('disabled');
+      option.removeAttribute('disabled');
       label.classList.remove('disabled');
     }
   }
@@ -655,15 +676,46 @@ function onChangeName(event) {
   }
 }
 
+function saveValidInput(event) {
+  event.currentTarget.prevValue = event.currentTarget.value;
+}
+
+function preventInvalidInput(event) {
+  const field = event.currentTarget;
+  if (field.willValidate && !field.validity.valid) {
+    field.value = field.prevValue;
+  }
+}
+
+function onMonthDayChange(event) {
+  const field = event.currentTarget;
+  if (field.value == '0') {
+    field.value = '';
+  }
+}
+
+function onYearChange(event) {
+  const field = event.currentTarget;
+  let prefix = '';
+  const currentYear = Number.parseInt(new Date().getFullYear());
+  // Should be good for the next 80 years or so...
+  if (field.value <= (currentYear - 2000)) {
+    prefix = '20';
+  } else if (field.value <= 99) {
+    prefix = '19';
+  }
+  field.value = `${prefix}${field.value.padStart(2, '0')}`;
+}
+
 // Helper function to add the correct class name to a displayed condition.
 function addConditionIcon(listItem, met,
   {displayMet=true, displayUnmet=true, displayUnk=true}={}) {
   let cls = '';
-  if (met == null && displayUnk) {
+  if (met === null && displayUnk) {
     cls = 'condition__unk';
-  } else if (!met && displayUnmet) {
+  } else if (met === false && displayUnmet) {
     cls = 'condition__unmet';
-  } else if (met && displayMet) {
+  } else if (met === true && displayMet) {
     cls = 'condition__met';
   }
   listItem.className = `condition ${cls}`;
@@ -770,6 +822,11 @@ function addDynamicFieldListItem(event) {
   }
   // Add our new item to the list.
   list.appendChild(newItem);
+  // Add listeners to any new numerical inputs
+  for (const numInput of newItem.querySelectorAll('input[type="number"]')) {
+    numInput.addEventListener('keydown', saveValidInput);
+    numInput.addEventListener('input', preventInvalidInput);
+  }
   updateDynamicFieldListButton(event.target);
 }
 
@@ -810,6 +867,7 @@ function updateDynamicFieldListButton(button) {
   if (items.length) {
     button.textContent = button.dataset.nonEmptyText;
   } else {
+    // TODO: Add test coverage for this branch.
     button.textContent = (
       button.dataset.emptyText || button.dataset.nonEmptyText);
   }
@@ -1036,11 +1094,31 @@ function addListeners() {
   for (const incomeList of incomeLists) {
     incomeList.addEventListener('input', updateIncomeTotal);
   }
-  document.getElementById('income-has-none').addEventListener('click',
-    onChangeNoIncome);
+  const intInputs = document.querySelectorAll('input[type="number"]');
+  for (const intInput of intInputs) {
+    intInput.addEventListener('keydown', saveValidInput);
+    intInput.addEventListener('input', preventInvalidInput);
+  }
 
-  document.getElementById('income-assets-none').addEventListener('click',
-    onNoAssetCheck);
+  const monthInputs = document.querySelectorAll(
+    '.dategroup_item input.date_month');
+  for (const monthInput of monthInputs) {
+    monthInput.addEventListener('change', onMonthDayChange);
+  }
+  const dayInputs = document.querySelectorAll(
+    '.dategroup_item input.date_day');
+  for (const dayInput of dayInputs) {
+    dayInput.addEventListener('change', onMonthDayChange);
+  }
+  const yearInputs = document.querySelectorAll(
+    '.dategroup_item input.date_year');
+  for (const yearInput of yearInputs) {
+    yearInput.addEventListener('change', onYearChange);
+  }
+  document.getElementById('yourself-details-none').addEventListener('click',
+    onToggleMultiselect);
+  document.getElementById('income-has-none').addEventListener('click',
+    onToggleMultiselect);
   document.getElementById('age').addEventListener('change', onChangeAge);
   document.getElementById('hh-myself-age').addEventListener('change',
     onChangeAge);
@@ -1096,7 +1174,6 @@ function mapResultFunctions() {
   document.getElementById('program-ssdi').result = ssdiResult;
   document.getElementById('program-va-pension').result = vaPensionResult;
   document.getElementById('program-wic').result = wicResult;
-  document.getElementById('program-uplift').result = upliftResult;
 }
 
 // Switches to the first form page in the document.
@@ -1320,6 +1397,11 @@ function getValueOrNull(id) {
         val = false;
       }
     }
+  } else if (elem.classList.contains('dategroup')) {
+    const day = elem.querySelector('input.date_day');
+    const month = elem.querySelector('input.date_month');
+    const year = elem.querySelector('input.date_year');
+    val = getDateStr(year.value, month.value, day.value);
   } else {
     val = elem.value;
   }
@@ -1327,6 +1409,17 @@ function getValueOrNull(id) {
     return null;
   }
   return val;
+}
+
+// Returns a full date string similar to what an input type="date" would give
+// as its value.
+// If any of the three input strings are empty or 0, an empty string is
+// returned.  No other validation is performed.
+function getDateStr(yearStr, monthStr, dayStr) {
+  if (yearStr && monthStr && dayStr) {
+    return `${yearStr}-${monthStr.padStart(2, '0')}-${dayStr.padStart(2, '0')}`;
+  }
+  return '';
 }
 
 function getDateOrNan(id) {
@@ -1466,12 +1559,12 @@ class MonthlyIncomeLimits {
 // Flags that can be associated with a Program to alter the display
 // of that Program's eligibility result to the user.
 const FlagCodes = {
-  UNKNOWN: 0,
-  NEAR_INCOME_LIMIT: 1,
-  TOO_COMPLEX: 2,
-  COMPLEX_IMMIGRATION: 3,
-  COMPLEX_RETIREMENT_AGE: 4,
-  MORE_INFO_NEEDED: 5,
+  UNKNOWN: 'UNKNOWN',
+  NEAR_INCOME_LIMIT: 'NEAR_INCOME_LIMIT',
+  TOO_COMPLEX: 'TOO_COMPLEX',
+  COMPLEX_IMMIGRATION: 'COMPLEX_IMMIGRATION',
+  COMPLEX_RETIREMENT_AGE: 'COMPLEX_RETIREMENT_AGE',
+  MORE_INFO_NEEDED: 'MORE_INFO_NEEDED',
 };
 
 // A single eligibility condition that can be displayed to the user.  Note
@@ -2164,7 +2257,7 @@ function vtaParatransitResult(input) {
 }
 
 function housingChoiceResult(input) {
-  // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+  // https://www.huduser.gov/portal/datasets/il/il2023/2023IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2023&yy=23&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
   const extraCalc = function(numExtraPeople) {
     const limits = cnst.housingChoice.ANNUAL_INCOME_LIMITS;
     const baseLimit = limits[cnst.housingChoice.BASE_HOUSEHOLD_SIZE - 1];
@@ -2205,7 +2298,7 @@ function housingChoiceResult(input) {
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
-  if (input.existingHousingChoiceMe || input.existingHousingChoiceHousehold) {
+  if (input.existingPhaMe || input.existingPhaHousehold) {
     program.markEnrolled();
   }
   return program.getResult();
@@ -2536,25 +2629,6 @@ function wicResult(input) {
   return program.getResult();
 }
 
-function upliftResult(input) {
-  const isUnhoused = isOneOf(input.housingSituation, [
-    'vehicle',
-    'transitional',
-    'hotel',
-    'shelter',
-    'no-stable-place']);
-
-  const program = new Program();
-  program.addConditionsOneOf([
-    new EligCondition('Be experiencing homelessness', isUnhoused),
-    new EligCondition(`Be at risk of losing housing`, input.homelessRisk),
-  ]);
-  if (input.existingUpliftMe) {
-    program.markEnrolled();
-  }
-  return program.getResult();
-}
-
 function clearUnusedPages() {
   const pages = [...document.querySelectorAll('div.elig_page')];
   // Reset usage tracking.
@@ -2563,6 +2637,7 @@ function clearUnusedPages() {
   }
   // Walk the form to find out which pages are used.
   let page = pages[0];
+  // Stryker disable next-line BlockStatement: Results in infinite loop.
   do {
     page.used = true;
     page = page.next();
@@ -2613,7 +2688,6 @@ function buildInputObj() {
     housingSituation: getValueOrNull('housing-situation'),
     paysUtilities: getValueOrNull('pay-utilities'),
     hasKitchen: getValueOrNull('has-kitchen-yes'),
-    homelessRisk: getValueOrNull('risk-homeless'),
     immigrationStatus: getValueOrNull('immig_status'),
     usesGuideDog: getValueOrNull('use-guide-dog'),
     militaryDisabled: getValueOrNull('dis-military'),
@@ -2663,11 +2737,11 @@ function buildInputObj() {
   for (const item of dutyPeriodItems) {
     inputData.dutyPeriods.push({
       type: getValueOrNull(
-        item.querySelector('select[id^="your-duty-type"]').id),
+        item.querySelector('[id^="your-duty-type"]').id),
       start: getDateOrNan(
-        item.querySelector('input[id^="served-from"]').id),
+        item.querySelector('[id^="served-from"]').id),
       end: getDateOrNan(
-        item.querySelector('input[id^="served-until"]').id),
+        item.querySelector('[id^="served-until"]').id),
     });
   }
 
@@ -2680,7 +2754,205 @@ function setUnenrolledVisibility(program, showUnenrolledInfo) {
   }
 }
 
-// Determines eligibility for programs based on user form input values.
+function sortByProgramName(listElem) {
+  const items = [...listElem.children];
+  items.sort((a, b) => {
+    const titleA = a.querySelector('h4').textContent.toLowerCase();
+    const titleB = b.querySelector('h4').textContent.toLowerCase();
+    if (titleA < titleB) {
+      return -1;
+    }
+    // Stryker disable next-line: The compareFn should be well-formed, but this
+    // branch is not taken by the V8 JavaScript engine.
+    if (titleA > titleB) {
+      return 1;
+    }
+    return 0;
+  });
+  for (const item of items) {
+    listElem.appendChild(item);
+  }
+}
+
+function renderConditions(conditions, listElem) {
+  for (const condition of conditions) {
+    const listItem = document.createElement('li');
+    if (condition instanceof Array) {
+      // For nested lists of conditions, first create a
+      // HTML list item to act as a heading for the grouping.
+      const combinedMet = or(...condition.map((c) => c.met));
+      listItem.textContent = 'Either:';
+      addConditionIcon(listItem, combinedMet);
+      listElem.appendChild(listItem);
+      // Then, create a list to sit under that heading.
+      const subList = document.createElement('ul');
+      for (const [idx, conditionPart] of condition.entries()) {
+        let suffix = '';
+        if (idx < condition.length - 1) {
+          suffix = '&nbsp;<span class="bold">or</span>';
+        }
+        const subListItem = document.createElement('li');
+        subListItem.innerHTML = conditionPart.desc + suffix;
+        // If the combined group is met, we only notate the components
+        // that contribute to the overall group being met. This will avoid
+        // showing a potentially confusing unmet "X" within a group that's
+        // met (because the group is OR'd together). If the combined
+        // group is not met, we show everything.
+        addConditionIcon(subListItem, conditionPart.met,
+          {displayUnmet: !combinedMet, displayUnk: !combinedMet});
+        subList.appendChild(subListItem);
+      }
+      listElem.appendChild(subList);
+    } else {
+      listItem.innerHTML = condition.desc;
+      addConditionIcon(listItem, condition.met);
+      listElem.appendChild(listItem);
+    }
+  }
+}
+
+function renderFlags(flags, listElem) {
+  for (const flag of flags) {
+    let flagMsg = '';
+    switch (flag) {
+    case FlagCodes.MORE_INFO_NEEDED:
+      flagMsg = 'We need more information from you to make an eligibility ' +
+        'recommendation. ' +
+        '<button type="button" class="link back_to_form noprint" ' +
+        'data-section-id="section-yourself">' +
+        'Back to the form</button>';
+      break;
+    case FlagCodes.COMPLEX_IMMIGRATION:
+      flagMsg = 'The immigrant eligibility rules for this program are ' +
+        'complex, and not all immigrants are eligible.';
+      break;
+    case FlagCodes.COMPLEX_RETIREMENT_AGE:
+      flagMsg = 'To be eligible for this program, you must be younger than ' +
+        'the Social Security Administration\'s ' +
+        '<a href="https://www.ssa.gov/benefits/retirement/planner/ageincrease.html" ' +
+        'target="_blank" rel="noopener">full retirement age</a>, which ' +
+        'changes slightly depending on exactly when you were born.';
+      break;
+    }
+    if (flagMsg) {
+      const flagItem = document.createElement('li');
+      flagItem.classList.add('note');
+      flagItem.innerHTML = flagMsg;
+      listElem.appendChild(flagItem);
+    }
+  }
+}
+
+function showResultText(container, hasResults) {
+  const resultsMsgs = container.querySelectorAll('.has_results');
+  const noResultsMsgs = container.querySelectorAll('.no_results');
+  for (const resultMsg of resultsMsgs) {
+    if (hasResults) {
+      resultMsg.classList.remove('hidden');
+    } else {
+      resultMsg.classList.add('hidden');
+    }
+  }
+  for (const noResultMsg of noResultsMsgs) {
+    if (hasResults) {
+      noResultMsg.classList.add('hidden');
+    } else {
+      noResultMsg.classList.remove('hidden');
+    }
+  }
+}
+
+function renderResultsSummaryList(list, eligiblePrograms) {
+  // Reset list element
+  // Stryker disable next-line BlockStatement: Results in infinite loop.
+  while (list.firstChild) {
+    list.removeChild(list.firstChild);
+  }
+  // Render each list item
+  for (const program of eligiblePrograms) {
+    const listItem = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = `#${program.id}`;
+    link.textContent = program.querySelector('h4').textContent;
+    link.addEventListener('click', onAnchorClick);
+    listItem.appendChild(link);
+    list.appendChild(listItem);
+  }
+}
+
+function renderResultsSummaryFooter(container, numUnknown, numIneligible,
+  numEnrolled) {
+  function countStr(num) {
+    let ending = 's';
+    if (Number(num) === 1) {
+      ending = '';
+    }
+    return `${num} program${ending}`;
+  }
+
+  // Reset container element
+  container.textContent = '';
+  // Render discription text
+  if (numUnknown) {
+    container.appendChild(document.createTextNode(
+      'We need additional information from you to assess '));
+    const link = document.createElement('a');
+    link.href = '#unknown-programs';
+    link.textContent = countStr(numUnknown);
+    link.addEventListener('click', onAnchorClick);
+    container.appendChild(link);
+    container.appendChild(document.createTextNode('. '));
+  }
+  if (numIneligible || numEnrolled) {
+    const singular = (Number(numIneligible) === 1 ||
+      (!numIneligible && Number(numEnrolled) === 1));
+    container.appendChild(document.createTextNode(
+      `There ${singular ? 'is' : 'are'}${numUnknown ? ' also' : ''} `));
+    if (numIneligible) {
+      const link = document.createElement('a');
+      link.href = '#ineligible-programs';
+      link.textContent = countStr(numIneligible);
+      link.addEventListener('click', onAnchorClick);
+      container.appendChild(link);
+      container.appendChild(document.createTextNode(
+        ' you likely do not qualify for'));
+      if (numEnrolled) {
+        container.appendChild(document.createTextNode(' and '));
+      }
+    }
+    if (numEnrolled) {
+      const link = document.createElement('a');
+      link.href = '#enrolled-programs';
+      link.textContent = countStr(numEnrolled);
+      link.addEventListener('click', onAnchorClick);
+      container.appendChild(link);
+      container.appendChild(document.createTextNode(
+        ` you're already enrolled in`));
+    }
+    container.appendChild(document.createTextNode('. '));
+  }
+}
+
+function renderResultsSummary(eligiblePrograms, unknownPrograms,
+  ineligiblePrograms, enrolledPrograms) {
+  const numEligible = eligiblePrograms.length;
+  const numUnknown = unknownPrograms.length;
+  const numIneligible = ineligiblePrograms.length;
+  const numEnrolled = enrolledPrograms.length;
+  const numPrograms = numEligible + numUnknown + numIneligible + numEnrolled;
+
+  document.getElementById('summary-num-programs').textContent = numPrograms;
+  document.getElementById('summary-num-eligible').textContent = numEligible;
+  showResultText(document.getElementById('elig-summary'), numEligible);
+  renderResultsSummaryList(document.querySelector('#elig-summary > ul'),
+    eligiblePrograms);
+  // Render the footer summarizing unknown, ineligible, and enrolled programs.
+  renderResultsSummaryFooter(document.getElementById('summary-footer'),
+    numUnknown, numIneligible, numEnrolled);
+}
+
+// Determines eligibility for programs based on user form input values and
+// renders the results.
 function computeEligibility() {
   // Ensure any inputs on unused pages are cleared out prior to eligibility
   // computation.
@@ -2688,86 +2960,28 @@ function computeEligibility() {
 
   const input = buildInputObj();
   const allPrograms = document.querySelectorAll('.programs > ul > li');
-  const eligibleList = document.querySelector('.programs__eligible > ul');
-  const ineligibleList = document.querySelector('.programs__ineligible > ul');
-  const unknownList = document.querySelector('.programs__unknown > ul');
-  const enrolledList = document.querySelector('.programs__enrolled > ul');
+  const eligibleList = document.querySelector('#eligible-programs > ul');
+  const ineligibleList = document.querySelector('#ineligible-programs > ul');
+  const unknownList = document.querySelector('#unknown-programs > ul');
+  const enrolledList = document.querySelector('#enrolled-programs > ul');
   for (const program of allPrograms) {
     const result = program.result(input);
     const conditionList = program.querySelector('.elig_conditions');
     const flagList = program.querySelector('.elig_flags');
     // Reset the program's displayed conditions and flags.
+    // Stryker disable next-line BlockStatement: Results in infinite loop.
     while (conditionList.firstChild) {
+      // TODO: Test this behavior
       conditionList.removeChild(conditionList.firstChild);
     }
+    // Stryker disable next-line BlockStatement: Results in infinite loop.
     while (flagList.firstChild) {
       flagList.removeChild(flagList.firstChild);
     }
-    // Render each program's conditions.
-    for (const condition of result.conditions) {
-      const listItem = document.createElement('li');
-      if (condition instanceof Array) {
-        // For nested lists of conditions, first create a
-        // HTML list item to act as a heading for the grouping.
-        const combinedMet = or(...condition.map((c) => c.met));
-        listItem.textContent = 'Either:';
-        addConditionIcon(listItem, combinedMet);
-        conditionList.appendChild(listItem);
-        // Then, create a list to sit under that heading.
-        const subList = document.createElement('ul');
-        for (const [idx, conditionPart] of condition.entries()) {
-          let suffix = '';
-          if (idx < condition.length - 1) {
-            suffix = '&nbsp;<span class="bold">or</span>';
-          }
-          const subListItem = document.createElement('li');
-          subListItem.innerHTML = conditionPart.desc + suffix;
-          // If the combined group is met, we only notate the components
-          // that contribute to the overall group being met. This will avoid
-          // showing a potentially confusing unmet "X" within a group that's
-          // met (because the group is OR'd together). If the combined
-          // group is not met, we show everything.
-          addConditionIcon(subListItem, conditionPart.met,
-            {displayUnmet: !combinedMet, displayUnk: !combinedMet});
-          subList.appendChild(subListItem);
-        }
-        conditionList.appendChild(subList);
-      } else {
-        listItem.innerHTML = condition.desc;
-        addConditionIcon(listItem, condition.met);
-        conditionList.appendChild(listItem);
-      }
-    }
-    // Render each program's flags.
-    for (const flag of result.flags) {
-      let flagMsg = '';
-      switch (flag) {
-      case FlagCodes.MORE_INFO_NEEDED:
-        flagMsg = 'We need more information from you to make an eligibility ' +
-          'recommendation. ' +
-          '<button type="button" class="link back_to_form" ' +
-          'data-section-id="section-yourself">' +
-          'Back to the form</button>';
-        break;
-      case FlagCodes.COMPLEX_IMMIGRATION:
-        flagMsg = 'The immigrant eligibility rules for this program are ' +
-          'complex, and not all immigrants are eligible.';
-        break;
-      case FlagCodes.COMPLEX_RETIREMENT_AGE:
-        flagMsg = 'To be eligible for this program, you must be younger than ' +
-          'the Social Security Administration\'s ' +
-          '<a href="https://www.ssa.gov/benefits/retirement/planner/ageincrease.html" ' +
-          'target="_blank" rel="noopener">full retirement age</a>, which ' +
-          'changes slightly depending on exactly when you were born.';
-        break;
-      }
-      if (flagMsg) {
-        const flagItem = document.createElement('li');
-        flagItem.classList.add('note');
-        flagItem.innerHTML = flagMsg;
-        flagList.appendChild(flagItem);
-      }
-    }
+
+    renderConditions(result.conditions, conditionList);
+    renderFlags(result.flags, flagList);
+
     const revisitButtons = document.querySelectorAll('button.back_to_form');
     for (const button of revisitButtons) {
       button.addEventListener('click', toSection);
@@ -2789,42 +3003,19 @@ function computeEligibility() {
 
   for (const container of document.querySelectorAll('.programs')) {
     const list = container.querySelector('ul');
-    const resultsMsgs = container.querySelectorAll('.has_results');
-    const noResultsMsgs = container.querySelectorAll('.no_results');
-
-    // Show/hide info text depending on whether there are items in the list.
-    for (const resultMsg of resultsMsgs) {
-      if (list.children.length) {
-        resultMsg.classList.remove('hidden');
-      } else {
-        resultMsg.classList.add('hidden');
-      }
-    }
-    for (const noResultMsg of noResultsMsgs) {
-      if (list.children.length) {
-        noResultMsg.classList.add('hidden');
-      } else {
-        noResultMsg.classList.remove('hidden');
-      }
-    }
-
-    // Sort list items alphabetically.
-    const items = [...list.children];
-    items.sort((a, b) => {
-      const titleA = a.querySelector('h4').textContent;
-      const titleB = b.querySelector('h4').textContent;
-      if (titleA < titleB) {
-        return -1;
-      }
-      if (titleA > titleB) {
-        return 1;
-      }
-      return 0;
-    });
-    for (const item of items) {
-      list.appendChild(item);
-    }
+    // TODO: Don't get all list children, just child <li>
+    showResultText(container, list.children.length);
+    sortByProgramName(list);
   }
+
+  // It's important we render the summary after populating each list of programs
+  // and sorting those lists.
+  renderResultsSummary(
+    document.querySelectorAll('#eligible-programs > ul > li'),
+    document.querySelectorAll('#unknown-programs > ul > li'),
+    document.querySelectorAll('#ineligible-programs > ul > li'),
+    document.querySelectorAll('#enrolled-programs > ul > li'),
+  );
 }
 
 // Script entry point.
@@ -2839,6 +3030,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     cnst,
     FlagCodes,
+    EligCondition,
     hasNulls,
     add,
     or,
@@ -2856,6 +3048,7 @@ if (typeof module !== 'undefined' && module.exports) {
     getNumberOfDays,
     formatUsDate,
     dateOrToday,
+    getDateStr,
     withinInterval,
     indexOfAll,
     isOneOf,
@@ -2882,7 +3075,6 @@ if (typeof module !== 'undefined' && module.exports) {
     ssiCapiAdjustedIncome,
     ssiResult,
     ssdiResult,
-    upliftResult,
     vaDisabilityResult,
     vaPensionCountableIncome,
     vaPensionHouseholdSize,
@@ -2896,5 +3088,11 @@ if (typeof module !== 'undefined' && module.exports) {
     clearInputs,
     init,
     buildInputObj,
+    sortByProgramName,
+    addConditionIcon,
+    renderConditions,
+    renderFlags,
+    showResultText,
+    renderResultsSummaryFooter,
   };
 }

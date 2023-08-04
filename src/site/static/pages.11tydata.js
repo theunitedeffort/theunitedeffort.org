@@ -29,6 +29,13 @@ const fetchPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
+        // Temporarily ignore the public assistance index page during content
+        // migration.
+        // TODO: After migration, delete /public-assistance Airtable record,
+        // then remove this special handling.
+        if (record.get('Page path') === '/public-assistance') {
+          continue;
+        }
         if (record.get('Status') == 'Published') {
           const name = record.get('Page title');
           const path = record.get('Page path');

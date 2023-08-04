@@ -2,7 +2,7 @@ name: End to End Tests
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "prod"]
   workflow_dispatch:
 
 env:

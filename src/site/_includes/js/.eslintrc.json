@@ -4,7 +4,8 @@
       "files": "*.js",
       "excludedFiles": ["test/**"],
       "rules": {
-        "builtin-compat/no-incompatible-builtins": "warn"
+        "builtin-compat/no-incompatible-builtins": "warn",
+        "strict": ["error", "global"]
       },
       "settings": {
         "builtin-compat-ignore": [

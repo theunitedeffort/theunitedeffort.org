@@ -56,3 +56,8 @@ status = 200
 from = "/housing"
 to = "/housing/affordable-housing"
 status = 301
+
+[[redirects]]
+from = "/public-assistance"
+to = "/resources"
+status = 301

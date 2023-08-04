@@ -1,10 +1,16 @@
+'use strict';
+
 const USER_NAME_KEY = 'userName';
-const APT_NAME_FIELD_ID = 'fldMcM49qaNr3EQ2a';
-const POPULATIONS_SERVED_FIELD_ID = 'fldkzU54q8lYtIH7G';
-const PROPERTY_URL_FIELD_ID = 'fldei8N0xw2VhjX9V';
-const UNIT_TYPE_FIELD_ID = 'fldJ4fP1y13NE6ywu';
-const UNIT_STATUS_FIELD_ID = 'fldTNeFcJ3dhDKLqZ';
-const AMI_PERCENT_FIELD_ID = 'fldBHf0GmnBHnZBFI';
+const APT_NAME_FIELD_ID = 'fld4uDIBhYSt70nBS';
+const POPULATIONS_SERVED_FIELD_ID = 'fldCRLJwhWq0x4eGo';
+const PROPERTY_URL_FIELD_ID = 'fldwAZrsok7XlFuID';
+const SUPPLEMENTAL_URL_1_FIELD_ID = 'fldGwXBbflIAOlFub';
+const SUPPLEMENTAL_URL_2_FIELD_ID = 'fldVMm4oxKCBEruAW';
+const SUPPLEMENTAL_URL_3_FIELD_ID = 'flduI9U48PIxslF8E';
+const SUPPLEMENTAL_URL_4_FIELD_ID = 'fldqgW9NDlMYpR6m2';
+const UNIT_TYPE_FIELD_ID = 'fldOZPpp6jwtSXZ4G';
+const UNIT_STATUS_FIELD_ID = 'fldYIOfAhlGXRBcYb';
+const AMI_PERCENT_FIELD_ID = 'fldGCPA4UF4nBQ2dU';
 const MAX_NUM_UNITS = document.querySelectorAll(
   `#all-units > div[id^="unit-"]`).length;
 const MAX_NUM_OFFERINGS = document.querySelector(
@@ -100,13 +106,13 @@ function collapseCollapsible(content, button) {
 }
 
 // Toggles the collapsed state of this unit or rent offering.
-function toggleCollapsible() {
-  const contentDiv = this.parentNode.parentNode.parentNode.querySelector(
+function toggleCollapsible(event) {
+  const contentDiv = event.currentTarget.closest('fieldset').querySelector(
     '.collapsible_content');
   if (contentDiv.hasAttribute('hidden')) {
-    expandCollapsible(contentDiv, this);
+    expandCollapsible(contentDiv, event.currentTarget);
   } else {
-    collapseCollapsible(contentDiv, this);
+    collapseCollapsible(contentDiv, event.currentTarget);
   }
 }
 
@@ -121,74 +127,87 @@ function handleUserNameKeydown(e) {
 
 // Updates the main header of the page to match the value of the element
 // receiving the event.
-function updatePageTitle() {
-  document.getElementById('apt-name-header').textContent = this.value;
+function updatePageTitle(event) {
+  document.getElementById('apt-name-header').textContent = (
+    event.currentTarget.value);
 }
 
 // Updates the href attribute of any links with class 'property-link' to
 // be the value of the element receiving the event.
-function updatePropertyLink() {
+function updatePropertyLink(event) {
   const links = document.querySelectorAll('.property-link');
   const iframe = document.getElementsByTagName('iframe')[0];
   // If the URL does not start with https:// or http://,
   // assume https:// and prepend it to the user's input.
-  if (this.value.search(/https?:\/\//) != 0) {
-    this.setAttribute('value', `https://${this.value}`);
+  if (event.currentTarget.value.search(/https?:\/\//) != 0) {
+    event.currentTarget.value = `https://${event.currentTarget.value}`;
   }
   for (const link of links) {
-    link.setAttribute('href', this.value);
+    link.setAttribute('href', event.currentTarget.value);
   }
   // Any http link is guaranteed to fail to display in the iframe because
   // the UEO site is served over https. Set the iframe src to have an
   // unspecified protocol to optimisitically request the https version
   // if there is one (without changing the stored property URL value).
-  iframe.src = this.value.replace(/https?:/, '');
+  iframe.src = event.currentTarget.value.replace(/https?:/, '');
+}
+
+function updateSupplementalLink(event) {
+  const parent = event.currentTarget.parentNode;
+  const anchor = parent.querySelector('a.supplemental_url');
+  if (event.currentTarget.value.search(/https?:\/\//) != 0) {
+    event.currentTarget.value = `https://${event.currentTarget.value}`;
+  }
+  anchor.setAttribute('href', event.currentTarget.value);
 }
 
 // Shows the second address field.
-function updateSecondAddressVisibility() {
-  document.getElementById('second-address').removeAttribute('hidden');
-  document.getElementById('show-second-address').setAttribute('hidden',
-    'hidden');
+function showExtraField(event) {
+  document.getElementById(event.currentTarget.dataset.controls)
+    .removeAttribute('hidden');
+  event.currentTarget.setAttribute('hidden', 'hidden');
 }
 
 // Updates the heading for this unit to match the unit type selected.
-function updateUnitHeading() {
-  const heading = this.parentNode.parentNode.querySelector('.section_title');
+function updateUnitHeading(event) {
+  const heading = (
+    event.currentTarget.closest('fieldset').querySelector('.section_title'));
   let unitTypeStr = '';
-  if (this.value) {
-    unitTypeStr = `: ${this.value}`;
+  if (event.currentTarget.value) {
+    unitTypeStr = `: ${event.currentTarget.value}`;
   }
   heading.textContent = `Unit Type${unitTypeStr}`;
 }
 
 // Updates the heading for this rent offering to include the AMI % category.
-function updateOfferingHeading() {
-  const heading = this.parentNode.parentNode.querySelector('.section_title');
+function updateOfferingHeading(event) {
+  const heading = (
+    event.currentTarget.closest('fieldset').querySelector('.section_title'));
   let offeringStr = '';
-  if (this.value) {
-    offeringStr = `: ${this.value}% AMI`;
+  if (event.currentTarget.value) {
+    offeringStr = `: ${event.currentTarget.value}% AMI`;
   }
   heading.textContent = `Rent Offering${offeringStr}`;
 }
 
-function updateSelectColor() {
-  const options = this.childNodes;
+function updateSelectColor(event) {
+  const options = event.currentTarget.childNodes;
   for (const option of options) {
     if (option.selected) {
       const color = option.dataset.color;
       if (color) {
-        this.style.backgroundColor = `var(--airtable-color-${color})`;
+        event.currentTarget.style.backgroundColor = (
+          `var(--airtable-color-${color})`);
       } else {
-        this.style.backgroundColor = '';
+        event.currentTarget.style.backgroundColor = '';
       }
       break;
     }
   }
 }
 
-function updateMultiselectColors() {
-  const options = this.querySelectorAll('input[type=checkbox]');
+function updateMultiselectColors(event) {
+  const options = event.currentTarget.querySelectorAll('input[type=checkbox]');
   for (const option of options) {
     const label = option.nextSibling.nextSibling;
     label.style.backgroundColor = '';
@@ -226,8 +245,8 @@ function updateAgeVisibility() {
 
 // Shows or hides maximum income table rows depending on the values
 // of min and max occupancy for the unit.
-function updateMaxIncomeRowsVisibility() {
-  const unitContainer = this.parentNode;
+function updateMaxIncomeRowsVisibility(event) {
+  const unitContainer = event.currentTarget.parentNode;
   const offeringContainers = unitContainer.querySelectorAll('fieldset');
   const minOccupancyField = unitContainer.querySelector(
     '[name*=MIN_OCCUPANCY]');
@@ -253,11 +272,11 @@ function updateMaxIncomeRowsVisibility() {
 
 // Shows the primary or alternate rent input fields based on the state of the
 // checkbox that got this event.
-function updateRentVisibility() {
-  const offering = this.parentNode;
+function updateRentVisibility(event) {
+  const offering = event.currentTarget.parentNode;
   const rentInput = offering.querySelector('.rent_value');
   const rentAlternateInput = offering.querySelector('.rent_alternate');
-  if (this.checked) {
+  if (event.currentTarget.checked) {
     rentInput.setAttribute('hidden', 'hidden');
     clearAllFieldsIn(rentInput);
     rentAlternateInput.removeAttribute('hidden');
@@ -270,12 +289,12 @@ function updateRentVisibility() {
 
 // Shows the primary or alternate minimum income input fields based on the state
 // of the checkbox that got this event.
-function updateMinIncomeVisibility() {
-  const unit = this.parentNode;
+function updateMinIncomeVisibility(event) {
+  const unit = event.currentTarget.parentNode;
   const minIncomeInput = unit.querySelector('.min_income');
   const minIncomeAlternateInputs = unit.querySelectorAll(
     '.min_income_alternate');
-  if (this.checked) {
+  if (event.currentTarget.checked) {
     minIncomeInput.setAttribute('hidden', 'hidden');
     clearAllFieldsIn(minIncomeInput);
     for (const alternateInput of minIncomeAlternateInputs) {
@@ -292,12 +311,12 @@ function updateMinIncomeVisibility() {
 
 // Shows the primary or alternate maximum income input fields based on the state
 // of the checkbox that got this event.
-function updateMaxIncomeVisibility() {
-  const offering = this.parentNode;
+function updateMaxIncomeVisibility(event) {
+  const offering = event.currentTarget.parentNode;
   const maxIncomeInput = offering.querySelector('table.max_income');
   const maxIncomeAlternateInput = offering.querySelector(
     '.max_income_alternate');
-  if (this.checked) {
+  if (event.currentTarget.checked) {
     maxIncomeInput.setAttribute('hidden', 'hidden');
     clearAllFieldsIn(maxIncomeInput);
     maxIncomeAlternateInput.removeAttribute('hidden');
@@ -331,12 +350,12 @@ function addUnit() {
 // the list of units in the DOM.  This way, the visible units are always
 // adjacent and units are always "added" right after the visible ones (see
 // addUnit() ).
-function deleteUnit() {
+function deleteUnit(event) {
   if (lastVisUnitIdx >= 0) {
     lastVisUnitIdx -= 1;
     // The unit being deleted is the one assocated with the specific
     // delete button that got this event.
-    const deletedUnit = this.parentNode.parentNode.parentNode.parentNode;
+    const deletedUnit = event.currentTarget.closest('[id^="unit-"]');
     // Hide the unit section being deleted.
     deletedUnit.setAttribute('hidden', 'hidden');
     const deletedUnitId = deletedUnit.id.split('-')[1];
@@ -368,8 +387,8 @@ function deleteUnit() {
 // When a new rent offering is "added", the rent offering section that is
 // immediately after the last currently-visible offering section in the DOM is
 // made visible.
-function addOffering() {
-  const unitDiv = this.parentNode.parentNode.parentNode;
+function addOffering(event) {
+  const unitDiv = event.currentTarget.closest('[id^="unit-"]');
   const unitId = unitDiv.id.split('-')[1];
   if (lastVisOfferIdx[unitId] < MAX_NUM_OFFERINGS - 1) {
     lastVisOfferIdx[unitId] += 1;
@@ -391,11 +410,11 @@ function addOffering() {
 // the list of rent offerings in the DOM.  This way, the visible units are
 // always adjacent and offerings are always "added" right after the visible ones
 // (see addOffering() ).
-function deleteOffering() {
+function deleteOffering(event) {
   // The rent offering being deleted is the one assocated with the specific
   // delete button that got this event.
-  const deletedOffering = this.parentNode.parentNode.parentNode.parentNode;
-  const unitDiv = deletedOffering.parentNode.parentNode.parentNode.parentNode;
+  const deletedOffering = event.currentTarget.closest('[id*="-offering-"]');
+  const unitDiv = deletedOffering.parentNode.closest('[id^="unit-"]');
   const unitId = unitDiv.id.split('-')[1];
   if (lastVisOfferIdx[unitId] >= 0) {
     lastVisOfferIdx[unitId] -= 1;
@@ -660,8 +679,9 @@ function addListeners() {
   userNameInput.addEventListener('keydown', handleUserNameKeydown);
 
   // Form interactions
-  document.getElementById('show-second-address').addEventListener('click',
-    updateSecondAddressVisibility);
+  for (const button of document.querySelectorAll('.show_extra_field')) {
+    button.addEventListener('click', showExtraField);
+  }
   for (const button of document.querySelectorAll('button.collapse_control')) {
     button.addEventListener('click', toggleCollapsible);
   }
@@ -692,6 +712,14 @@ function addListeners() {
     updatePageTitle);
   document.getElementById(PROPERTY_URL_FIELD_ID).addEventListener('change',
     updatePropertyLink);
+  document.getElementById(SUPPLEMENTAL_URL_1_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_2_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_3_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_4_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`)
     .addEventListener('change', updateAgeVisibility);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`)

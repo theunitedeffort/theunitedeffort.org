@@ -1,10 +1,10 @@
 const Airtable = require('airtable');
 const base = new Airtable(
-  {apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+  {apiKey: process.env.AIRTABLE_WRITE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const HOUSING_CHANGE_QUEUE_TABLE = "tblKO2Ea4NGEoDGND";
-const HOUSING_DATABASE_TABLE = "tbl8LUgXQoTYEw2Yh";
-const UNITS_TABLE = "tblRtXBod9CC0mivK";
+const HOUSING_DATABASE_TABLE = "tblq3LUpHcY0ISzxZ";
+const UNITS_TABLE = "tblWoxbMLr5iedJ3W";
 const MAX_IN_PROGRESS_DURATION_HRS = 8;
 
 // Sort ranking for unit type.

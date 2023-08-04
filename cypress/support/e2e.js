@@ -1,3 +1,5 @@
+require('./commands');
+
 // https://dev.to/tylerben/catching-console-error-statements-in-cypress-1b4g
 Cypress.on('window:before:load', (win) => {
   cy.stub(win.console, 'error').callsFake((msg) => {
