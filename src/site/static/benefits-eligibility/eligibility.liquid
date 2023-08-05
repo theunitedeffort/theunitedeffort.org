@@ -22,12 +22,13 @@ pageClass: "page-benefits-eligibility"
   {% eligSection "intro" %}
     {% eligPage "intro" %}
     <p>
-      This form will ask you questions about you, your household, and your income. Answer each question to the best of your knowledge. After finishing this form, the results page will display a list of assistance programs you may consider applying for.
+      This form will ask you questions about you, your household, and your income. Answer each question to the best of your knowledge. After finishing this form, the results page will display a list of assistance programs you may consider applying for. <a href="/benefits-eligibility/programs">See the list of all {{programs | size}} programs we check</a>
     </p>
     <p>You can always re-visit a section by clicking on that section in the progress bar, even after you've seen your results.  Note that if you use your browser's back button, you will lose your progress.
     </p>
     <p>
       <span class="bold">The data you enter is never stored, transmitted, or shared with any agency and is completely private</span>.
+    </p>
     <p>
       Ready?  Press Next to begin.
     </p>
@@ -472,81 +473,11 @@ pageClass: "page-benefits-eligibility"
           With the information provided, we are unable to determine if you may be eligible for the following programs.
         </p>
         <ul>
-          {% program "Assistance Dog Special Allowance (ADSA)", "adsa", "https://www.cdss.ca.gov/assistance-dogs" %}
-            ADSA provides certain people who use a guide, signal, or service dog with a monthly payment to help with their disability-related needs.
-          {% endprogram %}
-
-          {% program "CalFresh", "calfresh", "https://www.cdss.ca.gov/calfresh" %}
-            CalFresh provides monthly food benefits to certain low-income individuals and families.
-          {% endprogram %}
-
-          {% program "California Work Opportunity and Responsibility to Kids (CalWORKs)", "calworks", "https://www.cdss.ca.gov/calworks", "https://ca.db101.org/ca/programs/income_support/calworks/program.htm"%}
-            CalWORKs provides cash aid and services to certain low-income families with children in the home.
-          {% endprogram %}
-
-          {% program "Cash Assistance Program for Immigrants (CAPI)", "capi", "https://www.cdss.ca.gov/capi", "https://ca.db101.org/ca/programs/income_support/capi/program.htm" %}
-            CAPI provides monthly cash benefits to certain elderly, blind, or disabled legal immigrants.
-          {% endprogram %}
-
-          {% program "California Alternate Rates for Energy (CARE)", "care", "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/california-alternate-rates-for-energy" %}
-            CARE provides a discount on electricity and natural gas bills for certain low-income individuals and families.
-          {% endprogram %}
-
-          {% program "Family Electric Rate Assistance (FERA)", "fera", "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/family-electric-rate-assistance-program" %}
-            FERA provides a discount on electricity bills for certain low-income families.
-          {% endprogram %}
-
-          {% program "VA Disability Compensation", "va-disability", "https://www.va.gov/disability/how-to-file-claim/", "https://www.va.gov/disability/" %}
-            VA disability compensation provides a monthly payment to certain injured or disabled veterans.
-          {% endprogram %}
-
-          {% program "General Assistance (GA)", "ga", "https://socialservices.sccgov.org/how-do-i/apply-for-benefits", "https://socialservices.sccgov.org/financial-assistance/financial-assistance-adults-without-dependent-children-general-assistance" %}
-            GA provides cash assistance and employment services to certain low-income individuals with no dependent children.
-          {% endprogram %}
-
-          {% program "No-Fee ID Card", "no-fee-id", "/resources/how-to-apply-for-california-identification-card/#what-is-a-no-fee-and-reduced-fee-id-card", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
-            Unhoused or elderly individuals may get an identification card from the Department of Motor Vehicles without having to pay the usual fee.
-          {% endprogram %}
-
-          {% program "Reduced Fee ID Card", "reduced-fee-id", "/resources/how-to-apply-for-california-identification-card/#what-is-a-no-fee-and-reduced-fee-id-card", "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/" %}
-            Low-income individuals may get a discount on the fee for an identification card from the Department of Motor Vehicles.
-          {% endprogram %}
-
-          {% program "In-Home Supportive Services (IHSS)", "ihss", "https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients", "https://ca.db101.org/ca/programs/health_coverage/medi_cal/ihss/program.htm" %}
-            IHSS provides in-home personal assistance to certain low-income individuals who are blind, disabled, or elderly so they can continue to live at home safely.
-          {% endprogram %}
-
-          {% program "California LifeLine", "lifeline", "https://www.californialifeline.com/en/eligibility_requirements#link4", "https://www.californialifeline.com/en" %}
-            Lifeline provides a discount on home phone and cell phone bills for certain low-income households.  In some situations, the program will cover the full cost of phone bills and provide a new phone for free.
-          {% endprogram %}
-
-          {% program "Low Income Home Energy Assistance Program (LIHEAP)", "liheap", "https://www.csd.ca.gov/Pages/Services.aspx?SCU=Santa%20Clara%20County&PT=CM", "https://www.csd.ca.gov/Pages/Assistance-PayingMyEnergyBills.aspx" %}
-            LIHEAP provides one-time assistance with paying energy bills, home weatherization, and energy-related home repairs to certain low-income households.
-          {% endprogram %}
-
-          {% program "VTA ACCESS Paratransit", "vta-paratransit", "https://www.vta.org/go/paratransit#accordion-applying-for-vta-access-paratransit-service", "https://www.vta.org/sites/default/files/2022-05/Paratransit-Rider%27s-Guide_LMR2022.pdf" %}
-            VTA ACCESS Paratransit provides door-to-door transportation service as well as free VTA bus and light rail transit passes for certain disabled individuals.
-          {% endprogram %}
-
-          {% program "Housing Choice Voucher Interest List", "housing-choice", "https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/", "https://www.scchousingauthority.org/section-8/" %}
-            The Housing Choice Voucher program helps certain low-income individuals and families pay for rental housing. This was previously known as the "Section 8 Program."  Eligible individuals will be added to a Housing Choice Voucher interest list to await random selection into a separate voucher waiting list when it reopens.
-          {% endprogram %}
-
-          {% program "Supplemental Security Income (SSI)", "ssi", "https://www.ssa.gov/benefits/ssi/", "https://ca.db101.org/ca/programs/income_support/ssi/program.htm" %}
-            SSI is a federal program that provides a monthly cash benefit to certain low-income individuals who are disabled, blind, or elderly.
-          {% endprogram %}
-
-          {% program "Social Security Disability Insurance (SSDI)", "ssdi", "https://www.ssa.gov/applyfordisability/", "https://ca.db101.org/ca/programs/income_support/ssdi2/program.htm" %}
-            SSDI is a federal program that provides a monthly cash benefit to certain disabled individuals who have worked and paid Social Security taxes in the past.
-          {% endprogram %}
-
-          {% program "VA Pension", "va-pension", "https://www.va.gov/pension/how-to-apply/", "https://www.va.gov/pension/" %}
-            VA Pension is a program that provides ongoing cash payments for eligible veterans.
-          {% endprogram %}
-
-          {% program "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)", "wic", "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle", "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx" %}
-            WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods.
-          {% endprogram %}
+          {% for program in programs %}
+            {% program program.name, program.id, program.applyUrl, program.infoUrl %}
+              {{program.summary}}
+            {% endprogram %}
+          {% endfor %}
         </ul>
       </div>
 
@@ -564,12 +495,7 @@ pageClass: "page-benefits-eligibility"
         <ul></ul>
       </div>
 
-      <p>
-        The United Effort Organization does not administer or provide any of these programs, though we can help you navigate the application process.
-      </p>
-      <p>
-        If you have any questions about these programs, you can email <a href="mailto:help@theunitedeffort.org">help@theunitedeffort.org</a> or get in touch with the program provider directly.
-      </p>
+      {% render "program-disclaimer" %}
     {% endeligPage %}
   {% endeligSection %}
 

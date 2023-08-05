@@ -342,17 +342,26 @@ module.exports = function(eleventyConfig) {
   // Renders a single public assistance program to display in a list.
   eleventyConfig.addPairedShortcode('program', function(
     content, title, id, applyUrl, refUrl='') {
+    function extIndicator(href) {
+      if (href.slice(0, 4) === 'http') {
+        return '<sup>&#8599;</sup>';
+      }
+      return '';
+    }
+
     const links = [];
     if (applyUrl) {
       links.push(`
         <p class="unenrolled_only">
-          <a href="${applyUrl}" target="_blank" rel="noopener">How to apply</a>
+          <a href="${applyUrl}" target="_blank"
+            rel="noopener">How to apply</a>${extIndicator(applyUrl)}
         </p>`);
     }
     if (refUrl) {
       links.push(`
         <p>
-          <a href="${refUrl}" target="_blank" rel="noopener">Learn more</a>
+          <a href="${refUrl}" target="_blank"
+            rel="noopener">Learn more</a>${extIndicator(refUrl)}
         </p>`);
     }
     links.push(`

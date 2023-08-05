@@ -223,6 +223,10 @@ body.max_width {
   padding-top: 0;
 }
 
+ul.no_bullets {
+  list-style-type: none;
+}
+
 // https://www.scottohara.me/blog/2017/04/14/inclusively-hidden.html
 .visually_hidden:not(:focus):not(:active) {
   clip: rect(0 0 0 0);
