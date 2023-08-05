@@ -23,8 +23,9 @@ pageClass: "page-benefits-eligibility"
       <p>{{program.summary}}</p>
       {% assign learnMoreUrl = program.infoUrl | default: program.applyUrl %}
       {% if learnMoreUrl %}
+        {% assign prefix = learnMoreUrl | slice: 0, 4 %}
         <p>
-          <a href="{{learnMoreUrl}}" target="_blank" rel="noopener">Learn more</a>
+          <a href="{{learnMoreUrl}}" target="_blank" rel="noopener">Learn more</a>{% if prefix == 'http' %}<sup>&#8599;</sup>{% endif %}
         </p>
       {% endif %}
     </li>
