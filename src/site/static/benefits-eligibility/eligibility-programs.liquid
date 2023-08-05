@@ -10,7 +10,7 @@ pageClass: "page-benefits-eligibility"
 <span class="subtitle">In Santa Clara County</span></h1>
 
 <p>
-  Using our Check Benefits Eligibility tool, you can check your eligibility for the {{ programs | size }} programs listed below.
+  Using our Check Benefits Eligibility tool, you can check your eligibility for the {{ programs | size }} programs listed below.  For more information about each program, visit the links below or contact the program provider directly.
 </p>
 <p>
   <a href="/benefits-eligibility">Check your eligibility now</a>
@@ -30,3 +30,4 @@ pageClass: "page-benefits-eligibility"
     </li>
   {% endfor %}
 </ul>
+{% render "program-disclaimer" %}
