@@ -346,7 +346,7 @@ module.exports = function(eleventyConfig) {
       if (href.slice(0, 4) === 'http') {
         return '<sup>&#8599;</sup>';
       }
-      return ''
+      return '';
     }
 
     const links = [];
