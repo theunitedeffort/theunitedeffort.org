@@ -1,3 +1,6 @@
+[context.deploy-preview]
+command = 'sed -i "s|INJECTED_PASSWORD|${PROTECTED_CONTENT_PASSWORD}|g" prod-headers && cp prod-headers dist/_headers && npm run build'
+
 [build]
 command = "npm run build"
 publish = "dist"
