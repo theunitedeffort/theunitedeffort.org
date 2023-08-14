@@ -69,6 +69,30 @@ const fetchPages = async () => {
     });
 };
 
+// Fetch the list of general resources from the Airtable API.
+const fetchGeneralResources = async () => {
+  const data = [];
+  const table = base('tblyp7AurXeZEIW4J'); // Resources table
+  return table.select({
+    view: 'API list all',
+  })
+    .all()
+    .then((records) => {
+      records.forEach(function(record) {
+        // TODO: Remove this context check after migration from
+        // public assistance programs to resources is complete.
+        // This check exists so we can view a development
+        // version of the site with all the newly-migrated resources
+        // but still hide them from the production site.
+        if (process.env.CONTEXT !== 'production' ||
+            record.get('Show on website')) {
+          data.push(record.fields);
+        }
+      });
+      return data;
+    });
+};
+
 
 module.exports = async function() {
   const asset = new AssetCache('airtable_pages');
@@ -77,8 +101,9 @@ module.exports = async function() {
     return await asset.getCachedValue();
   }
   console.log('Fetching pages.');
-  const p = await fetchPages();
-  const ret = {pages: p};
+  const [pageList, resourceList] = await Promise.all(
+    [fetchPages(), fetchGeneralResources()]);
+  const ret = {pages: pageList, partialsData: {resources: resourceList}};
   await asset.save(ret, 'json');
   return ret;
 };
