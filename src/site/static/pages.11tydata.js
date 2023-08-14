@@ -29,13 +29,6 @@ const fetchPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
-        // Temporarily ignore the public assistance index page during content
-        // migration.
-        // TODO: After migration, delete /public-assistance Airtable record,
-        // then remove this special handling.
-        if (record.get('Page path') === '/public-assistance') {
-          continue;
-        }
         if (record.get('Status') == 'Published') {
           const name = record.get('Page title');
           const path = record.get('Page path');
@@ -79,13 +72,7 @@ const fetchGeneralResources = async () => {
     .all()
     .then((records) => {
       records.forEach(function(record) {
-        // TODO: Remove this context check after migration from
-        // public assistance programs to resources is complete.
-        // This check exists so we can view a development
-        // version of the site with all the newly-migrated resources
-        // but still hide them from the production site.
-        if (process.env.CONTEXT !== 'production' ||
-            record.get('Show on website')) {
+        if (record.get('Show on website')) {
           data.push(record.fields);
         }
       });
