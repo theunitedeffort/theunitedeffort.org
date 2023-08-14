@@ -9,11 +9,6 @@ publish = "dist"
 functions = "netlify/functions"
 
 [context.production]
-# Use HTTP basic auth for production only.
-# This build command replaces the password placeholder for basic auth in
-# the prod-headers file with the password defined by an env var in the Netlify
-# UI.  It then copies that file over to the expected headers location before
-# running the build.
 command = "sed -i \"s|INJECTED_PASSWORD|${PRE_RELEASE_CONTENT_PASSWORD}|g\" prod-headers && mkdir dist && cp prod-headers dist/_headers && npm run build"
 
 [[redirects]]
