@@ -1,0 +1,202 @@
+---
+layout: layouts/base.liquid
+title: Find Resources
+permalink: 
+  build: "/find-resources/index.html"
+  serverless: "/find-resources/filter"
+pageClass: "page-resources"
+pageHead: '<script src="/js/accessibility.js" defer></script>'
+---
+
+{% assign updateButtonStr = "Update results" %}
+{% assign query = eleventy.serverless.query %}
+{% assign resourcesDb = resources.resourceList | filterResourcesByQuery: query %}
+{% assign num_results = resourcesDb | size %}
+{% assign num_filters_applied = query | numResourceFiltersApplied %}
+{% capture num_results_snippet %}
+  Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {{num_results | pluralize: "resource", "resources"}}
+{% endcapture %}
+
+{% comment %}
+There is some startup time associated with a Netlify serverless function,
+so go ahead and fire it up now in preparation for a user's search.
+The function should still be 'warm' if the user executes a search in a
+reasonable timeframe.
+{% endcomment %}
+{% unless eleventy.serverless %}
+  <link rel="prefetch" href="/.netlify/functions/serverless">
+{% endunless %}
+
+<script>
+function CopyUrl() {
+  navigator.clipboard.writeText(window.location.href);
+  document.getElementById("copy-url-done").removeAttribute("hidden");
+  return false;
+}
+
+// Show a loading message by changing the submit button to say "Loading..."
+function ShowLoading() {
+  let submitButton = document.getElementById("filter-submit");
+  submitButton.value = "Loading...";
+  submitButton.disabled = "disabled";
+}
+
+function HideLoading() {
+  let submitButton = document.getElementById("filter-submit");
+  submitButton.value = "{{updateButtonStr}}";
+  submitButton.removeAttribute("disabled");
+}
+
+function ResetForm() {
+  document.getElementById("resources-search").reset();
+}
+
+// If the filtering form GETs the results page's url with
+// the anchor hash (e.g. action="/find-resources/filter#results")
+// then the form submission button will be disabled and the
+// page will not reload if the user clicks on the submit button
+// without first changing the filter state.  So, to force a 
+// page reload every time, have the form GET e.g. 
+// /find-resources/filter and manually scroll to the anchor
+// after the page loads.  Also ensure the rent and income checkboxes
+// are shown if those fields are filled. 
+{% if num_filters_applied > 0 %} 
+function OnDomLoad() {
+  location.hash = "#results";
+}
+document.addEventListener("DOMContentLoaded", function() {
+  OnDomLoad();
+});
+{% endif %}
+
+function OnPageShow() {
+  // When the user departs the page by applying filters, the submit
+  // button text changes to a loading message.  Ensure that loading
+  // message is gone if the user returns to the page via the back
+  // navigation arrow.  Also ensure any filter options that were selected
+  // prior to navigating away are cleared when navigating back.
+  HideLoading();
+  ResetForm();
+}
+
+window.onpageshow = function() {OnPageShow()};
+
+</script>
+
+<h1>{{title}}
+<span class="subtitle">In Santa Clara County</span></h1>
+<p class="noprint bold">
+{{num_results_snippet}}
+</p>
+{% if num_filters_applied == 0 %}
+<p>
+Narrow your search with the filter options below or <a href="#results">scroll</a> to the full list of resources
+</p>
+{% else %}
+<p class="noprint">
+{{num_filters_applied}} {{num_filters_applied | pluralize: "filter is", "filters are"}} applied. <a href="/find-resources">Clear filters</a>
+</p>
+{% endif %}
+
+
+<section aria-label="Resources Filter Options">
+<form action="/find-resources/filter" action="get" id="resources-search" class="housing_search" onsubmit="ShowLoading();">
+
+  {% assign filterValues = resources.filterValues | updateFilterState: query %}
+
+  {% for section in filterValues %}
+  <fieldset>
+    <legend>{{section.heading}}</legend>
+    <div class="option_columns">
+    {% assign sortedOpts = section.options | rankSort: "name" %}
+    {% for opt in sortedOpts %}
+      {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
+      <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
+        {% assign label = opt.label %}
+      <label for="{{optId}}">{{label}}</label><br/>
+    {% endfor %}
+    </div>
+  </fieldset>
+  {% endfor %}
+
+  <fieldset>
+    <legend>More Filters</legend>
+    <div>
+      <p>
+      <label for="resource-name">Resource Name</label>
+      <input type="text" id="resource-name" value="{{query.resourceName | escape}}" name="resourceName">
+      </p>
+    </div>
+  </fieldset>
+
+  <div class="form_controls">
+    <input type="submit" id="filter-submit" class="btn btn_primary noprint" value="{{updateButtonStr}}"/>
+  </div>
+</form>
+</section>
+
+<section id="results" class="anchor_context" aria-label="Resources Results">
+  <div class="align-end flex stack-reversed">
+    <p class="noprint bold">
+      {{num_results_snippet}}
+    </p>
+    <div>
+      {% if num_results > 0 %}
+        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/find-resources/table?{{query | queryString}}">
+          Show printable summary
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  {% if num_filters_applied > 0 %}
+    <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
+  {% endif %}
+    <p>
+      <a href="/find-resources/feedback" class="noprint">Report an error</a>
+    </p>
+
+  <div class="flex results_container">
+    <div id="map-toggle" class="noprint hidden">
+      <button type="button" class="btn btn_secondary">Show Map</button>
+    </div>
+    <div id="list-container">
+      <ul class="results_list" aria-label="Results List">
+        {%- for resource in resourcesDb -%}
+          {% comment %}
+          The list of resources can be quite long, and the time it takes to
+          render all of them with eleventy serverless can lead to longer page
+          load times.  The itemds are pre-rendered in the build and used here
+          for serverless requests.
+          {% endcomment %}
+          {%- if eleventy.serverless -%}
+            {{- collections.resourceListItems[resource.id] -}}
+          {%- else -%}
+            {% comment %}
+            The resourceListItems collection is not
+            available at build time (only after the build), and thus can't be used
+            for the static page render.
+            {% endcomment %}
+            {%- render "resources-item", resource: resource -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {% if num_results == 0 %}
+          <li class="no_results">
+            Try changing the filter options above to broaden your search and see more results.
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+    <div id="map-container" class="map_container hidden">
+      <div class="split_right_container">
+        <div id="map"></div>
+        <div id="map-legend"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div>
+<p>
+  These resources are compiled from many separate information sources in order to provide a single searchable list.  We strive to be as accurate as possible, but always confirm details with the resource provider.
+</p>
+</div>

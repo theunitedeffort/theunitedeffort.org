@@ -9,7 +9,14 @@ publish = "dist"
 functions = "netlify/functions"
 
 [context.production]
-command = "sed -i \"s|INJECTED_PASSWORD|${PRE_RELEASE_CONTENT_PASSWORD}|g\" prod-headers && mkdir dist && cp prod-headers dist/_headers && npm run build"
+command = 'sed -i "s|INJECTED_PASSWORD|${PRE_RELEASE_CONTENT_PASSWORD}|g" prod-headers && mkdir dist && cp prod-headers dist/_headers && npm run build'
+
+[[redirects]]
+from = "/find-resources/filter"
+to = "/.netlify/functions/serverless"
+status = 200
+force = true
+_generated_by_eleventy_serverless = "serverless"
 
 [[redirects]]
 from = "/housing/affordable-housing/tracker"

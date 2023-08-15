@@ -1,0 +1,40 @@
+<li id="resource-{{resource.id}}">
+	{%- assign sortedCategories = resource.categories | rankSort -%}
+  <p>
+  {%- for category in sortedCategories -%}
+    <span class="badge">{{category}}</span>
+  {%- endfor -%}
+ </p>
+  <h2>
+    <a href="/find-resources/{{resource.id}}">{{resource.name}}</a>
+  </h2>
+{%- if resource.organization and resource.organization != '' -%}
+  <p>
+    provided by {{resource.organization}}
+  </p>
+{%- endif -%}
+{%- if resource.addresses[0] and resource.addresses[0] != '' -%}
+  <p class="contact">
+  {{resource.addresses[0]}}{%- if resource.city and resource.city != '' -%}, {{resource.city}}{%- endif -%}
+    <span class="map_link_container noprint nowrap">
+      (<button type="button" class="map_link link hidden" aria-label="Highlight {{resource.name}} on map">Show on map</button><span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{resource.name}} on Google Maps">map</a><sup>&#8599;</sup></span>)
+    </span>
+  </p>
+{%- endif -%}
+{%- if resource.emails[0] and resource.emails[0] != '' -%}
+  <p class="contact">
+    <a href="mailto:{{resource.emails[0]}}" target="_blank" rel="noopener">{{resource.emails[0]}}</a>
+  </p>
+{%- endif -%}
+{%- if resource.phones[0] and resource.phones[0] != '' -%}
+  <p class="contact">
+    {%- assign formattedPhone = resource.phones[0] | formatPhone -%}
+    <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
+  </p>
+{%- endif -%}
+{%- if resource.website and resource.website != '' -%}
+  <p class="contact">
+    <a href="{{resource.website}}" target="_blank" rel="noopener" aria-label="Website for {{resource.name}}">View website</a><sup>&#8599;</sup>
+  </p>
+{%- endif -%}
+</li>

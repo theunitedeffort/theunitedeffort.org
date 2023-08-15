@@ -231,6 +231,21 @@ module.exports = function(eleventyConfig) {
     return count;
   });
 
+  eleventyConfig.addFilter('numResourceFiltersApplied', function(query) {
+    // TODO: Don't hardcode this list of filters here.
+    const allowedFilters = [
+      'category',
+      'name',
+    ];
+    let count = 0;
+    for (const key in query) {
+      if (allowedFilters.includes(key) && query[key]) {
+        count++;
+      }
+    }
+    return count;
+  });
+
   // Add filter checkbox state from the query parameters to 'filterValues'.
   eleventyConfig.addFilter('updateFilterState', function(filterValues, query) {
     // The AssetCache holding filterValues stores a buffered version of the
@@ -816,6 +831,35 @@ module.exports = function(eleventyConfig) {
     // Some properties may have had all their associated units filtered out,
     // so remove those before returning the final list of filtered properties.
     return housingListCopy.filter((a) => a.units.length);
+  });
+
+  eleventyConfig.addFilter('filterResourcesByQuery', function(resourceList, query) {
+    query = query || '';
+    console.log(query);
+    let resourceListCopy = JSON.parse(JSON.stringify(resourceList));
+    if (query.category) {
+      const categories = query.category.split(', ');
+      resourceListCopy = resourceListCopy.filter((r) => {
+        for (const category of categories) {
+          if (r.categories.includes(category)) {
+            return true;
+          }
+        }
+        return false;
+      });
+    }
+
+    if (query.resourceName) {
+      const name = query.resourceName.toLowerCase();
+      resourceListCopy = resourceListCopy.filter((r) => {
+        return (
+          r.name.toLowerCase().includes(name) ||
+          r.organization.toLowerCase().includes(name)
+        );
+      });
+    }
+
+    return resourceListCopy;
   });
 
   eleventyConfig.addFilter('formatPhone', function(phoneStr) {
