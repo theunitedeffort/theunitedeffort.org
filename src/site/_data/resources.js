@@ -78,56 +78,10 @@ const resourceData = async () => {
 const filterOptions = (resources) => {
   const categories = [...new Set(resources.map((r) => r.categories).flat()
     .filter((c) => c))];
-  // const openStatuses = [...new Set(
-  //   housing.map((h) => h.units.map((u) => u.openStatus)).flat()
-  //     .filter((s) => s))];
-  // const unitTypes = [...new Set(
-  //   housing.map((h) => h.units.map((u) => u.type)).flat().filter((t) => t))];
-  // const allPopulationsServed = [...new Set(
-  //   housing.map((h) => h.populationsServed).flat().filter((p) => p))];
 
   const filterVals = [];
   filterVals.push(new FilterSection('Category', 'category',
     categories.map((x) => new FilterCheckbox(x))));
-
-  // // Special handling for some unit types
-  // // Any "{N} Bedroom" entries that have HIGH_CAPACITY_UNIT or greater bedrooms
-  // // will get grouped  together into one filter checkbox.
-  // const unitTypeOptions = [];
-  // const bedroomSizes = [];
-  // let bedroomStr = '';
-  // for (const unitType of unitTypes) {
-  //   const match = unitType.match(/^(\d) ?(bedroom|br)$/i);
-  //   if (match) {
-  //     bedroomSizes.push({num: parseInt(match[1]), str: unitType});
-  //     bedroomStr = match[2];
-  //   }
-  // }
-  // const catchallSize = Math.min(Math.max(...bedroomSizes.map((x) => x.num)),
-  //   HIGH_CAPACITY_UNIT);
-  // // Only do grouping if the unit types list includes units with at least
-  // // HIGH_CAPACITY_UNIT bedrooms.
-  // if (catchallSize >= HIGH_CAPACITY_UNIT) {
-  //   // Get all unit types that will be grouped together
-  //   const groupedSizes = bedroomSizes.filter((x) => x.num >= catchallSize);
-  //   for (const bedroomSize of groupedSizes) {
-  //     const idx = unitTypes.indexOf(bedroomSize.str);
-  //     // Remove it from the unit types list so it can be grouped instead.
-  //     unitTypes.splice(idx, 1);
-  //   }
-  //   // Make a single entry out of all the grouped sizes.
-  //   const groupedStr = groupedSizes.map((x) => x.str).join(', ');
-  //   unitTypeOptions.push(new FilterCheckbox(groupedStr,
-  //     `${HIGH_CAPACITY_UNIT}+ ${bedroomStr}`));
-  // }
-  // unitTypeOptions.push(...unitTypes.map((x) => new FilterCheckbox(x)));
-  // filterVals.push(new FilterSection('Type of Unit', 'unitType',
-  //   unitTypeOptions));
-
-  // filterVals.push(new FilterSection('Availability', 'availability',
-  //   openStatuses.map((x) => new FilterCheckbox(x))));
-  // filterVals.push(new FilterSection('Populations Served', 'populationsServed',
-  //   allPopulationsServed.map((x) => new FilterCheckbox(x))));
 
   return filterVals;
 };
