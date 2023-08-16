@@ -1,0 +1,18 @@
+---
+layout: "layouts/base.liquid"
+title: "Client Stories"
+pageClass: ""
+permalink: /client-stories/index.html
+---
+
+{% comment %}
+Here is an example of how data can be retrieved from the "stories" array of
+objects.  The object keys (e.g. "Title") correspond to the Airtable column names
+in the Client Stories table.
+{% endcomment %}
+<h1>{{stories[0]["Title"]}}</h1>
+
+{% comment %}
+TODO: Write HTML and Liquid syntax to build the client stories page from the
+stories array.
+{% endcomment %}
