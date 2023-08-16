@@ -8,6 +8,7 @@ on:
 env:
   AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
   AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
+  AIRTABLE_RESOURCES_BASE_ID: ${{vars.AIRTABLE_RESOURCES_BASE_ID}}
   CYPRESS_RECORD_KEY: ${{secrets.CYPRESS_RECORD_KEY}}
 
 jobs:
@@ -40,9 +41,6 @@ jobs:
 
   firefox-browser-tests:
     runs-on: ubuntu-22.04
-    env:
-      AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
-      AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
     steps:
       - uses: actions/checkout@v3
       # Install NPM dependencies, cache them correctly
@@ -70,9 +68,6 @@ jobs:
 
   edge-browser-tests:
     runs-on: ubuntu-22.04
-    env:
-      AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
-      AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
     steps:
       - uses: actions/checkout@v3
       # Install NPM dependencies, cache them correctly
