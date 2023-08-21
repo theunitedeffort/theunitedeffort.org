@@ -651,6 +651,18 @@ function onToggleMultiselect(event) {
   }
 }
 
+function onToggleDynamicFieldList(event) {
+  const page = event.currentTarget.closest('.elig_page');
+  // Remove any assets already entered.
+  resetDynamicFieldLists(page);
+  // Disable/enable the interface to add new assets.
+  // TODO: consider aria-disabled here (and elsewhere).
+  const assetButtons = page.querySelectorAll('.field_list_add');
+  for (const assetButton of assetButtons) {
+    assetButton.disabled = event.currentTarget.checked;
+  }
+}
+
 function onChangeAge(event) {
   document.getElementById('hh-myself-age').value = event.target.value;
   document.getElementById('age').value = event.target.value;
@@ -1111,6 +1123,8 @@ function addListeners() {
     onToggleMultiselect);
   document.getElementById('income-has-none').addEventListener('click',
     onToggleMultiselect);
+  document.getElementById('assets-has-none').addEventListener('click',
+    onToggleDynamicFieldList);
   document.getElementById('age').addEventListener('change', onChangeAge);
   document.getElementById('hh-myself-age').addEventListener('change',
     onChangeAge);
@@ -2687,7 +2701,9 @@ function buildInputObj() {
     servedFullDuration: getValueOrNull('full-dur-yes'),
     dutyPeriods: [],
     income: {},
-    assets: getIncomeValues(document.getElementById('page-income-assets')),
+    assets: {
+      values: getIncomeValues(document.getElementById('page-income-assets')),
+    },
     paidSsTaxes: getValueOrNull('ss-taxes'),
   };
 
@@ -2713,6 +2729,10 @@ function buildInputObj() {
   // was entered (and the household was not marked as having zero income).
   inputData.income.valid = (householdTotal > 0 ||
     getValueOrNull('income-has-none'));
+  // Assets are invalid if nothing was entered (and the household was not marked
+  // as explicitly having no assets).
+  inputData.assets.valid = (categoryTotal(inputData.assets.values) > 0 ||
+    getValueOrNull('assets-has-none'));
 
   // Income specifically from SSI
   const retirementEntries = [...document.querySelectorAll(
