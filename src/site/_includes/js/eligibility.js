@@ -659,7 +659,11 @@ function onToggleDynamicFieldList(event) {
   // TODO: consider aria-disabled here (and elsewhere).
   const assetButtons = page.querySelectorAll('.field_list_add');
   for (const assetButton of assetButtons) {
-    assetButton.disabled = event.currentTarget.checked;
+    if (event.currentTarget.checked) {
+      assetButton.setAttribute('aria-disabled', 'true');
+    } else {
+      assetButton.removeAttribute('aria-disabled');
+    }
   }
 }
 
@@ -782,6 +786,9 @@ function resetDynamicFieldLists(parent) {
 
 // Adds an item to a dynamic list of fields.
 function addDynamicFieldListItem(event) {
+  if (event.currentTarget.hasAttribute('aria-disabled')) {
+    return;
+  }
   const wrapper = event.target.closest('.dynamic_field_list_wrapper');
   const list = wrapper.querySelector('ul.dynamic_field_list');
   const items = wrapper.querySelectorAll('ul.dynamic_field_list > li');

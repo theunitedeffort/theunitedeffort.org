@@ -73,7 +73,9 @@ main {
   }
 
   .btn_primary:disabled,
-  a.btn_primary:disabled {
+  a.btn_primary:disabled,
+  .btn_secondary[aria-disabled],
+  a.btn_secondary[aria-disabled] {
     cursor: not-allowed;
     color: var(--color-gray-700);
     background-color: var(--color-gray-300);
@@ -82,7 +84,9 @@ main {
   }
 
   .btn_secondary:disabled,
-  a.btn_secondary:disabled {
+  a.btn_secondary:disabled,
+  .btn_secondary[aria-disabled],
+  a.btn_secondary[aria-disabled] {
     cursor: not-allowed;
     color: var(--color-gray-600);
     background-color: var(--color-gray-900);
