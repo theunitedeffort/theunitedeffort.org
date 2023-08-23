@@ -335,7 +335,8 @@ describe('Program eligibility', () => {
     modified.pregnant = true;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.calworks.MBSAC[0]]];
-    modified.assets = [[elig.cnst.calworks.BASE_RESOURCE_LIMIT]];
+    modified.assets.valid = true;
+    modified.assets.values = [[elig.cnst.calworks.BASE_RESOURCE_LIMIT]];
     modified._verifyFn = elig.calworksResult;
     return modified;
   }
@@ -347,6 +348,8 @@ describe('Program eligibility', () => {
     modified.disabled = true;
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
+    modified.assets.valid = true;
+    // TODO: add asset values?
     modified._verifyFn = elig.capiResult;
     return modified;
   }
@@ -355,6 +358,8 @@ describe('Program eligibility', () => {
     const modified = structuredClone(baseInput);
     modified.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
     modified.income.valid = true;
+    modified.assets.valid = true;
+    // TODO: add a value for assets?
     modified.income.wages = [[elig.cnst.ga.MONTHLY_INCOME_LIMITS[0]]];
     modified._verifyFn = elig.gaResult;
     return modified;
@@ -408,6 +413,8 @@ describe('Program eligibility', () => {
     const modified = structuredClone(baseInput);
     modified.disabled = true;
     modified.income.valid = true;
+    modified.assets.valid = true;
+    // TODO: add asset values?
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
     modified._verifyFn = elig.ssiResult;
     return modified;
@@ -421,7 +428,8 @@ describe('Program eligibility', () => {
     modified.income.valid = true;
     modified.income.wages = (
       [[elig.cnst.vaPension.ANNUAL_INCOME_LIMITS[0] / 12]]);
-    modified.assets = [[elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT -
+    modified.assets.valid = true;
+    modified.assets.values = [[elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT -
         12 * modified.income.wages[0][0]]];
     modified.dutyPeriods = [{
       type: 'active-duty',
@@ -536,7 +544,10 @@ describe('Program eligibility', () => {
         retirement: [[]],
         other: [[]],
       },
-      assets: [[]],
+      assets: {
+        valid: false,
+        values: [[]],
+      },
       paidSsTaxes: null,
       ssiIncome: [],
       existingSsiMe: false,
@@ -814,6 +825,7 @@ describe('Program eligibility', () => {
 
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.pregnant = true;
       input.citizen = false;
       check(elig.calworksResult, input)
@@ -822,6 +834,7 @@ describe('Program eligibility', () => {
 
     testImmigration(() => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.pregnant = true;
     },
     elig.calworksResult,
@@ -829,11 +842,13 @@ describe('Program eligibility', () => {
 
     test('Eligible when pregnant', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       check(elig.calworksResult, input).isEligibleIf('pregnant').is(true);
     });
 
     test('Eligible when household contains a pregnant person', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.householdSize = 2;
       input.householdPregnant = [false];
       check(elig.calworksResult, input)
@@ -842,6 +857,7 @@ describe('Program eligibility', () => {
 
     test('Eligible when household includes a child', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.householdSize = 2;
       input.householdAges = [elig.cnst.calworks.MAX_CHILD_AGE + 1];
       check(elig.calworksResult, input)
@@ -850,6 +866,7 @@ describe('Program eligibility', () => {
 
     test('Eligible when main caretaker is young', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.age = elig.cnst.calworks.MAX_CHILD_AGE;
       check(elig.calworksResult, input).isEligibleIf('headOfHousehold').is(true);
     });
@@ -857,6 +874,7 @@ describe('Program eligibility', () => {
     test('Requires adjusted income to be at or below Minimum Basic Standard for Adequate Care', () => {
       input.pregnant = true;
       input.income.valid = true;
+      input.assets.valid = true;
       // Note part of income from employment is disregarded, so use unemployment
       // income for this test.
       check(elig.calworksResult, input).isEligibleIf('income.unemployment')
@@ -866,36 +884,37 @@ describe('Program eligibility', () => {
     test('Requires assets to be at or below the limit', () => {
       input.pregnant = true;
       input.income.valid = true;
+      input.assets.valid = true;
       input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
       input.householdSize = 2;
       // Elderly household member
       input.householdAges = [elig.cnst.calworks.MIN_ELDERLY_AGE];
       input.householdDisabled = [false];
-      check(elig.calworksResult, input).isEligibleIf('assets')
+      check(elig.calworksResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
       // Disabled household member
       input.householdAges = [elig.cnst.calworks.MIN_ELDERLY_AGE - 1];
       input.householdDisabled = [true];
-      check(elig.calworksResult, input).isEligibleIf('assets')
+      check(elig.calworksResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
       // No elderly or disabled member
       input.householdAges = [elig.cnst.calworks.MIN_ELDERLY_AGE - 1];
       input.householdDisabled = [false];
-      check(elig.calworksResult, input).isEligibleIf('assets')
+      check(elig.calworksResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.calworks.BASE_RESOURCE_LIMIT);
       // Elderly applicant
       input.age = elig.cnst.calworks.MIN_ELDERLY_AGE;
-      check(elig.calworksResult, input).isEligibleIf('assets')
+      check(elig.calworksResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
       // Disabled applicant
       input.disabled = true;
-      check(elig.calworksResult, input).isEligibleIf('assets')
+      check(elig.calworksResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
       // Unknown ages
       input.householdAges = [null];
       input.age = null;
       input.disabled = false;
-      check(elig.calworksResult, input).isEligibleIf('assets')
+      check(elig.calworksResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.calworks.BASE_RESOURCE_LIMIT);
     });
   });
@@ -917,6 +936,7 @@ describe('Program eligibility', () => {
 
     test('Requires valid immigration status', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.disabled = true;
       input.citizen = false;
       input.immigrationStatus = 'long_term';
@@ -926,6 +946,7 @@ describe('Program eligibility', () => {
 
     testImmigration(() => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.disabled = true;
     }, elig.capiResult, [
       {immStatus: 'permanent_resident', expectedElig: true, flagExpected: true},
@@ -1092,12 +1113,14 @@ describe('Program eligibility', () => {
 
     test('Requires applicant to be older than a minimum age', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       check(elig.gaResult, input).isEligibleIf('age')
         .isAtLeast(elig.cnst.ga.MIN_ELIGIBLE_AGE);
     });
 
     test('Requires no dependent children', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
       input.householdDependents = [false, true];
       check(elig.gaResult, input)
@@ -1107,6 +1130,7 @@ describe('Program eligibility', () => {
     test('Requires income at or below income limit', () => {
       const maxIncome = elig.cnst.ga.MONTHLY_INCOME_LIMITS[0];
       input.income.valid = true;
+      input.assets.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
       check(elig.gaResult, input)
         .isEligibleIf('income.wages').isAtMost(maxIncome);
@@ -1114,13 +1138,15 @@ describe('Program eligibility', () => {
 
     test('Requires assets at or below resource limit', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
       check(elig.gaResult, input)
-        .isEligibleIf('assets').isAtMost(elig.cnst.ga.MAX_RESOURCES);
+        .isEligibleIf('assets.values').isAtMost(elig.cnst.ga.MAX_RESOURCES);
     });
 
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
       input.citizen = false;
       check(elig.gaResult, input)
@@ -1129,6 +1155,7 @@ describe('Program eligibility', () => {
 
     testImmigration(() => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
     },
     elig.gaResult,
@@ -1462,6 +1489,7 @@ describe('Program eligibility', () => {
 
     test('Requires applicant to be disabled, blind, or elderly', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       check(resultFn, input).isEligibleIf('disabled').is(true);
       check(resultFn, input).isEligibleIf('blind').is(true);
       check(resultFn, input)
@@ -1471,6 +1499,7 @@ describe('Program eligibility', () => {
     test('Requires no substantial gainful activity for blind or disabled applicants', () => {
       let sgaLimit = elig.cnst.ssiCapi.SGA_NON_BLIND;
       input.income.valid = true;
+      input.assets.valid = true;
       input.disabled = true;
       // SGA should only count earned income.
       input.income.unemployment = [[1]];
@@ -1485,6 +1514,7 @@ describe('Program eligibility', () => {
 
     test('Substantial gainful activity test not applied for non-disabled and non-blind applicants', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.age = elig.cnst.ssiCapi.MIN_ELDERLY_AGE;
       input.income.wages = [[elig.cnst.ssiCapi.SGA_NON_BLIND + 1]];
       expect(resultFn(input).eligible).toBe(true);
@@ -1494,13 +1524,16 @@ describe('Program eligibility', () => {
       const testAssets = elig.cnst.ssiCapi.MAX_RESOURCES;
       input.income.valid = true;
       input.disabled = true;
-      input.assets = [[testAssets]];
+      input.assets.valid = true;
+      input.assets.values = [[testAssets]];
+      // TODO: use isUnder (etc)?
       check(resultFn, input)
-        .isEligibleIf('assets').is([[testAssets - 1]]);
+        .isEligibleIf('assets.values').is([[testAssets - 1]]);
     });
 
     test('Requires adjusted income below maximum benefit amount', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.disabled = true;
 
       // Non-blind with a kitchen
@@ -1543,6 +1576,7 @@ describe('Program eligibility', () => {
 
     test('Eligible with U.S. citizenship', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.disabled = true;
       input.citizen = false;
       check(elig.ssiResult, input).isEligibleIf('citizen').is(true);
@@ -1550,6 +1584,7 @@ describe('Program eligibility', () => {
 
     testImmigration(() => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.disabled = true;
     },
     elig.ssiResult,
@@ -1786,19 +1821,22 @@ describe('Program eligibility', () => {
     describe('Net worth', () => {
       test('Sums yearly income and total assets', () => {
         const monthlyIncome = 10;
-        input.assets = [[1000, 1000]];
+        input.assets.valid = true;
+        input.assets.values = [[1000, 1000]];
         expect(elig.vaPensionNetWorth(input, monthlyIncome)).toBe(2120);
       });
 
       test('Includes assets from spouse', () => {
         input.householdSpouse = [true, false];
-        input.assets = [[100], [200], [899]];
+        input.assets.valid = true;
+        input.assets.values = [[100], [200], [899]];
         expect(elig.vaPensionNetWorth(input, 0)).toBe(300);
       });
 
       test('Does not include assets from dependents', () => {
         input.householdDependents = [true];
-        input.assets = [[100], [300]];
+        input.assets.valid = true;
+        input.assets.values = [[100], [300]];
         expect(elig.vaPensionNetWorth(input, 0)).toBe(100);
       });
     });
@@ -1820,6 +1858,7 @@ describe('Program eligibility', () => {
 
     test('Requires veteran status', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.disabled = true;
       input.dutyPeriods = [validDutyPeriod];
       input.dischargeStatus = 'honorable';
@@ -1828,6 +1867,7 @@ describe('Program eligibility', () => {
 
     test('Requires discharge that is not other-than-honorable, bad conduct, or dishonorable', () => {
       input.income.valid = true;
+      input.assets.valid = true;
       input.veteran = true;
       input.disabled = true;
       input.dutyPeriods = [validDutyPeriod];
@@ -1846,6 +1886,7 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [validDutyPeriod];
       input.dischargeStatus = 'honorable';
       input.income.valid = true;
+      input.assets.valid = true;
       check(elig.vaPensionResult, input).isEligibleIf('income.wages')
         .isAtMost(elig.cnst.vaPension.ANNUAL_INCOME_LIMITS[0] / 12);
     });
@@ -1856,11 +1897,12 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [validDutyPeriod];
       input.dischargeStatus = 'honorable';
       input.income.valid = true;
+      input.assets.valid = true;
       // All assets, no income
-      check(elig.vaPensionResult, input).isEligibleIf('assets')
+      check(elig.vaPensionResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT);
 
-      input.assets = [[elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT]];
+      input.assets.values = [[elig.cnst.vaPension.ANNUAL_NET_WORTH_LIMIT]];
       // Adding some income here should put the net worth over the limit.
       check(elig.vaPensionResult, input)
         .isNotEligibleIf('income.wages').is([[1]]);
@@ -1870,6 +1912,7 @@ describe('Program eligibility', () => {
       input.veteran = true;
       input.disabled = true;
       input.income.valid = true;
+      input.assets.valid = true;
       input.dischargeStatus = 'honorable';
 
       // During wartime, early enough start date, duty duration too short
@@ -1925,6 +1968,7 @@ describe('Program eligibility', () => {
       input.veteran = true;
       input.disabled = true;
       input.income.valid = true;
+      input.assets.valid = true;
       input.dischargeStatus = 'honorable';
 
       // During wartime, late enough start date, duration too short
@@ -1986,6 +2030,7 @@ describe('Program eligibility', () => {
     test('Requires applicant be disabled, elderly, or receiving SSI or SSDI', () => {
       input.veteran = true;
       input.income.valid = true;
+      input.assets.valid = true;
       input.dutyPeriods = [validDutyPeriod];
       input.dischargeStatus = 'honorable';
       check(elig.vaPensionResult, input).isEligibleIf('disabled').is(true);

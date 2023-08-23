@@ -656,7 +656,6 @@ function onToggleDynamicFieldList(event) {
   // Remove any assets already entered.
   resetDynamicFieldLists(page);
   // Disable/enable the interface to add new assets.
-  // TODO: consider aria-disabled here (and elsewhere).
   const assetButtons = page.querySelectorAll('.field_list_add');
   for (const assetButton of assetButtons) {
     if (event.currentTarget.checked) {
@@ -1503,9 +1502,10 @@ function grossIncome(input, hhMemberIdx=null) {
 }
 
 function totalResources(input, hhMemberIdx=null) {
-  // TODO (#397): Add checkbox for users to explicitly specify they have zero
-  // resources.
-  return categoryTotal(input.assets, hhMemberIdx);
+  if (!input.assets.valid) {
+    return NaN;
+  }
+  return categoryTotal(input.assets.values, hhMemberIdx);
 }
 
 // Returns true if the immigration status is valid for assistance, false

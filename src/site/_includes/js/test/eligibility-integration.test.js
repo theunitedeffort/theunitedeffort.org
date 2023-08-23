@@ -1598,7 +1598,10 @@ describe('buildInputObj', () => {
         childSupport: [[17, 57], [270], [3700]],
         other: [[18, 58], [280], [3800]],
       },
-      assets: [[1000, 99], [2000], [3000]],
+      assets: {
+        valid: true,
+        values: [[1000, 99], [2000], [3000]],
+      },
       paidSsTaxes: true,
       ssiIncome: [12, 220],
       existingAdsaHousehold: true,
@@ -1775,7 +1778,7 @@ describe('buildInputObj', () => {
     addIncome('other', expected.income.other);
     expect(getInput().income).toEqual(expected.income);
 
-    addAssets(expected.assets);
+    addAssets(expected.assets.values);
     expect(getInput().assets).toEqual(expected.assets);
 
     setYesNo('ss-taxes', expected.paidSsTaxes);
