@@ -349,7 +349,7 @@ describe('Program eligibility', () => {
     modified.income.valid = true;
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
     modified.assets.valid = true;
-    // TODO: add asset values?
+    modified.assets.values = [[elig.cnst.ssiCapi.MAX_RESOURCES - 1]];
     modified._verifyFn = elig.capiResult;
     return modified;
   }
@@ -358,9 +358,9 @@ describe('Program eligibility', () => {
     const modified = structuredClone(baseInput);
     modified.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
     modified.income.valid = true;
-    modified.assets.valid = true;
-    // TODO: add a value for assets?
     modified.income.wages = [[elig.cnst.ga.MONTHLY_INCOME_LIMITS[0]]];
+    modified.assets.valid = true;
+    modified.assets.values = [[elig.cnst.ga.MAX_RESOURCES]];
     modified._verifyFn = elig.gaResult;
     return modified;
   }
@@ -413,9 +413,9 @@ describe('Program eligibility', () => {
     const modified = structuredClone(baseInput);
     modified.disabled = true;
     modified.income.valid = true;
-    modified.assets.valid = true;
-    // TODO: add asset values?
     modified.income.wages = [[elig.cnst.ssiCapi.MAX_BENEFIT_NON_BLIND]];
+    modified.assets.valid = true;
+    modified.assets.values = [[elig.cnst.ssiCapi.MAX_RESOURCES - 1]];
     modified._verifyFn = elig.ssiResult;
     return modified;
   }
@@ -1521,14 +1521,11 @@ describe('Program eligibility', () => {
     });
 
     test('Requires assets below resource limit', () => {
-      const testAssets = elig.cnst.ssiCapi.MAX_RESOURCES;
       input.income.valid = true;
       input.disabled = true;
       input.assets.valid = true;
-      input.assets.values = [[testAssets]];
-      // TODO: use isUnder (etc)?
       check(resultFn, input)
-        .isEligibleIf('assets.values').is([[testAssets - 1]]);
+        .isEligibleIf('assets.values').isUnder(elig.cnst.ssiCapi.MAX_RESOURCES);
     });
 
     test('Requires adjusted income below maximum benefit amount', () => {
