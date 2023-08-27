@@ -400,7 +400,13 @@ pageClass: "page-benefits-eligibility"
       {% capture assetPreamble %}
         Enter the values of all assets or resources you and your household have.  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
       {% endcapture %}
-      {% render "eligibility-income-details" desc: "assets", heading: "Asset", id: "assets", preamble: assetPreamble, buttonText: "Add another asset", emptyButtonText: "Enter an asset for this person", entryLabel: "Value", sumDesc: "Combined household assets", sumUnit: " " %}
+      {% capture assetEpilogue %}
+        <div>
+          <input id="assets-has-none" type="checkbox">
+          <label for="assets-has-none">My household has no assets of any kind</label>
+        </div>
+      {% endcapture %}
+      {% render "eligibility-income-details" desc: "assets", heading: "Asset", id: "assets", preamble: assetPreamble, buttonText: "Add another asset", emptyButtonText: "Enter an asset for this person", entryLabel: "Value", sumDesc: "Combined household assets", sumUnit: " ", epilogue: assetEpilogue %}
     {% endeligPage %}
   {% endeligSection %}
 

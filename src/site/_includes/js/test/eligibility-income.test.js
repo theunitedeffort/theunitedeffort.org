@@ -14,6 +14,10 @@ const emptyInput = {
     retirement: [[], []],
     other: [[], []],
   },
+  assets: {
+    valid: true,
+    values: [[], []],
+  },
 };
 
 describe('categoryTotal', () => {
@@ -160,26 +164,29 @@ describe('grossIncome', () => {
 });
 
 describe('totalResources', () => {
-  test('Returns 0 for an empty assets array', () => {
-    const input = {
-      assets: [[], []],
+  const testInput = {};
+  beforeEach(() => {
+    testInput.assets = {
+      valid: true,
+      values: [[42, 10], [8], [100]],
     };
-    expect(elig.totalResources(input)).toBe(0);
+  });
+  test('Returns 0 for an empty assets array', () => {
+    expect(elig.totalResources(emptyInput)).toBe(0);
   });
 
   test('Sums all assets array values', () => {
-    const input = {
-      assets: [[42, 10], [8], [100]],
-    };
-    expect(elig.totalResources(input)).toBe(160);
+    expect(elig.totalResources(testInput)).toBe(160);
   });
 
   test('Sums assets array values from specified group indices', () => {
-    const input = {
-      assets: [[42, 10], [8], [100]],
-    };
-    expect(elig.totalResources(input, 1)).toBe(8);
-    expect(elig.totalResources(input, [0, 2])).toBe(152);
-    expect(elig.totalResources(input, null)).toBe(160);
+    expect(elig.totalResources(testInput, 1)).toBe(8);
+    expect(elig.totalResources(testInput, [0, 2])).toBe(152);
+    expect(elig.totalResources(testInput, null)).toBe(160);
+  });
+
+  test('Returns NaN for invalid input', () => {
+    testInput.assets.valid = false;
+    expect(elig.totalResources(testInput)).toBe(NaN);
   });
 });

@@ -925,6 +925,37 @@ describe('Navigation and UI', () => {
     }
   });
 
+  test('Selecting no assets disables add asset buttons', () => {
+    click(nextButton, 2);
+    expect(visiblePage().id).toBe('page-household-members');
+    addHouseholdMember();
+    addHouseholdMember();
+    click(nextButton, 4);
+    expect(visiblePage().id).toBe('page-income-assets');
+    const itemSelector = 'ul.dynamic_field_list > li';
+    const wrapper = document.querySelector(
+      '#page-income-assets .income_details_wrapper');
+    const buttons = wrapper.querySelectorAll('button.field_list_add');
+    const noAssets = document.getElementById('assets-has-none');
+    for (const button of buttons) {
+      expect(button.hasAttribute('aria-disabled')).toBe(false);
+    }
+    click(noAssets);
+    expect(wrapper.querySelectorAll(itemSelector).length).toBe(0);
+    for (const button of buttons) {
+      expect(button.hasAttribute('aria-disabled')).toBe(true);
+      click(button);
+    }
+    // Clicking the add button should not add any assets.
+    expect(wrapper.querySelectorAll(itemSelector).length).toBe(0);
+    click(noAssets);
+    for (const button of buttons) {
+      expect(button.hasAttribute('aria-disabled')).toBe(false);
+      click(button);
+    }
+    expect(wrapper.querySelectorAll(itemSelector).length).toBe(3);
+  });
+
   test('Selecting "none of the above" clears and disables all yourself descriptors', () => {
     const yourselfCheckboxes = document.querySelectorAll(
       '#yourself-details input[type="checkbox"]:not(#yourself-details-none)');
@@ -1598,7 +1629,10 @@ describe('buildInputObj', () => {
         childSupport: [[17, 57], [270], [3700]],
         other: [[18, 58], [280], [3800]],
       },
-      assets: [[1000, 99], [2000], [3000]],
+      assets: {
+        valid: true,
+        values: [[1000, 99], [2000], [3000]],
+      },
       paidSsTaxes: true,
       ssiIncome: [12, 220],
       existingAdsaHousehold: true,
@@ -1775,7 +1809,7 @@ describe('buildInputObj', () => {
     addIncome('other', expected.income.other);
     expect(getInput().income).toEqual(expected.income);
 
-    addAssets(expected.assets);
+    addAssets(expected.assets.values);
     expect(getInput().assets).toEqual(expected.assets);
 
     setYesNo('ss-taxes', expected.paidSsTaxes);

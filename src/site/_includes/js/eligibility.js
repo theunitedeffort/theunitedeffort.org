@@ -651,6 +651,21 @@ function onToggleMultiselect(event) {
   }
 }
 
+function onToggleDynamicFieldList(event) {
+  const page = event.currentTarget.closest('.elig_page');
+  // Remove any assets already entered.
+  resetDynamicFieldLists(page);
+  // Disable/enable the interface to add new assets.
+  const assetButtons = page.querySelectorAll('.field_list_add');
+  for (const assetButton of assetButtons) {
+    if (event.currentTarget.checked) {
+      assetButton.setAttribute('aria-disabled', 'true');
+    } else {
+      assetButton.removeAttribute('aria-disabled');
+    }
+  }
+}
+
 function onChangeAge(event) {
   document.getElementById('hh-myself-age').value = event.target.value;
   document.getElementById('age').value = event.target.value;
@@ -770,6 +785,9 @@ function resetDynamicFieldLists(parent) {
 
 // Adds an item to a dynamic list of fields.
 function addDynamicFieldListItem(event) {
+  if (event.currentTarget.hasAttribute('aria-disabled')) {
+    return;
+  }
   const wrapper = event.target.closest('.dynamic_field_list_wrapper');
   const list = wrapper.querySelector('ul.dynamic_field_list');
   const items = wrapper.querySelectorAll('ul.dynamic_field_list > li');
@@ -1111,6 +1129,8 @@ function addListeners() {
     onToggleMultiselect);
   document.getElementById('income-has-none').addEventListener('click',
     onToggleMultiselect);
+  document.getElementById('assets-has-none').addEventListener('click',
+    onToggleDynamicFieldList);
   document.getElementById('age').addEventListener('change', onChangeAge);
   document.getElementById('hh-myself-age').addEventListener('change',
     onChangeAge);
@@ -1482,9 +1502,10 @@ function grossIncome(input, hhMemberIdx=null) {
 }
 
 function totalResources(input, hhMemberIdx=null) {
-  // TODO (#397): Add checkbox for users to explicitly specify they have zero
-  // resources.
-  return categoryTotal(input.assets, hhMemberIdx);
+  if (!input.assets.valid) {
+    return NaN;
+  }
+  return categoryTotal(input.assets.values, hhMemberIdx);
 }
 
 // Returns true if the immigration status is valid for assistance, false
@@ -2687,7 +2708,9 @@ function buildInputObj() {
     servedFullDuration: getValueOrNull('full-dur-yes'),
     dutyPeriods: [],
     income: {},
-    assets: getIncomeValues(document.getElementById('page-income-assets')),
+    assets: {
+      values: getIncomeValues(document.getElementById('page-income-assets')),
+    },
     paidSsTaxes: getValueOrNull('ss-taxes'),
   };
 
@@ -2713,6 +2736,10 @@ function buildInputObj() {
   // was entered (and the household was not marked as having zero income).
   inputData.income.valid = (householdTotal > 0 ||
     getValueOrNull('income-has-none'));
+  // Assets are invalid if nothing was entered (and the household was not marked
+  // as explicitly having no assets).
+  inputData.assets.valid = (categoryTotal(inputData.assets.values) > 0 ||
+    getValueOrNull('assets-has-none'));
 
   // Income specifically from SSI
   const retirementEntries = [...document.querySelectorAll(
