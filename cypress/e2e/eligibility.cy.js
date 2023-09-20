@@ -254,6 +254,18 @@ describe('Eligibility Assessment Tool', () => {
     nextShouldBe('#page-income-assets');
     incomeChecks();
     inputMoney();
+    cy.get('@page').findByLabelText(/no assets/i).as('noAssets').click();
+    cy.get('@page').should('include.text', '$0');
+    const noAssetsRegex = /enter an asset/i;
+    cy.get('@page')
+      .findAllByText(noAssetsRegex).each(($el, idx, $list) => {
+        cy.wrap($el).should('have.attr', 'aria-disabled');
+      });
+    cy.get('@noAssets').click();
+    cy.get('@page')
+      .findAllByText(noAssetsRegex).each(($el, idx, $list) => {
+        cy.wrap($el).should('not.have.attr', 'aria-disabled');
+      });
 
     nextShouldBe('#page-existing-benefits');
     cy.get('@yourself').should('be.enabled');
