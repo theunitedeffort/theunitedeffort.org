@@ -51,6 +51,10 @@ body.smaller {
   }
 }
 
+body.page_client_stories {
+  p.storyContent {white-space: pre-wrap;}
+}
+
 body.page_housing_table {
   display: block;
 }
