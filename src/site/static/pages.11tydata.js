@@ -7,7 +7,6 @@ const base = new Airtable(
 const fetchSection = (id) => {
   const table = base('tblAkC6dlPJc4o0Je'); // sections table
   return table.find(id).then((record) => {
-    // console.log(`CONTENT`, id, record.get("Content"));
     if (record.get('Type') == 'Markdown page') {
       return record.get('Markdown');
     } else {
@@ -29,7 +28,7 @@ const fetchPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
-        if (record.get('Status') == 'Published') {
+        if (record.get('Status') == 'Published' || record.get('Status') == 'Draft') {
           const name = record.get('Page title');
           const path = record.get('Page path');
           const sectionID = record.get('Section')[0];

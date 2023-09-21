@@ -1,0 +1,15 @@
+---
+layout: "layouts/base.liquid"
+pagination:
+  data: stories
+  size: 1
+  alias: story
+pageClass: "page-about"
+permalink: "/client-stories/{{story.Title | slugify}}/index.html"
+
+eleventyComputed:
+  title: '{{apartment.aptName | default: "Apartment Listing"}}'
+---
+
+<h1>{{story["Title"]}}</h1>
+{{story["Content"] | markdownify}}
