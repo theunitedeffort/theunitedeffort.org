@@ -5,11 +5,20 @@ pagination:
   size: 1
   alias: story
 pageClass: "page-about"
-permalink: "/client-stories/{{story.Title | slugify}}/index.html"
+permalink: "/client-stories/{{story['Title'] | slugify}}/index.html"
 
 eleventyComputed:
-  title: '{{apartment.aptName | default: "Apartment Listing"}}'
+  title: '{{story["Title"] | default: "Story"}}'
 ---
 
 <h1>{{story["Title"]}}</h1>
-{{story["Content"] | markdownify}}
+<div class="story_content">
+  {% if story.image %}
+    <img src="{{story.image.url}}" width="{{story.image.width}}" height="{{story.image.height}}" alt="{{story["Photo description"]}}" />
+  {% endif %}
+  {{story["Content"] | markdownify}}
+</div>
+
+<p class="noprint">
+  <a href="/client-stories">&#8592; Back to more stories</a>
+</p>
