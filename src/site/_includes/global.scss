@@ -103,6 +103,10 @@ main {
   }
 }
 
+.story_content {
+  max-width: 900px;
+}
+
 body.max_width {
   .container {
     width: 95%;

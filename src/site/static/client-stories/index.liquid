@@ -7,10 +7,15 @@ permalink: /client-stories/index.html
 
 <h1>Client Stories</h1>
 
-<ul>
+<div class="card-set">
 {% for story in stories %}
-  <li>
-    <a href="/client-stories/{{story["Title"] | slugify}}">{{story["Title"]}}</a>
-  </li>
+  <div class="card">
+    <h3>{{story["Title"]}}</h3>
+    <p>{{story["Summary"]}}</p>
+    <!-- <img src="{{story.thumb.url}}" width="{{story.thumb.width}}" height="{{story.thumb.height}}" alt="{{story["Photo description"]}}" /> -->
+    <p>
+      <a href="/client-stories/{{story["Title"] | slugify}}">Read more</a>
+    </p>
+  </div>
 {% endfor %}
-</ul>
+</div>
