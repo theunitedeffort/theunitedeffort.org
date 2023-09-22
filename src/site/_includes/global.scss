@@ -51,10 +51,6 @@ body.smaller {
   }
 }
 
-body.page_client_stories {
-  p.storyContent {white-space: pre-wrap;}
-}
-
 body.page_housing_table {
   display: block;
 }
@@ -85,6 +81,11 @@ main {
   padding-bottom: 4em;
 }
 
+figcaption,
+.caption {
+  font-size: 0.8em;
+}
+
 .container {
   width: 90%;
   margin: 0 auto;
@@ -105,6 +106,10 @@ main {
 
 .story_content {
   max-width: 900px;
+}
+
+.story_audio {
+  margin: 2em 0;
 }
 
 body.max_width {
@@ -250,7 +255,7 @@ ul.no_bullets {
   width: 1px;
 }
 
-iframe {
+iframe.url_preview {
   width: 100%;
   height: 100vh;
   border: solid 2px var(--color-gray-600);

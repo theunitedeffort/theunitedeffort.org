@@ -14,7 +14,28 @@ eleventyComputed:
 <h1>{{story["Title"]}}</h1>
 <div class="story_content">
   {% if story.image %}
-    <img src="{{story.image.url}}" width="{{story.image.width}}" height="{{story.image.height}}" alt="{{story["Photo description"]}}" />
+    <figure>
+      <img src="{{story.image.url}}" width="{{story.image.width}}" height="{{story.image.height}}" alt="{{story["Photo Description"]}}" />
+      <figcaption>
+        {{story["Photo Caption"]}}
+        {% if story["Photo Credit"] and story["Photo Credit"] != '' %}
+          (Image credit {{story["Photo Credit"]}})
+        {% endif %}
+      </figcaption>
+    </figure>
+  {% endif %}
+  {% if story["Audio Embed Code"] and story["Audio Embed Code"] != '' %}
+    <div class="story_audio">
+      <p>
+        Listen to {{story["Client Name"] | default: "this community member"}} or read the full story below.
+      </p>
+      {{story["Audio Embed Code"]}}
+      {% if story["Audio Credit"] and story["Audio Credit"] != '' %}
+        <p class="attribution">
+          Audio credit {{story["Audio Credit"]}}
+        </p>
+      {% endif %}
+    </div>
   {% endif %}
   {{story["Content"] | markdownify}}
 </div>
