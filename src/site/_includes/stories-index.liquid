@@ -1,16 +1,9 @@
----
-layout: "layouts/base.liquid"
-title: "Client Stories"
-pageClass: "page-about"
-permalink: /client-stories/index.html
----
-
 <h1>Client Stories</h1>
 
 <div class="card-set">
-  {% for story in stories %}
+  {% for story in data.stories %}
     {% capture storyUrl -%}
-      /client-stories/{{story["Title"] | slugify}}
+      /about/stories/{{story["Title"] | slugify}}
     {%- endcapture %}
     <div class="card">
       <h3><a class="unstyled" href="{{storyUrl}}">{{story["Title"]}}</a></h3>

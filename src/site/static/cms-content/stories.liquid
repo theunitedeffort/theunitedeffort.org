@@ -1,11 +1,11 @@
 ---
 layout: "layouts/base.liquid"
 pagination:
-  data: stories
+  data: partialsData.stories
   size: 1
   alias: story
 pageClass: "page-about"
-permalink: "/client-stories/{{story['Title'] | slugify}}/index.html"
+permalink: "/about/stories/{{story['Title'] | slugify}}/index.html"
 
 eleventyComputed:
   title: '{{story["Title"] | default: "Story"}}'
@@ -41,5 +41,5 @@ eleventyComputed:
 </div>
 
 <p class="noprint">
-  <a href="/client-stories">&#8592; Back to more stories</a>
+  <a href="/about/stories">&#8592; Back to more stories</a>
 </p>
