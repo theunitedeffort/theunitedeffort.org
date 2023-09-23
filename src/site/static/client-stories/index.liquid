@@ -8,14 +8,18 @@ permalink: /client-stories/index.html
 <h1>Client Stories</h1>
 
 <div class="card-set">
-{% for story in stories %}
-  <div class="card">
-    <h3>{{story["Title"]}}</h3>
-    <p>{{story["Summary"]}}</p>
-    <!-- <img src="{{story.thumb.url}}" width="{{story.thumb.width}}" height="{{story.thumb.height}}" alt="{{story["Photo description"]}}" /> -->
-    <p>
-      <a href="/client-stories/{{story["Title"] | slugify}}">Read more</a>
-    </p>
-  </div>
-{% endfor %}
+  {% for story in stories %}
+    {% capture storyUrl -%}
+      /client-stories/{{story["Title"] | slugify}}
+    {%- endcapture %}
+    <div class="card">
+      <h3><a class="unstyled" href="{{storyUrl}}">{{story["Title"]}}</a></h3>
+      <p>{{story["Content"] | truncatewords: 25}}</p>
+      <!-- <p>{{story["Summary"]}}</p> -->
+      <!-- <img src="{{story.thumb.url}}" width="{{story.thumb.width}}" height="{{story.thumb.height}}" alt="{{story["Photo description"]}}" /> -->
+      <p>
+        <a href="{{storyUrl}}">Read more</a>
+      </p>
+    </div>
+  {% endfor %}
 </div>

@@ -78,6 +78,10 @@
     button.link:focus {
       text-decoration: none;
     }
+    a.unstyled {
+      text-decoration: none;
+      color: var(--color-black);
+    }
     /* 
     A button is not technically type, but we are styling
     it to look that way, so here it is in type.scss
