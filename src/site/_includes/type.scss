@@ -19,9 +19,6 @@
   h1 {
     font-size: 2.5em;
     margin: 0.5em 0 0.5em;
-    @include bp(wide) {
-      max-width: 900px;
-    }
   }
   
   h2 {
@@ -80,6 +77,10 @@
     button.link:hover,
     button.link:focus {
       text-decoration: none;
+    }
+    a.unstyled {
+      text-decoration: none;
+      color: var(--color-black);
     }
     /* 
     A button is not technically type, but we are styling
