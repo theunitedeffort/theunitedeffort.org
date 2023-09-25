@@ -1,5 +1,5 @@
 const {AssetCache} = require('@11ty/eleventy-fetch');
-const Image = require("@11ty/eleventy-img");
+const Image = require('@11ty/eleventy-img');
 const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
@@ -102,16 +102,17 @@ const fetchStories = async () => {
 const fetchImages = async (stories) => {
   for (const story of stories) {
     if (story['Photo'] && story['Photo'].length > 0) {
+      // eslint-disable-next-line new-cap
       const stats = await Image(story['Photo'][0].url, {
         widths: [500, 200],
-        urlPath: "/images/",
-        outputDir: "./dist/images/",
+        urlPath: '/images/',
+        outputDir: './dist/images/',
       });
       story.image = stats.jpeg[1];
       story.thumb = stats.jpeg[0];
     }
   }
-}
+};
 
 module.exports = async function() {
   const asset = new AssetCache('airtable_pages');
