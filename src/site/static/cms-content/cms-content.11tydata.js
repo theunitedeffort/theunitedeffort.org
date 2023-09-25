@@ -29,6 +29,7 @@ const fetchPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
+        // TODO: revert to 'Published' only before pushing to prod.
         if (record.get('Status') == 'Published' || record.get('Status') == 'Draft') {
           const name = record.get('Page title');
           const path = record.get('Page path');
@@ -112,34 +113,9 @@ const fetchImages = async (stories) => {
   }
 }
 
-
-// module.exports = async function() {
-//   const asset = new AssetCache('airtable_stories');
-//   if (asset.isCacheValid('1h')) {
-//     console.log('Returning cached stories data.');
-//     return await asset.getCachedValue();
-//   }
-//   console.log('Fetching stories.');
-//   const storyList = await fetchStories();
-//   for (const story of storyList) {
-//     if (story['Photo'] && story['Photo'].length > 0) {
-//       const stats = await Image(story['Photo'][0].url, {
-//         widths: [500, 200],
-//         urlPath: "/images/",
-//         outputDir: "./dist/images/",
-//       });
-//       story.image = stats.jpeg[1];
-//       story.thumb = stats.jpeg[0];
-//     }
-//   }
-//   const ret = {stories: storyList};
-//   await asset.save(ret, 'json');
-//   return ret;
-
-
 module.exports = async function() {
   const asset = new AssetCache('airtable_pages');
-  if (asset.isCacheValid('1s')) {
+  if (asset.isCacheValid('1h')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
   }
