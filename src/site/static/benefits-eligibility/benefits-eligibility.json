@@ -95,11 +95,11 @@
       "summary": "VTA ACCESS Paratransit provides door-to-door transportation service as well as free VTA bus and light rail transit passes for certain disabled individuals."
     },
     {
-      "name": "Housing Choice Voucher Interest List",
+      "name": "Housing Choice & Property Voucher Interest Lists",
       "id": "housing-choice",
       "applyUrl": "https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/",
       "infoUrl": "https://www.scchousingauthority.org/section-8/",
-      "summary": "The Housing Choice Voucher program helps certain low-income individuals and families pay for rental housing. This was previously known as the \"Section 8 Program.\"  Eligible individuals will be added to a Housing Choice Voucher interest list to await random selection into a separate voucher waiting list when it reopens."
+      "summary": "The Housing Choice Voucher and Property Voucher programs help certain low-income individuals and families pay for rental housing. This was previously known as the \"Section 8 Program.\"  Eligible individuals will be added to a Housing Choice Voucher interest list and then optionally to a Property Voucher list to await random selection into a separate voucher waiting list when it reopens."
     },
     {
       "name": "Supplemental Security Income (SSI)",
