@@ -4,18 +4,19 @@ const cnst = {
   calfresh: {
     // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
     // Section 2.1
-    // Effective through 9/30/23
+    // https://www.cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACINs/2023/I-48-23.pdf?ver=2023-09-18-161425-983
+    // Effective through 9/30/24
     FED_POVERTY_LEVEL: [ // USD per month
-      1133,
-      1526,
-      1920,
-      2313,
-      2706,
-      3100,
-      3493,
-      3886,
+      1215,
+      1644,
+      2072,
+      2500,
+      2929,
+      3357,
+      3785,
+      4214,
     ],
-    FED_POVERTY_LEVEL_ADDL_PERSON: 394, // USD per month per person
+    FED_POVERTY_LEVEL_ADDL_PERSON: 429, // USD per month per person
     // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
     // Section 11.8
     GROSS_INCOME_LIMIT_MCE_FACTOR: 2.0, // Times federal poverty limit
