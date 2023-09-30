@@ -29,8 +29,7 @@ const fetchPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
-        // TODO: revert to 'Published' only before pushing to prod.
-        if (record.get('Status') == 'Published' || record.get('Status') == 'Draft') {
+        if (record.get('Status') == 'Published') {
           const name = record.get('Page title');
           const path = record.get('Page path');
           const sectionID = record.get('Section')[0];
