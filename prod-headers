@@ -3,6 +3,3 @@
 
 /find-resources/*
   Basic-Auth: ueo:INJECTED_PASSWORD
-
-/about/stories/*
-  Basic-Auth: ueo:INJECTED_PASSWORD
