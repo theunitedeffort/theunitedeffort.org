@@ -162,6 +162,7 @@ function updateSupplementalLink(event) {
 }
 
 // Shows the second address field.
+// TODO: automatically show this field if there is data present in the prefill.
 function showExtraField(event) {
   document.getElementById(event.currentTarget.dataset.controls)
     .removeAttribute('hidden');
@@ -544,6 +545,14 @@ function prefillForm(data) {
     const queueRecordId = data.queue.thisItem.recordId;
     document.getElementById('queue-record-id').setAttribute('value',
       queueRecordId);
+  }
+  if (data.queue.thisItem.housingTable) {
+    document.getElementById('housing-table').setAttribute('value',
+      data.queue.thisItem.housingTable);
+  }
+  if (data.queue.thisItem.unitsTable) {
+    document.getElementById('units-table').setAttribute('value',
+      data.queue.thisItem.unitsTable);
   }
   const fieldSelector = 'input, textarea, select';
   const propertySection = document.getElementById('property-data');

@@ -9,15 +9,15 @@ const fetchHousingSchema = async () => {
   const table = base(HOUSING_DATABASE_SCHEMA_TABLE);
 
   return table.select({
-    fields: ['SM_HOUSING_DATABASE_FIELDS_JSON', 'SM_UNITS_FIELDS_JSON'],
+    fields: ['HOUSING_DATABASE_FIELDS_JSON', 'UNITS_FIELDS_JSON'],
     maxRecords: 1,
     sort: [{field: 'ID', direction: 'asc'}],
   })
     .all()
     .then((records) => {
       const housingDbFields = JSON.parse(
-        records[0].get('SM_HOUSING_DATABASE_FIELDS_JSON'));
-      const unitsFields = JSON.parse(records[0].get('SM_UNITS_FIELDS_JSON'));
+        records[0].get('HOUSING_DATABASE_FIELDS_JSON'));
+      const unitsFields = JSON.parse(records[0].get('UNITS_FIELDS_JSON'));
       return {
         housing: Object.fromEntries(housingDbFields.map((x) => [x.name, x])),
         units: Object.fromEntries(unitsFields.map((x) => [x.name, x])),
