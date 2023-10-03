@@ -108,6 +108,9 @@ function groupByUnitType(units) {
 // 'housingId'.  Returns a list of record objects or an empty list if
 // no units records are found.
 const fetchUnitRecords = async(unitsTableId, housingId) => {
+  if (!unitsTableId) {
+    return [];
+  }
   const table = base(unitsTableId);
   return table.select({
     filterByFormula: `{_DISPLAY_ID} = "${housingId}"`
@@ -123,6 +126,9 @@ const fetchUnitRecords = async(unitsTableId, housingId) => {
 // If no property exists with the given housing ID, returns nothing.
 const fetchHousingRecord = async(housingTableId, housingId) => {
   // TODO: Error handling.
+  if (!housingTableId) {
+    return;
+  }
   const table = base(housingTableId);
   return table.select({
     filterByFormula: `{DISPLAY_ID} = "${housingId}"`
