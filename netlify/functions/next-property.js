@@ -3,8 +3,6 @@ const base = new Airtable(
   {apiKey: process.env.AIRTABLE_WRITE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const HOUSING_CHANGE_QUEUE_TABLE = "tblKO2Ea4NGEoDGND";
-const HOUSING_DATABASE_TABLE = "tblq3LUpHcY0ISzxZ";
-const UNITS_TABLE = "tblWoxbMLr5iedJ3W";
 const MAX_IN_PROGRESS_DURATION_HRS = 8;
 
 // Sort ranking for unit type.
@@ -109,8 +107,8 @@ function groupByUnitType(units) {
 // Gets all records data about the units within the property with housing ID 
 // 'housingId'.  Returns a list of record objects or an empty list if
 // no units records are found.
-const fetchUnitRecords = async(housingId) => {
-  const table = base(UNITS_TABLE);
+const fetchUnitRecords = async(unitsTableId, housingId) => {
+  const table = base(unitsTableId);
   return table.select({
     filterByFormula: `{_DISPLAY_ID} = "${housingId}"`
   })
@@ -123,9 +121,9 @@ const fetchUnitRecords = async(housingId) => {
 // Gets the record data corresponding to the property with housing ID 
 // 'housingId'.  
 // If no property exists with the given housing ID, returns nothing.
-const fetchHousingRecord = async(housingId) => {
+const fetchHousingRecord = async(housingTableId, housingId) => {
   // TODO: Error handling.
-  const table = base(HOUSING_DATABASE_TABLE);
+  const table = base(housingTableId);
   return table.select({
     filterByFormula: `{DISPLAY_ID} = "${housingId}"`
   })
@@ -186,7 +184,13 @@ const fetchQueueData = async(campaign) => {
     Date.now() - (MAX_IN_PROGRESS_DURATION_HRS * 60 * 60 * 1000));
   let filterFormula = `{CAMPAIGN} = "${campaign}"`;
   return table.select({
-    fields: ["ID", "_DISPLAY_ID", "IN_PROGRESS_DATETIME", "COMPLETED_DATETIME"],
+    fields: [
+      "ID",
+      "_DISPLAY_ID",
+      "IN_PROGRESS_DATETIME",
+      "COMPLETED_DATETIME",
+      "HOUSING_DB",
+      "UNITS_DB"],
     filterByFormula: filterFormula,
     // Sort by management company to ensure that sequential properties
     // in the queue have similar-looking websites for easier data-hunting
@@ -220,8 +224,10 @@ const fetchQueueData = async(campaign) => {
       numTodo: todo.length,
       numTotal: records.length,
       thisItem: {
-        housingId: todo.length > 0 ? todo[0].get("_DISPLAY_ID")[0] : "",
+        housingId: todo.length > 0 ? todo[0].get("_DISPLAY_ID") : "",
         recordId: todo.length > 0 ? todo[0].id : "",
+        housingTable: todo.length > 0 ? todo[0].get("HOUSING_DB") : "",
+        unitsTable: todo.length > 0 ? todo[0].get("UNITS_DB") : "",
       },
     };
     return queueData;
@@ -258,6 +264,8 @@ exports.handler = async function(event) {
       // A housing ID was given explicitly in the URL, and it matches an 
       // existing queue item.  Thus, override whatever the queue says is next up
       // with the queue record data for the housing ID given in the URL.
+      // Note the housing and units db do not need to be overidden because the
+      // db identifiers should be constant for each campaign.
       data.queue.thisItem.recordId = queueRecordIdOverride;
       data.queue.thisItem.housingId = housingId;
     } else {
@@ -267,8 +275,12 @@ exports.handler = async function(event) {
     console.log(data.queue);
 
     // Get all the data for the housing ID.
-    console.log("fetching unit records and housing record for ID: " + housingId);
-    let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
+    console.log(`fetching unit records and housing record for ID: ` +
+      `${housingId} from housing table ${data.queue.thisItem.housingTable} ` +
+      `and units table ${data.queue.thisItem.unitsTable}`);
+    let housingData = await Promise.all([
+      fetchHousingRecord(data.queue.thisItem.housingTable, housingId),
+      fetchUnitRecords(data.queue.thisItem.unitsTable, housingId)]);
     data.housing = housingData[0];
     data.units = groupByUnitType(housingData[1]);
 
@@ -278,6 +290,9 @@ exports.handler = async function(event) {
       console.log("updating in progress status for ID: " + housingId);
       await markInProgressInQueue(data.queue.thisItem.recordId);
       // TODO: Get these updated counts from the queue?
+      // TODO: Only increment/decrement if the apartment in question is
+      // actually newly in-progress.  it's possible to re-visit an in-progress
+      // or completed apartment using the URL override.
       data.queue.numInProgress += 1;
       data.queue.numTodo -= 1;
     }
