@@ -622,10 +622,8 @@ function prefillForm(data) {
   for (const button of showExtraFieldButtons) {
     const linkedElem = document.getElementById(button.dataset.controls);
     const linkedInputs = linkedElem.querySelectorAll(fieldSelector);
-    console.log(linkedInputs);
     for (const input of linkedInputs) {
       if (input.value != '') {
-        console.log(input.value);
         button.click();
         break;
       }
