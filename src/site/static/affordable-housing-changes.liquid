@@ -63,6 +63,7 @@ maxHouseholdSize: 12
               {% formField housingFields, "SECOND_ADDRESS" %}
             </div>
 
+            <!--TODO: update city list to include San Mateo options -->
             {% fieldLabel "City", housingFields, "CITY" %}<br/>
             {% formField housingFields, "CITY", "short" %}
 
@@ -98,23 +99,23 @@ maxHouseholdSize: 12
               <a href="" target="_blank" rel="noopener" class="label supplemental_url">Visit this page</a><sup>&#8599;</sup>
               <span class="label"><button type="button" class="link show_extra_field" data-controls="third-url">Add a third URL</button></span><br/>
               {% formField housingFields, "SUPPLEMENTAL_URL_1" %}
-              <div id="third-url" hidden>
-                {% fieldLabel "Supplemental URL 2", housingFields, "SUPPLEMENTAL_URL_2" %}
-                <a href="" target="_blank" rel="noopener" class="label supplemental_url">Visit this page</a><sup>&#8599;</sup>
-                <span class="label"><button type="button" class="link show_extra_field" data-controls="fourth-url">Add a fourth URL</button></span><br/>
-                {% formField housingFields, "SUPPLEMENTAL_URL_2" %}
-                <div id="fourth-url" hidden>
-                  {% fieldLabel "Supplemental URL 3", housingFields, "SUPPLEMENTAL_URL_3" %}
-                  <a href="" target="_blank" rel="noopener" class="label supplemental_url ">Visit this page</a><sup>&#8599;</sup>
-                  <span class="label"><button type="button" class="link show_extra_field" data-controls="fifth-url">Add a fifth URL</button></span><br/>
-                  {% formField housingFields, "SUPPLEMENTAL_URL_3" %}
-                  <div id="fifth-url" hidden>
-                    {% fieldLabel "Supplemental URL 4", housingFields, "SUPPLEMENTAL_URL_4" %}
-                    <a href="" target="_blank" rel="noopener" class="label supplemental_url">Visit this page</a><sup>&#8599;</sup><br/>
-                    {% formField housingFields, "SUPPLEMENTAL_URL_4" %}
-                  </div>
-                </div>
-              </div>
+            </div>
+            <div id="third-url" hidden>
+              {% fieldLabel "Supplemental URL 2", housingFields, "SUPPLEMENTAL_URL_2" %}
+              <a href="" target="_blank" rel="noopener" class="label supplemental_url">Visit this page</a><sup>&#8599;</sup>
+              <span class="label"><button type="button" class="link show_extra_field" data-controls="fourth-url">Add a fourth URL</button></span><br/>
+              {% formField housingFields, "SUPPLEMENTAL_URL_2" %}
+            </div>
+            <div id="fourth-url" hidden>
+              {% fieldLabel "Supplemental URL 3", housingFields, "SUPPLEMENTAL_URL_3" %}
+              <a href="" target="_blank" rel="noopener" class="label supplemental_url ">Visit this page</a><sup>&#8599;</sup>
+              <span class="label"><button type="button" class="link show_extra_field" data-controls="fifth-url">Add a fifth URL</button></span><br/>
+              {% formField housingFields, "SUPPLEMENTAL_URL_3" %}
+            </div>
+            <div id="fifth-url" hidden>
+              {% fieldLabel "Supplemental URL 4", housingFields, "SUPPLEMENTAL_URL_4" %}
+              <a href="" target="_blank" rel="noopener" class="label supplemental_url">Visit this page</a><sup>&#8599;</sup><br/>
+              {% formField housingFields, "SUPPLEMENTAL_URL_4" %}
             </div>
 
             {% fieldLabel "Total Units", housingFields, "NUM_TOTAL_UNITS" %}<br/>
