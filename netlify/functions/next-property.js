@@ -295,12 +295,13 @@ exports.handler = async function(event) {
     if (data.queue.thisItem.recordId) {
       console.log("updating in progress status for ID: " + housingId);
       await markInProgressInQueue(data.queue.thisItem.recordId);
+      const updatedQueue = await fetchQueueData(campaign);
       // TODO: Get these updated counts from the queue?
       // TODO: Only increment/decrement if the apartment in question is
       // actually newly in-progress.  it's possible to re-visit an in-progress
       // or completed apartment using the URL override.
-      data.queue.numInProgress += 1;
-      data.queue.numTodo -= 1;
+      data.queue.numInProgress = updatedQueue.numInProgress;
+      data.queue.numTodo = updatedQueue.numTodo;
     }
   }
 
