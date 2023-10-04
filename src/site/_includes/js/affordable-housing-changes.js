@@ -1,16 +1,16 @@
 'use strict';
 
 const USER_NAME_KEY = 'userName';
-const APT_NAME_FIELD_ID = 'fld4uDIBhYSt70nBS';
-const POPULATIONS_SERVED_FIELD_ID = 'fldCRLJwhWq0x4eGo';
-const PROPERTY_URL_FIELD_ID = 'fldwAZrsok7XlFuID';
-const SUPPLEMENTAL_URL_1_FIELD_ID = 'fldGwXBbflIAOlFub';
-const SUPPLEMENTAL_URL_2_FIELD_ID = 'fldVMm4oxKCBEruAW';
-const SUPPLEMENTAL_URL_3_FIELD_ID = 'flduI9U48PIxslF8E';
-const SUPPLEMENTAL_URL_4_FIELD_ID = 'fldqgW9NDlMYpR6m2';
-const UNIT_TYPE_FIELD_ID = 'fldOZPpp6jwtSXZ4G';
-const UNIT_STATUS_FIELD_ID = 'fldYIOfAhlGXRBcYb';
-const AMI_PERCENT_FIELD_ID = 'fldGCPA4UF4nBQ2dU';
+const APT_NAME_FIELD_ID = 'fldMcM49qaNr3EQ2a';
+const POPULATIONS_SERVED_FIELD_ID = 'fldkzU54q8lYtIH7G';
+const PROPERTY_URL_FIELD_ID = 'fldei8N0xw2VhjX9V';
+const SUPPLEMENTAL_URL_1_FIELD_ID = 'fldoe6XJoxDyKZ8Vt';
+const SUPPLEMENTAL_URL_2_FIELD_ID = 'fldDuvqWGWxzA5X1e';
+const SUPPLEMENTAL_URL_3_FIELD_ID = 'fldcqigCh1DvoZ8zW';
+const SUPPLEMENTAL_URL_4_FIELD_ID = 'fld8Y5vlMxHWlvzNk';
+const UNIT_TYPE_FIELD_ID = 'fldJ4fP1y13NE6ywu';
+const UNIT_STATUS_FIELD_ID = 'fldTNeFcJ3dhDKLqZ';
+const AMI_PERCENT_FIELD_ID = 'fldBHf0GmnBHnZBFI';
 const MAX_NUM_UNITS = document.querySelectorAll(
   `#all-units > div[id^="unit-"]`).length;
 const MAX_NUM_OFFERINGS = document.querySelector(
@@ -560,6 +560,7 @@ function prefillForm(data) {
   const propertyFields = propertySection.querySelectorAll(fieldSelector);
   const unitsFields = unitsSection.querySelectorAll(fieldSelector);
   const formConditionals = unitsSection.querySelectorAll('.form_conditional');
+  const showExtraFieldButtons = document.querySelectorAll('.show_extra_field');
   // Fill all property-level fields.
   for (const field of propertyFields) {
     const value = data.housing.fields[field.name];
@@ -582,7 +583,7 @@ function prefillForm(data) {
   // Special handling for these form conditionals, which are form inputs
   // that do not map directly to Airtable fields.  Instead, they provide
   // form-level interactivity only. They do get pre-filled based on other
-  // Airtable fields, howerver.
+  // Airtable fields, however.
   for (const field of formConditionals) {
     if (!field.dataset.primaryField || !field.dataset.alternateField) {
       continue;
@@ -615,6 +616,18 @@ function prefillForm(data) {
        (primaryFieldUsed && conflictResolution == 'alternate')
       ));
     field.dispatchEvent(new Event('change'));
+  }
+
+  // Make sure any extra fields are shown if those extra fields have data.
+  for (const button of showExtraFieldButtons) {
+    const linkedElem = document.getElementById(button.dataset.controls);
+    const linkedInputs = linkedElem.querySelectorAll(fieldSelector);
+    for (const input of linkedInputs) {
+      if (input.value != '') {
+        button.click();
+        break;
+      }
+    }
   }
 }
 
