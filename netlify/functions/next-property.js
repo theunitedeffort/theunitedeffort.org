@@ -232,8 +232,10 @@ const fetchQueueData = async(campaign) => {
       thisItem: {
         housingId: todo.length > 0 ? todo[0].get("_DISPLAY_ID") : "",
         recordId: todo.length > 0 ? todo[0].id : "",
-        housingTable: todo.length > 0 ? todo[0].get("HOUSING_DB") : "",
-        unitsTable: todo.length > 0 ? todo[0].get("UNITS_DB") : "",
+        // All records have the same housing and units db since it's
+        // defined at the campaign level.
+        housingTable: records[0].get("HOUSING_DB"),
+        unitsTable: records[0].get("UNITS_DB"),
       },
     };
     return queueData;
