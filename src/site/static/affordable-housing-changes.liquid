@@ -218,7 +218,7 @@ maxHouseholdSize: 12
 
                             <div class="min_income_alternate" hidden>
                               {% indexedFieldLabel offerIdx, "Minimum Income", unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD" %}<br/> 
-                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD", "extra_long inline" %} $/year<br/>
+                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD", "long inline" %} $/year<br/>
                             </div>
 
                             {% assign primaryMaxIncomeStr = "" %}
@@ -244,7 +244,7 @@ maxHouseholdSize: 12
                                   {% assign hhSizeStr = hhSize | append: " people" %}
                                 {% endif %}
                                   <td>{% indexedFieldLabel offerIdx, hhSizeStr, unitsFields, fieldname %}</td>
-                                  <td>${% indexedFormField offerIdx, unitsFields, fieldname, "extra_long inline" %} per year</td>
+                                  <td>${% indexedFormField offerIdx, unitsFields, fieldname, "long inline" %} per year</td>
                                 </tr>
                               {% endfor %}
                             </table>
@@ -252,8 +252,8 @@ maxHouseholdSize: 12
                               <span class="label">Maximum Income Range<span>
                               <p data-toggletip data-toggletip-class="icon_query">Most properties list the maximum allowed income based on household size.<br/>However, if the maximum income is just given as a simple range of values (e.g. Maximum Income $54,000 - $77,000), then enter the range here.</p>
                               <br/>
-                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD", "extra_long inline" %} to
-                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD", "extra_long inline" %} $/year
+                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD", "long inline" %} to
+                              {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD", "long inline" %} $/year
                               <br/>
                             </div>
                           </div>

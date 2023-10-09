@@ -393,6 +393,12 @@
         width: 20em;
       }
 
+      input[type=text].extra_long,
+      select.extra_long,
+      textarea.extra_long {
+        width: 35em;
+      }
+
       input[type=number] {
         width: 5em;
       }
@@ -400,7 +406,6 @@
       input[type=number].long {
         width: 7em;
       }
-
 
       input.inline {
         display: inline-block;
