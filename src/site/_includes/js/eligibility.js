@@ -193,7 +193,9 @@ const cnst = {
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
     // Effective through 12/31/23?
+    // TODO: On 1/1/2024 change to 1550
     SGA_NON_BLIND: 1470, // USD per month
+    // TODO: On 1/1/2024 change to 2590
     SGA_BLIND: 2460, // USD per month
     // https://www.ssa.gov/pubs/EN-05-11125.pdf
     // Note these max benefit amounts include the California state supplement.
