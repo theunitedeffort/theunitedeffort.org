@@ -428,6 +428,21 @@ function deleteOffering(event) {
     // (e.g. "offering-0", "offering-1") will not always be in order in the DOM,
     // as the order depends on add/delete history.
     offeringsContainer.appendChild(deletedOffering);
+
+    // If this is the final offering being deleted, leaving an empty list of
+    // offerings, pre-populate the ID field of the next offering queued up with
+    // the fallback ID.  This ensures that even unit types with no offerings
+    // in the form link back to an Airtable record in the units table.  This
+    // needs to be done because the form nests offerings within units, but
+    // the data is stored in Airtable at the offering level only. (Confusingly,
+    // in a table called "Units").  Since only the next offering entry in the
+    // queue is populated with the fallback, if the user decides to add an
+    // offering, it'll already be associated with an existing Airtable record.
+    if (lastVisOfferIdx[unitId] == -1) {
+      const defaultOffering = unitDiv.querySelector('.all_offerings > div');
+      const idField = defaultOffering.querySelector('[name^="ID:"]');
+      idField.value = idField.dataset.fallback;
+    }
     // Ensure all the fields in the deleted unit are cleared to avoid
     // accidentally transmitting data in hidden fields upon submit.
     clearAllFieldsIn(deletedOffering);
@@ -575,9 +590,30 @@ function prefillForm(data) {
     if (offerIdx === undefined) {
       offerIdx = 0;
     }
-    if (unitIdx < data.units.length && offerIdx < data.units[unitIdx].length) {
-      const value = data.units[unitIdx][offerIdx].fields[fieldName];
-      prefillField(field, value);
+    if (unitIdx < data.units.length) {
+      if (fieldName === 'ID') {
+        // Set the first unit record ID as the fallback record to be edited
+        // in the event all offerings are deleted from the interactive
+        // form.  This will maintain a tie to an Airtable units table record
+        // should all the offerings be removed.
+        field.dataset.fallback = data.units[unitIdx][0].fields[fieldName];
+      }
+      if (offerIdx < data.units[unitIdx].length) {
+        const value = data.units[unitIdx][offerIdx].fields[fieldName];
+        prefillField(field, value);
+      }
+    }
+  }
+
+  const firstOfferings = document.querySelectorAll(
+    '.all_offerings div:first-child');
+  for (const offering of firstOfferings) {
+    const fieldSelector = (
+      'input:not(.form_conditional):not([type=hidden]), textarea, select');
+    const fields = offering.querySelectorAll(fieldSelector);
+    const deleteButton = offering.querySelector('.delete_offering');
+    if (!hasUnitsDataIn(Array.from(fields, f => f.name), data.units)) {
+      deleteButton.click();
     }
   }
   // Special handling for these form conditionals, which are form inputs
