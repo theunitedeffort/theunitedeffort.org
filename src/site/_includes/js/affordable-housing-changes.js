@@ -606,13 +606,13 @@ function prefillForm(data) {
   }
 
   const firstOfferings = document.querySelectorAll(
-    '.all_offerings div:first-child');
+    '.all_offerings > div:first-child');
   for (const offering of firstOfferings) {
     const fieldSelector = (
       'input:not(.form_conditional):not([type=hidden]), textarea, select');
     const fields = offering.querySelectorAll(fieldSelector);
     const deleteButton = offering.querySelector('.delete_offering');
-    if (!hasUnitsDataIn(Array.from(fields, f => f.name), data.units)) {
+    if (!hasUnitsDataIn(Array.from(fields, (f) => f.name), data.units)) {
       deleteButton.click();
     }
   }
