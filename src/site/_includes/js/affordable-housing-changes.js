@@ -132,16 +132,20 @@ function updatePageTitle(event) {
     event.currentTarget.value);
 }
 
+function addMissingProtocol(textInput) {
+  // If the non-empty URL does not start with https:// or http://,
+  // assume https:// and prepend it to the user's input.
+  if (textInput.value && textInput.value.search(/https?:\/\//) != 0) {
+    textInput.value = `https://${textInput.value}`;
+  }
+}
+
 // Updates the href attribute of any links with class 'property-link' to
 // be the value of the element receiving the event.
 function updatePropertyLink(event) {
   const links = document.querySelectorAll('.property-link');
   const iframe = document.getElementsByTagName('iframe')[0];
-  // If the URL does not start with https:// or http://,
-  // assume https:// and prepend it to the user's input.
-  if (event.currentTarget.value.search(/https?:\/\//) != 0) {
-    event.currentTarget.value = `https://${event.currentTarget.value}`;
-  }
+  addMissingProtocol(event.currentTarget);
   for (const link of links) {
     link.setAttribute('href', event.currentTarget.value);
   }
@@ -155,9 +159,7 @@ function updatePropertyLink(event) {
 function updateSupplementalLink(event) {
   const parent = event.currentTarget.parentNode;
   const anchor = parent.querySelector('a.supplemental_url');
-  if (event.currentTarget.value.search(/https?:\/\//) != 0) {
-    event.currentTarget.value = `https://${event.currentTarget.value}`;
-  }
+  addMissingProtocol(event.currentTarget);
   anchor.setAttribute('href', event.currentTarget.value);
 }
 
