@@ -1,0 +1,37 @@
+---
+layout: layouts/base.liquid
+title: Check for Affordable Housing Updates
+permalink:
+  serverless: "/contrib/affordable-housing/start/index.html"
+pageClass: ""
+---
+
+{% assign query = eleventy.serverless.query %}
+
+<h1>Check for Affordable Housing Updates<span class="subtitle">for the <span class="bold">{{query.name}}</span> campaign</span></h1>
+
+<p>
+  Thank you for helping us keep our affordable housing database up-to-date!
+</p>
+<p>
+  This task involves looking at property websites and comparing the information shown there to the information we have in our database.
+</p>
+
+<p class="note">Before starting, <span class="bold">resize this window to fill the right half of your screen.</span>  When you begin, the information in our housing database will show up on the left half of your screen. Use the <span>ruler below</span> to help you resize your window.
+</p>
+
+<p>Ready?</p>
+<p>
+  <a id="launch" class="btn btn_primary" href="/contrib/affordable-housing/campaigns/{{query.urlKey}}/">Get Started</a>
+</p>
+<div class="ruler"><div>Half of your screen width</div></div>
+
+<script>
+  const openLink = document.getElementById('launch');
+  openLink.addEventListener('click', (event) => {
+    const windowRef = window.open(openLink.href, "mywindowname", "top=0,left=0,width=400,height=400");
+    windowRef.resizeTo(windowRef.screen.availWidth / 2, screen.availHeight);
+    event.preventDefault();
+  });
+  document.querySelector(".ruler").style.width = `${window.screen.availWidth / 2}px`;
+</script>

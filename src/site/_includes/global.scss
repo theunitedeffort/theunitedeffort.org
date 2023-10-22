@@ -245,6 +245,46 @@ ul.no_bullets {
   list-style-type: none;
 }
 
+$ruler-thickness: 4px;
+$ruler-color: var(--color-orange);
+$ruler-arrow-width: 20px;
+$ruler-arrow-height: 15px;
+.ruler {
+  background-color: $ruler-color;
+  height: $ruler-thickness;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  position: absolute;
+  left: 0;
+  box-sizing: border-box;
+  border-left: $ruler-arrow-width solid var(--color-white);
+  border-right: $ruler-arrow-width solid var(--color-white);
+}
+
+.ruler:before {
+  content: "";
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: calc(-#{$ruler-arrow-height} / 2 + #{$ruler-thickness} / 2);
+  left: -$ruler-arrow-width;
+  border-top: calc(#{$ruler-arrow-height} / 2) solid transparent;
+  border-right: $ruler-arrow-width solid $ruler-color;
+  border-bottom: calc(#{$ruler-arrow-height} / 2) solid transparent;
+}
+
+.ruler:after {
+  content: "";
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: calc(-#{$ruler-arrow-height} / 2 + #{$ruler-thickness} / 2);
+  right: -$ruler-arrow-width;
+  border-top: calc(#{$ruler-arrow-height} / 2) solid transparent;
+  border-left: $ruler-arrow-width solid $ruler-color;
+  border-bottom: calc(#{$ruler-arrow-height} / 2) solid transparent;
+}
+
 // https://www.scottohara.me/blog/2017/04/14/inclusively-hidden.html
 .visually_hidden:not(:focus):not(:active) {
   clip: rect(0 0 0 0);
@@ -254,6 +294,15 @@ ul.no_bullets {
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+.ruler div {
+  position: absolute;
+  top: .5em;
+  width: 100%;
+  text-align: center;
+  color: $ruler-color;
+  font-style: italic;
 }
 
 iframe.url_preview {
