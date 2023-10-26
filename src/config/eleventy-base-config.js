@@ -1,4 +1,5 @@
 const markdown = require('marked');
+const eleventyImage = require('@11ty/eleventy-img');
 
 // This is a global sort ranking for all filter options.
 // It assumes no name collisions.
@@ -23,6 +24,23 @@ const SORT_RANKING = new Map([
 ]);
 
 module.exports = function(eleventyConfig) {
+  eleventyConfig.addShortcode('image', async function(image, format='jpeg') {
+    const metadata = await eleventyImage(image['FILE'][0].url, {
+      widths: [800],
+      formats: [format],
+      urlPath: '/images/',
+      outputDir: './dist/images/',
+      filenameFormat: function(id, src, width, format, options) {
+        return `${image['IDENTIFIER']}-${width}.${format}`;
+      },
+    });
+
+    // TODO: use Image.generateHTML to properly generate dynamic images with
+    // srcset and sizes.
+    const data = metadata[format][metadata[format].length - 1];
+    return `<img alt="${image['IMAGE_DESCRIPTION']}" width="${data.width}" height="${data.height}" src="${data.url}">`;
+  });
+
   // Markdown filter
   eleventyConfig.addFilter('markdownify', (str) => {
     str = str.replaceAll('http:///', '/');
