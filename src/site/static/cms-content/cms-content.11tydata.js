@@ -1,5 +1,5 @@
 const {AssetCache} = require('@11ty/eleventy-fetch');
-const Image = require('@11ty/eleventy-img');
+const eleventyImage = require('@11ty/eleventy-img');
 const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
@@ -98,11 +98,10 @@ const fetchStories = async () => {
     });
 };
 
-const fetchImages = async (stories) => {
+const cacheStoryImages = async (stories) => {
   for (const story of stories) {
     if (story['Photo'] && story['Photo'].length > 0) {
-      // eslint-disable-next-line new-cap
-      const stats = await Image(story['Photo'][0].url, {
+      const stats = await eleventyImage(story['Photo'][0].url, {
         widths: [500, 200],
         urlPath: '/images/',
         outputDir: './dist/images/',
@@ -113,6 +112,23 @@ const fetchImages = async (stories) => {
   }
 };
 
+const fetchImages = async () => {
+  console.log('fetching images');
+  const data = {};
+  const table = base('tblWyKHolohkAMSAw'); // Images table
+  return table.select({
+    view: 'API list all',
+  })
+    .all()
+    .then((records) => {
+      records.forEach(function(record) {
+        data[record.get('IDENTIFIER')] = record.fields;
+      });
+      return data;
+    });
+};
+
+
 module.exports = async function() {
   const asset = new AssetCache('airtable_pages');
   if (asset.isCacheValid('1h')) {
@@ -120,11 +136,12 @@ module.exports = async function() {
     return await asset.getCachedValue();
   }
   console.log('Fetching pages.');
-  const [pageList, resourceList, storiesList] = await Promise.all(
-    [fetchPages(), fetchGeneralResources(), fetchStories()]);
-  await fetchImages(storiesList);
+  const [pageList, resourceList, storiesList, imageList] = await Promise.all(
+    [fetchPages(), fetchGeneralResources(), fetchStories(), fetchImages()]);
+  await cacheStoryImages(storiesList);
   const ret = {
     pages: pageList,
+    images: imageList,
     partialsData: {
       resources: resourceList,
       stories: storiesList,
