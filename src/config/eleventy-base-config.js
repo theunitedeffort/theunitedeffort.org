@@ -30,9 +30,6 @@ module.exports = function(eleventyConfig) {
       formats: [format],
       urlPath: '/images/',
       outputDir: './dist/images/',
-      filenameFormat: function(id, src, width, format, options) {
-        return `${image['IDENTIFIER']}-${width}.${format}`;
-      },
     });
 
     // TODO: use Image.generateHTML to properly generate dynamic images with

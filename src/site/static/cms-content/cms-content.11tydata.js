@@ -139,7 +139,6 @@ module.exports = async function() {
   const [pageList, resourceList, storiesList, imageList] = await Promise.all(
     [fetchPages(), fetchGeneralResources(), fetchStories(), fetchImages()]);
   await cacheStoryImages(storiesList);
-  // await cacheImages(imageList);
   const ret = {
     pages: pageList,
     images: imageList,
