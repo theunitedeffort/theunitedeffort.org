@@ -3,7 +3,8 @@
 const cnst = {
   calfresh: {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/2CalFresh/CFMonthAllIncomeElig.htm
-    // Section 2.1 "CalFresh Program Monthly Allotment and Income Eligibility Standards Charts"
+    // Section 2.1 "CalFresh Program Monthly Allotment and Income Eligibility
+    //   Standards Charts"
     // Effective through 9/30/24
     FED_POVERTY_LEVEL: [ // USD per month
       1215,
