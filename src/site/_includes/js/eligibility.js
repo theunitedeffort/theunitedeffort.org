@@ -2,9 +2,8 @@
 
 const cnst = {
   calfresh: {
-    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
-    // Section 2.1
-    // https://www.cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACINs/2023/I-48-23.pdf?ver=2023-09-18-161425-983
+    // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/2CalFresh/CFMonthAllIncomeElig.htm
+    // Section 2.1 "CalFresh Program Monthly Allotment and Income Eligibility Standards Charts"
     // Effective through 9/30/24
     FED_POVERTY_LEVEL: [ // USD per month
       1215,
@@ -17,18 +16,16 @@ const cnst = {
       4214,
     ],
     FED_POVERTY_LEVEL_ADDL_PERSON: 429, // USD per month per person
-    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
-    // Section 11.8
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/CEHouseholds/MCE.htm
+    // "Modified Categorical Eligibility (MCE)"
     GROSS_INCOME_LIMIT_MCE_FACTOR: 2.0, // Times federal poverty limit
-    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap19.pdf
-    // Section 19.1.3
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/Income_Definitions_and_Exemptions/EarndIncm.htm
+    // "Self-Employment [63-503.41]"
     SELF_EMPLOYED_EXEMPT_FRACTION: 0.4,
   },
   calworks: {
-    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
-    // Section 1.2
-    // https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACLs/2023/23-48.pdf?ver=2023-05-25-094822-990#page=4
-    // Region 1
+    // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/1CalWorksRCAECATCVAP/NonExEmpAUStndsCht.htm
+    // Section 1.2 "Non-Exempt (Employable) AU Standards Chart Region 1"
     // Effective through 6/30/24
     MBSAC: [ // USD per month
       862,
@@ -43,25 +40,25 @@ const cnst = {
       3760,
     ],
     MBSAC_ADDL_PERSON: 34, // USD per month per person
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
-    // Section 14.1 (seems out of date)
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/14Property_Gen/Property_Limit.htm
+    // "Property General - Property Limit"
     // https://www.sfhsa.org/sites/default/files/media/document/2023-04/factsheet_calworks_english_02.2023.pdf
     // Effective through ?
     BASE_RESOURCE_LIMIT: 10888, // USD
     DISABLED_ELDERLY_RESOURCE_LIMIT: 16333, // USD
     MIN_ELDERLY_AGE: 60, // Years
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap33.pdf
-    // Section 33.3
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/33Financial_Eligibility/Applicant_GI_Test.htm
+    // "Applicant Gross Income Test"
     EMPLOYMENT_DISREGARD: 450, // USD per month
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap31.pdf
-    // Section 31.6.1
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/31Self_Employment/Income_Determination.htm
+    // "Monthly Net Income"
     SELF_EMPLOYED_DISREGARD_FRAC: 0.4,
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
-    // Section 27.9.3
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/27Other_Exempt_Income/Other_Exempt_Income.htm
+    // "Child/Spousal Support Disregard"
     ONE_CHILD_SUPPORT_DISREGARD: 100, // USD per month
     TWO_CHILD_SUPPORT_DISREGARD: 200, // USD per month
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap13.pdf
-    // Section 13.1.1
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/13Age_Student_Immunization/Age_Requirements.htm
+    // "Age Requirements"
     MAX_CHILD_AGE: 18, // Years
   },
   care: {
@@ -96,8 +93,8 @@ const cnst = {
     MIN_HOUSEHOLD_SIZE: 3, // People
   },
   ga: {
-    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
-    // Section 4.2, UNSHARED Housing in section 4.2.1
+    // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/4GA/NeedStnds.htm
+    // "Need Standards, Grant Level - UNSHARED Housing"
     // Effective through ?
     MONTHLY_INCOME_LIMITS: [ // USD per month
       343,
@@ -112,12 +109,12 @@ const cnst = {
       1396,
     ],
     MONTHLY_INCOME_LIMIT_ADDL_PERSON: 11, // USD per month per person
-    // https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap02.pdf
-    // Section 2.3.2
+    // https://stgenssa.sccgov.org/debs/program_handbooks/general_assistance/assets/05Identification/Age_Identity.htm
+    // "Age and Identity"
     MIN_ELIGIBLE_AGE: 18, // Years
     NUM_OF_DEPENDENTS: 0, // People
-    // https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap08.pdf
-    // Section 8.1.5
+    // https://stgenssa.sccgov.org/debs/program_handbooks/general_assistance/assets/08Property/GA_Policies.htm
+    // "Personal Property - GA Policy [180]"
     MAX_RESOURCES: 500, // USD
   },
   housingChoice: {
@@ -1697,7 +1694,7 @@ function adsaResult(input) {
 }
 
 function calfreshResult(input) {
-  // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
+  // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/2CalFresh/CFMonthAllIncomeElig.htm
   // Section 2.1
   const fedPovertyLevel = new MonthlyIncomeLimits(
     cnst.calfresh.FED_POVERTY_LEVEL,
@@ -1707,7 +1704,7 @@ function calfreshResult(input) {
     input.citizen,
     validImmigration(input));
 
-  // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/CEHouseholds/CEHouseholds.htm
   // TODO: Determine if _every_ household member is eligible for Calworks
   // or GA, as that is the true test of categorical eligibility.
   const isCategoricallyEligible = or(
@@ -1726,8 +1723,8 @@ function calfreshResult(input) {
   // TODO (#279): Run net income and resource checks for households containing
   // and elderly or disabled member in the event gross income is higher than
   // the MCE limit.
-  // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf#page=7
-  // Section 11.8.4
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/CEHouseholds/MCE.htm
+  // "MCE Determination for Elderly/Disabled Households"
   //
   const mceIncomeLimit = (cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR *
     fedPovertyLevel.getLimit(input.householdSize));
@@ -1785,8 +1782,8 @@ function calworksAdjustedIncome(input) {
       (1 - cnst.calworks.SELF_EMPLOYED_DISREGARD_FRAC) *
       categoryTotal(input.income.selfEmployed));
   const childSupportTotal = categoryTotal(input.income.childSupport);
-  // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
-  // Section 27.1
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/27Other_Exempt_Income/Other_Exempt_Income.htm
+  // "SSI/SSP or CAPI Payments and Income"
   const ssiIncomeTotal = input.ssiIncome.reduce(add, 0);
 
   // TODO: remove the SSI income subtraction?
@@ -1822,8 +1819,7 @@ function calworksResult(input) {
   // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
   // TODO: Add in special needs to income limit?
   // https://www.cdss.ca.gov/cdssweb/entres/forms/english/cw29.pdf
-  // See also https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap35.pdf
-  // Section 35.5.1
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/33Financial_Eligibility/Applicant_GI_Test.htm
   const mbsacIncomeLimit = mbsac.getLimit(input.householdSize);
   const underIncomeLimit = le(nonExemptIncome, mbsacIncomeLimit);
 
@@ -1868,13 +1864,13 @@ function calworksResult(input) {
 }
 
 function capiResult(input) {
-  // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
+  // https://stgenssa.sccgov.org/debs/program_handbooks/capi/assets/CAPI/06ImmigrationStatus/ImmgrtnStts.htm
   // Note that we basically default to an eligible determination for all
   // immigrants that are not explicitly temporarily living in the country.
   const meetsImmigrationReq = and(
     not(input.citizen),
-    // TODO: (?) Handle certain qualified aliens per Section 6.4 of
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
+    // TODO: (?) Handle certain qualified aliens per "Qualifying Categories" of
+    // https://stgenssa.sccgov.org/debs/program_handbooks/capi/assets/CAPI/06ImmigrationStatus/QualfyCatgrs.htm
     validImmigration(input));
 
   const program = ssiCapiBaseProgram(input);
@@ -2046,18 +2042,17 @@ function vaDisabilityResult(input) {
 }
 
 // GA-specific references:
-//   https://socialservices.sccgov.org/about-us/department-employment-and-benefit-services/regulation-and-policy-handbooks/general-assistance
-//   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
+//   https://stgenssa.sccgov.org/debs/program_handbooks/general_assistance/index.htm
+//   https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/4GA/NeedStnds.htm
 //
 // TO DO:
-//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap07.pdf
+//   https://stgenssa.sccgov.org/debs/program_handbooks/general_assistance/assets/07Citizens_Noncitizens/Citizens_Noncitizens.htm
 //     (7. Citizens/Noncitizens)
 //     Qualified non-citizen: Need to determine all non-citizen groups which
 //     fit this category. May or may not need to add more detail to immigration
 //     status form page.
 //
-//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf
-//     (Section 5.1)
+//   https://stgenssa.sccgov.org/debs/program_handbooks/general_assistance/assets/05Identification/Age_Identity.htm
 //     Maximum age can be over 64 years with some conditions. May or may not
 //     need to implement this.
 function gaResult(input) {
