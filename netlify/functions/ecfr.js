@@ -13,13 +13,13 @@ const ECFR_BASE_URL = 'https://www.ecfr.gov';
 const SUMMARY_ENDPOINT = 'api/versioner/v1/titles.json';
 
 async function getDateForCurrent(title) {
-	console.log(`Getting date for latest version of title ${title}`);
+  console.log(`Getting date for latest version of title ${title}`);
   const endpoint = `${ECFR_BASE_URL}/${SUMMARY_ENDPOINT}`;
   const resp = await fetch(endpoint);
   const summary = await resp.json();
   const titleSummary = summary.titles.find((t) => t.number == title);
   if (!titleSummary) {
-  	return;
+    return;
   }
   const date = titleSummary.latest_issue_date;
   console.log(`Latest date is ${date}`);
@@ -27,25 +27,25 @@ async function getDateForCurrent(title) {
 }
 
 exports.handler = async function(event) {
-	let path = event.path.replace(/\/ecfr\//g, '');
-	const currentRegex = /\/current\//;
-	const titleRegex = /title-(\d+)/;
-	console.log(`Path is ${path}`);
-	if (currentRegex.test(path) && titleRegex.test(path)) {
-		console.log('finding latest date');
-		const title = titleRegex.exec(path)[1];
-		const date = await getDateForCurrent(title);
-		if (date) {
+  let path = event.path.replace(/\/ecfr\//g, '');
+  const currentRegex = /\/current\//;
+  const titleRegex = /title-(\d+)/;
+  console.log(`Path is ${path}`);
+  if (currentRegex.test(path) && titleRegex.test(path)) {
+    console.log('finding latest date');
+    const title = titleRegex.exec(path)[1];
+    const date = await getDateForCurrent(title);
+    if (date) {
       path = path.replace(currentRegex, `/${date}/`);
       console.log(`Updated path to ${path}`);
-		}
-	}
-	const endpoint = `${ECFR_BASE_URL}/${path}?${event.rawQuery}`;
-	console.log(`Getting response for ${endpoint}`);
+    }
+  }
+  const endpoint = `${ECFR_BASE_URL}/${path}?${event.rawQuery}`;
+  console.log(`Getting response for ${endpoint}`);
   const resp = await fetch(endpoint);
   const content = await resp.text();
 
-	return {
+  return {
     statusCode: resp.status,
     body: content,
     headers: {
