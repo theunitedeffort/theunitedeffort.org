@@ -77,6 +77,11 @@ to = "/.netlify/functions/next-property"
 status = 200
 
 [[redirects]]
+from = "/ecfr/*"
+to = "/.netlify/functions/ecfr"
+status = 200
+
+[[redirects]]
 from = "/housing"
 to = "/housing/affordable-housing"
 status = 301
