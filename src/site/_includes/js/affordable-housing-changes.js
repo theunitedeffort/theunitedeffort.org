@@ -856,7 +856,7 @@ function initPage(data, params) {
     document.getElementById('skip-property').setAttribute('href',
       campaignPath);
     document.getElementById('housing-changes').setAttribute('action',
-      `/contrib/affordable-housing/thank-you?campaign=${safeCampaign}`);
+      `/contrib/affordable-housing/thank-you/index.html?campaign=${safeCampaign}`);
     if (data.housing) {
       initUnitVisibility(data);
       prefillForm(data);
