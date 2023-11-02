@@ -260,6 +260,7 @@ const fetchQueueData = async(campaign) => {
 }
 
 exports.handler = async function(event) {
+  console.log(JSON.stringify(event, null, 2));
   console.log(event.path);
   // Get the campaign name and optional housing ID from the URL
   const paramsStr = event.path.split("next-property/")[1];
