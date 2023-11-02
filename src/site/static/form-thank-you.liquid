@@ -12,7 +12,7 @@ permalink: /contrib/affordable-housing/thank-you/index.html
   Thank you for helping members of our community find affordable housing.
 </p>
 
-<a href="/contrib/affordable-housing/campaigns/audit-nov-2023-xaIEbSpSWNqXgL" class="btn btn_primary" id="back-link">Check Another Property</a>
+<a href="/contrib/affordable-housing/campaigns/" class="btn btn_primary" id="back-link">Check Another Property</a>
 <a href="/" class="btn btn_secondary">All Done For Now</a>
 
 {% comment %}
@@ -21,7 +21,7 @@ so this page must be statically generated.  Hence, this
 client-side JS to get the back link customized for each
 campaign.
 {% endcomment %}
-<!-- <script>
+<script>
 function setBackLink() {
   params = new URLSearchParams(window.location.search);
   if (params.has("campaign")) {
@@ -32,4 +32,4 @@ function setBackLink() {
 }
 
 setBackLink();
-</script> -->
+</script>
