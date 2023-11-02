@@ -701,6 +701,7 @@ function getPathParams() {
 
 // Fetches all data required to prefill the input form fields.
 async function fetchFormPrefillData(params) {
+  console.log(`getting next-property as requested by ${window.location.href}`);
   if (!params.campaign) {
     return {};
   }
@@ -844,6 +845,7 @@ function initUserName() {
 
 // Prepares the page for display to the user.
 function initPage(data, params) {
+  console.log('initializing page');
   initUserName();
   displayQueue(data.queue);
   // A campaign is required for nearly all aspects of the page.
@@ -869,6 +871,7 @@ function initPage(data, params) {
 // Script entry point.
 /* eslint no-unused-vars: "off" */
 async function run() {
+  console.log('run called');
   addListeners();
   const params = getPathParams();
   const data = await fetchFormPrefillData(params);
