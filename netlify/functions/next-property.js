@@ -8,11 +8,16 @@ const MAX_IN_PROGRESS_DURATION_HRS = 8;
 // Sort ranking for unit type.
 // Highest rank = 1. Types not listed here will be sorted alphabetically.
 // Force an item to be ranked last every time with rank = -1.
-const TYPE_SORT_RANKING = new Map([
+const SORT_RANKING = new Map([
   // Unit Type
-  ["SRO", 1],
-  ["Studio", 2],
-  ["Others", -1],
+  ['SRO', 1],
+  ['Studio', 2],
+  ['Others', -1],
+  // Availability
+  ['Available', 1],
+  ['Waitlist Open', 2],
+  ['Waitlist Closed', 3],
+  ['Call for Status', 4],
 ]);
 
 // Sorts rent offerings so that the generally cheaper offerings are first.
@@ -54,49 +59,61 @@ function sortRents(values) {
   return sorted;
 }
 
+function rankSortHelper(a, b) {
+  let rankA = SORT_RANKING.get(a);
+  let rankB = SORT_RANKING.get(b);
+  // Special handling for the -1 rank, which is always sorted last.
+  if (rankB < 0) {
+    return -1;
+  } else if (rankA < 0) {
+    return 1;
+  // Sort by rank if both items have one.
+  } else if (rankA && rankB) {
+    return rankA - rankB;
+  // Put unranked items after the ranked ones.
+  } else if (rankA && !rankB) {
+    return -1;
+  } else if (!rankA && rankB) {
+    return 1;
+  // Sort unranked items alphabetically.
+  } else if (a < b) {
+    return -1;
+  } else if (a > b) {
+    return 1;
+  }
+  return 0;
+}
+
 // Sorts unit types according to a custom sort order.
 // TODO: Make this sorting function shared within the entire
 // codebase.
 function sortUnitTypes(values) {
   let sorted = values.sort(function(a, b) {
-    let rankA = TYPE_SORT_RANKING.get(a);
-    let rankB = TYPE_SORT_RANKING.get(b);
-    // Special handling for the -1 rank, which is always sorted last.
-    if (rankB < 0) {
-      return -1;
-    } else if (rankA < 0) {
-      return 1;
-    // Sort by rank if both items have one.
-    } else if (rankA && rankB) {
-      return rankA - rankB;
-    // Put unranked items after the ranked ones.
-    } else if (rankA && !rankB) {
-      return -1;
-    } else if (!rankA && rankB) {
-      return 1;
-    // Sort unranked items alphabetically.
-    } else if (a < b) {
-      return -1;
-    } else if (a > b) {
-      return 1;
+    const [typeA, statusA] = a.split('__');
+    const [typeB, statusB] = b.split('__');
+    if (typeA === typeB) {
+      return rankSortHelper(statusA, statusB);
     }
-    return 0;
+    else {
+      return rankSortHelper(typeA, typeB);
+    }
   });
   return sorted;
 }
 
 // Groups unit records by unit type.
 // Returns an array of units records arrays.  Each item in the array is an array
-// of all the units records of one type (e.g. 1 Bedroom, Studio, etc). Inner
+// of all the units records of one type and status (e.g. 1 Bedroom Waitlist
+// Open, 1 Bedroom Waitlist Closed, Studio Waitlist Open, etc). Inner
 // arrays are sorted by rent offering cost and outer array is sorted by unit
 // type.
-function groupByUnitType(units) {
+function groupByUnitTypeAndStatus(units) {
   groupedUnits = [];
   let tempMap = {};
   for (let unitRecord of units) {
-    let typeKey = unitRecord.fields["TYPE"];
-    tempMap[typeKey] = tempMap[typeKey] || [];
-    tempMap[typeKey].push(unitRecord);
+    let key = `${unitRecord.fields["TYPE"]}__${unitRecord.fields["STATUS"]}`;
+    tempMap[key] = tempMap[key] || [];
+    tempMap[key].push(unitRecord);
   }
   for (let unitType of sortUnitTypes(Object.keys(tempMap))) {
     groupedUnits.push(sortRents(tempMap[unitType]));
@@ -290,7 +307,7 @@ exports.handler = async function(event) {
       fetchHousingRecord(data.queue.thisItem.housingTable, housingId),
       fetchUnitRecords(data.queue.thisItem.unitsTable, housingId)]);
     data.housing = housingData[0];
-    data.units = groupByUnitType(housingData[1]);
+    data.units = groupByUnitTypeAndStatus(housingData[1]);
 
     // If there is a matching queue record for this housing ID, update it to
     // be in progress.
