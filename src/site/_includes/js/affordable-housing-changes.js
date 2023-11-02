@@ -701,7 +701,7 @@ function getPathParams() {
 
 // Fetches all data required to prefill the input form fields.
 async function fetchFormPrefillData(params) {
-  console.log(`getting next-property as requested by ${window.location.href}`)
+  console.log(`getting next-property as requested by ${window.location.href}`);
   if (!params.campaign) {
     return {};
   }
