@@ -144,16 +144,10 @@ function addMissingProtocol(textInput) {
 // be the value of the element receiving the event.
 function updatePropertyLink(event) {
   const links = document.querySelectorAll('.property-link');
-  const iframe = document.getElementsByTagName('iframe')[0];
   addMissingProtocol(event.currentTarget);
   for (const link of links) {
     link.setAttribute('href', event.currentTarget.value);
   }
-  // Any http link is guaranteed to fail to display in the iframe because
-  // the UEO site is served over https. Set the iframe src to have an
-  // unspecified protocol to optimisitically request the https version
-  // if there is one (without changing the stored property URL value).
-  iframe.src = event.currentTarget.value.replace(/https?:/, '');
 }
 
 function updateSupplementalLink(event) {
