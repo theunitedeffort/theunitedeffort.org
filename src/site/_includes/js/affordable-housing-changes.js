@@ -34,8 +34,6 @@ function setTerminalMessage(header, content) {
   document.getElementById('apt-name-header').textContent = header;
   document.getElementById('terminal-content').innerHTML = content;
   document.getElementById('input-content').setAttribute('hidden', 'hidden');
-  document.getElementById('property-webpage-frame').setAttribute(
-    'hidden', 'hidden');
 }
 
 // Displays a message for the empty property queue condition.
@@ -77,8 +75,8 @@ function setUserName() {
     document.getElementById('user-name-input-container').setAttribute('hidden',
       'hidden');
     document.getElementById('edit-user-name').removeAttribute('hidden');
-    document.getElementById('user-name').setAttribute('value', userName);
-    userNameInput.setAttribute('value', userName);
+    document.getElementById('user-name').value = userName;
+    userNameInput.value = userName;
     document.getElementById('welcome-name').textContent = `, ${userName}`;
     localStorage.setItem(USER_NAME_KEY, userName);
   }
@@ -259,7 +257,7 @@ function updateMaxIncomeRowsVisibility(event) {
         rows[j].setAttribute('hidden', 'hidden');
         // Also clear contents when hiding rows so that hidden row data
         // doesn't get accidentally transmitted on form submit.
-        rows[j].querySelector('input').setAttribute('value', '');
+        rows[j].querySelector('input').value = '';
       } else {
         rows[j].removeAttribute('hidden');
       }
@@ -464,13 +462,13 @@ function clearAllFieldsIn(node) {
       for (const option of options) {
         option.selected = false;
       }
-      input.firstChild.setAttribute('selected', 'selected');
+      input.firstChild.selected = true;
       input.value = '';
     } else if (input.tagName == 'INPUT') {
       if (input.type == 'checkbox') {
         input.checked = false;
       } else {
-        input.value = ''
+        input.value = '';
       }
     }
     // Input values have changed, so run any change handlers.
@@ -497,21 +495,21 @@ function prefillField(field, value) {
         doCheck = value;
       }
       if (doCheck) {
-        field.setAttribute('checked', 'checked');
+        field.checked = true;
       }
     } else {
-      field.setAttribute('value', value);
+      field.value = value;
     }
   } else if (field.tagName == 'TEXTAREA') {
-    field.textContent = value;
+    field.value = value;
   } else if (field.tagName == 'SELECT') {
     for (const option of field.childNodes) {
       if (option.value == value) {
-        option.setAttribute('selected', 'selected');
+        option.selected = true;
         break;
       }
     }
-    field.setAttribute('value', value);
+    field.value = value;
   }
 
   // Field values have changed, so trigger the appropriate change
@@ -554,15 +552,14 @@ function prefillForm(data) {
   // housing database.
   if (data.queue.thisItem.recordId) {
     const queueRecordId = data.queue.thisItem.recordId;
-    document.getElementById('queue-record-id').setAttribute('value',
-      queueRecordId);
+    document.getElementById('queue-record-id').value = queueRecordId;
   }
   if (data.queue.thisItem.housingTable) {
-    document.getElementById('housing-table').setAttribute('value',
+    document.getElementById('housing-table').value = (
       data.queue.thisItem.housingTable);
   }
   if (data.queue.thisItem.unitsTable) {
-    document.getElementById('units-table').setAttribute('value',
+    document.getElementById('units-table').value = (
       data.queue.thisItem.unitsTable);
   }
   const fieldSelector = 'input, textarea, select';
@@ -838,7 +835,7 @@ function initUserName() {
   const userName = localStorage.getItem(USER_NAME_KEY);
   const userNameInput = document.getElementById('user-name-input');
   if (userName) {
-    userNameInput.setAttribute('value', userName);
+    userNameInput.value = userName;
     userNameInput.dispatchEvent(new Event('change'));
   }
 }
@@ -877,6 +874,6 @@ async function run() {
   const data = await fetchFormPrefillData(params);
   initPage(data, params);
   if (params.campaign) {
-    document.getElementById('campaign').setAttribute('value', params.campaign);
+    document.getElementById('campaign').value = params.campaign;
   }
 }
