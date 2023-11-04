@@ -468,7 +468,7 @@ function clearAllFieldsIn(node) {
       if (input.type == 'checkbox') {
         input.checked = false;
       } else {
-        input.value = ''
+        input.value = '';
       }
     }
     // Input values have changed, so run any change handlers.
