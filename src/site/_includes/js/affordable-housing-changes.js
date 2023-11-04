@@ -458,19 +458,19 @@ function clearAllFieldsIn(node) {
   const allInputs = node.querySelectorAll('input, textarea, select');
   for (const input of allInputs) {
     if (input.tagName == 'TEXTAREA') {
-      input.textContent = '';
+      input.value = '';
     } else if (input.tagName == 'SELECT') {
       const options = input.childNodes;
       for (const option of options) {
-        option.removeAttribute('selected');
+        option.selected = false;
       }
       input.firstChild.setAttribute('selected', 'selected');
-      input.setAttribute('value', '');
+      input.value = '';
     } else if (input.tagName == 'INPUT') {
       if (input.type == 'checkbox') {
-        input.removeAttribute('checked');
+        input.checked = false;
       } else {
-        input.setAttribute('value', '');
+        input.value = ''
       }
     }
     // Input values have changed, so run any change handlers.
