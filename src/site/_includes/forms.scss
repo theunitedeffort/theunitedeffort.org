@@ -24,10 +24,12 @@
           border-bottom: solid 1px var(--color-gray-700);
         }
       }
+
       label {
         font-size: 0.8em;
         white-space: nowrap;
       }
+
       input[type=text],
       input[type=number],
       input[type=email],
@@ -41,6 +43,10 @@
         padding: 0.2em;
         border-radius: 3px;
         margin-bottom: 0.2em;
+      }
+
+      select {
+        background-color: var(--color-white);
       }
 
       input[type=text].short,
@@ -102,10 +108,6 @@
       ul {
         list-style: none;
         margin: 0;
-      }
-
-      select {
-        background-color: var(--color-white);
       }
 
       input.date_day,
