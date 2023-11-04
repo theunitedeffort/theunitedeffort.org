@@ -215,10 +215,10 @@ const fetchQueueData = async(campaign) => {
       "HOUSING_DB",
       "UNITS_DB"],
     filterByFormula: filterFormula,
-    // Sort by management company to ensure that sequential properties
+    // Sort by property URL hostname to ensure that sequential properties
     // in the queue have similar-looking websites for easier data-hunting
     // by our volunteers.
-    sort: [{field: "_MANAGEMENT_COMPANY", direction: "asc"},
+    sort: [{field: "URL_HOSTNAME", direction: "asc"},
            {field: "_DISPLAY_ID", direction: "asc"}],
   })
   .all()
