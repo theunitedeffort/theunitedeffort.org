@@ -157,6 +157,22 @@ function updateSupplementalLink(event) {
   const anchor = parent.querySelector('a.supplemental_url');
   addMissingProtocol(event.currentTarget);
   anchor.setAttribute('href', hrefOrVoid(event.currentTarget.value));
+  // Get all supplemental URLs and update the instruction text
+  const urlInputs = document.querySelectorAll('input[name^="SUPPLEMENTAL_URL"]');
+  const container = document.getElementById('all-supplemental-urls');
+  const anchors = [];
+  for (const input of urlInputs) {
+    if (input.value) {
+      anchors.push(`<a href="${input.value}" target="_blank">another one</a><sup>&#8599;</sup>`);
+    }
+  }
+  if (anchors.length > 0) {
+    container.innerHTML = `(${anchors.join(', ')}) `
+    container.removeAttribute('hidden');
+  } else {
+    container.innerHTML = '';
+    container.setAttribute('hidden', 'hidden');
+  }
 }
 
 // Shows the second address field.
