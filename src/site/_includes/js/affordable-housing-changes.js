@@ -138,13 +138,17 @@ function addMissingProtocol(textInput) {
   }
 }
 
+function hrefOrVoid(str) {
+  return str || 'javascript:void(0)';
+}
+
 // Updates the href attribute of any links with class 'property-link' to
 // be the value of the element receiving the event.
 function updatePropertyLink(event) {
   const links = document.querySelectorAll('.property-link');
   addMissingProtocol(event.currentTarget);
   for (const link of links) {
-    link.setAttribute('href', event.currentTarget.value);
+    link.setAttribute('href', hrefOrVoid(event.currentTarget.value));
   }
 }
 
@@ -152,11 +156,10 @@ function updateSupplementalLink(event) {
   const parent = event.currentTarget.parentNode;
   const anchor = parent.querySelector('a.supplemental_url');
   addMissingProtocol(event.currentTarget);
-  anchor.setAttribute('href', event.currentTarget.value);
+  anchor.setAttribute('href', hrefOrVoid(event.currentTarget.value));
 }
 
 // Shows the second address field.
-// TODO: automatically show this field if there is data present in the prefill.
 function showExtraField(event) {
   document.getElementById(event.currentTarget.dataset.controls)
     .removeAttribute('hidden');
