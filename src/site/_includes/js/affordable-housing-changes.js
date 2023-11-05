@@ -163,11 +163,12 @@ function updateSupplementalLink(event) {
   const anchors = [];
   for (const input of urlInputs) {
     if (input.value) {
-      anchors.push(`<a href="${input.value}" target="_blank">another one</a><sup>&#8599;</sup>`);
+      anchors.push(`<a href="${input.value}" ` +
+        `target="_blank">another one</a><sup>&#8599;</sup>`);
     }
   }
   if (anchors.length > 0) {
-    container.innerHTML = `(${anchors.join(', ')}) `
+    container.innerHTML = `(${anchors.join(', ')}) `;
     container.removeAttribute('hidden');
   } else {
     container.innerHTML = '';
