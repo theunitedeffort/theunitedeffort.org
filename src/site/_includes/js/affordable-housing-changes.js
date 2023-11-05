@@ -160,7 +160,6 @@ function updateSupplementalLink(event) {
 }
 
 // Shows the second address field.
-// TODO: automatically show this field if there is data present in the prefill.
 function showExtraField(event) {
   document.getElementById(event.currentTarget.dataset.controls)
     .removeAttribute('hidden');
