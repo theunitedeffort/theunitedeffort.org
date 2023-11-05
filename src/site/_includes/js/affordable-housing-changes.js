@@ -60,7 +60,7 @@ function setEmptyQueueMessage(queue) {
 function setInvalidHousingIdMessage(housingId, campaignPath) {
   const header = 'Oops! That property doesn\'t seem to exist.';
   const content = `There is no property with the ID
-    <span class="bold">${housingId}</span> in our database.  Check your URL
+    <span class="bold">${housingId}</span> in this campaign.  Check your URL
     and try again or see the <a href="${campaignPath}">next property</a> that
     needs to be checked.`;
   setTerminalMessage(header, content);
