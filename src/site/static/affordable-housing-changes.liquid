@@ -3,8 +3,11 @@ layout: layouts/base.liquid
 title: Check for Affordable Housing Updates
 permalink: 
   build: "/contrib/affordable-housing/changes/index.html"
-pageClass: ""
-pageHead: '<script src="/js/accessibility.js" defer></script>'
+pageClass: "visible-scrollbars"
+pageHead: '<style type="text/css">
+  * {scrollbar-color: var(--color-gray-600) var(--color-gray-800);}
+  </style>
+  <script src="/js/accessibility.js" defer></script>'
 maxUnits: 10
 maxOfferings: 5
 maxHouseholdSize: 12
