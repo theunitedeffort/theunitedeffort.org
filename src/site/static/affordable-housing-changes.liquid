@@ -147,7 +147,7 @@ maxHouseholdSize: 12
       {% formField housingFields, "PREFERS_LOCAL_APPLICANTS" %}
       {% fieldLabel "Prefers applicants within the local city", housingFields, "PREFERS_LOCAL_APPLICANTS" %}<br/>
     </div>
-
+    <p class="note">It is <span class="bold">not</span> required to input the unit types and rent offerings in sorted order.</p>
     <div id="all-units">
       {% assign unitEndIdx = maxUnits | plus: -1 %}
       {% assign offeringEndIdx = maxOfferings | plus: -1 %}
