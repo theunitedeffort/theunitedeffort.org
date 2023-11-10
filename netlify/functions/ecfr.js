@@ -10,7 +10,7 @@
 // This function expects the same path and paramters as the eCFR API endpoints.
 
 const ECFR_BASE_URL = 'https://www.ecfr.gov';
-const SUMMARY_ENDPOINT = 'api/versioner/v1/titles.json';
+const SUMMARY_ENDPOINT = 'api/versioner/v1/titles';
 
 async function getDateForCurrent(title) {
   console.log(`Getting date for latest version of title ${title}`);
