@@ -27,6 +27,7 @@ function sortRents(values) {
     // If both offerings have differing rent, sort according to those.  
     // Otherwise, use min income if available.
     // Otherwise, use max income (the low end of the range) if available.
+    // Otherwise, use AMI percentage if available.
     // If the offerings have none of those three values, don't sort at all, as 
     // there is nothing to compare against.
     let compA = 0;
@@ -47,6 +48,11 @@ function sortRents(values) {
         a.fields.MAX_YEARLY_INCOME_LOW_USD != b.fields.MAX_YEARLY_INCOME_LOW_USD) {
       compA = a.fields.MAX_YEARLY_INCOME_LOW_USD;
       compB = b.fields.MAX_YEARLY_INCOME_LOW_USD;
+    } else if (a.fields.PERCENT_AMI &&
+        b.fields.PERCENT_AMI &&
+        a.fields.PERCENT_AMI != b.fields.PERCENT_AMI) {
+      compA = a.fields.PERCENT_AMI;
+      compB = b.fields.PERCENT_AMI;
     }
     if (compA < compB) {
       return -1;
