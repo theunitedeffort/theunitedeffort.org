@@ -233,16 +233,16 @@ const cnst = {
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
     // Effective through 11/30/23
-    ANNUAL_NET_WORTH_LIMIT: 150538, // USD per year
+    ANNUAL_NET_WORTH_LIMIT: 155356, // USD per year
     // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
     // Effective through 11/30/23
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      16037,
-      21001,
+      16551,
+      21674,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2743, // USD per year
-    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 13850, // USD per year
+    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2831, // USD per year
+    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 14600, // USD per year
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
