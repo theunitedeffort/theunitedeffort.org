@@ -317,6 +317,14 @@ $ruler-arrow-height: 15px;
   width: 1px;
 }
 
+main {
+  .donate_wrapper {
+    text-align: center;
+    margin-top: 2em;
+    margin-bottom: 2em;
+  }
+}
+
 .ruler div {
   position: absolute;
   top: .5em;
