@@ -43,7 +43,6 @@ const cnst = {
     MBSAC_ADDL_PERSON: 34, // USD per month per person
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/14Property_Gen/Property_Limit.htm
     // "Property General - Property Limit"
-    // https://www.sfhsa.org/sites/default/files/media/document/2023-04/factsheet_calworks_english_02.2023.pdf
     // Effective through 1/1/2025?
     BASE_RESOURCE_LIMIT: 11634, // USD
     DISABLED_ELDERLY_RESOURCE_LIMIT: 17452, // USD
