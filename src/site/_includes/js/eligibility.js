@@ -189,18 +189,16 @@ const cnst = {
   },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
-    // Effective through 12/31/23?
-    // TODO: On 1/1/2024 change to 1550
-    SGA_NON_BLIND: 1470, // USD per month
-    // TODO: On 1/1/2024 change to 2590
-    SGA_BLIND: 2460, // USD per month
-    // https://www.ssa.gov/pubs/EN-05-11125.pdf
+    // Effective through 12/31/24
+    SGA_NON_BLIND: 1550, // USD per month
+    SGA_BLIND: 2590, // USD per month
+    // https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACINs/2023/I-66_23.pdf?ver=2023-11-21-144047-077
     // Note these max benefit amounts include the California state supplement.
     // TODO: Handle other living categories (e.g. non-medical out-of-home care).
-    // Effective through 12/31/23?
-    MAX_BENEFIT_NON_BLIND: 1133.73, // USD per month
-    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1251.74, // USD per month
-    MAX_BENEFIT_BLIND: 1211, // USD per month
+    // Effective through 12/31/24
+    MAX_BENEFIT_NON_BLIND: 1182.94, // USD per month
+    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1311.81, // USD per month
+    MAX_BENEFIT_BLIND: 1267.32, // USD per month
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
     // Effective through 12/31/23?
     MAX_RESOURCES: 2000, // USD
