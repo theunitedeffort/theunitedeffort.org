@@ -7,6 +7,14 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
+    // Do not store cookies.
+    gtag('consent', 'default', {
+          'ad_storage': 'denied',
+          'analytics_storage': 'denied',
+          'functionality_storage': 'denied',
+          'personalization_storage': 'denied',
+          'security_storage': 'denied'
+        });
     // Do not allow data sharing.
     gtag('config', 'G-Y2D6F78X86', {
       'allow_ad_personalization_signals': false,
