@@ -8,11 +8,13 @@ const base = new Airtable(
 const fetchSection = (id) => {
   const table = base('tblAkC6dlPJc4o0Je'); // sections table
   return table.find(id).then((record) => {
+    let content = '';
     if (record.get('Type') == 'Markdown page') {
-      return record.get('Markdown');
+      content = record.get('Markdown');
     } else {
-      return record.get('Content');
+      content = record.get('Content');
     }
+    return {content: content, class: record.get('HTML Class Attribute')}
   });
 };
 
@@ -33,7 +35,7 @@ const fetchPages = async () => {
           const name = record.get('Page title');
           const path = record.get('Page path');
           const sectionID = record.get('Section')[0];
-          const content = await fetchSection(sectionID);
+          const section = await fetchSection(sectionID);
 
           if (!data[name]) {
             data[name] = {
@@ -45,7 +47,8 @@ const fetchPages = async () => {
 
           data[name].sections.push({
             type: record.get('Type')[0].replace(' ', '-'),
-            content: content,
+            content: section.content,
+            class: section.class,
           });
         }
       }
@@ -131,7 +134,7 @@ const fetchImages = async () => {
 
 module.exports = async function() {
   const asset = new AssetCache('airtable_pages');
-  if (asset.isCacheValid('1h')) {
+  if (asset.isCacheValid('1s')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
   }

@@ -3,14 +3,14 @@ https://maps.google.com/maps?q={{ apartment.addresses[0] | url_encode}}+{{ apart
 {%- endcapture -%}
 {%- if apartment.addresses[0] and apartment.addresses[0] != '' -%}
   <p class="contact">
-  {{ apartment.addresses[0] }}{%- if apartment.city and apartment.city != '' -%}, {{ apartment.city }}{%- endif -%}
+  <span class="notranslate">{{ apartment.addresses[0] }}{%- if apartment.city and apartment.city != '' -%}, {{ apartment.city }}{%- endif -%}</span>
     <span class="map_link_container noprint nowrap">
       (<button type="button" class="map_link link hidden" aria-label="Highlight {{ apartment.aptName }} on map">Show on map</button><span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ apartment.aptName }} on Google Maps">map</a><sup>&#8599;</sup></span>)
     </span>
   </p>
 {%- endif -%}
 {%- if apartment.emails[0] and apartment.emails[0] != '' -%}
-  <p class="contact"> 
+  <p class="contact notranslate">
     <a href="mailto:{{ apartment.emails[0] }}" target="_blank" rel="noopener">{{ apartment.emails[0] }}</a>
   </p>
 {%- endif -%}

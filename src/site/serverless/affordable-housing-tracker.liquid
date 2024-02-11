@@ -104,7 +104,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
     {% assign sortedHousingdb = housingdb | sort: "aptName" %}
     {% for apartment in sortedHousingdb %}
       <tr>
-        <td class="apartment">
+        <td class="apartment notranslate">
           <p>
             <a class="noprint" href="/housing/affordable-housing/{{apartment.id}}" target="_blank" rel="noopener">{{ apartment.aptName }}</a>
             <span class="only_print bold">{{apartment.aptName}}</span>
