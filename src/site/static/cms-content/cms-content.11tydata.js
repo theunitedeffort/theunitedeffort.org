@@ -134,7 +134,7 @@ const fetchImages = async () => {
 
 module.exports = async function() {
   const asset = new AssetCache('airtable_pages');
-  if (asset.isCacheValid('1s')) {
+  if (asset.isCacheValid('1h')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
   }
