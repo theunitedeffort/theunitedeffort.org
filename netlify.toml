@@ -82,6 +82,26 @@ to = "/.netlify/functions/ecfr"
 status = 200
 
 [[redirects]]
+from = "/gtranslate"
+to = "/.netlify/functions/gtranslate"
+status = 200
+
+[[redirects]]
+from = "/translate_a_element"
+to = "/.netlify/functions/translate_a_element"
+status = 200
+
+[[redirects]]
+from = "/el_main"
+to = "/.netlify/functions/el_main"
+status = 200
+
+[[redirects]]
+from = "/test-translate"
+to = "/.netlify/functions/test-translate"
+status = 200
+
+[[redirects]]
 from = "/housing"
 to = "/housing/affordable-housing"
 status = 301
