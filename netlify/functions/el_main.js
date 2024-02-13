@@ -12,7 +12,7 @@ exports.handler = async function(event) {
   console.log(`Getting response for ${endpoint}`);
   const resp = await fetch(endpoint);
   let content = await resp.text();
-  content = content.replaceAll('cleardot.gif', 'cleardot.blocked');
+  content = content.replaceAll('https://www.google.com/images/cleardot.gif', 'https://');
   content = content.replaceAll('/gen204', '/gen204.blocked');
 
   return {

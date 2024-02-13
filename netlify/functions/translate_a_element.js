@@ -3,7 +3,7 @@ exports.handler = async function(event) {
   console.log(`Getting response for ${endpoint}`);
   const resp = await fetch(endpoint);
   let content = await resp.text();
-  content = content.replace(/_loadJs\('(https:.*)'\);/, "_loadJs('http:\\/\\/localhost:8888\\/el_main?q=$1');");
+  content = content.replace(/_loadJs\('(https:.*)'\);/, "_loadJs('\\/el_main?q=$1');");
 
   return {
     statusCode: resp.status,
