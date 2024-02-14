@@ -13,7 +13,7 @@ exports.handler = async function(event) {
   const resp = await fetch(endpoint);
   let content = await resp.text();
   content = content.replaceAll('https://www.google.com/images/cleardot.gif', 'https://');
-  content = content.replaceAll('/gen204', '/gen204.blocked');
+  content = content.replaceAll('/gen204?', '/');
 
   return {
     statusCode: resp.status,
