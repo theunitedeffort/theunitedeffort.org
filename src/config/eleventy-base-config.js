@@ -44,6 +44,14 @@ module.exports = function(eleventyConfig) {
     return markdown.marked(str);
   });
 
+  // Substitute placeholder text with the appropriate markup.
+  eleventyConfig.addFilter('unplaceholder', (str) => {
+    str = str.replaceAll('{{notranslate}}', '<span class="notranslate">');
+    str = str.replaceAll('{{endnotranslate}}', '</span>');
+    return str;
+  });
+
+
   // Get all of the unique values of a property
   eleventyConfig.addFilter('index', function(collection, property) {
     let values = [];
