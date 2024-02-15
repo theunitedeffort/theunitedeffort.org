@@ -24,6 +24,8 @@ table.deflist {
   table-layout: fixed;
   td {
     border: none;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
     padding-left: 0;
     vertical-align: top;
     width: auto;
@@ -32,10 +34,9 @@ table.deflist {
   }
   td:first-child {
     font-weight: 600;
-    white-space: nowrap;
     word-wrap: normal;
     overflow-wrap: normal;
-    width: 8em;
+    width: 9em;
   }
   ul {
     margin: 0;

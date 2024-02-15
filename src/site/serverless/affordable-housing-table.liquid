@@ -40,7 +40,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
       <th>Rent</th>
       <th>Min Income</th>
       <th>Max Income</th>
-      <th>AMI</th>
+      <th class="notranslate">AMI</th>
       <th>Phone #</th>
       <th>Must be Senior</th>
     </tr>
@@ -48,12 +48,12 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   <tbody>
     {% for apartment in housingdb %}
       <tr>
-        <td>
+        <td class="notranslate">
           <a class="noprint" href="/housing/affordable-housing/{{apartment.id}}" target="_blank" rel="noopener">{{ apartment.aptName }}</a>
           <span class="only_print">{{apartment.aptName}}</span>
         </td>
-        <td>{{ apartment.addresses[0] }}</td>
-        <td>{{ apartment.city }}</td>
+        <td class="notranslate">{{ apartment.addresses[0] }}</td>
+        <td class="notranslate">{{ apartment.city }}</td>
         <td>
           {% assign waitlistStatuses = apartment.units | map: "openStatus" | compact | uniq %}
           {% if waitlistStatuses.size > 1 %}
@@ -68,7 +68,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
             {{ waitlistStatuses | first }}
           {% endif %}
         </td>
-        <td>{{ apartment.units | map: "type" | uniq | rankSort | join: '<br style="mso-data-placement:same-cell;"/>' | replace: "Bedroom", "BR" }}</td>
+        <td class="notranslate">{{ apartment.units | map: "type" | uniq | rankSort | join: '<br style="mso-data-placement:same-cell;"/>' | replace: "Bedroom", "BR" }}</td>
         <td>
           {% assign rents = apartment.units | map: "rent" | map: "amount" | compact | uniq | sort %}
           {% if rents.size == 1 %}

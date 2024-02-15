@@ -20,21 +20,23 @@
       {%- endfor -%}
     </ul>
   {%- elsif label == "Website" -%}
-    <a href="{{ item }}" target="_blank" rel="noopener">{{ item }}</a>
+    <a href="{{ item }}" target="_blank" rel="noopener" class="notranslate">{{ item }}</a>
   {%- elsif label == "Additional Info" -%}
     <ul>
       {%- for link in item -%}
-        <li><a href="{{ link }}" target="_blank" rel="noopener">{{ link }}</a></li>
+        <li><a href="{{ link }}" target="_blank" rel="noopener" class="notranslate">{{ link }}</a></li>
       {%- endfor -%}
     </ul>
   {%- elsif label == "Address" -%}
     <ul>
       {%- for address in item -%}
         {%- if address and address != '' -%}
-          <li>{{ address }} (<a href="https://maps.google.com/maps?q={{address | url_encode}}+{{apartment.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)</li>
+          <li><span class="notranslate">{{ address }}</span> (<a href="https://maps.google.com/maps?q={{address | url_encode}}+{{apartment.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)</li>
         {%- endif -%}
       {%- endfor -%}
     </ul>
+  {%- elsif label == "City" -%}
+    <span class="notranslate">{{ item }}</span>
   {%- else -%}
     {{ item }}
   {%- endif -%}
