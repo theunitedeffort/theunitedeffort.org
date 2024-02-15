@@ -142,13 +142,19 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     {% assign sortedOpts = section.options | rankSort: "name" %}
     {% for opt in sortedOpts %}
       {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
-      <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
-      {% if opt.name == "SRO" %}
-          {% assign label = '<abbr role="definition" aria-label="Single Room Occupancy">SRO</abbr>' %}
-      {% else %}
-          {% assign label = opt.label %}
-      {% endif %}
-      <label for="{{optId}}">{{label}}</label><br/>
+      <div>
+        <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
+        {% if opt.name == "SRO" %}
+            {% assign label = '<abbr role="definition" aria-label="Single Room Occupancy"><span translate="no">SRO</span></abbr>' %}
+        {% else %}
+            {% assign label = opt.label %}
+        {% endif %}
+        <label for="{{optId}}"
+        {%- if section.name == "city" %}
+          translate="no"
+        {%- endif -%}
+        >{{label}}</label>
+      </div>
     {% endfor %}
     </div>
   </fieldset>
