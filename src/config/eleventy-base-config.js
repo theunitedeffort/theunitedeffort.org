@@ -46,7 +46,7 @@ module.exports = function(eleventyConfig) {
 
   // Substitute placeholder text with the appropriate markup.
   eleventyConfig.addFilter('unplaceholder', (str) => {
-    str = str.replaceAll('{{notranslate}}', '<span class="notranslate">');
+    str = str.replaceAll('{{notranslate}}', '<span translate="no">');
     str = str.replaceAll('{{endnotranslate}}', '</span>');
     return str;
   });
