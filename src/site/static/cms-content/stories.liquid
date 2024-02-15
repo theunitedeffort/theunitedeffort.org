@@ -37,7 +37,7 @@ eleventyComputed:
       {% endif %}
     </div>
   {% endif %}
-  {{story["Content"] | markdownify}}
+  {{story["Content"] | markdownify | unplaceholder}}
 </div>
 
 <p class="noprint">
