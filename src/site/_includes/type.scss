@@ -336,6 +336,7 @@
   .toggletip_entry {
     position: relative;
     display: inline-block;
+    margin-right: 0.2em;
   }
 
   .toggletip_container {
@@ -366,9 +367,9 @@
   the toggle icon */
   .toggletip_content::before {
     content: "";
-    width: 0.2em;
+    width: 0.5em;
     height: 100%;
-    left: -0.2em;
+    left: -0.5em;
     top: 0;
     position: absolute;
   }
