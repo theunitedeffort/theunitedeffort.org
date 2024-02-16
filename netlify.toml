@@ -82,6 +82,11 @@ to = "/.netlify/functions/ecfr"
 status = 200
 
 [[redirects]]
+from = "/tp"
+to = "/.netlify/functions/translate-proxy"
+status = 200
+
+[[redirects]]
 from = "/housing"
 to = "/housing/affordable-housing"
 status = 301
