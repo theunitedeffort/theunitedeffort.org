@@ -552,14 +552,14 @@ function onInput(event) {
 }
 
 function onAnchorClick(event) {
-  const dest = document.querySelector(event.target.hash);
+  const dest = document.querySelector(event.currentTarget.hash);
   dest.scrollIntoView({behavior: 'smooth'});
   event.preventDefault();
 }
 
 function onHouseholdMemberAdd(event) {
   // Get the household member that was just added.
-  const newMember = event.target.closest('.elig_page').querySelector(
+  const newMember = event.currentTarget.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
   // Add listener to the new member's spouse checkbox
   const spouseInput = newMember.querySelector('[id^="hh-member-spouse"]');
@@ -598,7 +598,7 @@ function onHouseholdMemberAdd(event) {
 }
 
 function onDutyPeriodAdd(event) {
-  const newPeriod = event.target.closest('.elig_page').querySelector(
+  const newPeriod = event.currentTarget.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
   const firstFieldset = document.querySelector(
     '#page-veteran-duty-period fieldset');
@@ -611,34 +611,34 @@ function onDutyPeriodAdd(event) {
 }
 
 function onChangeSpouse(event) {
-  if (event.target.checked) {
+  if (event.currentTarget.checked) {
     // If a spouse checkbox was just checked, enforce that all the others are
     // unchecked.
     const spouseInputs = document.querySelectorAll('[id^="hh-member-spouse"]');
     for (const input of spouseInputs) {
-      if (input !== event.target) {
+      if (input !== event.currentTarget) {
         input.checked = false;
       }
     }
-    event.target.dependentParameter.checked = false;
+    event.currentTarget.dependentParameter.checked = false;
   }
 }
 
 function onChangeDependent(event) {
-  if (event.target.checked) {
-    event.target.spouseParameter.checked = false;
+  if (event.currentTarget.checked) {
+    event.currentTarget.spouseParameter.checked = false;
   }
 }
 
 function onToggleMultiselect(event) {
-  const list = event.target.closest('.multiselect');
+  const list = event.currentTarget.closest('.multiselect');
   const options = list.querySelectorAll('input[type=checkbox]');
   for (const option of options) {
-    if (option == event.target) {
+    if (option == event.currentTarget) {
       continue;
     }
     const label = list.querySelector(`label[for="${option.id}"]`);
-    if (event.target.checked) {
+    if (event.currentTarget.checked) {
       option.checked = false;
       option.setAttribute('disabled', 'disabled');
       label.classList.add('disabled');
@@ -665,22 +665,24 @@ function onToggleDynamicFieldList(event) {
 }
 
 function onChangeAge(event) {
-  document.getElementById('hh-myself-age').value = event.target.value;
-  document.getElementById('age').value = event.target.value;
+  document.getElementById('hh-myself-age').value = event.currentTarget.value;
+  document.getElementById('age').value = event.currentTarget.value;
 }
 
 function onChangeName(event) {
-  const item = event.target.closest('ul.dynamic_field_list>li');
+  const item = event.currentTarget.closest('ul.dynamic_field_list>li');
   // Update the heading to the household member's name.
   const heading = item.querySelector('h4');
   if (!heading.defaultContent) {
     // Save the initial content in case the custom name is later deleted.
     heading.defaultContent = heading.textContent;
   }
-  const inputValue = event.target.value.trim();
+  const inputValue = event.currentTarget.value.trim();
   if (inputValue) {
+    heading.setAttribute('translate', 'no');
     heading.textContent = inputValue;
   } else {
+    heading.removeAttribute('translate');
     heading.textContent = heading.defaultContent;
   }
   // Also update the headings in all the income details pages.
@@ -786,7 +788,7 @@ function addDynamicFieldListItem(event) {
   if (event.currentTarget.hasAttribute('aria-disabled')) {
     return;
   }
-  const wrapper = event.target.closest('.dynamic_field_list_wrapper');
+  const wrapper = event.currentTarget.closest('.dynamic_field_list_wrapper');
   const list = wrapper.querySelector('ul.dynamic_field_list');
   const items = wrapper.querySelectorAll('ul.dynamic_field_list > li');
   // Figure out the largest id index used so far.
@@ -874,7 +876,7 @@ function removeDynamicFieldListItem(listItem) {
 }
 
 function onDynamicFieldListRemove(event) {
-  removeDynamicFieldListItem(event.target.closest('li'));
+  removeDynamicFieldListItem(event.currentTarget.closest('li'));
 }
 
 function updateDynamicFieldListButton(button) {
@@ -890,7 +892,7 @@ function updateDynamicFieldListButton(button) {
 }
 
 function updateIncomeTotal(event) {
-  const page = event.target.closest('.elig_page');
+  const page = event.currentTarget.closest('.elig_page');
   const totalDisplay = page.querySelector('.total');
   const inputs = page.querySelectorAll('input[type=number]');
   let sum = 0;
@@ -1018,10 +1020,9 @@ function switchToPage(toPage) {
 }
 
 // Brings the user to the first page of a section.
-// This function is used as a step indicator click handler, and 'this'
-// represents the context of the event, i.e. the button that was clicked.
+// This function is used as a step indicator click handler
 function toSection(event) {
-  const section = document.getElementById(event.target.dataset.sectionId);
+  const section = document.getElementById(event.currentTarget.dataset.sectionId);
   if (section.id == 'section-results') {
     // Ensure results are always up-to-date prior to showing them.
     // TODO: Determine if it would be better to invalidate results on
