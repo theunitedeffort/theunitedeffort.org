@@ -843,7 +843,7 @@ function addDynamicFieldListItem(event) {
     numInput.addEventListener('keydown', saveValidInput);
     numInput.addEventListener('input', preventInvalidInput);
   }
-  updateDynamicFieldListButton(event.target);
+  updateDynamicFieldListButton(event.currentTarget);
 }
 
 function removeDynamicFieldListItem(listItem) {
