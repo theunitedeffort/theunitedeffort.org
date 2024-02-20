@@ -13,9 +13,9 @@
   {{preamble | default: defaultPreamble}}
 </p>
 <div class="income_details_wrapper">
-  <fieldset>
+  {% capture fieldsetTemplate %}
     <legend>Myself</legend>
-    {% capture template %}
+    {% capture listTemplate %}
       <h4>{{heading}} 1</h4>
       <div>
         <label for="income-{{id}}">{{entryLabel | default: "Income"}}</label>
@@ -24,8 +24,20 @@
       {{extraContent}}
     {% endcapture %}
 
-    {% dynamicFieldList buttonStr, emptyButtonStr, template %}
+    {% dynamicFieldList buttonStr, emptyButtonStr, listTemplate %}
     {% enddynamicFieldList %}
+  {% endcapture %}
+  {% comment %}
+  Store the fieldset in a template here so that it can be copied when
+  new household members are added.  The template will be unaffected by
+  client-side translations, so is always safe to copy regardless of the selected
+  language.
+  {% endcomment %}
+  <template>
+    {{fieldsetTemplate}}
+  </template>
+  <fieldset>
+    {{fieldsetTemplate}}
   </fieldset>
 </div>
 {{epilogue}}

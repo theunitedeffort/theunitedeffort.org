@@ -578,8 +578,11 @@ function onHouseholdMemberAdd(event) {
   const incomePages = document.querySelectorAll(
     'div[id^="page-income-"]');
   for (const incomePage of incomePages) {
-    const firstFieldset = incomePage.querySelector('fieldset');
-    const newFieldset = firstFieldset.cloneNode(true);
+    const fieldsetTempl = incomePage.querySelector('template');
+    const newFieldset = document.createElement('fieldset');
+    newFieldset.appendChild(fieldsetTempl.content.cloneNode(true));
+    // TODO: what if the translation happens first and then the income
+    // headings are set to the translated string?
     setMemberIncomeHeading(newFieldset,
       newMember.querySelector('h4').textContent);
     // Remove all items from the new list
@@ -592,7 +595,7 @@ function onHouseholdMemberAdd(event) {
 
     addDynamicFieldListListeners(newFieldset);
 
-    firstFieldset.parentNode.appendChild(newFieldset);
+    fieldsetTempl.parentNode.appendChild(newFieldset);
     newMember.linkedElems.push(newFieldset);
   }
 }
@@ -600,13 +603,14 @@ function onHouseholdMemberAdd(event) {
 function onDutyPeriodAdd(event) {
   const newPeriod = event.currentTarget.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
-  const firstFieldset = document.querySelector(
-    '#page-veteran-duty-period fieldset');
-  const newFieldset = firstFieldset.cloneNode(true);
+  const fieldsetTempl = document.querySelector(
+    '#page-veteran-duty-period template');
+  const newFieldset = document.createElement('fieldset');
+  newFieldset.appendChild(fieldsetTempl.content.cloneNode(true));
   const idModifier = `-period${newPeriod.dynamicFieldListId}`;
   modifyIds(newFieldset, idModifier);
   clearInputs(newFieldset);
-  firstFieldset.parentNode.appendChild(newFieldset);
+  fieldsetTempl.parentNode.appendChild(newFieldset);
   newPeriod.linkedElems = [newFieldset];
 }
 
@@ -673,10 +677,6 @@ function onChangeName(event) {
   const item = event.currentTarget.closest('ul.dynamic_field_list>li');
   // Update the heading to the household member's name.
   const heading = item.querySelector('h4');
-  if (!heading.defaultContent) {
-    // Save the initial content in case the custom name is later deleted.
-    heading.defaultContent = heading.textContent;
-  }
   const inputValue = event.currentTarget.value.trim();
   if (inputValue) {
     heading.setAttribute('translate', 'no');
@@ -822,6 +822,7 @@ function addDynamicFieldListItem(event) {
     // Add one for 1 indexing of headings vs 0 indexing of IDs.
     itemHeading.textContent = itemHeading.textContent.replace(
       /\d+$/, newIdNumber + 1);
+    itemHeading.defaultContent = itemHeading.textContent;
   }
   // Add a remove button for the new item.
   const removeButton = document.createElement('button');

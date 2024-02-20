@@ -147,7 +147,7 @@ pageClass: "page-benefits-eligibility"
 
     {% eligPage "veteran-duty-period" %}
       <h3>About Your Military Service</h3>
-      <fieldset>
+      {% capture dutyPeriodTempl %}
         <p>
           This question is about your <span class="bold">active duty period</span> from <span id="served-from-ref" class="bold"></span> until <span id="served-until-ref" class="bold"></span>.
         </p>
@@ -165,6 +165,12 @@ pageClass: "page-benefits-eligibility"
             {% endoption %}
           {% endsingleselect %}
         </div>
+      {% endcapture %}
+      <template>
+        {{dutyPeriodTempl}}
+      </template>
+      <fieldset>
+        {{dutyPeriodTempl}}
       </fieldset>
     {% endeligPage %}
 
