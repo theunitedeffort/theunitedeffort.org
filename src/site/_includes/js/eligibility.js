@@ -1023,7 +1023,8 @@ function switchToPage(toPage) {
 // Brings the user to the first page of a section.
 // This function is used as a step indicator click handler
 function toSection(event) {
-  const section = document.getElementById(event.currentTarget.dataset.sectionId);
+  const section = document.getElementById(
+    event.currentTarget.dataset.sectionId);
   if (section.id == 'section-results') {
     // Ensure results are always up-to-date prior to showing them.
     // TODO: Determine if it would be better to invalidate results on
