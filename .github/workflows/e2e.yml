@@ -22,7 +22,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           start: npm run start
-          wait-on: 'http://localhost:8080'
+          wait-on: 'http://localhost:8888'
           record: true
           browser: chrome
       - name: Upload screenshots
@@ -49,7 +49,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           start: npm run start
-          wait-on: 'http://localhost:8080'
+          wait-on: 'http://localhost:8888'
           record: true
           browser: firefox
       - name: Upload screenshots
@@ -76,7 +76,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           start: npm run start
-          wait-on: 'http://localhost:8080'
+          wait-on: 'http://localhost:8888'
           record: true
           browser: edge
       - name: Upload screenshots

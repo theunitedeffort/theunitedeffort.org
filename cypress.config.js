@@ -3,7 +3,7 @@ const { defineConfig } = require("cypress");
 module.exports = defineConfig({
   projectId: "yfze3r",
   e2e: {
-    baseUrl: 'http://localhost:8080',
+    baseUrl: 'http://localhost:8888',
     setupNodeEvents(on, config) {
       // https://www.ryanjyost.com/advanced-cypress-tips/
       on(`task`, {
