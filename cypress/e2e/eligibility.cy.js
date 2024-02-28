@@ -580,37 +580,140 @@ describe('Eligibility Assessment Tool', () => {
     });
   });
 
-  it.only('handles language switching back and forth', () => {
-    const lang = 'es';
-    cy.findByRole('link', {name: langText[lang]}).as('translate').click();
-    cy.contains('button', strs.buttonNext[lang]).as('next').click();
-    cy.get('#page-yourself-start').as('page').should('be.visible');
-    cy.get('@page').findByLabelText(strs.fieldVeteran[lang]).click();
-    cy.get('@next').click();
+  describe('Back and forth translation', () => {
+    let lang;
 
-    cy.get('#page-veteran-details').as('page').should('be.visible');
-    cy.get('@page').contains('button', strs.buttonAddAnother[lang]).click();
-    cy.get('@page').contains(new RegExp(strs.dutyPeriod[lang], 'i'));
-    cy.findByRole('link', {name: langText['en']}).as('english').click();
-    cy.get('@page').contains(new RegExp(strs.dutyPeriod['en'], 'i'));
-    cy.get('@page').contains(new RegExp(strs.dutyPeriod[lang], 'i'))
-      .should('not.exist');
-    cy.get('@translate').click();
+    beforeEach(() => {
+      lang = 'es';
+      cy.findByRole('link', {name: langText['en']}).as('english');
+      cy.findByRole('link', {name: langText[lang]}).as('translate').click();
+      cy.contains('button', strs.buttonNext[lang]).as('next').click();
+      cy.contains('button', strs.buttonBack[lang]).as('back');
+      cy.contains('button', strs.buttonFinish[lang]).as('finish');
+    })
 
-    cy.get('@next').click();
-    cy.get('@next').click();
-    cy.get('#page-income').as('page').should('be.visible');
-    cy.get('@page').findByLabelText(strs.noIncome[lang]).click();
-    cy.get('@next').click();
-    cy.get('@next').click();
-    cy.get('@next').click();
-    cy.contains('button', strs.buttonFinish[lang]).as('finish');
-    cy.get('@finish').click();
-    cy.get('#elig-summary').as('summaryList');
-    cy.get('@summaryList').contains(strs.lifelineTitle[lang]);
-    cy.get('@english').click();
-    cy.get('@summaryList').contains(strs.lifelineTitle['en']);
-    cy.get('@summaryList').contains(strs.lifelineTitle[lang])
-      .should('not.exist');
+    it('translates all household members back and forth', () => {
+      cy.get('@next').click();
+
+      cy.get('#page-household-members').as('page').should('be.visible');
+      cy.get('@page').contains('button', strs.buttonAddNew[lang]).click();
+      cy.get('@page').contains('li', new RegExp(`${strs.member[lang]} 2`, 'i'))
+        .as('member2');
+      cy.get('@member2').findByLabelText(strs.name[lang]).as('member2Name')
+        .type('House');
+      cy.get('@member2Name').blur();
+      cy.get('@page').contains('li', 'House').as('member2');
+      cy.get('@member2Name').clear();
+      cy.get('@member2Name').blur();
+      cy.get('@back').click();
+      cy.get('@next').click();
+      cy.get('@page').contains('li', new RegExp(`${strs.member[lang]} 2`, 'i'));
+      cy.get('@english').click();
+      cy.get('@page').contains('li', new RegExp(`${strs.member['en']} 2`, 'i'));
+      cy.get('@page').contains('li', new RegExp(`${strs.member[lang]} 2`, 'i'))
+        .should('not.exist');
+    });
+
+    it('translates all member incomes back and forth', () => {
+      cy.get('@next').click();
+
+      cy.get('#page-household-members').as('page').should('be.visible');
+      cy.get('@page').contains('button', strs.buttonAddNew[lang]).click();
+      cy.get('@next').click();
+      cy.get('@next').click();
+
+      cy.get('#page-income').as('page').should('be.visible');
+      cy.get('@page').findByLabelText(strs.wages[lang]).click();
+      cy.get('@next').click();
+
+      cy.get('#page-income-details-wages').as('page').should('be.visible');
+      cy.get('@page').contains('button', strs.firstMoneyAdd[lang]);
+      cy.get('@english').click();
+      cy.get('@page').contains('button', strs.firstMoneyAdd['en']);
+      cy.get('@page').contains('button', strs.firstMoneyAdd[lang])
+        .should('not.exist');
+    });
+
+    it('translates results summary list back and forth', () => {
+      cy.get('@next').click();
+      cy.get('@next').click();
+      cy.get('@next').click();
+
+      cy.get('#page-income').as('page').should('be.visible');
+      cy.get('@page').findByLabelText(strs.noIncome[lang]).click();
+      cy.get('@next').click();
+      cy.get('@next').click();
+      cy.get('@next').click();
+      cy.get('@finish').click();
+
+      cy.get('#page-results').should('be.visible');
+      cy.get('#elig-summary').as('summaryList');
+      cy.get('@summaryList').contains(strs.lifelineTitle[lang]);
+      cy.get('@english').click();
+      cy.get('@summaryList').contains(strs.lifelineTitle['en']);
+      cy.get('@summaryList').contains(strs.lifelineTitle[lang])
+        .should('not.exist');
+    });
+
+    it('translates all duty periods back and forth', () => {
+      cy.get('#page-yourself-start').as('page').should('be.visible');
+      cy.get('@page').findByLabelText(strs.fieldVeteran[lang]).click();
+      cy.get('@next').click();
+
+      cy.get('#page-veteran-details').as('page').should('be.visible');
+      cy.get('@page').contains('button', strs.buttonAddAnother[lang]).click();
+      cy.get('@page').contains(new RegExp(strs.dutyPeriod[lang], 'i'));
+      cy.get('@english').click();
+      cy.get('@page').contains(new RegExp(strs.dutyPeriod['en'], 'i'));
+      cy.get('@page').contains(new RegExp(strs.dutyPeriod[lang], 'i'))
+        .should('not.exist');
+    });
+
+    it('translates all duty period follow-up questions back and forth', () => {
+      cy.get('#page-yourself-start').as('page').should('be.visible');
+      cy.get('@page').findByLabelText(strs.fieldVeteran[lang]).click();
+      cy.get('@next').click();
+
+      cy.get('#page-veteran-details').as('page').should('be.visible');
+      cy.get('@page').contains('button', strs.buttonAddAnother[lang]).click();
+      cy.get('@page').contains('li', new RegExp(`${strs.dutyPeriod[lang]} 1`, 'i'))
+        .as('period1');
+      // TODO: change to regex
+      cy.get('@period1').findByLabelText(strs.dutyType[lang])
+        .select('active-duty');
+      cy.get('@period1').findByRole('group', {name: strs.startDate[lang]})
+        .as('start1');
+      cy.get('@start1').findByLabelText(strs.month[lang]).type('1');
+      cy.get('@start1').findByLabelText(strs.day[lang]).type('1');
+      cy.get('@start1').findByLabelText(strs.year[lang]).type('2020');
+      cy.get('@period1').findByRole('group', {name: strs.endDate[lang]}).as('end1');
+      cy.get('@end1').findByLabelText(strs.month[lang]).type('1');
+      cy.get('@end1').findByLabelText(strs.day[lang]).type('2');
+      cy.get('@end1').findByLabelText(strs.year[lang]).type('2020');
+      cy.get('@page').contains('li', new RegExp(`${strs.dutyPeriod[lang]} 2`, 'i'))
+        .as('period2');
+      // TODO: change to regex https://stackoverflow.com/questions/52219274/cypress-how-to-select-option-containing-text
+      cy.get('@period2').findByLabelText(strs.dutyType[lang])
+        .select('active-duty');
+      cy.get('@period2').findByRole('group', {name: strs.startDate[lang]})
+        .as('start2');
+      cy.get('@start2').findByLabelText(strs.month[lang]).type('1');
+      cy.get('@start2').findByLabelText(strs.day[lang]).type('1');
+      cy.get('@start2').findByLabelText(strs.year[lang]).type('2020');
+      cy.get('@period2').findByRole('group', {name: strs.endDate[lang]}).as('end2');
+      cy.get('@end2').findByLabelText(strs.month[lang]).type('1');
+      cy.get('@end2').findByLabelText(strs.day[lang]).type('2');
+      cy.get('@end2').findByLabelText(strs.year[lang]).type('2020');
+      cy.get('@next').click();
+
+      cy.get('#page-veteran-duty-period').as('page').should('be.visible');
+      cy.get('@page').contains('fieldset', strs.dutyPeriodDates[lang]);
+      cy.get('@back').click();
+      cy.findByRole('link', {name: langText['en']}).click();
+      cy.contains('button', strs.buttonNext['en']).click();
+      cy.get('@page').contains('fieldset', strs.dutyPeriodDates['en']);
+      cy.get('@page').contains('fieldset', strs.dutyPeriodDates[lang])
+        .should('not.exist');
+    });
   });
 });

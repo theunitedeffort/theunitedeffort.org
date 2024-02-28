@@ -121,7 +121,7 @@ pageClass: "page-benefits-eligibility"
 
       <div>
         <p>Enter details for your duty periods below:</p>
-        {% dynamicFieldList "Add another duty period" %}
+        {% capture dutyPeriodDetailsTempl %}
           <h4>Duty Period 1</h4>
           <div>
             <label for="your-duty-type">Duty type</label>
@@ -141,6 +141,9 @@ pageClass: "page-benefits-eligibility"
           <div>
             {% dategroup "served-until", "Service end date" %}
           </div>
+        {% endcapture %}
+        {% dynamicFieldList "Add another duty period", "", dutyPeriodDetailsTempl %}
+          {{dutyPeriodDetailsTempl}}
         {% enddynamicFieldList %}
       </div>
     {% endeligPage %}
