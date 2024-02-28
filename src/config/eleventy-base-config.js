@@ -407,7 +407,7 @@ module.exports = function(eleventyConfig) {
         <a href="/contact" target="_blank">Contact us for help applying</a>
       </p>`);
     return `
-      <li id="program-${id}">
+      <li id="program-${id}" data-default-title="${title}">
         <h4>${title}</h4>
         <ul class="elig_flags unenrolled_only"></ul>
         <p>${content}</p>

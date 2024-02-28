@@ -687,7 +687,7 @@ function onChangeName(event) {
   }
   // Also update the headings in all the income details pages.
   for (const linkedElem of item.linkedElems) {
-    setMemberIncomeHeading(linkedElem, heading.textContent);
+    setMemberIncomeHeading(linkedElem, heading.textContent, !inputValue);
   }
 }
 
@@ -736,8 +736,14 @@ function addConditionIcon(listItem, met,
   listItem.className = `condition ${cls}`;
 }
 
-function setMemberIncomeHeading(incomeFieldset, value) {
-  incomeFieldset.querySelector('legend').textContent = value;
+function setMemberIncomeHeading(incomeFieldset, value, doTranslate=true) {
+  const legend = incomeFieldset.querySelector('legend');
+  if (doTranslate) {
+    legend.removeAttribute('translate');
+  } else {
+    legend.setAttribute('translate', 'no');
+  }
+  legend.textContent = value;
 }
 
 function modifyIds(parent, idModifier) {
@@ -2891,7 +2897,7 @@ function renderResultsSummaryList(list, eligiblePrograms) {
     const listItem = document.createElement('li');
     const link = document.createElement('a');
     link.href = `#${program.id}`;
-    link.textContent = program.querySelector('h4').textContent;
+    link.textContent = program.dataset.defaultTitle;
     link.addEventListener('click', onAnchorClick);
     listItem.appendChild(link);
     list.appendChild(listItem);
