@@ -66,7 +66,7 @@ const strs = {
   },
   'fieldNoneDescribeMe': {
     'en': /none of these describe me/i,
-    'es': /ninguno de estos me describe/i
+    'es': /ninguno de estos me describe/i,
   },
   'fieldHeadHousehold': {
     'en': 'head of your household',
@@ -248,7 +248,7 @@ const strs = {
     'en': 'California LifeLine',
     'es': 'Línea de vida de California',
   },
-}
+};
 
 
 function inputMoneyFor(alias, lang) {
@@ -315,7 +315,7 @@ function e2eTest(lang) {
     cy.findByRole('link', {name: langText[lang]}).click();
   } else {
     // If no language is clicked, the page should be in English
-    lang = 'en'
+    lang = 'en';
   }
   cy.get('#page-intro').should('be.visible');
   cy.contains('button', strs.navYourself[lang]).as('yourself')
@@ -372,7 +372,7 @@ function e2eTest(lang) {
   cy.get('@page').findByLabelText(strs.fieldDischargeStatus[lang]).as('select')
     .select(strs.honorable[lang]);
   cy.get('@page').contains('button', strs.buttonAddAnother[lang]).click();
-  cy.get('@page').contains('button', strs.buttonAddAnother[lang])
+  cy.get('@page').contains('button', strs.buttonAddAnother[lang]);
   cy.get('@page').contains('li', new RegExp(`${strs.dutyPeriod[lang]} 1`, 'i'))
     .as('period1');
   // TODO: change to regex
@@ -575,9 +575,10 @@ describe('Eligibility Assessment Tool', () => {
 
   const languages = ['en', 'es'];
   languages.forEach((lang) => {
-    it(`gets to final results page with data entry and language "${lang}"`, () => {
-      e2eTest(lang);
-    });
+    it(`gets to final results page with data entry and language "${lang}"`,
+      () => {
+        e2eTest(lang);
+      });
   });
 
   describe('Back and forth translation', () => {
@@ -590,7 +591,7 @@ describe('Eligibility Assessment Tool', () => {
       cy.contains('button', strs.buttonNext[lang]).as('next').click();
       cy.contains('button', strs.buttonBack[lang]).as('back');
       cy.contains('button', strs.buttonFinish[lang]).as('finish');
-    })
+    });
 
     it('translates all household members back and forth', () => {
       cy.get('@next').click();
