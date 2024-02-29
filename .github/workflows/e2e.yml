@@ -15,7 +15,7 @@ jobs:
   chrome-browser-tests:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
@@ -26,7 +26,7 @@ jobs:
           record: true
           browser: chrome
       - name: Upload screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         # add the line below to store screenshots only on failures
         # if: failure()
         with:
@@ -34,7 +34,7 @@ jobs:
           path: cypress/screenshots
           if-no-files-found: ignore
       - name: Upload videos
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: chrome-videos
           path: cypress/videos
@@ -42,7 +42,7 @@ jobs:
   firefox-browser-tests:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
@@ -53,7 +53,7 @@ jobs:
           record: true
           browser: firefox
       - name: Upload screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         # add the line below to store screenshots only on failures
         # if: failure()
         with:
@@ -61,7 +61,7 @@ jobs:
           path: cypress/screenshots
           if-no-files-found: ignore
       - name: Upload videos
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: firefox-videos
           path: cypress/videos
@@ -69,7 +69,7 @@ jobs:
   edge-browser-tests:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
@@ -80,7 +80,7 @@ jobs:
           record: true
           browser: edge
       - name: Upload screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         # add the line below to store screenshots only on failures
         # if: failure()
         with:
@@ -88,7 +88,7 @@ jobs:
           path: cypress/screenshots
           if-no-files-found: ignore
       - name: Upload videos
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: edge-videos
           path: cypress/videos
