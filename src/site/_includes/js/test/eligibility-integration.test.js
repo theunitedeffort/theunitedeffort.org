@@ -355,7 +355,7 @@ describe('Navigation and UI', () => {
           otherChecks: function() {
             expect(
               document.getElementById('page-veteran-duty-period').textContent)
-              .toContain('from 1/1/2000 until 12/30/2001');
+              .toContain('from\u20091/1/2000\u2009until\u200912/30/2001');
           },
         },
         {
@@ -711,7 +711,7 @@ describe('Navigation and UI', () => {
     let thisPage = visiblePage();
     expect(thisPage.id).toBe('page-veteran-duty-period');
     check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
-    expect(thisPage.textContent).toContain('from 1/1/2020 until 1/2/2020');
+    expect(thisPage.textContent).toContain('from\u20091/1/2020\u2009until\u20091/2/2020');
     // Choose an option for the follow up question
     click(document.getElementById('full-dur-yes'));
     click(backButton);
@@ -727,7 +727,7 @@ describe('Navigation and UI', () => {
     enterText(document.getElementById('served-until-day-1'), '30');
     click(nextButton);
     check(thisPage.querySelectorAll('fieldset')[1]).isVisible();
-    expect(thisPage.textContent).toContain('from 1/1/2000 until 12/30/2001');
+    expect(thisPage.textContent).toContain('from\u20091/1/2000\u2009until\u200912/30/2001');
     // The selection made in the first question should not be copied to the
     // second question.
     expect(document.getElementById('full-dur-yes').checked).toBe(true);
@@ -877,7 +877,12 @@ describe('Navigation and UI', () => {
         expect(updatedEntries[0]).toEqual(origEntries[1]);
       }
       // Two household members, one income entry each.
-      expect(incomePage.textContent).toContain('$246');
+      if (visiblePage().id == 'page-income-assets') {
+        expect(incomePage.textContent).toContain('$246');
+        expect(incomePage.textContent).not.toContain('per month');
+      } else {
+        expect(incomePage.textContent).toContain('$246\u2009per month');
+      }
       // Named household member should appear.
       expect(incomePage.textContent).toContain('Ada');
     }
@@ -1476,8 +1481,8 @@ describe('Navigation and UI', () => {
     const firstItem = summary.querySelector(itemSelector);
     expect(firstItem.querySelector('a').hash).toEqual(noFeeIdSelector);
     expect(summary.textContent).toContain('No-Fee ID Card');
-    expect(summary.textContent).toContain('checked 19 programs');
-    expect(summary.textContent).toContain('1 you may qualify for');
+    expect(summary.textContent).toContain('checked\u200919\u2009programs');
+    expect(summary.textContent).toContain('1\u2009you may qualify for');
     expect(summary.textContent).toContain('1 program you\'re already enrolled');
     expectResults(eligible, 1);
     expectDetailsVisible(eligible, true);

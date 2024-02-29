@@ -407,7 +407,7 @@ module.exports = function(eleventyConfig) {
         <a href="/contact" target="_blank">Contact us for help applying</a>
       </p>`);
     return `
-      <li id="program-${id}">
+      <li id="program-${id}" data-default-title="${title}">
         <h4>${title}</h4>
         <ul class="elig_flags unenrolled_only"></ul>
         <p>${content}</p>
@@ -437,7 +437,7 @@ module.exports = function(eleventyConfig) {
     const buttonStr = `<button type="button" ` +
       `class="btn btn_secondary field_list_add" ` +
       `data-non-empty-text="${addText}" ` +
-      `data-empty-text="${emptyAddText}">${addText}</button>`;
+      `data-empty-text="${emptyAddText}">${emptyAddText}</button>`;
     return `
       <div class="dynamic_field_list_wrapper">
         <ul class="dynamic_field_list">
