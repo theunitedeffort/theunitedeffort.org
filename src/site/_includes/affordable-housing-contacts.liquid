@@ -1,22 +1,22 @@
 {%- capture mapUrl -%}
-https://maps.google.com/maps?q={{ apartment.address | url_encode}}+{{ apartment.city | url_encode}},+CA
+https://maps.google.com/maps?q={{ apartment.addresses[0] | url_encode}}+{{ apartment.city | url_encode}},+CA
 {%- endcapture -%}
-{%- if apartment.address and apartment.address != '' -%}
+{%- if apartment.addresses[0] and apartment.addresses[0] != '' -%}
   <p class="contact">
-  {{ apartment.address }}{%- if apartment.city and apartment.city != '' -%}, {{ apartment.city }}{%- endif -%}
+  <span translate="no">{{ apartment.addresses[0] }}{%- if apartment.city and apartment.city != '' -%}, {{ apartment.city }}{%- endif -%}</span>
     <span class="map_link_container noprint nowrap">
       (<button type="button" class="map_link link hidden" aria-label="Highlight {{ apartment.aptName }} on map">Show on map</button><span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ apartment.aptName }} on Google Maps">map</a><sup>&#8599;</sup></span>)
     </span>
   </p>
 {%- endif -%}
-{%- if apartment.email and apartment.email != '' -%}
-  <p class="contact"> 
-    <a href="mailto:{{ apartment.email }}" target="_blank" rel="noopener">{{ apartment.email }}</a>
+{%- if apartment.emails[0] and apartment.emails[0] != '' -%}
+  <p class="contact" translate="no">
+    <a href="mailto:{{ apartment.emails[0] }}" target="_blank" rel="noopener">{{ apartment.emails[0] }}</a>
   </p>
 {%- endif -%}
-{%- if apartment.phone and apartment.phone != '' -%}
+{%- if apartment.phones[0] and apartment.phones[0] != '' -%}
   <p class="contact">
-    {%- assign formattedPhone = apartment.phone | replace: '(', '' | replace: ') ', '-' -%}
+    {%- assign formattedPhone = apartment.phones[0] | formatPhone -%}
     <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
   </p>
 {%- endif -%}

@@ -8,13 +8,20 @@ exports.data = function() {
 };
 
 exports.render = function(data) {
-  const entries = {};
-  for (const entry of data.collections.prerender) {
+  const housingEntries = {};
+  const resourcesEntries = {};
+  for (const entry of data.collections.prerenderHousing) {
     const snippets = entry.templateContent.split('${BADGES}');
-    entries[entry.data.apartment.id] = {
+    housingEntries[entry.data.apartment.id] = {
       'heading': snippets[0], 'contacts': snippets[1],
     };
   }
 
-  return JSON.stringify({housingListItems: entries});
+  for (const entry of data.collections.prerenderResources) {
+    resourcesEntries[entry.data.resource.id] = entry.templateContent;
+  }
+  return JSON.stringify({
+    housingListItems: housingEntries,
+    resourceListItems: resourcesEntries,
+  });
 };

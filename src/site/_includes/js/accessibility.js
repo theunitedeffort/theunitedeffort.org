@@ -1,3 +1,5 @@
+'use strict';
+
 (function() {
   // https://inclusive-components.design/tooltips-toggletips/
   function openToggletip(liveRegion, message, timeout) {
@@ -19,9 +21,6 @@
 
     // Iterate over them
     Array.prototype.forEach.call(toggletipTexts, function(toggletipText) {
-      // Store the toggletip message
-      const message = toggletipText.innerHTML;
-
       // Create the container element
       const container = document.createElement('span');
       container.setAttribute('class', 'toggletip_entry');
@@ -51,17 +50,18 @@
       // Place the live region in the container
       container.appendChild(liveRegion);
 
-      // Remove the original element
-      toggletipText.parentNode.removeChild(toggletipText);
+      // Hide the original element, but keep it around for machine translation.
+      toggletipText.setAttribute('aria-hidden', 'true');
+      toggletipText.classList.add('visually_hidden');
 
       // Show the message on click
       toggletip.addEventListener('click', function() {
-        openToggletip(liveRegion, message, 100);
+        openToggletip(liveRegion, toggletipText.innerHTML, 100);
       });
 
       // Show the message on hover
       toggletip.addEventListener('mouseover', function() {
-        openToggletip(liveRegion, message);
+        openToggletip(liveRegion, toggletipText.innerHTML);
       });
 
       // Close on outside click

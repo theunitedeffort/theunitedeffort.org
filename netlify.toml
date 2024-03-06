@@ -8,6 +8,30 @@ command = "npm run dev"
 publish = "dist"
 functions = "netlify/functions"
 
+[context.production]
+command = 'sed -i "s|INJECTED_PASSWORD|${PRE_RELEASE_CONTENT_PASSWORD}|g" prod-headers && mkdir dist && cp prod-headers dist/_headers && npm run build'
+
+[[redirects]]
+from = "/contrib/affordable-housing/start"
+to = "/.netlify/functions/serverless"
+status = 200
+force = true
+_generated_by_eleventy_serverless = "serverless"
+
+[[redirects]]
+from = "/contrib/affordable-housing/start/index.html"
+to = "/.netlify/functions/serverless"
+status = 200
+force = true
+_generated_by_eleventy_serverless = "serverless"
+
+[[redirects]]
+from = "/find-resources/filter"
+to = "/.netlify/functions/serverless"
+status = 200
+force = true
+_generated_by_eleventy_serverless = "serverless"
+
 [[redirects]]
 from = "/housing/affordable-housing/csv"
 to = "/.netlify/functions/serverless"
@@ -60,6 +84,21 @@ to = "/.netlify/functions/next-property"
 status = 200
 
 [[redirects]]
+from = "/ecfr/*"
+to = "/.netlify/functions/ecfr"
+status = 200
+
+[[redirects]]
+from = "/tp"
+to = "/.netlify/functions/translate-proxy"
+status = 200
+
+[[redirects]]
 from = "/housing"
 to = "/housing/affordable-housing"
+status = 301
+
+[[redirects]]
+from = "/public-assistance"
+to = "/resources"
 status = 301

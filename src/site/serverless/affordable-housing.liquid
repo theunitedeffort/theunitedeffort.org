@@ -128,7 +128,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 
 <section aria-label="Housing Filter Options">
 <form action="/housing/affordable-housing/filter" action="get" id="housing-search" class="housing_search" onsubmit="ShowLoading();">
-  
+
   {% assign filterValues = housing.filterValues | updateFilterState: query %}
 
   {% for section in filterValues %}
@@ -142,13 +142,19 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     {% assign sortedOpts = section.options | rankSort: "name" %}
     {% for opt in sortedOpts %}
       {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
-      <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
-      {% if opt.name == "SRO" %}
-          {% assign label = '<abbr role="definition" aria-label="Single Room Occupancy">SRO</abbr>' %}
-      {% else %}
-          {% assign label = opt.label %}
-      {% endif %}
-      <label for="{{optId}}">{{label}}</label><br/>
+      <div>
+        <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
+        {% if opt.name == "SRO" %}
+            {% assign label = '<abbr role="definition" aria-label="Single Room Occupancy"><span translate="no">SRO</span></abbr>' %}
+        {% else %}
+            {% assign label = opt.label %}
+        {% endif %}
+        <label for="{{optId}}"
+        {%- if section.name == "city" %}
+          translate="no"
+        {%- endif -%}
+        >{{label}}</label>
+      </div>
     {% endfor %}
     </div>
   </fieldset>
@@ -208,11 +214,11 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 </section>
 
 <section id="results" class="anchor_context" aria-label="Housing Results">
-  <div class="align-end flex stack-reversed">
+  <div class="align-right flex stack-reversed">
     <p class="noprint bold">
-    {{num_results_snippet}}
+      {{num_results_snippet}}
     </p>
-    <div>
+    <div class="grow_1">
       {% if num_results > 0 %}
         <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/housing/affordable-housing/table?{{query | queryString}}">
           Show printable summary
@@ -234,6 +240,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% if num_filters_applied > 0 %}
     <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
   {% endif %}
+    <p>
+      <a href="/housing/affordable-housing/feedback" class="noprint">Report an error</a>
+    </p>
 
   <div class="flex results_container">
     <div id="map-toggle" class="noprint hidden">
@@ -299,7 +308,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       <div class="split_right_container">
         <div id="map"></div>
         <div id="map-legend"></div>
-        <p class="attribution">Transit data provided by <a href=http://www.511.org target="_blank" rel="noopener">511.org</a></p>
+        <p class="attribution align-right">Transit data provided by <a href=http://www.511.org target="_blank" rel="noopener">511.org</a></p>
       </div>
     </div>
   </div>

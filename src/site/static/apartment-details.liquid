@@ -11,13 +11,13 @@ eleventyComputed:
   title: '{{apartment.aptName | default: "Apartment Listing"}}'
 ---
 
-<h1>{{title}}</h1>
+<h1 translate="no">{{title}}</h1>
 <table class="deflist">
-  {% render "apartment-meta-item" label: "Address", item: apartment.address, apartment: apartment %}
+  {% render "apartment-meta-item" label: "Address", item: apartment.addresses, apartment: apartment %}
   {% render "apartment-meta-item" label: "City", item: apartment.city %}
   {% render "apartment-meta-item" label: "Units", item: apartment.numTotalUnits %}
-  {% render "apartment-meta-item" label: "Email", item: apartment.email %}
-  {% render "apartment-meta-item" label: "Phone", item: apartment.phone %}
+  {% render "apartment-meta-item" label: "Email", item: apartment.emails %}
+  {% render "apartment-meta-item" label: "Phone", item: apartment.phones %}
   {% render "apartment-meta-item" label: "Website", item: apartment.website %}
   {% render "apartment-meta-item" label: "Additional Info", item: apartment.supplementalUrls %}
 </table>
@@ -135,7 +135,7 @@ eleventyComputed:
               {% assign defaultBracketStr = "Bracket " | concat: forloop.index %}
               <td>
                 {%- if unit.incomeBracket and unit.incomeBracket != "" -%}
-                  {{unit.incomeBracket}}% <abbr role="definition" aria-label="Area Median Income">AMI</abbr>
+                  {{unit.incomeBracket}}% <abbr role="definition" aria-label="Area Median Income"><span translate="no">AMI</span></abbr>
                 {%- else -%}
                   {{defaultBracketStr}}
                 {%- endif -%}
@@ -201,4 +201,7 @@ eleventyComputed:
   {% endfor %}
 </div>
 
+<p class="float_right">
+  <a href="/housing/affordable-housing/feedback" class="noprint">Report an error</a>
+</p>
 

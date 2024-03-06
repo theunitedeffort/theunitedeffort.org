@@ -3,6 +3,7 @@ const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 // This requirement is somehow not propagated from affordable-housing.11tydata.js
 // so include it here to be sure it makes it into the serverless bundle.
 const EleventyFetch = require("@11ty/eleventy-fetch");
+const pluginToc = require('eleventy-plugin-nesting-toc');
 
 
 module.exports = function(eleventyConfig) {
@@ -16,6 +17,8 @@ module.exports = function(eleventyConfig) {
     // come from Babel instead (via babel.config.json and package.json)
     eleventyConfig.addPassthroughCopy({ "src/site/_includes/js/*.js": "/js" });
   }
+
+  eleventyConfig.addPlugin(pluginToc);
 
   // Eleventy Serverless plugin
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {

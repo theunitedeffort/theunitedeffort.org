@@ -3,19 +3,40 @@
   <td class="definition_term">{{ label }}</td>
   <td class="definition">
   {%- if label == "Email" -%}
-    <a href="mailto:{{ item }}">{{ item }}</a>
+    <ul>
+      {%- for email in item -%}
+        {%- if email and email != '' -%}
+          <li><a href="mailto:{{ email }}">{{ email }}</a></li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
   {%- elsif label == "Phone" -%}
-    <a href="tel:{{ item }}" >{{ item }}</a>
+    <ul>
+      {%- for phone in item -%}
+        {%- if phone and phone != '' -%}
+          {%- assign formattedPhone = phone | formatPhone -%}
+          <li><a href="tel:{{ formattedPhone }}" >{{ formattedPhone }}</a></li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
   {%- elsif label == "Website" -%}
-    <a href="{{ item }}" target="_blank" rel="noopener">{{ item }}</a>
+    <a href="{{ item }}" target="_blank" rel="noopener" translate="no">{{ item }}</a>
   {%- elsif label == "Additional Info" -%}
     <ul>
       {%- for link in item -%}
-        <li><a href="{{ link }}" target="_blank" rel="noopener">{{ link }}</a></li>
+        <li><a href="{{ link }}" target="_blank" rel="noopener" translate="no">{{ link }}</a></li>
       {%- endfor -%}
     </ul>
   {%- elsif label == "Address" -%}
-     {{ item }} (<a href="https://maps.google.com/maps?q={{item | url_encode}}+{{apartment.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)
+    <ul>
+      {%- for address in item -%}
+        {%- if address and address != '' -%}
+          <li><span translate="no">{{ address }}</span> (<a href="https://maps.google.com/maps?q={{address | url_encode}}+{{apartment.city | url_encode}}&country=us" target="_blank" rel="noopener">map</a>)</li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  {%- elsif label == "City" -%}
+    <span translate="no">{{ item }}</span>
   {%- else -%}
     {{ item }}
   {%- endif -%}

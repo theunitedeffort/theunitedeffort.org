@@ -72,15 +72,25 @@ main {
     }
   }
 
-  .btn:disabled,
-  a.btn:disabled {
+  .btn_primary:disabled,
+  a.btn_primary:disabled,
+  .btn_secondary[aria-disabled],
+  a.btn_secondary[aria-disabled] {
     cursor: not-allowed;
     color: var(--color-gray-700);
     background-color: var(--color-gray-300);
     border-top-color: var(--color-gray-300);
     border-bottom-color: var(--color-gray-100);
-    border-left: none;
-    border-right: none;
+  }
+
+  .btn_secondary:disabled,
+  a.btn_secondary:disabled,
+  .btn_secondary[aria-disabled],
+  a.btn_secondary[aria-disabled] {
+    cursor: not-allowed;
+    color: var(--color-gray-600);
+    background-color: var(--color-gray-900);
+    border-color: var(--color-gray-600);
   }
 
   .icon_info,
@@ -127,6 +137,12 @@ main {
 //     background-size: 2em 2em;
 //   }
 
+  .donate_wrapper a.btn {
+    font-size: 1rem;
+    @include bp(mid) {
+      font-size: 1.2rem;
+    }
+  }
 
 }
 

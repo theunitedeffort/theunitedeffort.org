@@ -1,7 +1,13 @@
+'use strict';
+
 const USER_NAME_KEY = 'userName';
 const APT_NAME_FIELD_ID = 'fldMcM49qaNr3EQ2a';
 const POPULATIONS_SERVED_FIELD_ID = 'fldkzU54q8lYtIH7G';
 const PROPERTY_URL_FIELD_ID = 'fldei8N0xw2VhjX9V';
+const SUPPLEMENTAL_URL_1_FIELD_ID = 'fldoe6XJoxDyKZ8Vt';
+const SUPPLEMENTAL_URL_2_FIELD_ID = 'fldDuvqWGWxzA5X1e';
+const SUPPLEMENTAL_URL_3_FIELD_ID = 'fldcqigCh1DvoZ8zW';
+const SUPPLEMENTAL_URL_4_FIELD_ID = 'fld8Y5vlMxHWlvzNk';
 const UNIT_TYPE_FIELD_ID = 'fldJ4fP1y13NE6ywu';
 const UNIT_STATUS_FIELD_ID = 'fldTNeFcJ3dhDKLqZ';
 const AMI_PERCENT_FIELD_ID = 'fldBHf0GmnBHnZBFI';
@@ -28,8 +34,6 @@ function setTerminalMessage(header, content) {
   document.getElementById('apt-name-header').textContent = header;
   document.getElementById('terminal-content').innerHTML = content;
   document.getElementById('input-content').setAttribute('hidden', 'hidden');
-  document.getElementById('property-webpage-frame').setAttribute(
-    'hidden', 'hidden');
 }
 
 // Displays a message for the empty property queue condition.
@@ -56,7 +60,7 @@ function setEmptyQueueMessage(queue) {
 function setInvalidHousingIdMessage(housingId, campaignPath) {
   const header = 'Oops! That property doesn\'t seem to exist.';
   const content = `There is no property with the ID
-    <span class="bold">${housingId}</span> in our database.  Check your URL
+    <span class="bold">${housingId}</span> in this campaign.  Check your URL
     and try again or see the <a href="${campaignPath}">next property</a> that
     needs to be checked.`;
   setTerminalMessage(header, content);
@@ -71,8 +75,8 @@ function setUserName() {
     document.getElementById('user-name-input-container').setAttribute('hidden',
       'hidden');
     document.getElementById('edit-user-name').removeAttribute('hidden');
-    document.getElementById('user-name').setAttribute('value', userName);
-    userNameInput.setAttribute('value', userName);
+    document.getElementById('user-name').value = userName;
+    userNameInput.value = userName;
     document.getElementById('welcome-name').textContent = `, ${userName}`;
     localStorage.setItem(USER_NAME_KEY, userName);
   }
@@ -100,13 +104,13 @@ function collapseCollapsible(content, button) {
 }
 
 // Toggles the collapsed state of this unit or rent offering.
-function toggleCollapsible() {
-  const contentDiv = this.parentNode.parentNode.parentNode.querySelector(
+function toggleCollapsible(event) {
+  const contentDiv = event.currentTarget.closest('fieldset').querySelector(
     '.collapsible_content');
   if (contentDiv.hasAttribute('hidden')) {
-    expandCollapsible(contentDiv, this);
+    expandCollapsible(contentDiv, event.currentTarget);
   } else {
-    collapseCollapsible(contentDiv, this);
+    collapseCollapsible(contentDiv, event.currentTarget);
   }
 }
 
@@ -121,74 +125,104 @@ function handleUserNameKeydown(e) {
 
 // Updates the main header of the page to match the value of the element
 // receiving the event.
-function updatePageTitle() {
-  document.getElementById('apt-name-header').textContent = this.value;
+function updatePageTitle(event) {
+  document.getElementById('apt-name-header').textContent = (
+    event.currentTarget.value);
+}
+
+function addMissingProtocol(textInput) {
+  // If the non-empty URL does not start with https:// or http://,
+  // assume https:// and prepend it to the user's input.
+  if (textInput.value && textInput.value.search(/https?:\/\//) != 0) {
+    textInput.value = `https://${textInput.value}`;
+  }
+}
+
+function hrefOrVoid(str) {
+  return str || 'javascript:void(0)';
 }
 
 // Updates the href attribute of any links with class 'property-link' to
 // be the value of the element receiving the event.
-function updatePropertyLink() {
+function updatePropertyLink(event) {
   const links = document.querySelectorAll('.property-link');
-  const iframe = document.getElementsByTagName('iframe')[0];
-  // If the URL does not start with https:// or http://,
-  // assume https:// and prepend it to the user's input.
-  if (this.value.search(/https?:\/\//) != 0) {
-    this.setAttribute('value', `https://${this.value}`);
-  }
+  addMissingProtocol(event.currentTarget);
   for (const link of links) {
-    link.setAttribute('href', this.value);
+    link.setAttribute('href', hrefOrVoid(event.currentTarget.value));
   }
-  // Any http link is guaranteed to fail to display in the iframe because
-  // the UEO site is served over https. Set the iframe src to have an
-  // unspecified protocol to optimisitically request the https version
-  // if there is one (without changing the stored property URL value).
-  iframe.src = this.value.replace(/https?:/, '');
+}
+
+function updateSupplementalLink(event) {
+  const parent = event.currentTarget.parentNode;
+  const anchor = parent.querySelector('a.supplemental_url');
+  addMissingProtocol(event.currentTarget);
+  anchor.setAttribute('href', hrefOrVoid(event.currentTarget.value));
+  // Get all supplemental URLs and update the instruction text
+  const urlInputs = document.querySelectorAll('input[name^="SUPPLEMENTAL_URL"]');
+  const container = document.getElementById('all-supplemental-urls');
+  const anchors = [];
+  for (const input of urlInputs) {
+    if (input.value) {
+      anchors.push(`<a href="${input.value}" ` +
+        `target="_blank">another one</a><sup>&#8599;</sup>`);
+    }
+  }
+  if (anchors.length > 0) {
+    container.innerHTML = `(${anchors.join(', ')}) `;
+    container.removeAttribute('hidden');
+  } else {
+    container.innerHTML = '';
+    container.setAttribute('hidden', 'hidden');
+  }
 }
 
 // Shows the second address field.
-function updateSecondAddressVisibility() {
-  document.getElementById('second-address').removeAttribute('hidden');
-  document.getElementById('show-second-address').setAttribute('hidden',
-    'hidden');
+function showExtraField(event) {
+  document.getElementById(event.currentTarget.dataset.controls)
+    .removeAttribute('hidden');
+  event.currentTarget.setAttribute('hidden', 'hidden');
 }
 
 // Updates the heading for this unit to match the unit type selected.
-function updateUnitHeading() {
-  const heading = this.parentNode.parentNode.querySelector('.section_title');
+function updateUnitHeading(event) {
+  const heading = (
+    event.currentTarget.closest('fieldset').querySelector('.section_title'));
   let unitTypeStr = '';
-  if (this.value) {
-    unitTypeStr = `: ${this.value}`;
+  if (event.currentTarget.value) {
+    unitTypeStr = `: ${event.currentTarget.value}`;
   }
   heading.textContent = `Unit Type${unitTypeStr}`;
 }
 
 // Updates the heading for this rent offering to include the AMI % category.
-function updateOfferingHeading() {
-  const heading = this.parentNode.parentNode.querySelector('.section_title');
+function updateOfferingHeading(event) {
+  const heading = (
+    event.currentTarget.closest('fieldset').querySelector('.section_title'));
   let offeringStr = '';
-  if (this.value) {
-    offeringStr = `: ${this.value}% AMI`;
+  if (event.currentTarget.value) {
+    offeringStr = `: ${event.currentTarget.value}% AMI`;
   }
   heading.textContent = `Rent Offering${offeringStr}`;
 }
 
-function updateSelectColor() {
-  const options = this.childNodes;
+function updateSelectColor(event) {
+  const options = event.currentTarget.childNodes;
   for (const option of options) {
     if (option.selected) {
       const color = option.dataset.color;
       if (color) {
-        this.style.backgroundColor = `var(--airtable-color-${color})`;
+        event.currentTarget.style.backgroundColor = (
+          `var(--airtable-color-${color})`);
       } else {
-        this.style.backgroundColor = '';
+        event.currentTarget.style.backgroundColor = '';
       }
       break;
     }
   }
 }
 
-function updateMultiselectColors() {
-  const options = this.querySelectorAll('input[type=checkbox]');
+function updateMultiselectColors(event) {
+  const options = event.currentTarget.querySelectorAll('input[type=checkbox]');
   for (const option of options) {
     const label = option.nextSibling.nextSibling;
     label.style.backgroundColor = '';
@@ -226,8 +260,8 @@ function updateAgeVisibility() {
 
 // Shows or hides maximum income table rows depending on the values
 // of min and max occupancy for the unit.
-function updateMaxIncomeRowsVisibility() {
-  const unitContainer = this.parentNode;
+function updateMaxIncomeRowsVisibility(event) {
+  const unitContainer = event.currentTarget.parentNode;
   const offeringContainers = unitContainer.querySelectorAll('fieldset');
   const minOccupancyField = unitContainer.querySelector(
     '[name*=MIN_OCCUPANCY]');
@@ -243,7 +277,7 @@ function updateMaxIncomeRowsVisibility() {
         rows[j].setAttribute('hidden', 'hidden');
         // Also clear contents when hiding rows so that hidden row data
         // doesn't get accidentally transmitted on form submit.
-        rows[j].querySelector('input').setAttribute('value', '');
+        rows[j].querySelector('input').value = '';
       } else {
         rows[j].removeAttribute('hidden');
       }
@@ -253,11 +287,11 @@ function updateMaxIncomeRowsVisibility() {
 
 // Shows the primary or alternate rent input fields based on the state of the
 // checkbox that got this event.
-function updateRentVisibility() {
-  const offering = this.parentNode;
+function updateRentVisibility(event) {
+  const offering = event.currentTarget.parentNode;
   const rentInput = offering.querySelector('.rent_value');
   const rentAlternateInput = offering.querySelector('.rent_alternate');
-  if (this.checked) {
+  if (event.currentTarget.checked) {
     rentInput.setAttribute('hidden', 'hidden');
     clearAllFieldsIn(rentInput);
     rentAlternateInput.removeAttribute('hidden');
@@ -270,12 +304,12 @@ function updateRentVisibility() {
 
 // Shows the primary or alternate minimum income input fields based on the state
 // of the checkbox that got this event.
-function updateMinIncomeVisibility() {
-  const unit = this.parentNode;
+function updateMinIncomeVisibility(event) {
+  const unit = event.currentTarget.parentNode;
   const minIncomeInput = unit.querySelector('.min_income');
   const minIncomeAlternateInputs = unit.querySelectorAll(
     '.min_income_alternate');
-  if (this.checked) {
+  if (event.currentTarget.checked) {
     minIncomeInput.setAttribute('hidden', 'hidden');
     clearAllFieldsIn(minIncomeInput);
     for (const alternateInput of minIncomeAlternateInputs) {
@@ -292,12 +326,12 @@ function updateMinIncomeVisibility() {
 
 // Shows the primary or alternate maximum income input fields based on the state
 // of the checkbox that got this event.
-function updateMaxIncomeVisibility() {
-  const offering = this.parentNode;
+function updateMaxIncomeVisibility(event) {
+  const offering = event.currentTarget.parentNode;
   const maxIncomeInput = offering.querySelector('table.max_income');
   const maxIncomeAlternateInput = offering.querySelector(
     '.max_income_alternate');
-  if (this.checked) {
+  if (event.currentTarget.checked) {
     maxIncomeInput.setAttribute('hidden', 'hidden');
     clearAllFieldsIn(maxIncomeInput);
     maxIncomeAlternateInput.removeAttribute('hidden');
@@ -331,12 +365,12 @@ function addUnit() {
 // the list of units in the DOM.  This way, the visible units are always
 // adjacent and units are always "added" right after the visible ones (see
 // addUnit() ).
-function deleteUnit() {
+function deleteUnit(event) {
   if (lastVisUnitIdx >= 0) {
     lastVisUnitIdx -= 1;
     // The unit being deleted is the one assocated with the specific
     // delete button that got this event.
-    const deletedUnit = this.parentNode.parentNode.parentNode.parentNode;
+    const deletedUnit = event.currentTarget.closest('[id^="unit-"]');
     // Hide the unit section being deleted.
     deletedUnit.setAttribute('hidden', 'hidden');
     const deletedUnitId = deletedUnit.id.split('-')[1];
@@ -368,8 +402,8 @@ function deleteUnit() {
 // When a new rent offering is "added", the rent offering section that is
 // immediately after the last currently-visible offering section in the DOM is
 // made visible.
-function addOffering() {
-  const unitDiv = this.parentNode.parentNode.parentNode;
+function addOffering(event) {
+  const unitDiv = event.currentTarget.closest('[id^="unit-"]');
   const unitId = unitDiv.id.split('-')[1];
   if (lastVisOfferIdx[unitId] < MAX_NUM_OFFERINGS - 1) {
     lastVisOfferIdx[unitId] += 1;
@@ -391,11 +425,11 @@ function addOffering() {
 // the list of rent offerings in the DOM.  This way, the visible units are
 // always adjacent and offerings are always "added" right after the visible ones
 // (see addOffering() ).
-function deleteOffering() {
+function deleteOffering(event) {
   // The rent offering being deleted is the one assocated with the specific
   // delete button that got this event.
-  const deletedOffering = this.parentNode.parentNode.parentNode.parentNode;
-  const unitDiv = deletedOffering.parentNode.parentNode.parentNode.parentNode;
+  const deletedOffering = event.currentTarget.closest('[id*="-offering-"]');
+  const unitDiv = deletedOffering.parentNode.closest('[id^="unit-"]');
   const unitId = unitDiv.id.split('-')[1];
   if (lastVisOfferIdx[unitId] >= 0) {
     lastVisOfferIdx[unitId] -= 1;
@@ -408,6 +442,21 @@ function deleteOffering() {
     // (e.g. "offering-0", "offering-1") will not always be in order in the DOM,
     // as the order depends on add/delete history.
     offeringsContainer.appendChild(deletedOffering);
+
+    // If this is the final offering being deleted, leaving an empty list of
+    // offerings, pre-populate the ID field of the next offering queued up with
+    // the fallback ID.  This ensures that even unit types with no offerings
+    // in the form link back to an Airtable record in the units table.  This
+    // needs to be done because the form nests offerings within units, but
+    // the data is stored in Airtable at the offering level only. (Confusingly,
+    // in a table called "Units").  Since only the next offering entry in the
+    // queue is populated with the fallback, if the user decides to add an
+    // offering, it'll already be associated with an existing Airtable record.
+    if (lastVisOfferIdx[unitId] == -1) {
+      const defaultOffering = unitDiv.querySelector('.all_offerings > div');
+      const idField = defaultOffering.querySelector('[name^="ID:"]');
+      idField.value = idField.dataset.fallback;
+    }
     // Ensure all the fields in the deleted unit are cleared to avoid
     // accidentally transmitting data in hidden fields upon submit.
     clearAllFieldsIn(deletedOffering);
@@ -427,19 +476,19 @@ function clearAllFieldsIn(node) {
   const allInputs = node.querySelectorAll('input, textarea, select');
   for (const input of allInputs) {
     if (input.tagName == 'TEXTAREA') {
-      input.textContent = '';
+      input.value = '';
     } else if (input.tagName == 'SELECT') {
       const options = input.childNodes;
       for (const option of options) {
-        option.removeAttribute('selected');
+        option.selected = false;
       }
-      input.firstChild.setAttribute('selected', 'selected');
-      input.setAttribute('value', '');
+      input.firstChild.selected = true;
+      input.value = '';
     } else if (input.tagName == 'INPUT') {
       if (input.type == 'checkbox') {
-        input.removeAttribute('checked');
+        input.checked = false;
       } else {
-        input.setAttribute('value', '');
+        input.value = '';
       }
     }
     // Input values have changed, so run any change handlers.
@@ -466,21 +515,21 @@ function prefillField(field, value) {
         doCheck = value;
       }
       if (doCheck) {
-        field.setAttribute('checked', 'checked');
+        field.checked = true;
       }
     } else {
-      field.setAttribute('value', value);
+      field.value = value;
     }
   } else if (field.tagName == 'TEXTAREA') {
-    field.textContent = value;
+    field.value = value;
   } else if (field.tagName == 'SELECT') {
     for (const option of field.childNodes) {
       if (option.value == value) {
-        option.setAttribute('selected', 'selected');
+        option.selected = true;
         break;
       }
     }
-    field.setAttribute('value', value);
+    field.value = value;
   }
 
   // Field values have changed, so trigger the appropriate change
@@ -523,8 +572,15 @@ function prefillForm(data) {
   // housing database.
   if (data.queue.thisItem.recordId) {
     const queueRecordId = data.queue.thisItem.recordId;
-    document.getElementById('queue-record-id').setAttribute('value',
-      queueRecordId);
+    document.getElementById('queue-record-id').value = queueRecordId;
+  }
+  if (data.queue.thisItem.housingTable) {
+    document.getElementById('housing-table').value = (
+      data.queue.thisItem.housingTable);
+  }
+  if (data.queue.thisItem.unitsTable) {
+    document.getElementById('units-table').value = (
+      data.queue.thisItem.unitsTable);
   }
   const fieldSelector = 'input, textarea, select';
   const propertySection = document.getElementById('property-data');
@@ -532,6 +588,7 @@ function prefillForm(data) {
   const propertyFields = propertySection.querySelectorAll(fieldSelector);
   const unitsFields = unitsSection.querySelectorAll(fieldSelector);
   const formConditionals = unitsSection.querySelectorAll('.form_conditional');
+  const showExtraFieldButtons = document.querySelectorAll('.show_extra_field');
   // Fill all property-level fields.
   for (const field of propertyFields) {
     const value = data.housing.fields[field.name];
@@ -546,15 +603,36 @@ function prefillForm(data) {
     if (offerIdx === undefined) {
       offerIdx = 0;
     }
-    if (unitIdx < data.units.length && offerIdx < data.units[unitIdx].length) {
-      const value = data.units[unitIdx][offerIdx].fields[fieldName];
-      prefillField(field, value);
+    if (unitIdx < data.units.length) {
+      if (fieldName === 'ID') {
+        // Set the first unit record ID as the fallback record to be edited
+        // in the event all offerings are deleted from the interactive
+        // form.  This will maintain a tie to an Airtable units table record
+        // should all the offerings be removed.
+        field.dataset.fallback = data.units[unitIdx][0].fields[fieldName];
+      }
+      if (offerIdx < data.units[unitIdx].length) {
+        const value = data.units[unitIdx][offerIdx].fields[fieldName];
+        prefillField(field, value);
+      }
+    }
+  }
+
+  const firstOfferings = document.querySelectorAll(
+    '.all_offerings > div:first-child');
+  for (const offering of firstOfferings) {
+    const fieldSelector = (
+      'input:not(.form_conditional):not([type=hidden]), textarea, select');
+    const fields = offering.querySelectorAll(fieldSelector);
+    const deleteButton = offering.querySelector('.delete_offering');
+    if (!hasUnitsDataIn(Array.from(fields, (f) => f.name), data.units)) {
+      deleteButton.click();
     }
   }
   // Special handling for these form conditionals, which are form inputs
   // that do not map directly to Airtable fields.  Instead, they provide
   // form-level interactivity only. They do get pre-filled based on other
-  // Airtable fields, howerver.
+  // Airtable fields, however.
   for (const field of formConditionals) {
     if (!field.dataset.primaryField || !field.dataset.alternateField) {
       continue;
@@ -587,6 +665,18 @@ function prefillForm(data) {
        (primaryFieldUsed && conflictResolution == 'alternate')
       ));
     field.dispatchEvent(new Event('change'));
+  }
+
+  // Make sure any extra fields are shown if those extra fields have data.
+  for (const button of showExtraFieldButtons) {
+    const linkedElem = document.getElementById(button.dataset.controls);
+    const linkedInputs = linkedElem.querySelectorAll(fieldSelector);
+    for (const input of linkedInputs) {
+      if (input.value != '') {
+        button.click();
+        break;
+      }
+    }
   }
 }
 
@@ -628,6 +718,7 @@ function getPathParams() {
 
 // Fetches all data required to prefill the input form fields.
 async function fetchFormPrefillData(params) {
+  console.log(`getting next-property as requested by ${window.location.href}`);
   if (!params.campaign) {
     return {};
   }
@@ -660,8 +751,9 @@ function addListeners() {
   userNameInput.addEventListener('keydown', handleUserNameKeydown);
 
   // Form interactions
-  document.getElementById('show-second-address').addEventListener('click',
-    updateSecondAddressVisibility);
+  for (const button of document.querySelectorAll('.show_extra_field')) {
+    button.addEventListener('click', showExtraField);
+  }
   for (const button of document.querySelectorAll('button.collapse_control')) {
     button.addEventListener('click', toggleCollapsible);
   }
@@ -692,6 +784,14 @@ function addListeners() {
     updatePageTitle);
   document.getElementById(PROPERTY_URL_FIELD_ID).addEventListener('change',
     updatePropertyLink);
+  document.getElementById(SUPPLEMENTAL_URL_1_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_2_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_3_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
+  document.getElementById(SUPPLEMENTAL_URL_4_FIELD_ID).addEventListener(
+    'change', updateSupplementalLink);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`)
     .addEventListener('change', updateAgeVisibility);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`)
@@ -755,13 +855,14 @@ function initUserName() {
   const userName = localStorage.getItem(USER_NAME_KEY);
   const userNameInput = document.getElementById('user-name-input');
   if (userName) {
-    userNameInput.setAttribute('value', userName);
+    userNameInput.value = userName;
     userNameInput.dispatchEvent(new Event('change'));
   }
 }
 
 // Prepares the page for display to the user.
 function initPage(data, params) {
+  console.log('initializing page');
   initUserName();
   displayQueue(data.queue);
   // A campaign is required for nearly all aspects of the page.
@@ -787,11 +888,12 @@ function initPage(data, params) {
 // Script entry point.
 /* eslint no-unused-vars: "off" */
 async function run() {
+  console.log('run called');
   addListeners();
   const params = getPathParams();
   const data = await fetchFormPrefillData(params);
   initPage(data, params);
   if (params.campaign) {
-    document.getElementById('campaign').setAttribute('value', params.campaign);
+    document.getElementById('campaign').value = params.campaign;
   }
 }

@@ -40,20 +40,20 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
       <th>Rent</th>
       <th>Min Income</th>
       <th>Max Income</th>
+      <th translate="no">AMI</th>
       <th>Phone #</th>
       <th>Must be Senior</th>
     </tr>
   </thead>
   <tbody>
-    {% assign sortedHousingdb = housingdb | sort: "aptName" %}
-    {% for apartment in sortedHousingdb %}
+    {% for apartment in housingdb %}
       <tr>
-        <td>
+        <td translate="no">
           <a class="noprint" href="/housing/affordable-housing/{{apartment.id}}" target="_blank" rel="noopener">{{ apartment.aptName }}</a>
           <span class="only_print">{{apartment.aptName}}</span>
         </td>
-        <td>{{ apartment.address }}</td>
-        <td>{{ apartment.city }}</td>
+        <td translate="no">{{ apartment.addresses[0] }}</td>
+        <td translate="no">{{ apartment.city }}</td>
         <td>
           {% assign waitlistStatuses = apartment.units | map: "openStatus" | compact | uniq %}
           {% if waitlistStatuses.size > 1 %}
@@ -68,7 +68,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
             {{ waitlistStatuses | first }}
           {% endif %}
         </td>
-        <td>{{ apartment.units | map: "type" | uniq | rankSort | join: '<br style="mso-data-placement:same-cell;"/>' | replace: "Bedroom", "BR" }}</td>
+        <td translate="no">{{ apartment.units | map: "type" | uniq | rankSort | join: '<br style="mso-data-placement:same-cell;"/>' | replace: "Bedroom", "BR" }}</td>
         <td>
           {% assign rents = apartment.units | map: "rent" | map: "amount" | compact | uniq | sort %}
           {% if rents.size == 1 %}
@@ -89,7 +89,6 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
           {% assign maxIncomes = apartment.units | map: "maxIncome" %}
           {% assign maxIncomeLows = maxIncomes | map: "low" | compact | uniq | sort %}
           {% assign maxIncomeHighs = maxIncomes | map: "high" | compact | uniq | sort %}
-          {% assign percentAmis = apartment.units | map: "incomeBracket" | compact | uniq | sort %}
           {% if maxIncomeLows.size > 0 and maxIncomeHighs.size > 0 %}
             {% assign maxIncomeLow = maxIncomeLows | first %}
             {% assign maxIncomeHigh = maxIncomeHighs | last %}
@@ -98,15 +97,19 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
             {% else %}
               {{ maxIncomeLow | money }} - {{ maxIncomeHigh | money }}
             {% endif %}
-          {% elsif percentAmis.size > 0 %}
+          {% endif %}
+        </td>
+        <td>
+          {% assign percentAmis = apartment.units | map: "incomeBracket" | compact | uniq | sort %}
+          {% if percentAmis.size > 0 %}
             {% if percentAmis.size == 1 %}
-              {{ percentAmis | first }}% AMI
+              {{ percentAmis | first }}%
             {% elsif percentAmis.size >= 2 %}
-              {{ percentAmis | first }}% - {{ percentAmis | last }}% AMI
+              {{ percentAmis | first }}% - {{ percentAmis | last }}%
             {% endif %}
           {% endif %}
         </td>
-        <td class="nowrap">{{ apartment.phone }}</td>
+        <td class="nowrap">{{ apartment.phones | join: '<br style="mso-data-placement:same-cell;"/>' }}</td>
         <td>
           {% if apartment.populationsServed contains "Seniors" %}
             Yes{% if apartment.minAge > 0 %}, {{ apartment.minAge }}+{% endif %}

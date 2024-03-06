@@ -1,20 +1,23 @@
 const Airtable = require('airtable');
 const base = new Airtable(
-  {apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+  {apiKey: process.env.AIRTABLE_WRITE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const HOUSING_CHANGE_QUEUE_TABLE = "tblKO2Ea4NGEoDGND";
-const HOUSING_DATABASE_TABLE = "tbl8LUgXQoTYEw2Yh";
-const UNITS_TABLE = "tblRtXBod9CC0mivK";
 const MAX_IN_PROGRESS_DURATION_HRS = 8;
 
 // Sort ranking for unit type.
 // Highest rank = 1. Types not listed here will be sorted alphabetically.
 // Force an item to be ranked last every time with rank = -1.
-const TYPE_SORT_RANKING = new Map([
+const SORT_RANKING = new Map([
   // Unit Type
-  ["SRO", 1],
-  ["Studio", 2],
-  ["Others", -1],
+  ['SRO', 1],
+  ['Studio', 2],
+  ['Others', -1],
+  // Availability
+  ['Available', 1],
+  ['Waitlist Open', 2],
+  ['Waitlist Closed', 3],
+  ['Call for Status', 4],
 ]);
 
 // Sorts rent offerings so that the generally cheaper offerings are first.
@@ -24,6 +27,7 @@ function sortRents(values) {
     // If both offerings have differing rent, sort according to those.  
     // Otherwise, use min income if available.
     // Otherwise, use max income (the low end of the range) if available.
+    // Otherwise, use AMI percentage if available.
     // If the offerings have none of those three values, don't sort at all, as 
     // there is nothing to compare against.
     let compA = 0;
@@ -44,6 +48,11 @@ function sortRents(values) {
         a.fields.MAX_YEARLY_INCOME_LOW_USD != b.fields.MAX_YEARLY_INCOME_LOW_USD) {
       compA = a.fields.MAX_YEARLY_INCOME_LOW_USD;
       compB = b.fields.MAX_YEARLY_INCOME_LOW_USD;
+    } else if (a.fields.PERCENT_AMI &&
+        b.fields.PERCENT_AMI &&
+        a.fields.PERCENT_AMI != b.fields.PERCENT_AMI) {
+      compA = a.fields.PERCENT_AMI;
+      compB = b.fields.PERCENT_AMI;
     }
     if (compA < compB) {
       return -1;
@@ -56,49 +65,61 @@ function sortRents(values) {
   return sorted;
 }
 
+function rankSortHelper(a, b) {
+  let rankA = SORT_RANKING.get(a);
+  let rankB = SORT_RANKING.get(b);
+  // Special handling for the -1 rank, which is always sorted last.
+  if (rankB < 0) {
+    return -1;
+  } else if (rankA < 0) {
+    return 1;
+  // Sort by rank if both items have one.
+  } else if (rankA && rankB) {
+    return rankA - rankB;
+  // Put unranked items after the ranked ones.
+  } else if (rankA && !rankB) {
+    return -1;
+  } else if (!rankA && rankB) {
+    return 1;
+  // Sort unranked items alphabetically.
+  } else if (a < b) {
+    return -1;
+  } else if (a > b) {
+    return 1;
+  }
+  return 0;
+}
+
 // Sorts unit types according to a custom sort order.
 // TODO: Make this sorting function shared within the entire
 // codebase.
 function sortUnitTypes(values) {
   let sorted = values.sort(function(a, b) {
-    let rankA = TYPE_SORT_RANKING.get(a);
-    let rankB = TYPE_SORT_RANKING.get(b);
-    // Special handling for the -1 rank, which is always sorted last.
-    if (rankB < 0) {
-      return -1;
-    } else if (rankA < 0) {
-      return 1;
-    // Sort by rank if both items have one.
-    } else if (rankA && rankB) {
-      return rankA - rankB;
-    // Put unranked items after the ranked ones.
-    } else if (rankA && !rankB) {
-      return -1;
-    } else if (!rankA && rankB) {
-      return 1;
-    // Sort unranked items alphabetically.
-    } else if (a < b) {
-      return -1;
-    } else if (a > b) {
-      return 1;
+    const [typeA, statusA] = a.split('__');
+    const [typeB, statusB] = b.split('__');
+    if (typeA === typeB) {
+      return rankSortHelper(statusA, statusB);
     }
-    return 0;
+    else {
+      return rankSortHelper(typeA, typeB);
+    }
   });
   return sorted;
 }
 
 // Groups unit records by unit type.
 // Returns an array of units records arrays.  Each item in the array is an array
-// of all the units records of one type (e.g. 1 Bedroom, Studio, etc). Inner
+// of all the units records of one type and status (e.g. 1 Bedroom Waitlist
+// Open, 1 Bedroom Waitlist Closed, Studio Waitlist Open, etc). Inner
 // arrays are sorted by rent offering cost and outer array is sorted by unit
 // type.
-function groupByUnitType(units) {
+function groupByUnitTypeAndStatus(units) {
   groupedUnits = [];
   let tempMap = {};
   for (let unitRecord of units) {
-    let typeKey = unitRecord.fields["TYPE"];
-    tempMap[typeKey] = tempMap[typeKey] || [];
-    tempMap[typeKey].push(unitRecord);
+    let key = `${unitRecord.fields["TYPE"]}__${unitRecord.fields["STATUS"]}`;
+    tempMap[key] = tempMap[key] || [];
+    tempMap[key].push(unitRecord);
   }
   for (let unitType of sortUnitTypes(Object.keys(tempMap))) {
     groupedUnits.push(sortRents(tempMap[unitType]));
@@ -109,8 +130,11 @@ function groupByUnitType(units) {
 // Gets all records data about the units within the property with housing ID 
 // 'housingId'.  Returns a list of record objects or an empty list if
 // no units records are found.
-const fetchUnitRecords = async(housingId) => {
-  const table = base(UNITS_TABLE);
+const fetchUnitRecords = async(unitsTableId, housingId) => {
+  if (!unitsTableId) {
+    return [];
+  }
+  const table = base(unitsTableId);
   return table.select({
     filterByFormula: `{_DISPLAY_ID} = "${housingId}"`
   })
@@ -123,9 +147,12 @@ const fetchUnitRecords = async(housingId) => {
 // Gets the record data corresponding to the property with housing ID 
 // 'housingId'.  
 // If no property exists with the given housing ID, returns nothing.
-const fetchHousingRecord = async(housingId) => {
+const fetchHousingRecord = async(housingTableId, housingId) => {
   // TODO: Error handling.
-  const table = base(HOUSING_DATABASE_TABLE);
+  if (!housingTableId) {
+    return;
+  }
+  const table = base(housingTableId);
   return table.select({
     filterByFormula: `{DISPLAY_ID} = "${housingId}"`
   })
@@ -186,12 +213,18 @@ const fetchQueueData = async(campaign) => {
     Date.now() - (MAX_IN_PROGRESS_DURATION_HRS * 60 * 60 * 1000));
   let filterFormula = `{CAMPAIGN} = "${campaign}"`;
   return table.select({
-    fields: ["ID", "_DISPLAY_ID", "IN_PROGRESS_DATETIME", "COMPLETED_DATETIME"],
+    fields: [
+      "ID",
+      "_DISPLAY_ID",
+      "IN_PROGRESS_DATETIME",
+      "COMPLETED_DATETIME",
+      "HOUSING_DB",
+      "UNITS_DB"],
     filterByFormula: filterFormula,
-    // Sort by management company to ensure that sequential properties
+    // Sort by property URL hostname to ensure that sequential properties
     // in the queue have similar-looking websites for easier data-hunting
     // by our volunteers.
-    sort: [{field: "_MANAGEMENT_COMPANY", direction: "asc"},
+    sort: [{field: "URL_HOSTNAME", direction: "asc"},
            {field: "_DISPLAY_ID", direction: "asc"}],
   })
   .all()
@@ -220,8 +253,12 @@ const fetchQueueData = async(campaign) => {
       numTodo: todo.length,
       numTotal: records.length,
       thisItem: {
-        housingId: todo.length > 0 ? todo[0].get("_DISPLAY_ID")[0] : "",
+        housingId: todo.length > 0 ? todo[0].get("_DISPLAY_ID") : "",
         recordId: todo.length > 0 ? todo[0].id : "",
+        // All records have the same housing and units db since it's
+        // defined at the campaign level.
+        housingTable: records[0].get("HOUSING_DB"),
+        unitsTable: records[0].get("UNITS_DB"),
       },
     };
     return queueData;
@@ -229,6 +266,7 @@ const fetchQueueData = async(campaign) => {
 }
 
 exports.handler = async function(event) {
+  console.log(JSON.stringify(event, null, 2));
   console.log(event.path);
   // Get the campaign name and optional housing ID from the URL
   const paramsStr = event.path.split("next-property/")[1];
@@ -258,6 +296,8 @@ exports.handler = async function(event) {
       // A housing ID was given explicitly in the URL, and it matches an 
       // existing queue item.  Thus, override whatever the queue says is next up
       // with the queue record data for the housing ID given in the URL.
+      // Note the housing and units db do not need to be overidden because the
+      // db identifiers should be constant for each campaign.
       data.queue.thisItem.recordId = queueRecordIdOverride;
       data.queue.thisItem.housingId = housingId;
     } else {
@@ -267,19 +307,27 @@ exports.handler = async function(event) {
     console.log(data.queue);
 
     // Get all the data for the housing ID.
-    console.log("fetching unit records and housing record for ID: " + housingId);
-    let housingData = await Promise.all([fetchHousingRecord(housingId), fetchUnitRecords(housingId)]);
+    console.log(`fetching unit records and housing record for ID: ` +
+      `${housingId} from housing table ${data.queue.thisItem.housingTable} ` +
+      `and units table ${data.queue.thisItem.unitsTable}`);
+    let housingData = await Promise.all([
+      fetchHousingRecord(data.queue.thisItem.housingTable, housingId),
+      fetchUnitRecords(data.queue.thisItem.unitsTable, housingId)]);
     data.housing = housingData[0];
-    data.units = groupByUnitType(housingData[1]);
+    data.units = groupByUnitTypeAndStatus(housingData[1]);
 
     // If there is a matching queue record for this housing ID, update it to
     // be in progress.
     if (data.queue.thisItem.recordId) {
       console.log("updating in progress status for ID: " + housingId);
       await markInProgressInQueue(data.queue.thisItem.recordId);
+      const updatedQueue = await fetchQueueData(campaign);
       // TODO: Get these updated counts from the queue?
-      data.queue.numInProgress += 1;
-      data.queue.numTodo -= 1;
+      // TODO: Only increment/decrement if the apartment in question is
+      // actually newly in-progress.  it's possible to re-visit an in-progress
+      // or completed apartment using the URL override.
+      data.queue.numInProgress = updatedQueue.numInProgress;
+      data.queue.numTodo = updatedQueue.numTodo;
     }
   }
 

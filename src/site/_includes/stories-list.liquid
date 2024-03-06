@@ -1,0 +1,18 @@
+<div class="card-set">
+  {% for story in data.stories %}
+    {% capture storyUrl -%}
+      /about/stories/{{story["Title"] | slugify}}
+    {%- endcapture %}
+    <div class="card">
+      <h3>
+        <a class="unstyled" href="{{storyUrl}}">{{story["Title"]}}</a>
+      </h3>
+      <p>
+        {{story["Content"] | truncatewords: 25}}
+      </p>
+      <p>
+        <a href="{{storyUrl}}">Read more</a>
+      </p>
+    </div>
+  {% endfor %}
+</div>

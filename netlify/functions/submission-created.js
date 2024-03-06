@@ -1,5 +1,7 @@
 var Airtable = require('airtable');
-var base = new Airtable({ apiKey: process.env.AIRTABLE_WRITE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+var base = new Airtable(
+  {apiKey: process.env.AIRTABLE_WRITE_API_KEY}).base(
+  process.env.AIRTABLE_BASE_ID);
 
 const AFFORDABLE_HOUSING_CHANGES_TABLE = "tblXy0hiHoda5UVSR";
 const AFFORDABLE_HOUSING_CHANGES_QUEUE_TABLE = "tblKO2Ea4NGEoDGND";
@@ -28,19 +30,21 @@ const markCompleteInQueue = async(recordId) => {
 exports.handler = async function(event) {
   console.log("handling form response.");
   let eventBody = JSON.parse(event.body);
-  let formResponses = eventBody.payload.data;
-  let createdAt = eventBody.payload.created_at;
-  let recordId = eventBody.payload.data.queue_record_id;
-  console.log("creating form response record");
-  await createFormResponseRecord(formResponses, createdAt);
-  console.log("form response record created");
-  if (recordId) {
-    // TODO: check that the form response was in fact recorded successfully.
-    console.log("updating queue");
-    await markCompleteInQueue(recordId);
-    console.log("queue updated");
-  } else {
-    console.log("no queue record id to update");
+  if (eventBody.payload.data.referrer.includes('contrib')) {
+    let formResponses = eventBody.payload.data;
+    let createdAt = eventBody.payload.created_at;
+    let recordId = eventBody.payload.data.queue_record_id;
+    console.log("creating form response record");
+    await createFormResponseRecord(formResponses, createdAt);
+    console.log("form response record created");
+    if (recordId) {
+      // TODO: check that the form response was in fact recorded successfully.
+      console.log("updating queue");
+      await markCompleteInQueue(recordId);
+      console.log("queue updated");
+    } else {
+      console.log("no queue record id to update");
+    }
   }
 
   return {

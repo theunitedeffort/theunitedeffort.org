@@ -128,17 +128,32 @@ function click(elem, times=1) {
 function select(elem, option) {
   expect(elem.querySelector(`[value="${option}"]`),
     `No such option "${option}" for id "${elem.id}"`).not.toBe(null);
-  enterText(elem, option);
+  check(elem).isVisible();
+  if (elem.tagName == 'SELECT') {
+    elem.value = option.toString();
+    const inputEvent = new Event('input', {bubbles: true});
+    const changeEvent = new Event('change', {bubbles: true});
+    elem.dispatchEvent(inputEvent);
+    elem.dispatchEvent(changeEvent);
+  } else {
+    throw new Error(`Can not select an item on a ${elem.type} element`);
+  }
 }
 
 // Enters text into an element, but _only_ if it's visible to the user.
 function enterText(elem, text) {
   check(elem).isVisible();
-  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(elem.tagName)) {
-    elem.value = text.toString();
+  if (['INPUT', 'TEXTAREA'].includes(elem.tagName)) {
+    const inputStr = text.toString();
+    elem.value = '';
+    for (const char of inputStr) {
+      const keydownEvent = new Event('keydown', {bubbles: true});
+      elem.dispatchEvent(keydownEvent);
+      elem.value += char;
+      const inputEvent = new Event('input', {bubbles: true});
+      elem.dispatchEvent(inputEvent);
+    }
     const changeEvent = new Event('change', {bubbles: true});
-    const inputEvent = new Event('input', {bubbles: true});
-    elem.dispatchEvent(inputEvent);
     elem.dispatchEvent(changeEvent);
   } else {
     throw new Error(`Can not type input on a ${elem.type} element`);
@@ -239,7 +254,7 @@ beforeAll(() => {
   window.scrollTo = jest.fn();
   html = fs.readFileSync(
     path.resolve(__dirname,
-      '../../../../../test/dist/public-assistance/eligibility/index.html'),
+      '../../../../../test/dist/benefits-eligibility/index.html'),
     'utf8');
 });
 
@@ -327,16 +342,20 @@ describe('Navigation and UI', () => {
             click(nextButton);
             document.getElementById('veteran').checked = true;
             click(nextButton);
-            document.getElementById('served-from').value = '2000-01-01';
+            document.getElementById('served-from-year').value = '2000';
+            document.getElementById('served-from-month').value = '01';
+            document.getElementById('served-from-day').value = '01';
             // 729 days later:
-            document.getElementById('served-until').value = '2001-12-30';
+            document.getElementById('served-until-year').value = '2001';
+            document.getElementById('served-until-month').value = '12';
+            document.getElementById('served-until-day').value = '30';
             document.getElementById('your-duty-type').value = 'active-duty';
             click(nextButton);
           },
           otherChecks: function() {
             expect(
               document.getElementById('page-veteran-duty-period').textContent)
-              .toContain('from 1/1/2000 until 12/30/2001');
+              .toContain('from\u20091/1/2000\u2009until\u200912/30/2001');
           },
         },
         {
@@ -682,25 +701,33 @@ describe('Navigation and UI', () => {
     click(nextButton);
     // Follow up question should be shown
     select(document.getElementById('your-duty-type'), 'active-duty');
-    enterText(document.getElementById('served-from'), '2020-01-01');
-    enterText(document.getElementById('served-until'), '2020-01-02');
+    enterText(document.getElementById('served-from-year'), '2020');
+    enterText(document.getElementById('served-from-month'), '01');
+    enterText(document.getElementById('served-from-day'), '01');
+    enterText(document.getElementById('served-until-year'), '2020');
+    enterText(document.getElementById('served-until-month'), '01');
+    enterText(document.getElementById('served-until-day'), '02');
     click(nextButton);
     let thisPage = visiblePage();
     expect(thisPage.id).toBe('page-veteran-duty-period');
     check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
-    expect(thisPage.textContent).toContain('from 1/1/2020 until 1/2/2020');
+    expect(thisPage.textContent).toContain('from\u20091/1/2020\u2009until\u20091/2/2020');
     // Choose an option for the follow up question
     click(document.getElementById('full-dur-yes'));
     click(backButton);
     // Add a new duty period to use for the remainder of the test
     click(visiblePage().querySelector('.field_list_add'));
     select(document.getElementById('your-duty-type-1'), 'active-duty');
-    enterText(document.getElementById('served-from-1'), '2000-01-01');
+    enterText(document.getElementById('served-from-year-1'), '2000');
+    enterText(document.getElementById('served-from-month-1'), '01');
+    enterText(document.getElementById('served-from-day-1'), '01');
     // 729 days later:
-    enterText(document.getElementById('served-until-1'), '2001-12-30');
+    enterText(document.getElementById('served-until-year-1'), '2001');
+    enterText(document.getElementById('served-until-month-1'), '12');
+    enterText(document.getElementById('served-until-day-1'), '30');
     click(nextButton);
     check(thisPage.querySelectorAll('fieldset')[1]).isVisible();
-    expect(thisPage.textContent).toContain('from 1/1/2000 until 12/30/2001');
+    expect(thisPage.textContent).toContain('from\u20091/1/2000\u2009until\u200912/30/2001');
     // The selection made in the first question should not be copied to the
     // second question.
     expect(document.getElementById('full-dur-yes').checked).toBe(true);
@@ -728,9 +755,13 @@ describe('Navigation and UI', () => {
     // Duty period is too long
     click(backButton);
     select(document.getElementById('your-duty-type-1'), 'active-duty');
-    enterText(document.getElementById('served-from-1'), '2000-01-01');
+    enterText(document.getElementById('served-from-year-1'), '2000');
+    enterText(document.getElementById('served-from-month-1'), '01');
+    enterText(document.getElementById('served-from-day-1'), '01');
     // 730 days later:
-    enterText(document.getElementById('served-until-1'), '2001-12-31');
+    enterText(document.getElementById('served-until-year-1'), '2001');
+    enterText(document.getElementById('served-until-month-1'), '12');
+    enterText(document.getElementById('served-until-day-1'), '31');
     click(nextButton);
     thisPage = visiblePage();
     check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
@@ -739,8 +770,12 @@ describe('Navigation and UI', () => {
     // Service occured too long ago
     click(backButton);
     select(document.getElementById('your-duty-type-1'), 'active-duty');
-    enterText(document.getElementById('served-from-1'), '1980-09-07');
-    enterText(document.getElementById('served-until-1'), '1980-09-08');
+    enterText(document.getElementById('served-from-year-1'), '1980');
+    enterText(document.getElementById('served-from-month-1'), '09');
+    enterText(document.getElementById('served-from-day-1'), '07');
+    enterText(document.getElementById('served-until-year-1'), '1980');
+    enterText(document.getElementById('served-until-month-1'), '09');
+    enterText(document.getElementById('served-until-day-1'), '08');
     click(nextButton);
     thisPage = visiblePage();
     check(thisPage.querySelectorAll('fieldset')[0]).isVisible();
@@ -842,7 +877,12 @@ describe('Navigation and UI', () => {
         expect(updatedEntries[0]).toEqual(origEntries[1]);
       }
       // Two household members, one income entry each.
-      expect(incomePage.textContent).toContain('$246');
+      if (visiblePage().id == 'page-income-assets') {
+        expect(incomePage.textContent).toContain('$246');
+        expect(incomePage.textContent).not.toContain('per month');
+      } else {
+        expect(incomePage.textContent).toContain('$246\u2009per month');
+      }
       // Named household member should appear.
       expect(incomePage.textContent).toContain('Ada');
     }
@@ -888,6 +928,37 @@ describe('Navigation and UI', () => {
       expect(checkbox.disabled).toBe(false);
       expect(checkbox.checked).toBe(false);
     }
+  });
+
+  test('Selecting no assets disables add asset buttons', () => {
+    click(nextButton, 2);
+    expect(visiblePage().id).toBe('page-household-members');
+    addHouseholdMember();
+    addHouseholdMember();
+    click(nextButton, 4);
+    expect(visiblePage().id).toBe('page-income-assets');
+    const itemSelector = 'ul.dynamic_field_list > li';
+    const wrapper = document.querySelector(
+      '#page-income-assets .income_details_wrapper');
+    const buttons = wrapper.querySelectorAll('button.field_list_add');
+    const noAssets = document.getElementById('assets-has-none');
+    for (const button of buttons) {
+      expect(button.hasAttribute('aria-disabled')).toBe(false);
+    }
+    click(noAssets);
+    expect(wrapper.querySelectorAll(itemSelector).length).toBe(0);
+    for (const button of buttons) {
+      expect(button.hasAttribute('aria-disabled')).toBe(true);
+      click(button);
+    }
+    // Clicking the add button should not add any assets.
+    expect(wrapper.querySelectorAll(itemSelector).length).toBe(0);
+    click(noAssets);
+    for (const button of buttons) {
+      expect(button.hasAttribute('aria-disabled')).toBe(false);
+      click(button);
+    }
+    expect(wrapper.querySelectorAll(itemSelector).length).toBe(3);
   });
 
   test('Selecting "none of the above" clears and disables all yourself descriptors', () => {
@@ -994,6 +1065,121 @@ describe('Navigation and UI', () => {
     expect(heading.textContent).toBe(customName);
   });
 
+  test('Numerical inputs disallow invalid input', () => {
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-yourself-start');
+    const yourselfAge = document.getElementById('age');
+    enterText(yourselfAge, '-1');
+    expect(yourselfAge.value).toBe('1');
+    enterText(yourselfAge, '0');
+    expect(yourselfAge.value).toBe('');
+    enterText(yourselfAge, '131');
+    expect(yourselfAge.value).toBe('13');
+    enterText(yourselfAge, '54');
+    expect(yourselfAge.value).toBe('54');
+
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-household-members');
+    const householdAge = document.getElementById('hh-myself-age');
+    enterText(householdAge, '-1');
+    expect(householdAge.value).toBe('1');
+    enterText(householdAge, '0');
+    expect(householdAge.value).toBe('');
+    enterText(householdAge, '131');
+    expect(householdAge.value).toBe('13');
+    enterText(householdAge, '54');
+    expect(householdAge.value).toBe('54');
+
+    addHouseholdMember();
+    const otherAge = document.getElementById('hh-member-age-1');
+    enterText(otherAge, '-1');
+    expect(otherAge.value).toBe('1');
+    enterText(otherAge, '0');
+    expect(otherAge.value).toBe('0');
+    enterText(otherAge, '131');
+    expect(otherAge.value).toBe('13');
+    enterText(otherAge, '54');
+    expect(otherAge.value).toBe('54');
+
+    click(document.getElementById('hh-member-pregnant-1'));
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-household-unborn-members');
+    const unborn = document.getElementById('unborn-children');
+    enterText(unborn, '-1');
+    expect(unborn.value).toBe('1');
+    enterText(unborn, '0');
+    expect(unborn.value).toBe('0');
+    enterText(unborn, '4');
+    expect(unborn.value).toBe('4');
+
+    click(nextButton, 2);
+    expect(visiblePage().id).toBe('page-income');
+    click(document.getElementById('income-has-wages'));
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-income-details-wages');
+    const addButton = visiblePage().querySelector('.field_list_add');
+    click(addButton);
+    const wages = document.getElementById('income-wages-0');
+    enterText(wages, '-1');
+    expect(wages.value).toBe('1');
+    enterText(wages, '0');
+    expect(wages.value).toBe('0');
+    enterText(wages, '123');
+    expect(wages.value).toBe('123');
+  });
+
+  test('Date inputs disallow invalid input', () => {
+    click(nextButton);
+    document.getElementById('veteran').checked = true;
+    click(nextButton);
+    expect(visiblePage().id).toBe('page-veteran-details');
+    // Month
+    const monthInput = document.getElementById('served-from-month');
+    enterText(monthInput, '0');
+    expect(monthInput.value).toBe('');
+    enterText(monthInput, '13');
+    expect(monthInput.value).toBe('1');
+    enterText(monthInput, '-2');
+    expect(monthInput.value).toBe('2');
+    enterText(monthInput, '12');
+    expect(monthInput.value).toBe('12');
+    enterText(monthInput, '1');
+    expect(monthInput.value).toBe('1');
+    enterText(monthInput, '01');
+    expect(monthInput.value).toBe('01');
+    // Day
+    const dayInput = document.getElementById('served-from-day');
+    enterText(dayInput, '0');
+    expect(dayInput.value).toBe('');
+    enterText(dayInput, '32');
+    expect(dayInput.value).toBe('3');
+    enterText(dayInput, '-1');
+    expect(dayInput.value).toBe('1');
+    enterText(dayInput, '31');
+    expect(dayInput.value).toBe('31');
+    enterText(dayInput, '1');
+    expect(dayInput.value).toBe('1');
+    enterText(dayInput, '01');
+    expect(dayInput.value).toBe('01');
+    // Year
+    const yearInput = document.getElementById('served-from-year');
+    const thisYear = new Date().getFullYear();
+    enterText(yearInput, '0');
+    expect(yearInput.value).toBe('2000');
+    enterText(yearInput, '33');
+    expect(yearInput.value).toBe('1933');
+    enterText(yearInput, '99');
+    expect(yearInput.value).toBe('1999');
+    enterText(yearInput, '-1');
+    expect(yearInput.value).toBe('2001');
+    enterText(yearInput, '3024');
+    expect(yearInput.value).toBe('302');
+    enterText(yearInput, thisYear + 1);
+    expect(yearInput.value).toBe(thisYear.toString().slice(0, 3));
+    enterText(yearInput, thisYear);
+    expect(yearInput.value).toBe(thisYear.toString());
+  });
+
   test('Dynamic field lists are reset on unused pages.', () => {
     const wagesCheckbox = document.getElementById('income-has-wages');
     const veteranCheckbox = document.getElementById('veteran');
@@ -1094,9 +1280,13 @@ describe('Navigation and UI', () => {
     expectPagesUsed(expectedPages);
 
     expectedPages.push('page-veteran-duty-period');
-    document.getElementById('served-from').value = '2000-01-01';
+    document.getElementById('served-from-year').value = '2000';
+    document.getElementById('served-from-month').value = '01';
+    document.getElementById('served-from-day').value = '01';
     // 729 days later:
-    document.getElementById('served-until').value = '2001-12-30';
+    document.getElementById('served-until-year').value = '2001';
+    document.getElementById('served-until-month').value = '12';
+    document.getElementById('served-until-day').value = '30';
     document.getElementById('your-duty-type').value = 'active-duty';
     expectPagesUsed(expectedPages);
 
@@ -1245,17 +1435,20 @@ describe('Navigation and UI', () => {
 
     const itemSelector = ':scope > ul > li';
     const moreInfoStr = 'need more information';
+    const noFeeIdSelector = '#program-no-fee-id';
 
     // Start with everything unknown or ineligible.
     toFormEnd();
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
 
-    const eligible = document.querySelector('.programs__eligible');
-    const unknown = document.querySelector('.programs__unknown');
-    const ineligible = document.querySelector('.programs__ineligible');
-    const enrolled = document.querySelector('.programs__enrolled');
+    const eligible = document.getElementById('eligible-programs');
+    const unknown = document.getElementById('unknown-programs');
+    const ineligible = document.getElementById('ineligible-programs');
+    const enrolled = document.getElementById('enrolled-programs');
+    const summary = document.getElementById('elig-summary');
 
+    expectNoResults(summary);
     expectNoResults(eligible);
     expectResults(ineligible);
     expectDetailsVisible(ineligible, true);
@@ -1263,7 +1456,7 @@ describe('Navigation and UI', () => {
     expectResults(unknown);
     expectDetailsVisible(unknown, true);
     expectProgramsSorted(unknown);
-    let noFeeId = unknown.querySelector('#program-no-fee-id');
+    let noFeeId = unknown.querySelector(noFeeIdSelector);
     expect(noFeeId).not.toBeNull();
     // Flag should be rendered.
     expect(noFeeId.textContent).toContain(moreInfoStr);
@@ -1284,10 +1477,17 @@ describe('Navigation and UI', () => {
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
 
+    expectResults(summary, 1);
+    const firstItem = summary.querySelector(itemSelector);
+    expect(firstItem.querySelector('a').hash).toEqual(noFeeIdSelector);
+    expect(summary.textContent).toContain('No-Fee ID Card');
+    expect(summary.textContent).toContain('checked\u200919\u2009programs');
+    expect(summary.textContent).toContain('1\u2009you may qualify for');
+    expect(summary.textContent).toContain('1 program you\'re already enrolled');
     expectResults(eligible, 1);
     expectDetailsVisible(eligible, true);
     expectProgramsSorted(eligible);
-    noFeeId = eligible.querySelector('#program-no-fee-id');
+    noFeeId = eligible.querySelector(noFeeIdSelector);
     expect(noFeeId).not.toBeNull();
     // Flag should not be rendered.
     expect(noFeeId.textContent).not.toContain(moreInfoStr);
@@ -1313,6 +1513,7 @@ describe('Navigation and UI', () => {
     click(document.getElementById('existing-lifeline-me'));
     click(submitButton);
     expect(visiblePage().id).toBe('page-results');
+    expectNoResults(summary);
     expectNoResults(eligible);
     expectNoResults(enrolled);
   });
@@ -1330,13 +1531,6 @@ describe('buildInputObj', () => {
   )('Sets paysUtilities with value of %s', (val) => {
     setYesNo('pay-utilities', val);
     expect(getInput()).toHaveProperty('paysUtilities', val);
-  });
-
-  test.each(
-    [true, false, null],
-  )('Sets homelessRisk with value of %s', (val) => {
-    setYesNo('risk-homeless', val);
-    expect(getInput()).toHaveProperty('homelessRisk', val);
   });
 
   test.each(
@@ -1390,8 +1584,6 @@ describe('buildInputObj', () => {
   });
 
   test('Sets all data from page elements', () => {
-    const dutyPeriodStartStrs = ['1960-01-25', ''];
-    const dutyPeriodEndStrs = ['1961-12-31', ''];
     const expected = {
       age: '42',
       citizen: false,
@@ -1413,7 +1605,6 @@ describe('buildInputObj', () => {
       housingSituation: 'housed',
       paysUtilities: true,
       hasKitchen: true,
-      homelessRisk: true,
       immigrationStatus: 'permanent_resident',
       usesGuideDog: true,
       militaryDisabled: true,
@@ -1421,8 +1612,8 @@ describe('buildInputObj', () => {
       servedFullDuration: true,
       dutyPeriods: [
         {
-          end: new Date(`${dutyPeriodEndStrs[0]}T00:00`),
-          start: new Date(`${dutyPeriodStartStrs[0]}T00:00`),
+          end: new Date(`1961-12-31T00:00`),
+          start: new Date(`1960-01-25T00:00`),
           type: 'active-duty',
         },
         {
@@ -1443,7 +1634,10 @@ describe('buildInputObj', () => {
         childSupport: [[17, 57], [270], [3700]],
         other: [[18, 58], [280], [3800]],
       },
-      assets: [[1000, 99], [2000], [3000]],
+      assets: {
+        valid: true,
+        values: [[1000, 99], [2000], [3000]],
+      },
       paidSsTaxes: true,
       ssiIncome: [12, 220],
       existingAdsaHousehold: true,
@@ -1476,8 +1670,6 @@ describe('buildInputObj', () => {
       existingSsdiMe: true,
       existingSsiHousehold: true,
       existingSsiMe: true,
-      existingUpliftHousehold: true,
-      existingUpliftMe: true,
       existingVaDisabilityHousehold: true,
       existingVaDisabilityMe: true,
       existingVaPensionHousehold: true,
@@ -1491,6 +1683,7 @@ describe('buildInputObj', () => {
       existingSchipMe: true,
       existingSchipHousehold: true,
     };
+    Object.preventExtensions(expected);
 
     document.body.parentElement.innerHTML = html;
     elig.init();
@@ -1574,9 +1767,6 @@ describe('buildInputObj', () => {
     document.getElementById('has-kitchen-yes').checked = expected.hasKitchen;
     expect(getInput().hasKitchen).toBe(expected.hasKitchen);
 
-    setYesNo('risk-homeless', expected.homelessRisk);
-    expect(getInput().homelessRisk).toBe(expected.homelessRisk);
-
     document.getElementById(expected.immigrationStatus).checked = true;
     expect(getInput().immigrationStatus).toBe(expected.immigrationStatus);
 
@@ -1597,12 +1787,20 @@ describe('buildInputObj', () => {
     document.querySelector('#page-veteran-details .field_list_add').click();
     document.getElementById('your-duty-type').value = (
       expected.dutyPeriods[0].type);
-    document.getElementById('served-from').value = dutyPeriodStartStrs[0];
-    document.getElementById('served-until').value = dutyPeriodEndStrs[0];
+    document.getElementById('served-from-year').value = '1960';
+    document.getElementById('served-from-month').value = '01';
+    document.getElementById('served-from-day').value = '25';
+    document.getElementById('served-until-year').value = '1961';
+    document.getElementById('served-until-month').value = '12';
+    document.getElementById('served-until-day').value = '31';
     document.getElementById('your-duty-type-1').value = (
       expected.dutyPeriods[1].type);
-    document.getElementById('served-from-1').value = dutyPeriodStartStrs[1];
-    document.getElementById('served-until-1').value = dutyPeriodEndStrs[1];
+    document.getElementById('served-from-year-1').value = '';
+    document.getElementById('served-from-month-1').value = '';
+    document.getElementById('served-from-day-1').value = '';
+    document.getElementById('served-until-year-1').value = '';
+    document.getElementById('served-until-month-1').value = '';
+    document.getElementById('served-until-day-1').value = '';
     expect(getInput().dutyPeriods).toEqual(expected.dutyPeriods);
 
     addIncome('wages', expected.income.wages);
@@ -1616,7 +1814,7 @@ describe('buildInputObj', () => {
     addIncome('other', expected.income.other);
     expect(getInput().income).toEqual(expected.income);
 
-    addAssets(expected.assets);
+    addAssets(expected.assets.values);
     expect(getInput().assets).toEqual(expected.assets);
 
     setYesNo('ss-taxes', expected.paidSsTaxes);
@@ -1757,15 +1955,6 @@ describe('buildInputObj', () => {
 
     document.getElementById('existing-ssi-me').checked = expected.existingSsiMe;
     expect(getInput().existingSsiMe).toBe(expected.existingSsiMe);
-
-    document.getElementById('existing-uplift-household').checked = (
-      expected.existingUpliftHousehold);
-    expect(getInput().existingUpliftHousehold).toBe(
-      expected.existingUpliftHousehold);
-
-    document.getElementById('existing-uplift-me').checked = (
-      expected.existingUpliftMe);
-    expect(getInput().existingUpliftMe).toBe(expected.existingUpliftMe);
 
     document.getElementById('existing-va-disability-household').checked = (
       expected.existingVaDisabilityHousehold);

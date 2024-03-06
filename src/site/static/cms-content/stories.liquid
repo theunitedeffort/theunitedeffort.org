@@ -1,0 +1,51 @@
+---
+layout: "layouts/base.liquid"
+pagination:
+  data: partialsData.stories
+  size: 1
+  alias: story
+pageClass: "page-about"
+permalink: "/about/stories/{{story['Title'] | slugify}}/index.html"
+
+eleventyComputed:
+  title: '{{story["Title"] | default: "Story"}}'
+---
+
+<h1>{{story["Title"]}}</h1>
+<div class="story_content">
+  {% if story.image %}
+    <figure>
+      <img src="{{story.image.url}}" width="{{story.image.width}}" height="{{story.image.height}}" alt="{{story["Photo Description"]}}" />
+      <figcaption>
+        {{story["Photo Caption"]}}
+        {% if story["Photo Credit"] and story["Photo Credit"] != '' %}
+          (Image credit <span translate="no">{{story["Photo Credit"]}}</span>)
+        {% endif %}
+      </figcaption>
+    </figure>
+  {% endif %}
+  {% if story["Audio Embed Code"] and story["Audio Embed Code"] != '' %}
+    <div class="story_audio">
+      {% assign clientName = "this community member" %}
+      {% if story["Client Name"] %}
+        {% capture clientName %}
+          <span translate="no">{{story["Client Name"]}}</span>
+        {% endcapture %}
+      {% endif %}
+      <p>
+        Listen to {{clientName}} or read the full story below.
+      </p>
+      {{story["Audio Embed Code"]}}
+      {% if story["Audio Credit"] and story["Audio Credit"] != '' %}
+        <p class="attribution align-right">
+          Audio credit <span translate="no">{{story["Audio Credit"]}}</span>
+        </p>
+      {% endif %}
+    </div>
+  {% endif %}
+  {{story["Content"] | markdownify | unplaceholder}}
+</div>
+
+<p class="noprint">
+  <a href="/about/stories">&#8592; Back to more stories</a>
+</p>

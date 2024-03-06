@@ -24,10 +24,11 @@
           border-bottom: solid 1px var(--color-gray-700);
         }
       }
+
       label {
         font-size: 0.8em;
-        white-space: nowrap;
       }
+
       input[type=text],
       input[type=number],
       input[type=email],
@@ -41,6 +42,10 @@
         padding: 0.2em;
         border-radius: 3px;
         margin-bottom: 0.2em;
+      }
+
+      select {
+        background-color: var(--color-white);
       }
 
       input[type=text].short,
@@ -104,8 +109,38 @@
         margin: 0;
       }
 
-      .elig_page div {
-        margin: 1em 0;
+      input.date_day,
+      input.date_month {
+        width: 3.25em;
+      }
+
+      input.date_year {
+        width: 4.5em;
+      }
+
+      .elig_page {
+        div {
+          margin: 1em 0;
+        }
+
+        div[role="group"] {
+          margin: 0;
+        }
+
+        .dategroup {
+          margin: 0;
+          display: inline-block;
+        }
+
+        .dategroup_item {
+          margin: 0 0 0 0.2em;
+          display: inline-block;
+          label {
+            display: block;
+            font-size: 0.8em;
+            font-weight: 400;
+          }
+        }
       }
 
       .elig_conditions {
@@ -165,6 +200,11 @@
 
       legend {
         margin: 0;
+        border: 0;
+      }
+
+      fieldset {
+        width: 100%;
       }
 
       .programs {
@@ -181,7 +221,7 @@
           margin-bottom: 2.5em;
           padding-left: 0.5em;
           border-left: 4px solid var(--color-gray-900);
-
+          break-inside: avoid;
           p {
             margin: 0;
           }
@@ -354,10 +394,19 @@
         width: 20em;
       }
 
+      input[type=text].extra_long,
+      select.extra_long,
+      textarea.extra_long {
+        width: 35em;
+      }
+
       input[type=number] {
         width: 5em;
       }
 
+      input[type=number].long {
+        width: 7em;
+      }
 
       input.inline {
         display: inline-block;
@@ -432,6 +481,14 @@
       }
       fieldset {
         width: 48%;
+      }
+
+      form#eligibility {
+        font-size: 1em;
+
+        fieldset {
+          width: 100%;
+        }
       }
     }
 

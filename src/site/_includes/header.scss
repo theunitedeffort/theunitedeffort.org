@@ -1,8 +1,6 @@
 header {
   background-color: var(--color-white);
-  color: var(--color-black);
-  font-size: 0.95rem;
-  font-weight: 700;
+  padding-top: 0.5rem;
   .container {
     text-align: center;
     @include bp(midwide) {
@@ -18,7 +16,7 @@ header {
   .nav-home img {
     margin: 0 auto 2em auto;
     @include bp(midwide) {
-      margin: 0;
+      margin: 0 1em 0 0;
     }
   }
   ul.navigation {
@@ -33,26 +31,45 @@ header {
     list-style: none;
     margin-right: 1rem;
   }
-  a:link,
-  a:visited {
-    text-decoration: none;
-    white-space: nowrap;
+  nav {
+    color: var(--color-black);
+    font-size: 1rem;
+    font-weight: 700;
+
+    a:link,
+    a:visited {
+      color: var(--color-black);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    a:hover,
+    a:focus {
+      color: var(--color-black);
+      text-decoration: underline;
+      text-decoration-thickness: 3px;
+      text-underline-offset: 2px;
+      text-decoration-color: var(--color-orange);
+    }
   }
-  a:hover,
-  a:focus {
-    text-decoration: underline;
-    text-decoration-thickness: 3px;
-    text-underline-offset: 2px;
-    text-decoration-color: var(--color-orange);
+
+  .gtranslate_wrapper {
+    text-align: right;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    height: 1.275rem;
+  }
+
+  a.glink {
+    padding: 0 0.5em;
   }
 }
 
 .page-resources .nav-resources,
-.page-public-assistance .nav-public-assistance,
-body[class^="page-public-assistance"] .nav-public-assistance,
+body[class^="page-benefits-eligibility"] .nav-benefits-eligibility,
+body[class^="page-public-assistance"] .nav-resources,
 body[class^="page-resources"] .nav-resources,
 body[class^="page-housing"] .nav-housing,
-.page-about .nav-about {
+body[class^="page-about"] .nav-about {
   text-decoration: underline;
   text-decoration-thickness: 3px;
   text-underline-offset: 2px;

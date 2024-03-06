@@ -1,0 +1,34 @@
+---
+layout: layouts/base.liquid
+title: Find Assistance Programs For You
+permalink:
+  build: "/benefits-eligibility/programs/index.html"
+pageClass: "page-benefits-eligibility"
+---
+
+<h1>{{title}}
+<span class="subtitle">In Santa Clara County</span></h1>
+
+<p>
+  Using our Check Benefits Eligibility tool, you can check your eligibility for the {{ programs | size }} programs listed below.  For more information about each program, visit the links below or contact the program provider directly.
+</p>
+<p>
+  <a href="/benefits-eligibility">Check your eligibility now</a>
+</p>
+<ul class="no_bullets">
+  {% assign sortedPrograms = programs | sort: "name" %}
+  {% for program in sortedPrograms %}
+    <li class="program_summary_item">
+      <h2>{{program.name}}</h2>
+      <p>{{program.summary}}</p>
+      {% assign learnMoreUrl = program.infoUrl | default: program.applyUrl %}
+      {% if learnMoreUrl %}
+        {% assign prefix = learnMoreUrl | slice: 0, 4 %}
+        <p>
+          <a href="{{learnMoreUrl}}" target="_blank" rel="noopener">Learn more</a>{% if prefix == 'http' %}<sup>&#8599;</sup>{% endif %}
+        </p>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+{% render "program-disclaimer" %}

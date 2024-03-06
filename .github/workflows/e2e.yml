@@ -2,30 +2,31 @@ name: End to End Tests
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "prod"]
   workflow_dispatch:
 
 env:
   AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
   AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
+  AIRTABLE_RESOURCES_BASE_ID: ${{vars.AIRTABLE_RESOURCES_BASE_ID}}
   CYPRESS_RECORD_KEY: ${{secrets.CYPRESS_RECORD_KEY}}
 
 jobs:
   chrome-browser-tests:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           start: npm run start
-          wait-on: 'http://localhost:8080'
+          wait-on: 'http://localhost:8888'
           record: true
           browser: chrome
       - name: Upload screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         # add the line below to store screenshots only on failures
         # if: failure()
         with:
@@ -33,29 +34,26 @@ jobs:
           path: cypress/screenshots
           if-no-files-found: ignore
       - name: Upload videos
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: chrome-videos
           path: cypress/videos
 
   firefox-browser-tests:
     runs-on: ubuntu-22.04
-    env:
-      AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
-      AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           start: npm run start
-          wait-on: 'http://localhost:8080'
+          wait-on: 'http://localhost:8888'
           record: true
           browser: firefox
       - name: Upload screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         # add the line below to store screenshots only on failures
         # if: failure()
         with:
@@ -63,29 +61,26 @@ jobs:
           path: cypress/screenshots
           if-no-files-found: ignore
       - name: Upload videos
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: firefox-videos
           path: cypress/videos
 
   edge-browser-tests:
     runs-on: ubuntu-22.04
-    env:
-      AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
-      AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           start: npm run start
-          wait-on: 'http://localhost:8080'
+          wait-on: 'http://localhost:8888'
           record: true
           browser: edge
       - name: Upload screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         # add the line below to store screenshots only on failures
         # if: failure()
         with:
@@ -93,7 +88,7 @@ jobs:
           path: cypress/screenshots
           if-no-files-found: ignore
       - name: Upload videos
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: edge-videos
           path: cypress/videos

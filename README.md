@@ -19,13 +19,14 @@ A collection of curated resources and a searchable database of collated affordab
 ## Data source
 
 Data for these page views are drawn from Airtable via the [Airtable API](https://airtable.com/apphE4mk8YDqyHM0I/api/docs).
-To access the data, the site requires _readonly_ access to Airtable via the appropriate Airtable base ID and the Airtable API key. Provide these via environment variables: 
+To access the data, the site requires _readonly_ access to Airtable via the appropriate Airtable base IDs and the Airtable API key. Provide these via environment variables: 
 
 - `AIRTABLE_API_KEY`
 - `AIRTABLE_BASE_ID=apphE4mk8YDqyHM0I`
+- `AIRTABLE_RESOURCES_BASE_ID=app1uIzz4pZe9IM21`
 
-Permissions to the Airtable base can be granted by the adminitrators of the [UEO base](https://airtable.com/apphE4mk8YDqyHM0I/).
-Once you have at least read access to the base, you can get a value for `AIRTABLE_API_KEY` by [generating an Airtable personal access token](https://airtable.com/create/tokens/new) with `data.records:read` scope on the UEO Housing Database.
+Permissions to the Airtable bases can be granted by the adminitrators of the [UEO base](https://airtable.com/apphE4mk8YDqyHM0I/) and the [UEO Resource base](https://airtable.com/app1uIzz4pZe9IM21/).
+Once you have at least read access to the bases, you can get a value for `AIRTABLE_API_KEY` by [generating an Airtable personal access token](https://airtable.com/create/tokens/new) with `data.records:read` scope on both the UEO Housing Database and the UEO Resources Database.
 
 Public transit data is also drawn from [511 SF Bay](https://511.org).  If you want this data in your development site, you will need to provide an addtional optional environment variable:
 
@@ -35,33 +36,61 @@ You can get such an API key by [requesting it from 511](https://511.org/open-dat
 
 ## Local development
 ### Prerequisites
-[npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+This project requires Node.js and npm.  It's recommended that you use a node version manager such as nvm to install Node.js and npm. You can find detailed instructions for installation via a node version manager on the [npm website](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm#using-a-node-version-manager-to-install-nodejs-and-npm) or use the simplified instructions below.
+
+#### Linux and Mac ([Full instructions](https://github.com/nvm-sh/nvm#installing-and-updating))
+Install nvm:
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+```
+
+Then close and re-open your terminal window. Next, install Node.js using nvm:
+
+```
+nvm install node
+```
+
+#### Windows ([Full instructions](https://github.com/coreybutler/nvm-windows#installation--upgrades))
+Download and run the latest [nvm-setup.exe](https://github.com/coreybutler/nvm-windows/releases)
+
+Open a terminal as Administrator, then install Node.js:
+
+```
+nvm install latest
+nvm use latest
+```
 
 ### Environment setup
 To make your own copy of this site and begin development, follow these instructions:
 
 
 #### Clone this repo
-```bash
+```
 git clone https://github.com/theunitedeffort/theunitedeffort.org
 ```
 
 #### Install dependencies
-```bash
+```
 cd theunitedeffort.org
 npm install
 ```
 
 #### Install Netlify CLI
-```bash
+```
 npm i -g netlify-cli
 ```
 
-#### Set environment variables
-Note you may want to add these to your `.bashrc` file or Node.js `.env` file to save them across sessions.
-```bash
-export AIRTABLE_BASE_ID=apphE4mk8YDqyHM0I
-export AIRTABLE_API_KEY={YOUR PERSONAL ACCESS TOKEN}
+#### Store environment variables
+First store the `AIRTABLE_BASE_ID` variable:
+
+```
+echo AIRTABLE_BASE_ID=apphE4mk8YDqyHM0I > .env
+```
+
+Next, store the `AIRTABLE_API_KEY` variable as your [personal access token](https://github.com/theunitedeffort/theunitedeffort.org#data-source). Since everyone's Airtable personal access token is different, you will have to modify the below command to replace `{YOUR_ACCESS_TOKEN}` with your actual access token.  For example, if your Airtable personal access token was `abc123`, then the command would be `echo AIRTABLE_API_KEY=abc123 > .env`
+
+```
+echo AIRTABLE_API_KEY={YOUR_ACCESS_TOKEN} > .env
 ```
 
 #### Run local development build and server

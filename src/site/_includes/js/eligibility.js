@@ -2,63 +2,63 @@
 
 const cnst = {
   calfresh: {
-    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
-    // Section 2.1
-    // Effective through 9/30/23
+    // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/2CalFresh/CFMonthAllIncomeElig.htm
+    // Section 2.1 "CalFresh Program Monthly Allotment and Income Eligibility
+    //   Standards Charts"
+    // Effective through 9/30/24
     FED_POVERTY_LEVEL: [ // USD per month
-      1133,
-      1526,
-      1920,
-      2313,
-      2706,
-      3100,
-      3493,
-      3886,
+      1215,
+      1644,
+      2072,
+      2500,
+      2929,
+      3357,
+      3785,
+      4214,
     ],
-    FED_POVERTY_LEVEL_ADDL_PERSON: 394, // USD per month per person
-    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
-    // Section 11.8
+    FED_POVERTY_LEVEL_ADDL_PERSON: 429, // USD per month per person
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/CEHouseholds/MCE.htm
+    // "Modified Categorical Eligibility (MCE)"
     GROSS_INCOME_LIMIT_MCE_FACTOR: 2.0, // Times federal poverty limit
-    // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap19.pdf
-    // Section 19.1.3
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/Income_Definitions_and_Exemptions/EarndIncm.htm
+    // "Self-Employment [63-503.41]"
     SELF_EMPLOYED_EXEMPT_FRACTION: 0.4,
   },
   calworks: {
-    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-afdc.pdf
-    // Section 1.2
-    // Effective through 6/30/23
+    // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/1CalWorksRCAECATCVAP/NonExEmpAUStndsCht.htm
+    // Section 1.2 "Non-Exempt (Employable) AU Standards Chart Region 1"
+    // Effective through 6/30/24
     MBSAC: [ // USD per month
-      807,
-      1324,
-      1641,
-      1947,
-      2221,
-      2499,
-      2746,
-      2988,
-      3242,
-      3519,
+      862,
+      1415,
+      1753,
+      2080,
+      2373,
+      2670,
+      2934,
+      3193,
+      3464,
+      3760,
     ],
-    MBSAC_ADDL_PERSON: 32, // USD per month per person
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap14.pdf
-    // Section 14.1 (seems out of date)
-    // https://www.sfhsa.org/sites/default/files/media/document/2023-04/factsheet_calworks_english_02.2023.pdf
-    // Effective through ?
-    BASE_RESOURCE_LIMIT: 10888, // USD
-    DISABLED_ELDERLY_RESOURCE_LIMIT: 16333, // USD
+    MBSAC_ADDL_PERSON: 34, // USD per month per person
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/14Property_Gen/Property_Limit.htm
+    // "Property General - Property Limit"
+    // Effective through 1/1/2025?
+    BASE_RESOURCE_LIMIT: 11634, // USD
+    DISABLED_ELDERLY_RESOURCE_LIMIT: 17452, // USD
     MIN_ELDERLY_AGE: 60, // Years
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap33.pdf
-    // Section 33.3
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/33Financial_Eligibility/Applicant_GI_Test.htm
+    // "Applicant Gross Income Test"
     EMPLOYMENT_DISREGARD: 450, // USD per month
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap31.pdf
-    // Section 31.6.1
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/31Self_Employment/Income_Determination.htm
+    // "Monthly Net Income"
     SELF_EMPLOYED_DISREGARD_FRAC: 0.4,
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
-    // Section 27.9.3
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/27Other_Exempt_Income/Other_Exempt_Income.htm
+    // "Child/Spousal Support Disregard"
     ONE_CHILD_SUPPORT_DISREGARD: 100, // USD per month
     TWO_CHILD_SUPPORT_DISREGARD: 200, // USD per month
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap13.pdf
-    // Section 13.1.1
+    // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/13Age_Student_Immunization/Age_Requirements.htm
+    // "Age Requirements"
     MAX_CHILD_AGE: 18, // Years
   },
   care: {
@@ -93,8 +93,8 @@ const cnst = {
     MIN_HOUSEHOLD_SIZE: 3, // People
   },
   ga: {
-    // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
-    // Section 4.2, UNSHARED Housing in section 4.2.1
+    // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/4GA/NeedStnds.htm
+    // "Need Standards, Grant Level - UNSHARED Housing"
     // Effective through ?
     MONTHLY_INCOME_LIMITS: [ // USD per month
       343,
@@ -109,12 +109,12 @@ const cnst = {
       1396,
     ],
     MONTHLY_INCOME_LIMIT_ADDL_PERSON: 11, // USD per month per person
-    // https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap02.pdf
-    // Section 2.3.2
+    // https://stgenssa.sccgov.org/debs/program_handbooks/general_assistance/assets/05Identification/Age_Identity.htm
+    // "Age and Identity"
     MIN_ELIGIBLE_AGE: 18, // Years
     NUM_OF_DEPENDENTS: 0, // People
-    // https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap08.pdf
-    // Section 8.1.5
+    // https://stgenssa.sccgov.org/debs/program_handbooks/general_assistance/assets/08Property/GA_Policies.htm
+    // "Personal Property - GA Policy [180]"
     MAX_RESOURCES: 500, // USD
   },
   housingChoice: {
@@ -161,22 +161,22 @@ const cnst = {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
     // LIHEAP income limits are set at 60% of State Median Income:
     //   https://www.acf.hhs.gov/ocs/policy-guidance/liheap-im-2022-04-state-median-income-estimates-optional-use-ffy-2022-and
-    // Effective through 9/30/23? (FY23)
+    // Effective through 11/1/24 (despite federal fiscal year starting 10/1)
     MONTHLY_INCOME_LIMITS: [ // USD per month
-      2700.17,
-      3531.0,
-      4361.83,
-      5192.75,
-      6023.59,
-      6854.43,
-      7010.21,
-      7166.0,
-      7321.78,
-      7477.56,
+      2882.83,
+      3769.83,
+      4656.83,
+      5543.92,
+      6430.92,
+      7317.92,
+      7484.25,
+      7650.58,
+      7816.92,
+      7983.17,
     ],
     // 3% of 4-person limit, as documented here:
     // https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf#page=4
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 155.78, // USD per month
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 166.32, // USD per month
   },
   noFeeId: {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
@@ -189,16 +189,16 @@ const cnst = {
   },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
-    // Effective through 12/31/23?
-    SGA_NON_BLIND: 1470, // USD per month
-    SGA_BLIND: 2460, // USD per month
-    // https://www.ssa.gov/pubs/EN-05-11125.pdf
+    // Effective through 12/31/24
+    SGA_NON_BLIND: 1550, // USD per month
+    SGA_BLIND: 2590, // USD per month
+    // https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACINs/2023/I-66_23.pdf?ver=2023-11-21-144047-077
     // Note these max benefit amounts include the California state supplement.
     // TODO: Handle other living categories (e.g. non-medical out-of-home care).
-    // Effective through 12/31/23?
-    MAX_BENEFIT_NON_BLIND: 1133.73, // USD per month
-    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1251.74, // USD per month
-    MAX_BENEFIT_BLIND: 1211, // USD per month
+    // Effective through 12/31/24
+    MAX_BENEFIT_NON_BLIND: 1182.94, // USD per month
+    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1311.81, // USD per month
+    MAX_BENEFIT_BLIND: 1267.32, // USD per month
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
     // Effective through 12/31/23?
     MAX_RESOURCES: 2000, // USD
@@ -551,9 +551,15 @@ function onInput(event) {
   addEventListener('beforeunload', confirmExit);
 }
 
+function onAnchorClick(event) {
+  const dest = document.querySelector(event.currentTarget.hash);
+  dest.scrollIntoView({behavior: 'smooth'});
+  event.preventDefault();
+}
+
 function onHouseholdMemberAdd(event) {
   // Get the household member that was just added.
-  const newMember = event.target.closest('.elig_page').querySelector(
+  const newMember = event.currentTarget.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
   // Add listener to the new member's spouse checkbox
   const spouseInput = newMember.querySelector('[id^="hh-member-spouse"]');
@@ -572,8 +578,11 @@ function onHouseholdMemberAdd(event) {
   const incomePages = document.querySelectorAll(
     'div[id^="page-income-"]');
   for (const incomePage of incomePages) {
-    const firstFieldset = incomePage.querySelector('fieldset');
-    const newFieldset = firstFieldset.cloneNode(true);
+    const fieldsetTempl = incomePage.querySelector('template');
+    const newFieldset = document.createElement('fieldset');
+    newFieldset.appendChild(fieldsetTempl.content.cloneNode(true));
+    // TODO: what if the translation happens first and then the income
+    // headings are set to the translated string?
     setMemberIncomeHeading(newFieldset,
       newMember.querySelector('h4').textContent);
     // Remove all items from the new list
@@ -586,53 +595,54 @@ function onHouseholdMemberAdd(event) {
 
     addDynamicFieldListListeners(newFieldset);
 
-    firstFieldset.parentNode.appendChild(newFieldset);
+    fieldsetTempl.parentNode.appendChild(newFieldset);
     newMember.linkedElems.push(newFieldset);
   }
 }
 
 function onDutyPeriodAdd(event) {
-  const newPeriod = event.target.closest('.elig_page').querySelector(
+  const newPeriod = event.currentTarget.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
-  const firstFieldset = document.querySelector(
-    '#page-veteran-duty-period fieldset');
-  const newFieldset = firstFieldset.cloneNode(true);
+  const fieldsetTempl = document.querySelector(
+    '#page-veteran-duty-period template');
+  const newFieldset = document.createElement('fieldset');
+  newFieldset.appendChild(fieldsetTempl.content.cloneNode(true));
   const idModifier = `-period${newPeriod.dynamicFieldListId}`;
   modifyIds(newFieldset, idModifier);
   clearInputs(newFieldset);
-  firstFieldset.parentNode.appendChild(newFieldset);
+  fieldsetTempl.parentNode.appendChild(newFieldset);
   newPeriod.linkedElems = [newFieldset];
 }
 
 function onChangeSpouse(event) {
-  if (event.target.checked) {
+  if (event.currentTarget.checked) {
     // If a spouse checkbox was just checked, enforce that all the others are
     // unchecked.
     const spouseInputs = document.querySelectorAll('[id^="hh-member-spouse"]');
     for (const input of spouseInputs) {
-      if (input !== event.target) {
+      if (input !== event.currentTarget) {
         input.checked = false;
       }
     }
-    event.target.dependentParameter.checked = false;
+    event.currentTarget.dependentParameter.checked = false;
   }
 }
 
 function onChangeDependent(event) {
-  if (event.target.checked) {
-    event.target.spouseParameter.checked = false;
+  if (event.currentTarget.checked) {
+    event.currentTarget.spouseParameter.checked = false;
   }
 }
 
 function onToggleMultiselect(event) {
-  const list = event.target.closest('.multiselect');
+  const list = event.currentTarget.closest('.multiselect');
   const options = list.querySelectorAll('input[type=checkbox]');
   for (const option of options) {
-    if (option == event.target) {
+    if (option == event.currentTarget) {
       continue;
     }
     const label = list.querySelector(`label[for="${option.id}"]`);
-    if (event.target.checked) {
+    if (event.currentTarget.checked) {
       option.checked = false;
       option.setAttribute('disabled', 'disabled');
       label.classList.add('disabled');
@@ -643,29 +653,73 @@ function onToggleMultiselect(event) {
   }
 }
 
+function onToggleDynamicFieldList(event) {
+  const page = event.currentTarget.closest('.elig_page');
+  // Remove any assets already entered.
+  resetDynamicFieldLists(page);
+  // Disable/enable the interface to add new assets.
+  const assetButtons = page.querySelectorAll('.field_list_add');
+  for (const assetButton of assetButtons) {
+    if (event.currentTarget.checked) {
+      assetButton.setAttribute('aria-disabled', 'true');
+    } else {
+      assetButton.removeAttribute('aria-disabled');
+    }
+  }
+}
+
 function onChangeAge(event) {
-  document.getElementById('hh-myself-age').value = event.target.value;
-  document.getElementById('age').value = event.target.value;
+  document.getElementById('hh-myself-age').value = event.currentTarget.value;
+  document.getElementById('age').value = event.currentTarget.value;
 }
 
 function onChangeName(event) {
-  const item = event.target.closest('ul.dynamic_field_list>li');
+  const item = event.currentTarget.closest('ul.dynamic_field_list>li');
   // Update the heading to the household member's name.
   const heading = item.querySelector('h4');
-  if (!heading.defaultContent) {
-    // Save the initial content in case the custom name is later deleted.
-    heading.defaultContent = heading.textContent;
-  }
-  const inputValue = event.target.value.trim();
+  const inputValue = event.currentTarget.value.trim();
   if (inputValue) {
+    heading.setAttribute('translate', 'no');
     heading.textContent = inputValue;
   } else {
+    heading.removeAttribute('translate');
     heading.textContent = heading.defaultContent;
   }
   // Also update the headings in all the income details pages.
   for (const linkedElem of item.linkedElems) {
-    setMemberIncomeHeading(linkedElem, heading.textContent);
+    setMemberIncomeHeading(linkedElem, heading.textContent, !inputValue);
   }
+}
+
+function saveValidInput(event) {
+  event.currentTarget.prevValue = event.currentTarget.value;
+}
+
+function preventInvalidInput(event) {
+  const field = event.currentTarget;
+  if (field.willValidate && !field.validity.valid) {
+    field.value = field.prevValue;
+  }
+}
+
+function onMonthDayChange(event) {
+  const field = event.currentTarget;
+  if (field.value == '0') {
+    field.value = '';
+  }
+}
+
+function onYearChange(event) {
+  const field = event.currentTarget;
+  let prefix = '';
+  const currentYear = Number.parseInt(new Date().getFullYear());
+  // Should be good for the next 80 years or so...
+  if (field.value <= (currentYear - 2000)) {
+    prefix = '20';
+  } else if (field.value <= 99) {
+    prefix = '19';
+  }
+  field.value = `${prefix}${field.value.padStart(2, '0')}`;
 }
 
 // Helper function to add the correct class name to a displayed condition.
@@ -682,8 +736,14 @@ function addConditionIcon(listItem, met,
   listItem.className = `condition ${cls}`;
 }
 
-function setMemberIncomeHeading(incomeFieldset, value) {
-  incomeFieldset.querySelector('legend').textContent = value;
+function setMemberIncomeHeading(incomeFieldset, value, doTranslate=true) {
+  const legend = incomeFieldset.querySelector('legend');
+  if (doTranslate) {
+    legend.removeAttribute('translate');
+  } else {
+    legend.setAttribute('translate', 'no');
+  }
+  legend.textContent = value;
 }
 
 function modifyIds(parent, idModifier) {
@@ -731,7 +791,10 @@ function resetDynamicFieldLists(parent) {
 
 // Adds an item to a dynamic list of fields.
 function addDynamicFieldListItem(event) {
-  const wrapper = event.target.closest('.dynamic_field_list_wrapper');
+  if (event.currentTarget.hasAttribute('aria-disabled')) {
+    return;
+  }
+  const wrapper = event.currentTarget.closest('.dynamic_field_list_wrapper');
   const list = wrapper.querySelector('ul.dynamic_field_list');
   const items = wrapper.querySelectorAll('ul.dynamic_field_list > li');
   // Figure out the largest id index used so far.
@@ -765,6 +828,7 @@ function addDynamicFieldListItem(event) {
     // Add one for 1 indexing of headings vs 0 indexing of IDs.
     itemHeading.textContent = itemHeading.textContent.replace(
       /\d+$/, newIdNumber + 1);
+    itemHeading.defaultContent = itemHeading.textContent;
   }
   // Add a remove button for the new item.
   const removeButton = document.createElement('button');
@@ -783,7 +847,12 @@ function addDynamicFieldListItem(event) {
   }
   // Add our new item to the list.
   list.appendChild(newItem);
-  updateDynamicFieldListButton(event.target);
+  // Add listeners to any new numerical inputs
+  for (const numInput of newItem.querySelectorAll('input[type="number"]')) {
+    numInput.addEventListener('keydown', saveValidInput);
+    numInput.addEventListener('input', preventInvalidInput);
+  }
+  updateDynamicFieldListButton(event.currentTarget);
 }
 
 function removeDynamicFieldListItem(listItem) {
@@ -814,7 +883,7 @@ function removeDynamicFieldListItem(listItem) {
 }
 
 function onDynamicFieldListRemove(event) {
-  removeDynamicFieldListItem(event.target.closest('li'));
+  removeDynamicFieldListItem(event.currentTarget.closest('li'));
 }
 
 function updateDynamicFieldListButton(button) {
@@ -830,7 +899,7 @@ function updateDynamicFieldListButton(button) {
 }
 
 function updateIncomeTotal(event) {
-  const page = event.target.closest('.elig_page');
+  const page = event.currentTarget.closest('.elig_page');
   const totalDisplay = page.querySelector('.total');
   const inputs = page.querySelectorAll('input[type=number]');
   let sum = 0;
@@ -958,10 +1027,10 @@ function switchToPage(toPage) {
 }
 
 // Brings the user to the first page of a section.
-// This function is used as a step indicator click handler, and 'this'
-// represents the context of the event, i.e. the button that was clicked.
+// This function is used as a step indicator click handler
 function toSection(event) {
-  const section = document.getElementById(event.target.dataset.sectionId);
+  const section = document.getElementById(
+    event.currentTarget.dataset.sectionId);
   if (section.id == 'section-results') {
     // Ensure results are always up-to-date prior to showing them.
     // TODO: Determine if it would be better to invalidate results on
@@ -1042,10 +1111,33 @@ function addListeners() {
   for (const incomeList of incomeLists) {
     incomeList.addEventListener('input', updateIncomeTotal);
   }
+  const intInputs = document.querySelectorAll('input[type="number"]');
+  for (const intInput of intInputs) {
+    intInput.addEventListener('keydown', saveValidInput);
+    intInput.addEventListener('input', preventInvalidInput);
+  }
+
+  const monthInputs = document.querySelectorAll(
+    '.dategroup_item input.date_month');
+  for (const monthInput of monthInputs) {
+    monthInput.addEventListener('change', onMonthDayChange);
+  }
+  const dayInputs = document.querySelectorAll(
+    '.dategroup_item input.date_day');
+  for (const dayInput of dayInputs) {
+    dayInput.addEventListener('change', onMonthDayChange);
+  }
+  const yearInputs = document.querySelectorAll(
+    '.dategroup_item input.date_year');
+  for (const yearInput of yearInputs) {
+    yearInput.addEventListener('change', onYearChange);
+  }
   document.getElementById('yourself-details-none').addEventListener('click',
     onToggleMultiselect);
   document.getElementById('income-has-none').addEventListener('click',
     onToggleMultiselect);
+  document.getElementById('assets-has-none').addEventListener('click',
+    onToggleDynamicFieldList);
   document.getElementById('age').addEventListener('change', onChangeAge);
   document.getElementById('hh-myself-age').addEventListener('change',
     onChangeAge);
@@ -1101,7 +1193,6 @@ function mapResultFunctions() {
   document.getElementById('program-ssdi').result = ssdiResult;
   document.getElementById('program-va-pension').result = vaPensionResult;
   document.getElementById('program-wic').result = wicResult;
-  document.getElementById('program-uplift').result = upliftResult;
 }
 
 // Switches to the first form page in the document.
@@ -1325,6 +1416,11 @@ function getValueOrNull(id) {
         val = false;
       }
     }
+  } else if (elem.classList.contains('dategroup')) {
+    const day = elem.querySelector('input.date_day');
+    const month = elem.querySelector('input.date_month');
+    const year = elem.querySelector('input.date_year');
+    val = getDateStr(year.value, month.value, day.value);
   } else {
     val = elem.value;
   }
@@ -1332,6 +1428,17 @@ function getValueOrNull(id) {
     return null;
   }
   return val;
+}
+
+// Returns a full date string similar to what an input type="date" would give
+// as its value.
+// If any of the three input strings are empty or 0, an empty string is
+// returned.  No other validation is performed.
+function getDateStr(yearStr, monthStr, dayStr) {
+  if (yearStr && monthStr && dayStr) {
+    return `${yearStr}-${monthStr.padStart(2, '0')}-${dayStr.padStart(2, '0')}`;
+  }
+  return '';
 }
 
 function getDateOrNan(id) {
@@ -1402,9 +1509,10 @@ function grossIncome(input, hhMemberIdx=null) {
 }
 
 function totalResources(input, hhMemberIdx=null) {
-  // TODO (#397): Add checkbox for users to explicitly specify they have zero
-  // resources.
-  return categoryTotal(input.assets, hhMemberIdx);
+  if (!input.assets.valid) {
+    return NaN;
+  }
+  return categoryTotal(input.assets.values, hhMemberIdx);
 }
 
 // Returns true if the immigration status is valid for assistance, false
@@ -1593,7 +1701,7 @@ function adsaResult(input) {
 }
 
 function calfreshResult(input) {
-  // https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-fs.pdf
+  // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/2CalFresh/CFMonthAllIncomeElig.htm
   // Section 2.1
   const fedPovertyLevel = new MonthlyIncomeLimits(
     cnst.calfresh.FED_POVERTY_LEVEL,
@@ -1603,7 +1711,7 @@ function calfreshResult(input) {
     input.citizen,
     validImmigration(input));
 
-  // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/CEHouseholds/CEHouseholds.htm
   // TODO: Determine if _every_ household member is eligible for Calworks
   // or GA, as that is the true test of categorical eligibility.
   const isCategoricallyEligible = or(
@@ -1622,8 +1730,8 @@ function calfreshResult(input) {
   // TODO (#279): Run net income and resource checks for households containing
   // and elderly or disabled member in the event gross income is higher than
   // the MCE limit.
-  // https://stgenssa.sccgov.org/debs/policy_handbook_calfresh/fschap11.pdf#page=7
-  // Section 11.8.4
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/CEHouseholds/MCE.htm
+  // "MCE Determination for Elderly/Disabled Households"
   //
   const mceIncomeLimit = (cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR *
     fedPovertyLevel.getLimit(input.householdSize));
@@ -1681,8 +1789,8 @@ function calworksAdjustedIncome(input) {
       (1 - cnst.calworks.SELF_EMPLOYED_DISREGARD_FRAC) *
       categoryTotal(input.income.selfEmployed));
   const childSupportTotal = categoryTotal(input.income.childSupport);
-  // https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap27.pdf
-  // Section 27.1
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/27Other_Exempt_Income/Other_Exempt_Income.htm
+  // "SSI/SSP or CAPI Payments and Income"
   const ssiIncomeTotal = input.ssiIncome.reduce(add, 0);
 
   // TODO: remove the SSI income subtraction?
@@ -1718,8 +1826,7 @@ function calworksResult(input) {
   // TODO: Exclude SSI/CAPI recipients?  That might make the form too complex.
   // TODO: Add in special needs to income limit?
   // https://www.cdss.ca.gov/cdssweb/entres/forms/english/cw29.pdf
-  // See also https://stgenssa.sccgov.org/debs/policy_handbook_CalWORKs/afchap35.pdf
-  // Section 35.5.1
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/33Financial_Eligibility/Applicant_GI_Test.htm
   const mbsacIncomeLimit = mbsac.getLimit(input.householdSize);
   const underIncomeLimit = le(nonExemptIncome, mbsacIncomeLimit);
 
@@ -1764,13 +1871,13 @@ function calworksResult(input) {
 }
 
 function capiResult(input) {
-  // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
+  // https://stgenssa.sccgov.org/debs/program_handbooks/capi/assets/CAPI/06ImmigrationStatus/ImmgrtnStts.htm
   // Note that we basically default to an eligible determination for all
   // immigrants that are not explicitly temporarily living in the country.
   const meetsImmigrationReq = and(
     not(input.citizen),
-    // TODO: (?) Handle certain qualified aliens per Section 6.4 of
-    // https://stgenssa.sccgov.org/debs/policy_handbook_CAPI/cachap06.pdf
+    // TODO: (?) Handle certain qualified aliens per "Qualifying Categories" of
+    // https://stgenssa.sccgov.org/debs/program_handbooks/capi/assets/CAPI/06ImmigrationStatus/QualfyCatgrs.htm
     validImmigration(input));
 
   const program = ssiCapiBaseProgram(input);
@@ -1942,18 +2049,17 @@ function vaDisabilityResult(input) {
 }
 
 // GA-specific references:
-//   https://socialservices.sccgov.org/about-us/department-employment-and-benefit-services/regulation-and-policy-handbooks/general-assistance
-//   https://stgenssa.sccgov.org/debs/policy_handbook_Charts/ch-ga.pdf
+//   https://stgenssa.sccgov.org/debs/program_handbooks/general_assistance/index.htm
+//   https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/4GA/NeedStnds.htm
 //
 // TO DO:
-//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap07.pdf
+//   https://stgenssa.sccgov.org/debs/program_handbooks/general_assistance/assets/07Citizens_Noncitizens/Citizens_Noncitizens.htm
 //     (7. Citizens/Noncitizens)
 //     Qualified non-citizen: Need to determine all non-citizen groups which
 //     fit this category. May or may not need to add more detail to immigration
 //     status form page.
 //
-//   https://stgenssa.sccgov.org/debs/policy_handbook_GA/gachap05.pdf
-//     (Section 5.1)
+//   https://stgenssa.sccgov.org/debs/program_handbooks/general_assistance/assets/05Identification/Age_Identity.htm
 //     Maximum age can be over 64 years with some conditions. May or may not
 //     need to implement this.
 function gaResult(input) {
@@ -2169,7 +2275,7 @@ function vtaParatransitResult(input) {
 }
 
 function housingChoiceResult(input) {
-  // https://www.huduser.gov/portal/datasets/il/il2022/2022IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2022&yy=22&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+  // https://www.huduser.gov/portal/datasets/il/il2023/2023IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2023&yy=23&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
   const extraCalc = function(numExtraPeople) {
     const limits = cnst.housingChoice.ANNUAL_INCOME_LIMITS;
     const baseLimit = limits[cnst.housingChoice.BASE_HOUSEHOLD_SIZE - 1];
@@ -2210,7 +2316,7 @@ function housingChoiceResult(input) {
   if (program.evaluate() && complexImmigration(input)) {
     program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
   }
-  if (input.existingHousingChoiceMe || input.existingHousingChoiceHousehold) {
+  if (input.existingPhaMe || input.existingPhaHousehold) {
     program.markEnrolled();
   }
   return program.getResult();
@@ -2541,25 +2647,6 @@ function wicResult(input) {
   return program.getResult();
 }
 
-function upliftResult(input) {
-  const isUnhoused = isOneOf(input.housingSituation, [
-    'vehicle',
-    'transitional',
-    'hotel',
-    'shelter',
-    'no-stable-place']);
-
-  const program = new Program();
-  program.addConditionsOneOf([
-    new EligCondition('Be experiencing homelessness', isUnhoused),
-    new EligCondition(`Be at risk of losing housing`, input.homelessRisk),
-  ]);
-  if (input.existingUpliftMe) {
-    program.markEnrolled();
-  }
-  return program.getResult();
-}
-
 function clearUnusedPages() {
   const pages = [...document.querySelectorAll('div.elig_page')];
   // Reset usage tracking.
@@ -2619,7 +2706,6 @@ function buildInputObj() {
     housingSituation: getValueOrNull('housing-situation'),
     paysUtilities: getValueOrNull('pay-utilities'),
     hasKitchen: getValueOrNull('has-kitchen-yes'),
-    homelessRisk: getValueOrNull('risk-homeless'),
     immigrationStatus: getValueOrNull('immig_status'),
     usesGuideDog: getValueOrNull('use-guide-dog'),
     militaryDisabled: getValueOrNull('dis-military'),
@@ -2627,7 +2713,9 @@ function buildInputObj() {
     servedFullDuration: getValueOrNull('full-dur-yes'),
     dutyPeriods: [],
     income: {},
-    assets: getIncomeValues(document.getElementById('page-income-assets')),
+    assets: {
+      values: getIncomeValues(document.getElementById('page-income-assets')),
+    },
     paidSsTaxes: getValueOrNull('ss-taxes'),
   };
 
@@ -2653,6 +2741,10 @@ function buildInputObj() {
   // was entered (and the household was not marked as having zero income).
   inputData.income.valid = (householdTotal > 0 ||
     getValueOrNull('income-has-none'));
+  // Assets are invalid if nothing was entered (and the household was not marked
+  // as explicitly having no assets).
+  inputData.assets.valid = (categoryTotal(inputData.assets.values) > 0 ||
+    getValueOrNull('assets-has-none'));
 
   // Income specifically from SSI
   const retirementEntries = [...document.querySelectorAll(
@@ -2669,11 +2761,11 @@ function buildInputObj() {
   for (const item of dutyPeriodItems) {
     inputData.dutyPeriods.push({
       type: getValueOrNull(
-        item.querySelector('select[id^="your-duty-type"]').id),
+        item.querySelector('[id^="your-duty-type"]').id),
       start: getDateOrNan(
-        item.querySelector('input[id^="served-from"]').id),
+        item.querySelector('[id^="served-from"]').id),
       end: getDateOrNan(
-        item.querySelector('input[id^="served-until"]').id),
+        item.querySelector('[id^="served-until"]').id),
     });
   }
 
@@ -2750,7 +2842,7 @@ function renderFlags(flags, listElem) {
     case FlagCodes.MORE_INFO_NEEDED:
       flagMsg = 'We need more information from you to make an eligibility ' +
         'recommendation. ' +
-        '<button type="button" class="link back_to_form" ' +
+        '<button type="button" class="link back_to_form noprint" ' +
         'data-section-id="section-yourself">' +
         'Back to the form</button>';
       break;
@@ -2775,7 +2867,116 @@ function renderFlags(flags, listElem) {
   }
 }
 
-// Determines eligibility for programs based on user form input values.
+function showResultText(container, hasResults) {
+  const resultsMsgs = container.querySelectorAll('.has_results');
+  const noResultsMsgs = container.querySelectorAll('.no_results');
+  for (const resultMsg of resultsMsgs) {
+    if (hasResults) {
+      resultMsg.classList.remove('hidden');
+    } else {
+      resultMsg.classList.add('hidden');
+    }
+  }
+  for (const noResultMsg of noResultsMsgs) {
+    if (hasResults) {
+      noResultMsg.classList.add('hidden');
+    } else {
+      noResultMsg.classList.remove('hidden');
+    }
+  }
+}
+
+function renderResultsSummaryList(list, eligiblePrograms) {
+  // Reset list element
+  // Stryker disable next-line BlockStatement: Results in infinite loop.
+  while (list.firstChild) {
+    list.removeChild(list.firstChild);
+  }
+  // Render each list item
+  for (const program of eligiblePrograms) {
+    const listItem = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = `#${program.id}`;
+    link.textContent = program.dataset.defaultTitle;
+    link.addEventListener('click', onAnchorClick);
+    listItem.appendChild(link);
+    list.appendChild(listItem);
+  }
+}
+
+function renderResultsSummaryFooter(container, numUnknown, numIneligible,
+  numEnrolled) {
+  function countStr(num) {
+    let ending = 's';
+    if (Number(num) === 1) {
+      ending = '';
+    }
+    return `${num} program${ending}`;
+  }
+
+  // Reset container element
+  container.textContent = '';
+  // Render discription text
+  if (numUnknown) {
+    container.appendChild(document.createTextNode(
+      'We need additional information from you to assess '));
+    const link = document.createElement('a');
+    link.href = '#unknown-programs';
+    link.textContent = countStr(numUnknown);
+    link.addEventListener('click', onAnchorClick);
+    container.appendChild(link);
+    container.appendChild(document.createTextNode('. '));
+  }
+  if (numIneligible || numEnrolled) {
+    const singular = (Number(numIneligible) === 1 ||
+      (!numIneligible && Number(numEnrolled) === 1));
+    container.appendChild(document.createTextNode(
+      `There ${singular ? 'is' : 'are'}${numUnknown ? ' also' : ''} `));
+    if (numIneligible) {
+      const link = document.createElement('a');
+      link.href = '#ineligible-programs';
+      link.textContent = countStr(numIneligible);
+      link.addEventListener('click', onAnchorClick);
+      container.appendChild(link);
+      container.appendChild(document.createTextNode(
+        ' you likely do not qualify for'));
+      if (numEnrolled) {
+        container.appendChild(document.createTextNode(' and '));
+      }
+    }
+    if (numEnrolled) {
+      const link = document.createElement('a');
+      link.href = '#enrolled-programs';
+      link.textContent = countStr(numEnrolled);
+      link.addEventListener('click', onAnchorClick);
+      container.appendChild(link);
+      container.appendChild(document.createTextNode(
+        ` you're already enrolled in`));
+    }
+    container.appendChild(document.createTextNode('. '));
+  }
+}
+
+function renderResultsSummary(eligiblePrograms, unknownPrograms,
+  ineligiblePrograms, enrolledPrograms) {
+  const numEligible = eligiblePrograms.length;
+  const numUnknown = unknownPrograms.length;
+  const numIneligible = ineligiblePrograms.length;
+  const numEnrolled = enrolledPrograms.length;
+  const numPrograms = numEligible + numUnknown + numIneligible + numEnrolled;
+
+  document.getElementById('summary-num-programs').textContent = numPrograms;
+  document.getElementById('summary-num-eligible').textContent = numEligible;
+  showResultText(document.getElementById('elig-summary'), numEligible);
+  renderResultsSummaryList(document.querySelector('#elig-summary > ul'),
+    eligiblePrograms);
+  // Render the footer summarizing unknown, ineligible, and enrolled programs.
+  renderResultsSummaryFooter(document.getElementById('summary-footer'),
+    numUnknown, numIneligible, numEnrolled);
+}
+
+// Determines eligibility for programs based on user form input values and
+// renders the results.
 function computeEligibility() {
   // Ensure any inputs on unused pages are cleared out prior to eligibility
   // computation.
@@ -2783,10 +2984,10 @@ function computeEligibility() {
 
   const input = buildInputObj();
   const allPrograms = document.querySelectorAll('.programs > ul > li');
-  const eligibleList = document.querySelector('.programs__eligible > ul');
-  const ineligibleList = document.querySelector('.programs__ineligible > ul');
-  const unknownList = document.querySelector('.programs__unknown > ul');
-  const enrolledList = document.querySelector('.programs__enrolled > ul');
+  const eligibleList = document.querySelector('#eligible-programs > ul');
+  const ineligibleList = document.querySelector('#ineligible-programs > ul');
+  const unknownList = document.querySelector('#unknown-programs > ul');
+  const enrolledList = document.querySelector('#enrolled-programs > ul');
   for (const program of allPrograms) {
     const result = program.result(input);
     const conditionList = program.querySelector('.elig_conditions');
@@ -2826,26 +3027,19 @@ function computeEligibility() {
 
   for (const container of document.querySelectorAll('.programs')) {
     const list = container.querySelector('ul');
-    const resultsMsgs = container.querySelectorAll('.has_results');
-    const noResultsMsgs = container.querySelectorAll('.no_results');
-
-    // Show/hide info text depending on whether there are items in the list.
-    for (const resultMsg of resultsMsgs) {
-      if (list.children.length) {
-        resultMsg.classList.remove('hidden');
-      } else {
-        resultMsg.classList.add('hidden');
-      }
-    }
-    for (const noResultMsg of noResultsMsgs) {
-      if (list.children.length) {
-        noResultMsg.classList.add('hidden');
-      } else {
-        noResultMsg.classList.remove('hidden');
-      }
-    }
+    // TODO: Don't get all list children, just child <li>
+    showResultText(container, list.children.length);
     sortByProgramName(list);
   }
+
+  // It's important we render the summary after populating each list of programs
+  // and sorting those lists.
+  renderResultsSummary(
+    document.querySelectorAll('#eligible-programs > ul > li'),
+    document.querySelectorAll('#unknown-programs > ul > li'),
+    document.querySelectorAll('#ineligible-programs > ul > li'),
+    document.querySelectorAll('#enrolled-programs > ul > li'),
+  );
 }
 
 // Script entry point.
@@ -2878,6 +3072,7 @@ if (typeof module !== 'undefined' && module.exports) {
     getNumberOfDays,
     formatUsDate,
     dateOrToday,
+    getDateStr,
     withinInterval,
     indexOfAll,
     isOneOf,
@@ -2904,7 +3099,6 @@ if (typeof module !== 'undefined' && module.exports) {
     ssiCapiAdjustedIncome,
     ssiResult,
     ssdiResult,
-    upliftResult,
     vaDisabilityResult,
     vaPensionCountableIncome,
     vaPensionHouseholdSize,
@@ -2922,5 +3116,7 @@ if (typeof module !== 'undefined' && module.exports) {
     addConditionIcon,
     renderConditions,
     renderFlags,
+    showResultText,
+    renderResultsSummaryFooter,
   };
 }
