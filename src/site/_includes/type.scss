@@ -32,6 +32,16 @@
   h4 {
     font-size: 1em;
   }
+
+  h1 + p.subtitle {
+    font-size: 1.25em;
+    margin-bottom: 1.25em;
+  }
+
+  h2 + p.subtitle {
+    font-size: 1em;
+    margin-bottom: 1em;
+  }
   
   main p,
   main ol,
