@@ -70,7 +70,7 @@ const strs = {
   },
   'fieldHeadHousehold': {
     'en': 'head of your household',
-    'es': 'el cabeza de familia',
+    'es': /el ((cabeza de familia)|(jefe de su hogar))/i,
   },
   'fieldGuideDog': {
     'en': 'use a guide, signal or service dog',
