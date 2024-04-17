@@ -128,18 +128,18 @@ const cnst = {
     INCREMENTAL_ADJ: 0.08,
     // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
     // See "very low income" here:
-    // https://www.huduser.gov/portal/datasets/il/il2023/2023summary.odn?states=6.0&data=2023&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2023&selection_type=county
+    // https://www.huduser.gov/portal/datasets/il/il2024/2024summary.odn?states=6.0&data=2024&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2024&selection_type=county
     // https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/
-    // Effective through 5/14/24 (or perhaps HUD fiscal year end 9/30/23?)
+    // Effective through 4/1/25
     ANNUAL_INCOME_LIMITS: [ // USD per month
-      62450,
-      71400,
-      80300,
-      89200,
-      96350,
-      103500,
-      110650,
-      117750,
+      64550,
+      73750,
+      82950,
+      92150,
+      99550,
+      106900,
+      114300,
+      121650,
     ],
   },
   ihss: {
