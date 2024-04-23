@@ -48,13 +48,16 @@ const fetchApartmentRecords = async () => {
       'DISALLOWS_PUBLIC_APPLICATIONS',
       'HAS_WHEELCHAIR_ACCESSIBLE_UNITS',
       'PREFERS_LOCAL_APPLICANTS',
+      'PUBLISH_STATUS',
     ],
   })
     .all()
     .then((records) => {
       records.forEach(function(record) {
-        // Only take apartments that have units associated with them.
-        if (record.get('UNITS')) {
+        // Only take apartments that have units associated with them and have
+        // been published (i.e. not a draft)
+        if (record.get('UNITS') &&
+            record.get('PUBLISH_STATUS') == 'Published') {
           apartments.push({
             id: record.get('DISPLAY_ID'),
             aptName: record.get('APT_NAME'),
