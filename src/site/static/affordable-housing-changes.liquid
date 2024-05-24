@@ -118,7 +118,8 @@ maxHouseholdSize: 12
         {% formField housingFields, "SUPPLEMENTAL_URL_4" %}
       </div>
 
-      {% fieldLabel "Total Units", housingFields, "NUM_TOTAL_UNITS" %}<br/>
+      {% fieldLabel "Total Units", housingFields, "NUM_TOTAL_UNITS" %}
+      <span class="form_hint label">Do not include manager units</span><br/>
       {% formField housingFields, "NUM_TOTAL_UNITS" %}
 
       <div class="multiselect" id="populations-served">
@@ -140,7 +141,8 @@ maxHouseholdSize: 12
       {% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}<br/>
 
       {% formField housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
-      {% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}<br/>
+      {% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
+      <span class="form_hint label">A displayed wheelchair icon is not sufficient to tick this</span><br/>
 
       {% formField housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}
       {% fieldLabel "Only accepts referral applications", housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}<br/>
