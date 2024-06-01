@@ -24,18 +24,25 @@ const SORT_RANKING = new Map([
 ]);
 
 module.exports = function(eleventyConfig) {
-  eleventyConfig.addShortcode('image', async function(image, format='jpeg') {
+  const makeImage = async function(image, width, format='auto') {
     const metadata = await eleventyImage(image['FILE'][0].url, {
-      widths: [800],
+      widths: [width, width * 2, width * 3],
       formats: [format],
       urlPath: '/images/',
       outputDir: './dist/images/',
     });
 
-    // TODO: use Image.generateHTML to properly generate dynamic images with
-    // srcset and sizes.
-    const data = metadata[format][metadata[format].length - 1];
-    return `<img alt="${image['IMAGE_DESCRIPTION']}" width="${data.width}" height="${data.height}" src="${data.url}">`;
+    // Note don't use 'format' here because it might be auto which does not
+    // appear in the resulting metadata keys.
+    const formatKey = Object.keys(metadata)[0];
+    const src = metadata[formatKey][0].url;
+    const srcset = metadata[formatKey].map((m) => `${m.srcset}`);
+
+    return `<img alt="${image['IMAGE_DESCRIPTION']}" loading="lazy" decoding="async" src="${src}" srcset="${srcset.join(',')}" sizes="${width}px">`
+  }
+
+  eleventyConfig.addShortcode('image', async function(image, format='jpeg') {
+    return await makeImage(image, 800, format);
   });
 
   // Markdown filter
@@ -45,9 +52,18 @@ module.exports = function(eleventyConfig) {
   });
 
   // Substitute placeholder text with the appropriate markup.
-  eleventyConfig.addFilter('unplaceholder', (str) => {
+  eleventyConfig.addAsyncFilter('unplaceholder', async (str, imageList=null) => {
+    const imageReplacer = async function(match, p1, offset, string) {
+      return await makeImage(imageList[p1]);
+    }
     str = str.replaceAll('{{notranslate}}', '<span translate="no">');
     str = str.replaceAll('{{endnotranslate}}', '</span>');
+    if (imageList !== null) {
+       for (match of str.matchAll(/{{image ([a-z0-9\-]+) ?(\d*)}}/g)) {
+          const imageTag = await makeImage(imageList[match[1]], match?.[2]);
+          str = str.replace(match[0], imageTag);
+       }
+    }
     return str;
   });
 
