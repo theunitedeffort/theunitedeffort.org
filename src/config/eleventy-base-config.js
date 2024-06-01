@@ -50,7 +50,7 @@ module.exports = function(eleventyConfig) {
   // Markdown filter
   eleventyConfig.addFilter('markdownify', (str) => {
     str = str.replaceAll('http:///', '/');
-    let markup = markdown.marked(str);
+    const markup = markdown.marked(str);
     return markup.replaceAll(/(href="https?:\/\/.*?")/g,
       '$1 target="_blank" rel="noopener"');
   });
