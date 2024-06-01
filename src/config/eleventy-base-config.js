@@ -35,12 +35,12 @@ module.exports = function(eleventyConfig) {
     // Note don't use 'format' here because it might be auto which does not
     // appear in the resulting metadata keys.
     const formatKey = Object.keys(metadata)[0];
-    const src = metadata[formatKey][0].url;
+    const src = metadata[formatKey][0];
     const srcset = metadata[formatKey].map((m) => `${m.srcset}`);
 
     return `<img alt="${image['IMAGE_DESCRIPTION']}" loading="lazy" ` +
-      `decoding="async" src="${src}" srcset="${srcset.join(',')}" ` +
-      `sizes="${width}px">`;
+      `decoding="async" src="${src.url}" width="${src.width}" ` +
+      `height="${src.height}" srcset="${srcset.join(',')}" sizes="${width}px">`;
   };
 
   eleventyConfig.addShortcode('image', async function(image, format='jpeg') {
