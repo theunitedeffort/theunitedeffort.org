@@ -53,9 +53,6 @@ module.exports = function(eleventyConfig) {
 
   // Substitute placeholder text with the appropriate markup.
   eleventyConfig.addAsyncFilter('unplaceholder', async (str, imageList=null) => {
-    const imageReplacer = async function(match, p1, offset, string) {
-      return await makeImage(imageList[p1]);
-    }
     str = str.replaceAll('{{notranslate}}', '<span translate="no">');
     str = str.replaceAll('{{endnotranslate}}', '</span>');
     if (imageList !== null) {
