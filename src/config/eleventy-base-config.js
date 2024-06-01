@@ -38,8 +38,10 @@ module.exports = function(eleventyConfig) {
     const src = metadata[formatKey][0].url;
     const srcset = metadata[formatKey].map((m) => `${m.srcset}`);
 
-    return `<img alt="${image['IMAGE_DESCRIPTION']}" loading="lazy" decoding="async" src="${src}" srcset="${srcset.join(',')}" sizes="${width}px">`
-  }
+    return `<img alt="${image['IMAGE_DESCRIPTION']}" loading="lazy" ` +
+      `decoding="async" src="${src}" srcset="${srcset.join(',')}" ` +
+      `sizes="${width}px">`;
+  };
 
   eleventyConfig.addShortcode('image', async function(image, format='jpeg') {
     return await makeImage(image, 800, format);
@@ -56,10 +58,10 @@ module.exports = function(eleventyConfig) {
     str = str.replaceAll('{{notranslate}}', '<span translate="no">');
     str = str.replaceAll('{{endnotranslate}}', '</span>');
     if (imageList !== null) {
-       for (match of str.matchAll(/{{image ([a-z0-9\-]+) ?(\d*)}}/g)) {
-          const imageTag = await makeImage(imageList[match[1]], match?.[2]);
-          str = str.replace(match[0], imageTag);
-       }
+      for (const match of str.matchAll(/{{image ([a-z0-9-]+) ?(\d*)}}/g)) {
+        const imageTag = await makeImage(imageList[match[1]], match?.[2]);
+        str = str.replace(match[0], imageTag);
+      }
     }
     return str;
   });
