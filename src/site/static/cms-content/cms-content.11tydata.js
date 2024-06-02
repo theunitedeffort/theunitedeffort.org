@@ -1,5 +1,7 @@
-const EleventyFetch = require('@11ty/eleventy-fetch');
+const eleventyFetch = require('@11ty/eleventy-fetch');
 const eleventyImage = require('@11ty/eleventy-img');
+const {writeFileSync} = require('fs');
+const path = require('path');
 const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
@@ -114,13 +116,15 @@ const cacheStoryImages = async (stories) => {
 
 const cacheAssets = async (assets) => {
   for (const asset of assets) {
-    await EleventyFetch(asset['FILE'][0].url, {
+    const assetBuffer = await eleventyFetch(asset['FILE'][0].url, {
       type: 'buffer',
       duration: '1h',
-      directory: './dist/assets/',
-    })
+    });
+    const extension = path.extname(asset['FILE'][0].filename);
+    writeFileSync(`./dist/assets/${asset['IDENTIFIER']}${extension}`,
+      assetBuffer);
   }
-}
+};
 
 const fetchImages = async () => {
   console.log('fetching images');
@@ -157,14 +161,20 @@ const fetchAssets = async () => {
 
 
 module.exports = async function() {
-  const asset = new EleventyFetch.AssetCache('airtable_pages');
+  const asset = new eleventyFetch.AssetCache('airtable_pages');
   if (asset.isCacheValid('1s')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
   }
   console.log('Fetching pages.');
-  const [pageList, resourceList, storiesList, imageList, assetList] = await Promise.all(
-    [fetchPages(), fetchGeneralResources(), fetchStories(), fetchImages(), fetchAssets()]);
+  const [
+    pageList,
+    resourceList,
+    storiesList,
+    imageList,
+    assetList,
+  ] = await Promise.all([fetchPages(), fetchGeneralResources(), fetchStories(),
+    fetchImages(), fetchAssets()]);
   await cacheStoryImages(storiesList);
   await cacheAssets(assetList);
   const ret = {
