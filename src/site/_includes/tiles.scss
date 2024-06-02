@@ -1,0 +1,30 @@
+.tile-set {
+  @include bp(narrow) {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 5%;
+    width: 80%;
+    margin: 0 auto;
+  }
+}
+
+.tile {
+  margin: 1em 0 3em;
+  text-align: center;
+  flex-grow: 1;
+  @include bp(narrow) {
+    width: 40%;
+    margin: 1em 0 1em;
+  }
+  @include bp(mid) {
+    width: 30%;
+    margin: 1em 0 1em;
+  }
+
+  img {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
