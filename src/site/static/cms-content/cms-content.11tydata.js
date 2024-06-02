@@ -1,6 +1,6 @@
 const eleventyFetch = require('@11ty/eleventy-fetch');
 const eleventyImage = require('@11ty/eleventy-img');
-const {writeFileSync} = require('fs');
+const fs = require('fs');
 const path = require('path');
 const Airtable = require('airtable');
 const base = new Airtable(
@@ -120,8 +120,12 @@ const cacheAssets = async (assets) => {
       type: 'buffer',
       duration: '1h',
     });
+    const outputDir = './dist/assets';
+    if (!fs.existsSync(outputDir)){
+      fs.mkdirSync(outputDir, {recursive: true});
+    }
     const extension = path.extname(asset['FILE'][0].filename);
-    writeFileSync(`./dist/assets/${asset['IDENTIFIER']}${extension}`,
+    fs.writeFileSync(path.join(outputDir, `${asset['IDENTIFIER']}${extension}`),
       assetBuffer);
   }
 };
@@ -162,7 +166,7 @@ const fetchAssets = async () => {
 
 module.exports = async function() {
   const asset = new eleventyFetch.AssetCache('airtable_pages');
-  if (asset.isCacheValid('1s')) {
+  if (asset.isCacheValid('1h')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
   }
