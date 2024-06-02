@@ -121,7 +121,7 @@ const cacheAssets = async (assets) => {
       duration: '1h',
     });
     const outputDir = './dist/assets';
-    if (!fs.existsSync(outputDir)){
+    if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, {recursive: true});
     }
     const extension = path.extname(asset['FILE'][0].filename);
