@@ -84,13 +84,13 @@ npm i -g netlify-cli
 First store the `AIRTABLE_BASE_ID` variable:
 
 ```
-echo AIRTABLE_BASE_ID=apphE4mk8YDqyHM0I > .env
+echo AIRTABLE_BASE_ID=apphE4mk8YDqyHM0I >> .env
 ```
 
 Next, store the `AIRTABLE_API_KEY` variable as your [personal access token](https://github.com/theunitedeffort/theunitedeffort.org#data-source). Since everyone's Airtable personal access token is different, you will have to modify the below command to replace `{YOUR_ACCESS_TOKEN}` with your actual access token.  For example, if your Airtable personal access token was `abc123`, then the command would be `echo AIRTABLE_API_KEY=abc123 > .env`
 
 ```
-echo AIRTABLE_API_KEY={YOUR_ACCESS_TOKEN} > .env
+echo AIRTABLE_API_KEY={YOUR_ACCESS_TOKEN} >> .env
 ```
 
 #### Run local development build and server
