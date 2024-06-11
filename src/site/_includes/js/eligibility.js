@@ -63,33 +63,33 @@ const cnst = {
   },
   care: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    // Effective through 5/31/2024
+    // Effective through 5/31/2025
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      39440,
-      39440,
-      49720,
-      60000,
-      70280,
-      80560,
-      90840,
-      101120,
+      40880,
+      40880,
+      51640,
+      62400,
+      73160,
+      83920,
+      94680,
+      105440,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10280, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
   },
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    // Effective through 5/31/2024
+    // Effective through 5/31/2025
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      62150, // Min household size 3.
-      62150, // Min household size 3.
-      62150,
-      75000,
-      87850,
-      100700,
-      113550,
-      126400,
+      64550, // Min household size 3.
+      64550, // Min household size 3.
+      64550,
+      78000,
+      91450,
+      104900,
+      118350,
+      131800,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 12850, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 13450, // USD per year per person
     MIN_HOUSEHOLD_SIZE: 3, // People
   },
   ga: {
