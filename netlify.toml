@@ -95,3 +95,13 @@ status = 301
 from = "/public-assistance"
 to = "/resources"
 status = 301
+
+[[redirects]]
+from = "/about/stories/ueo-helped-save-my-life/"
+to = "/about/stories/the-united-effort-organization-helped-save-my-life/"
+status = 301
+
+[[redirects]]
+from = "/about/stories/local-resident-protects-a-ueo-client-s-piano/"
+to = "/about/stories/local-resident-protects-a-united-effort-client-s-piano/"
+status = 301
