@@ -1,5 +1,2 @@
 /protected/*
   Basic-Auth: ueo:INJECTED_PASSWORD
-
-/find-resources/*
-  Basic-Auth: ueo:INJECTED_PASSWORD
