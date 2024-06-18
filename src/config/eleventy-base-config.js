@@ -859,7 +859,11 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addFilter('formatPhone', function(phoneStr) {
-    return phoneStr.replaceAll('(', '').replaceAll(') ', '-');
+    const temp = phoneStr;
+    phoneStr = phoneStr.replace(/\D/g, '');
+    if (phoneStr.length < 10) return temp;
+    if (phoneStr.length > 10) return phoneStr.replace(/(\d{3})(\d{3})(\d{4})(\d{1,})/, '$1-$2-$3 ext $4');
+    return phoneStr.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
   });
 
   eleventyConfig.addFilter('except', function(collection, value) {
