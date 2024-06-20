@@ -1292,6 +1292,9 @@ describe('Program eligibility', () => {
     test('Eligible when gross income is at or below the limit', () => {
       const maxIncome = elig.cnst.lifeline.ANNUAL_INCOME_LIMITS[0] / 12;
       input.income.valid = true;
+      // The Lifeline income limit is low, so we have to force ineligibility
+      // for Calfresh to only check Lifeline.
+      input.citizen = false;
       check(elig.lifelineResult, input)
         .isEligibleIf('income.wages').isAtMost(maxIncome);
     });

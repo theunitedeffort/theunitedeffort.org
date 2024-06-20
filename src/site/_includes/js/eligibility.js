@@ -148,14 +148,14 @@ const cnst = {
   },
   lifeline: {
     // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
-    // Effective through 5/31/24
+    // Effective through 5/31/25
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      32500,
-      32500,
-      37700,
-      45900,
+      23400,
+      31700,
+      40000,
+      48400,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 8200, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 8400, // USD per year per person
   },
   liheap: {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
