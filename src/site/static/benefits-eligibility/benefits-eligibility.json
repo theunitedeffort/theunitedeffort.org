@@ -128,6 +128,13 @@
       "applyUrl": "https://myfamily.wic.ca.gov/Home/HowCanIGetWIC#enrolledTitle",
       "infoUrl": "https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/Program-Landing1.aspx",
       "summary": "WIC is a health and nutrition family for mothers and their children that provides education, support, and benefits to buy healthy foods."
+    },
+    {
+      "name": "Clipper START",
+      "id": "clipper",
+      "applyUrl": "https://www.clipperstartcard.com/s/application",
+      "infoUrl": "https://www.clipperstartcard.com/s/",
+      "summary": "Clipper START provides a 50% discount on single ride transit fares for qualifying individuals. Applicable services include VTA, Caltrain, BART, and many more."
     }
   ]
 }
