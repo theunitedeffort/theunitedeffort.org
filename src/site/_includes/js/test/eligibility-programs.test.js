@@ -2143,4 +2143,25 @@ describe('Program eligibility', () => {
         .is([elig.cnst.wic.CHILD_EXIT_AGE - 1, 99]);
     });
   });
+  describe('Clipper START Program', () => { // Broken!
+    test('Not eligible with default input', () => {
+      expect(elig.clipperStartResult(input).eligible).not.toBe(true);
+    });
+
+    test('Cannot have RTC Clipper Card', () => {
+      input.existingRtcClipperMe = true;
+      check(elig.clipperStartResult, input).isEligibleIf('existing-rtc-clipper-me').is(false);
+    });
+
+    test('Age must be from 19 to 64 years', () => {
+      check(elig.clipperStartResult, input).isEligibleIf('age').isAtLeast(elig.cnst.clipper.MIN_ELIGIBLE_AGE);
+      check(elig.clipperStartResult, input).isEligibleIf('age').isAtMost(elig.cnst.clipper.MAX_ELIGIBLE_AGE);
+    });
+
+    test('Income must be at or below the limit', () => {
+      input.income.valid = true;
+      check(elig.clipperStartResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.clipper.ANNUAL_INCOME_LIMITS[0] / 12);
+    });
+    
+  });
 });
