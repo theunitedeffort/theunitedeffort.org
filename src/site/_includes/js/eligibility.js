@@ -258,6 +258,22 @@ const cnst = {
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
     CHILD_EXIT_AGE: 5, // Birthday at which a child is ineligible.
   },
+  clipper: {
+    // https://www.clipperstartcard.com/s/
+    ANNUAL_INCOME_LIMITS: [ // USD per year
+      30120,
+      40880,
+      51640,
+      62400,
+      73160,
+      83920,
+      94680,
+      105440,
+    ],
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
+    MIN_ELIGIBLE_AGE: 19, // Years
+    MAX_ElIGIBLE_AGE: 64, // Years
+  },
 };
 
 // This global variable holds the current state of the form navigation.
@@ -1193,6 +1209,7 @@ function mapResultFunctions() {
   document.getElementById('program-ssdi').result = ssdiResult;
   document.getElementById('program-va-pension').result = vaPensionResult;
   document.getElementById('program-wic').result = wicResult;
+  document.getElementById('program-clipper-start').result = clipperStartResult;
 }
 
 // Switches to the first form page in the document.
@@ -2644,6 +2661,33 @@ function wicResult(input) {
   if (input.existingWicMe || input.existingWicHousehold) {
     program.markEnrolled();
   }
+  return program.getResult();
+}
+
+function clipperStartResult(input) {
+  const meetsAgeReq = and(
+    ge(input.age, cnst.clipper.MIN_ELIGIBLE_AGE),
+    le(input.age, cnst.clipper.MAX_ElIGIBLE_AGE));
+
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
+    cnst.clipper.ANNUAL_INCOME_LIMITS,
+    cnst.clipper.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
+
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
+
+  const noRTC = not(input.existingRtcClipperMe);
+  
+  const program = new Program();
+  program.addCondition(new EligCondition(
+    'Be 19-64 years old',
+    meetsAgeReq));
+  program.addCondition(new EligCondition(
+    `Have a household income below ${usdLimit(incomeLimit)} per month (200% federal poverty level)`,
+    underIncomeLimit));
+  program.addCondition(new EligCondition(
+    `Not have an RTC Clipper Card for people with disabilities`,
+    noRTC)); 
   return program.getResult();
 }
 

@@ -131,7 +131,7 @@
     },
     {
       "name": "Clipper START",
-      "id": "clipper",
+      "id": "clipper-start",
       "applyUrl": "https://www.clipperstartcard.com/s/application",
       "infoUrl": "https://www.clipperstartcard.com/s/",
       "summary": "Clipper START provides a 50% discount on single ride transit fares for qualifying individuals. Applicable services include VTA, Caltrain, BART, and many more."
