@@ -3162,5 +3162,6 @@ if (typeof module !== 'undefined' && module.exports) {
     renderFlags,
     showResultText,
     renderResultsSummaryFooter,
+    clipperStartResult,
   };
 }
