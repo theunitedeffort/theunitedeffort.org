@@ -4,7 +4,7 @@
 (function() {
   const MAP_CENTER_LAT = 37.233907; // Center of Santa Clara County.
   const MAP_CENTER_LNG = -121.756180; // Center of Santa Clara County.
-  const MAP_ID = '9cafc548a28110af'; // For custom map styling.
+  const MAP_ID = '9194b5594b173697'; // For custom map styling.
   const MAP_INIT_ZOOM = 9; // Zoom level
   const MAP_HIGHLIGHT_ZOOM = 15; // Zoom level
 
