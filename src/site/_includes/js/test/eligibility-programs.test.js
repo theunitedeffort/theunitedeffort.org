@@ -592,6 +592,7 @@ describe('Program eligibility', () => {
       existingVaDisabilityHousehold: false,
       existingVtaParatransitMe: false,
       existingVtaParatransitHousehold: false,
+      existingRtcClipperMe: false,
     };
     Object.preventExtensions(input);
   });
@@ -2149,7 +2150,7 @@ describe('Program eligibility', () => {
     });
 
     test('Cannot have RTC Clipper Card', () => {
-      input.existingRtcClipperMe = true;
+      input.existingRtcClipperMe = false;
       check(elig.clipperStartResult, input).isEligibleIf('existing-rtc-clipper-me').is(false);
     });
 
