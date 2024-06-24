@@ -232,11 +232,11 @@ const cnst = {
       ['1990-08-02', ''], // Gulf war, no end date yet.
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
-    // Effective through 11/30/23
+    // Effective through 11/30/24
     ANNUAL_NET_WORTH_LIMIT: 155356, // USD per year
     // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
-    // Effective through 11/30/23
+    // Effective through 11/30/24
     ANNUAL_INCOME_LIMITS: [ // USD per year
       16551,
       21674,
