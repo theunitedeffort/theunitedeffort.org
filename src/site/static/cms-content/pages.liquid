@@ -11,6 +11,7 @@ eleventyComputed:
 ---
 
 {% assign cardSet = false %}
+{% assign tileSet = false %}
 {%- for section in thisPage.sections -%}
 
   {% comment %} wrap groups of cards into a card set for layout purposes. {% endcomment %}
@@ -23,16 +24,25 @@ eleventyComputed:
     </div>
   {% endif %} 
 
+  {% if section.type == "Tile" and tileSet == false %}
+    {% assign tileSet = true %}
+    <div class="tile-set">
+  {% endif %}
+  {% if tileSet == true and section.type != "Tile" %}
+    {% assign tileSet = false %}
+    </div>
+  {% endif %}
+
   <div class="{{section.type | downcase }}">
     {% if section.type == "Pancake" %}
       <div class="container">
-      {{ section.content | markdownify }}
+      {{ section.content | markdownify | unplaceholder: images}}
       </div>
     {% elsif section.type == "Render-partial" %}
       {% assign partialName = section.content | strip %}
       {% render partialName, data: partialsData %}
     {% else %}
-      {{ section.content | markdownify }}
+      {{ section.content | markdownify | unplaceholder: images}}
     {% endif %}
 
   </div>

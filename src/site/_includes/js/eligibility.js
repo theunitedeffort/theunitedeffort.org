@@ -43,10 +43,9 @@ const cnst = {
     MBSAC_ADDL_PERSON: 34, // USD per month per person
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/14Property_Gen/Property_Limit.htm
     // "Property General - Property Limit"
-    // https://www.sfhsa.org/sites/default/files/media/document/2023-04/factsheet_calworks_english_02.2023.pdf
-    // Effective through ?
-    BASE_RESOURCE_LIMIT: 10888, // USD
-    DISABLED_ELDERLY_RESOURCE_LIMIT: 16333, // USD
+    // Effective through 1/1/2025?
+    BASE_RESOURCE_LIMIT: 11634, // USD
+    DISABLED_ELDERLY_RESOURCE_LIMIT: 17452, // USD
     MIN_ELDERLY_AGE: 60, // Years
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/33Financial_Eligibility/Applicant_GI_Test.htm
     // "Applicant Gross Income Test"
@@ -64,33 +63,33 @@ const cnst = {
   },
   care: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    // Effective through 5/31/2024
+    // Effective through 5/31/2025
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      39440,
-      39440,
-      49720,
-      60000,
-      70280,
-      80560,
-      90840,
-      101120,
+      40880,
+      40880,
+      51640,
+      62400,
+      73160,
+      83920,
+      94680,
+      105440,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10280, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
   },
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    // Effective through 5/31/2024
+    // Effective through 5/31/2025
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      62150, // Min household size 3.
-      62150, // Min household size 3.
-      62150,
-      75000,
-      87850,
-      100700,
-      113550,
-      126400,
+      64550, // Min household size 3.
+      64550, // Min household size 3.
+      64550,
+      78000,
+      91450,
+      104900,
+      118350,
+      131800,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 12850, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 13450, // USD per year per person
     MIN_HOUSEHOLD_SIZE: 3, // People
   },
   ga: {
@@ -129,18 +128,18 @@ const cnst = {
     INCREMENTAL_ADJ: 0.08,
     // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
     // See "very low income" here:
-    // https://www.huduser.gov/portal/datasets/il/il2023/2023summary.odn?states=6.0&data=2023&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2023&selection_type=county
+    // https://www.huduser.gov/portal/datasets/il/il2024/2024summary.odn?states=6.0&data=2024&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2024&selection_type=county
     // https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/
-    // Effective through 5/14/24 (or perhaps HUD fiscal year end 9/30/23?)
+    // Effective through 4/1/25
     ANNUAL_INCOME_LIMITS: [ // USD per month
-      62450,
-      71400,
-      80300,
-      89200,
-      96350,
-      103500,
-      110650,
-      117750,
+      64550,
+      73750,
+      82950,
+      92150,
+      99550,
+      106900,
+      114300,
+      121650,
     ],
   },
   ihss: {
@@ -149,14 +148,14 @@ const cnst = {
   },
   lifeline: {
     // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
-    // Effective through 5/31/24
+    // Effective through 5/31/25
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      32500,
-      32500,
-      37700,
-      45900,
+      23400,
+      31700,
+      40000,
+      48400,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 8200, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 8400, // USD per year per person
   },
   liheap: {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
@@ -190,18 +189,16 @@ const cnst = {
   },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
-    // Effective through 12/31/23?
-    // TODO: On 1/1/2024 change to 1550
-    SGA_NON_BLIND: 1470, // USD per month
-    // TODO: On 1/1/2024 change to 2590
-    SGA_BLIND: 2460, // USD per month
-    // https://www.ssa.gov/pubs/EN-05-11125.pdf
+    // Effective through 12/31/24
+    SGA_NON_BLIND: 1550, // USD per month
+    SGA_BLIND: 2590, // USD per month
+    // https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACINs/2023/I-66_23.pdf?ver=2023-11-21-144047-077
     // Note these max benefit amounts include the California state supplement.
     // TODO: Handle other living categories (e.g. non-medical out-of-home care).
-    // Effective through 12/31/23?
-    MAX_BENEFIT_NON_BLIND: 1133.73, // USD per month
-    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1251.74, // USD per month
-    MAX_BENEFIT_BLIND: 1211, // USD per month
+    // Effective through 12/31/24
+    MAX_BENEFIT_NON_BLIND: 1182.94, // USD per month
+    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1311.81, // USD per month
+    MAX_BENEFIT_BLIND: 1267.32, // USD per month
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
     // Effective through 12/31/23?
     MAX_RESOURCES: 2000, // USD
@@ -246,18 +243,18 @@ const cnst = {
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
-    // Effective through 6/30/24
+    // Effective through 6/30/25
     MONTHLY_INCOME_LIMITS: [ // USD per month
-      2248,
-      3041,
-      3833,
-      4625,
-      5418,
-      6210,
-      7003,
-      7795,
+      2322,
+      3152,
+      3981,
+      4810,
+      5640,
+      6469,
+      7299,
+      8128,
     ],
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 793, // USD per month per person
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 830, // USD per month per person
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
     CHILD_EXIT_AGE: 5, // Birthday at which a child is ineligible.
   },
@@ -555,14 +552,14 @@ function onInput(event) {
 }
 
 function onAnchorClick(event) {
-  const dest = document.querySelector(event.target.hash);
+  const dest = document.querySelector(event.currentTarget.hash);
   dest.scrollIntoView({behavior: 'smooth'});
   event.preventDefault();
 }
 
 function onHouseholdMemberAdd(event) {
   // Get the household member that was just added.
-  const newMember = event.target.closest('.elig_page').querySelector(
+  const newMember = event.currentTarget.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
   // Add listener to the new member's spouse checkbox
   const spouseInput = newMember.querySelector('[id^="hh-member-spouse"]');
@@ -581,8 +578,11 @@ function onHouseholdMemberAdd(event) {
   const incomePages = document.querySelectorAll(
     'div[id^="page-income-"]');
   for (const incomePage of incomePages) {
-    const firstFieldset = incomePage.querySelector('fieldset');
-    const newFieldset = firstFieldset.cloneNode(true);
+    const fieldsetTempl = incomePage.querySelector('template');
+    const newFieldset = document.createElement('fieldset');
+    newFieldset.appendChild(fieldsetTempl.content.cloneNode(true));
+    // TODO: what if the translation happens first and then the income
+    // headings are set to the translated string?
     setMemberIncomeHeading(newFieldset,
       newMember.querySelector('h4').textContent);
     // Remove all items from the new list
@@ -595,53 +595,54 @@ function onHouseholdMemberAdd(event) {
 
     addDynamicFieldListListeners(newFieldset);
 
-    firstFieldset.parentNode.appendChild(newFieldset);
+    fieldsetTempl.parentNode.appendChild(newFieldset);
     newMember.linkedElems.push(newFieldset);
   }
 }
 
 function onDutyPeriodAdd(event) {
-  const newPeriod = event.target.closest('.elig_page').querySelector(
+  const newPeriod = event.currentTarget.closest('.elig_page').querySelector(
     'ul.dynamic_field_list').lastChild;
-  const firstFieldset = document.querySelector(
-    '#page-veteran-duty-period fieldset');
-  const newFieldset = firstFieldset.cloneNode(true);
+  const fieldsetTempl = document.querySelector(
+    '#page-veteran-duty-period template');
+  const newFieldset = document.createElement('fieldset');
+  newFieldset.appendChild(fieldsetTempl.content.cloneNode(true));
   const idModifier = `-period${newPeriod.dynamicFieldListId}`;
   modifyIds(newFieldset, idModifier);
   clearInputs(newFieldset);
-  firstFieldset.parentNode.appendChild(newFieldset);
+  fieldsetTempl.parentNode.appendChild(newFieldset);
   newPeriod.linkedElems = [newFieldset];
 }
 
 function onChangeSpouse(event) {
-  if (event.target.checked) {
+  if (event.currentTarget.checked) {
     // If a spouse checkbox was just checked, enforce that all the others are
     // unchecked.
     const spouseInputs = document.querySelectorAll('[id^="hh-member-spouse"]');
     for (const input of spouseInputs) {
-      if (input !== event.target) {
+      if (input !== event.currentTarget) {
         input.checked = false;
       }
     }
-    event.target.dependentParameter.checked = false;
+    event.currentTarget.dependentParameter.checked = false;
   }
 }
 
 function onChangeDependent(event) {
-  if (event.target.checked) {
-    event.target.spouseParameter.checked = false;
+  if (event.currentTarget.checked) {
+    event.currentTarget.spouseParameter.checked = false;
   }
 }
 
 function onToggleMultiselect(event) {
-  const list = event.target.closest('.multiselect');
+  const list = event.currentTarget.closest('.multiselect');
   const options = list.querySelectorAll('input[type=checkbox]');
   for (const option of options) {
-    if (option == event.target) {
+    if (option == event.currentTarget) {
       continue;
     }
     const label = list.querySelector(`label[for="${option.id}"]`);
-    if (event.target.checked) {
+    if (event.currentTarget.checked) {
       option.checked = false;
       option.setAttribute('disabled', 'disabled');
       label.classList.add('disabled');
@@ -668,27 +669,25 @@ function onToggleDynamicFieldList(event) {
 }
 
 function onChangeAge(event) {
-  document.getElementById('hh-myself-age').value = event.target.value;
-  document.getElementById('age').value = event.target.value;
+  document.getElementById('hh-myself-age').value = event.currentTarget.value;
+  document.getElementById('age').value = event.currentTarget.value;
 }
 
 function onChangeName(event) {
-  const item = event.target.closest('ul.dynamic_field_list>li');
+  const item = event.currentTarget.closest('ul.dynamic_field_list>li');
   // Update the heading to the household member's name.
   const heading = item.querySelector('h4');
-  if (!heading.defaultContent) {
-    // Save the initial content in case the custom name is later deleted.
-    heading.defaultContent = heading.textContent;
-  }
-  const inputValue = event.target.value.trim();
+  const inputValue = event.currentTarget.value.trim();
   if (inputValue) {
+    heading.setAttribute('translate', 'no');
     heading.textContent = inputValue;
   } else {
+    heading.removeAttribute('translate');
     heading.textContent = heading.defaultContent;
   }
   // Also update the headings in all the income details pages.
   for (const linkedElem of item.linkedElems) {
-    setMemberIncomeHeading(linkedElem, heading.textContent);
+    setMemberIncomeHeading(linkedElem, heading.textContent, !inputValue);
   }
 }
 
@@ -737,8 +736,14 @@ function addConditionIcon(listItem, met,
   listItem.className = `condition ${cls}`;
 }
 
-function setMemberIncomeHeading(incomeFieldset, value) {
-  incomeFieldset.querySelector('legend').textContent = value;
+function setMemberIncomeHeading(incomeFieldset, value, doTranslate=true) {
+  const legend = incomeFieldset.querySelector('legend');
+  if (doTranslate) {
+    legend.removeAttribute('translate');
+  } else {
+    legend.setAttribute('translate', 'no');
+  }
+  legend.textContent = value;
 }
 
 function modifyIds(parent, idModifier) {
@@ -789,7 +794,7 @@ function addDynamicFieldListItem(event) {
   if (event.currentTarget.hasAttribute('aria-disabled')) {
     return;
   }
-  const wrapper = event.target.closest('.dynamic_field_list_wrapper');
+  const wrapper = event.currentTarget.closest('.dynamic_field_list_wrapper');
   const list = wrapper.querySelector('ul.dynamic_field_list');
   const items = wrapper.querySelectorAll('ul.dynamic_field_list > li');
   // Figure out the largest id index used so far.
@@ -823,6 +828,7 @@ function addDynamicFieldListItem(event) {
     // Add one for 1 indexing of headings vs 0 indexing of IDs.
     itemHeading.textContent = itemHeading.textContent.replace(
       /\d+$/, newIdNumber + 1);
+    itemHeading.defaultContent = itemHeading.textContent;
   }
   // Add a remove button for the new item.
   const removeButton = document.createElement('button');
@@ -846,7 +852,7 @@ function addDynamicFieldListItem(event) {
     numInput.addEventListener('keydown', saveValidInput);
     numInput.addEventListener('input', preventInvalidInput);
   }
-  updateDynamicFieldListButton(event.target);
+  updateDynamicFieldListButton(event.currentTarget);
 }
 
 function removeDynamicFieldListItem(listItem) {
@@ -877,7 +883,7 @@ function removeDynamicFieldListItem(listItem) {
 }
 
 function onDynamicFieldListRemove(event) {
-  removeDynamicFieldListItem(event.target.closest('li'));
+  removeDynamicFieldListItem(event.currentTarget.closest('li'));
 }
 
 function updateDynamicFieldListButton(button) {
@@ -893,7 +899,7 @@ function updateDynamicFieldListButton(button) {
 }
 
 function updateIncomeTotal(event) {
-  const page = event.target.closest('.elig_page');
+  const page = event.currentTarget.closest('.elig_page');
   const totalDisplay = page.querySelector('.total');
   const inputs = page.querySelectorAll('input[type=number]');
   let sum = 0;
@@ -1021,10 +1027,10 @@ function switchToPage(toPage) {
 }
 
 // Brings the user to the first page of a section.
-// This function is used as a step indicator click handler, and 'this'
-// represents the context of the event, i.e. the button that was clicked.
+// This function is used as a step indicator click handler
 function toSection(event) {
-  const section = document.getElementById(event.target.dataset.sectionId);
+  const section = document.getElementById(
+    event.currentTarget.dataset.sectionId);
   if (section.id == 'section-results') {
     // Ensure results are always up-to-date prior to showing them.
     // TODO: Determine if it would be better to invalidate results on
@@ -2891,7 +2897,7 @@ function renderResultsSummaryList(list, eligiblePrograms) {
     const listItem = document.createElement('li');
     const link = document.createElement('a');
     link.href = `#${program.id}`;
-    link.textContent = program.querySelector('h4').textContent;
+    link.textContent = program.dataset.defaultTitle;
     link.addEventListener('click', onAnchorClick);
     listItem.appendChild(link);
     list.appendChild(listItem);

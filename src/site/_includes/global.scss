@@ -69,7 +69,6 @@ img {
   text-align: center;
 }
 
-header,
 footer,
 main,
 .pre-footer {
@@ -200,7 +199,7 @@ body.max_width {
   }
 }
 
-.align-end {
+.align-right {
   text-align: right;
 }
 
@@ -315,6 +314,14 @@ $ruler-arrow-height: 15px;
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+main {
+  .donate_wrapper {
+    text-align: center;
+    margin-top: 2em;
+    margin-bottom: 2em;
+  }
 }
 
 .ruler div {

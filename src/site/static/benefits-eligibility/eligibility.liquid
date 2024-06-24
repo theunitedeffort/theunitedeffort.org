@@ -121,7 +121,7 @@ pageClass: "page-benefits-eligibility"
 
       <div>
         <p>Enter details for your duty periods below:</p>
-        {% dynamicFieldList "Add another duty period" %}
+        {% capture dutyPeriodDetailsTempl %}
           <h4>Duty Period 1</h4>
           <div>
             <label for="your-duty-type">Duty type</label>
@@ -141,15 +141,18 @@ pageClass: "page-benefits-eligibility"
           <div>
             {% dategroup "served-until", "Service end date" %}
           </div>
+        {% endcapture %}
+        {% dynamicFieldList "Add another duty period", "", dutyPeriodDetailsTempl %}
+          {{dutyPeriodDetailsTempl}}
         {% enddynamicFieldList %}
       </div>
     {% endeligPage %}
 
     {% eligPage "veteran-duty-period" %}
       <h3>About Your Military Service</h3>
-      <fieldset>
+      {% capture dutyPeriodTempl %}
         <p>
-          This question is about your <span class="bold">active duty period</span> from <span id="served-from-ref" class="bold"></span> until <span id="served-until-ref" class="bold"></span>.
+          This question is about your <span class="bold">active duty period</span> from&thinsp;<span id="served-from-ref" class="bold" translate="no"></span>&thinsp;until&thinsp;<span id="served-until-ref" class="bold" translate="no"></span>.
         </p>
         <div>
           <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
@@ -165,6 +168,12 @@ pageClass: "page-benefits-eligibility"
             {% endoption %}
           {% endsingleselect %}
         </div>
+      {% endcapture %}
+      <template>
+        {{dutyPeriodTempl}}
+      </template>
+      <fieldset>
+        {{dutyPeriodTempl}}
       </fieldset>
     {% endeligPage %}
 
@@ -463,7 +472,7 @@ pageClass: "page-benefits-eligibility"
     </div>
     <div id="elig-summary">
       <p>
-        We checked <span id="summary-num-programs"></span> programs<span class="has_results"> and found <span id="summary-num-eligible" class="bold"></span> you may qualify for and are not yet receiving.</span><span class="no_results">, but based on your responses we were <span class="bold">not able to find any matching programs for you.</span></span>
+        We checked&thinsp;<span id="summary-num-programs"></span>&thinsp;programs<span class="has_results">&thinsp;and found&thinsp;<span id="summary-num-eligible" class="bold"></span>&thinsp;you may qualify for and are not yet receiving.</span><span class="no_results">, but based on your responses we were <span class="bold">not able to find any matching programs for you.</span></span>
       </p>
       <ul></ul>
       <p><span id="summary-footer"></span> You can see the whole list of programs we checked below.</p>

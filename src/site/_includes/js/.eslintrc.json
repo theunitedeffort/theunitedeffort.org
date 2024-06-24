@@ -15,7 +15,8 @@
           "Generator\\..*",
           "AsyncGenerator\\..*",
           "WeakSet\\..*",
-          "Atomics\\..*"
+          "Atomics\\..*",
+          "Iterator\\..*"
         ]
       }
     }

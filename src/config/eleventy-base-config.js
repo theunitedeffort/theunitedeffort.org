@@ -24,25 +24,50 @@ const SORT_RANKING = new Map([
 ]);
 
 module.exports = function(eleventyConfig) {
-  eleventyConfig.addShortcode('image', async function(image, format='jpeg') {
+  const makeImage = async function(image, width, format='auto') {
     const metadata = await eleventyImage(image['FILE'][0].url, {
-      widths: [800],
+      widths: [width, width * 2, width * 3],
       formats: [format],
       urlPath: '/images/',
       outputDir: './dist/images/',
     });
 
-    // TODO: use Image.generateHTML to properly generate dynamic images with
-    // srcset and sizes.
-    const data = metadata[format][metadata[format].length - 1];
-    return `<img alt="${image['IMAGE_DESCRIPTION']}" width="${data.width}" height="${data.height}" src="${data.url}">`;
+    // Note don't use 'format' here because it might be auto which does not
+    // appear in the resulting metadata keys.
+    const formatKey = Object.keys(metadata)[0];
+    const src = metadata[formatKey][0];
+    const srcset = metadata[formatKey].map((m) => `${m.srcset}`);
+
+    return `<img alt="${image['IMAGE_DESCRIPTION']}" loading="lazy" ` +
+      `decoding="async" src="${src.url}" width="${src.width}" ` +
+      `height="${src.height}" srcset="${srcset.join(',')}" sizes="${width}px">`;
+  };
+
+  eleventyConfig.addShortcode('image', async function(image, format='jpeg') {
+    return await makeImage(image, 800, format);
   });
 
   // Markdown filter
   eleventyConfig.addFilter('markdownify', (str) => {
     str = str.replaceAll('http:///', '/');
-    return markdown.marked(str);
+    const markup = markdown.marked(str);
+    return markup.replaceAll(/(href="https?:\/\/.*?")/g,
+      '$1 target="_blank" rel="noopener"');
   });
+
+  // Substitute placeholder text with the appropriate markup.
+  eleventyConfig.addAsyncFilter('unplaceholder', async (str, imageList=null) => {
+    str = str.replaceAll('{{notranslate}}', '<span translate="no">');
+    str = str.replaceAll('{{endnotranslate}}', '</span>');
+    if (imageList !== null) {
+      for (const match of str.matchAll(/{{image ([a-z0-9-]+) ?(\d*)}}/g)) {
+        const imageTag = await makeImage(imageList[match[1]], match?.[2]);
+        str = str.replace(match[0], imageTag);
+      }
+    }
+    return str;
+  });
+
 
   // Get all of the unique values of a property
   eleventyConfig.addFilter('index', function(collection, property) {
@@ -246,21 +271,6 @@ module.exports = function(eleventyConfig) {
     return count;
   });
 
-  eleventyConfig.addFilter('numResourceFiltersApplied', function(query) {
-    // TODO: Don't hardcode this list of filters here.
-    const allowedFilters = [
-      'category',
-      'name',
-    ];
-    let count = 0;
-    for (const key in query) {
-      if (allowedFilters.includes(key) && query[key]) {
-        count++;
-      }
-    }
-    return count;
-  });
-
   // Add filter checkbox state from the query parameters to 'filterValues'.
   eleventyConfig.addFilter('updateFilterState', function(filterValues, query) {
     // The AssetCache holding filterValues stores a buffered version of the
@@ -399,7 +409,7 @@ module.exports = function(eleventyConfig) {
         <a href="/contact" target="_blank">Contact us for help applying</a>
       </p>`);
     return `
-      <li id="program-${id}">
+      <li id="program-${id}" data-default-title="${title}">
         <h4>${title}</h4>
         <ul class="elig_flags unenrolled_only"></ul>
         <p>${content}</p>
@@ -429,7 +439,7 @@ module.exports = function(eleventyConfig) {
     const buttonStr = `<button type="button" ` +
       `class="btn btn_secondary field_list_add" ` +
       `data-non-empty-text="${addText}" ` +
-      `data-empty-text="${emptyAddText}">${addText}</button>`;
+      `data-empty-text="${emptyAddText}">${emptyAddText}</button>`;
     return `
       <div class="dynamic_field_list_wrapper">
         <ul class="dynamic_field_list">
@@ -848,37 +858,12 @@ module.exports = function(eleventyConfig) {
     return housingListCopy.filter((a) => a.units.length);
   });
 
-  eleventyConfig.addFilter('filterResourcesByQuery', function(resourceList, query) {
-    query = query || '';
-    console.log(query);
-    let resourceListCopy = JSON.parse(JSON.stringify(resourceList));
-    if (query.category) {
-      const categories = query.category.split(', ');
-      resourceListCopy = resourceListCopy.filter((r) => {
-        for (const category of categories) {
-          if (r.categories.includes(category)) {
-            return true;
-          }
-        }
-        return false;
-      });
-    }
-
-    if (query.resourceName) {
-      const name = query.resourceName.toLowerCase();
-      resourceListCopy = resourceListCopy.filter((r) => {
-        return (
-          r.name.toLowerCase().includes(name) ||
-          r.organization.toLowerCase().includes(name)
-        );
-      });
-    }
-
-    return resourceListCopy;
-  });
-
   eleventyConfig.addFilter('formatPhone', function(phoneStr) {
-    return phoneStr.replaceAll('(', '').replaceAll(') ', '-');
+    const temp = phoneStr;
+    phoneStr = phoneStr.replace(/\D/g, '');
+    if (phoneStr.length < 10) return temp;
+    if (phoneStr.length > 10) return phoneStr.replace(/(\d{3})(\d{3})(\d{4})(\d{1,})/, '$1-$2-$3 ext $4');
+    return phoneStr.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
   });
 
   eleventyConfig.addFilter('except', function(collection, value) {

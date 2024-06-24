@@ -32,6 +32,16 @@
   h4 {
     font-size: 1em;
   }
+
+  h1 + p.subtitle {
+    font-size: 1.25em;
+    margin-bottom: 1.25em;
+  }
+
+  h2 + p.subtitle {
+    font-size: 1em;
+    margin-bottom: 1em;
+  }
   
   main p,
   main ol,
@@ -62,6 +72,7 @@
   }
   
   main,
+  header,
   .pre-footer {
     a:link,
     a:visited,
@@ -336,6 +347,7 @@
   .toggletip_entry {
     position: relative;
     display: inline-block;
+    margin-right: 0.2em;
   }
 
   .toggletip_container {
@@ -366,9 +378,9 @@
   the toggle icon */
   .toggletip_content::before {
     content: "";
-    width: 0.2em;
+    width: 0.5em;
     height: 100%;
-    left: -0.2em;
+    left: -0.5em;
     top: 0;
     position: absolute;
   }
@@ -501,7 +513,6 @@ address {
 .attribution {
   font-size: 0.7em;
   margin-top: 0.3em;
-  text-align: right;
 }
 
   

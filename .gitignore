@@ -11,6 +11,7 @@ netlify/functions/serverless/**
 .env
 /src/coverage
 /cypress/videos
+/cypress/screenshots
 
 # stryker temp files
 .stryker-tmp

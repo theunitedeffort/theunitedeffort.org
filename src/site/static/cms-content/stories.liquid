@@ -12,6 +12,9 @@ eleventyComputed:
 ---
 
 <h1>{{story["Title"]}}</h1>
+{% if story["Subtitle"] and story["Subtitle"] != '' %}
+  <p class="subtitle">{{story["Subtitle"]}}</p>
+{% endif %}
 <div class="story_content">
   {% if story.image %}
     <figure>
@@ -19,25 +22,31 @@ eleventyComputed:
       <figcaption>
         {{story["Photo Caption"]}}
         {% if story["Photo Credit"] and story["Photo Credit"] != '' %}
-          (Image credit {{story["Photo Credit"]}})
+          (Image credit <span translate="no">{{story["Photo Credit"]}}</span>)
         {% endif %}
       </figcaption>
     </figure>
   {% endif %}
   {% if story["Audio Embed Code"] and story["Audio Embed Code"] != '' %}
     <div class="story_audio">
+      {% assign clientName = "this community member" %}
+      {% if story["Client Name"] %}
+        {% capture clientName %}
+          <span translate="no">{{story["Client Name"]}}</span>
+        {% endcapture %}
+      {% endif %}
       <p>
-        Listen to {{story["Client Name"] | default: "this community member"}} or read the full story below.
+        Listen to {{clientName}} or read the full story below.
       </p>
       {{story["Audio Embed Code"]}}
       {% if story["Audio Credit"] and story["Audio Credit"] != '' %}
-        <p class="attribution">
-          Audio credit {{story["Audio Credit"]}}
+        <p class="attribution align-right">
+          Audio credit <span translate="no">{{story["Audio Credit"]}}</span>
         </p>
       {% endif %}
     </div>
   {% endif %}
-  {{story["Content"] | markdownify}}
+  {{story["Content"] | markdownify | unplaceholder}}
 </div>
 
 <p class="noprint">

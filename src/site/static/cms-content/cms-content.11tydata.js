@@ -1,5 +1,7 @@
-const {AssetCache} = require('@11ty/eleventy-fetch');
+const eleventyFetch = require('@11ty/eleventy-fetch');
 const eleventyImage = require('@11ty/eleventy-img');
+const fs = require('fs');
+const path = require('path');
 const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
@@ -112,6 +114,22 @@ const cacheStoryImages = async (stories) => {
   }
 };
 
+const cacheAssets = async (assets) => {
+  for (const asset of assets) {
+    const assetBuffer = await eleventyFetch(asset['FILE'][0].url, {
+      type: 'buffer',
+      duration: '1h',
+    });
+    const outputDir = './dist/assets';
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, {recursive: true});
+    }
+    const extension = path.extname(asset['FILE'][0].filename);
+    fs.writeFileSync(path.join(outputDir, `${asset['IDENTIFIER']}${extension}`),
+      assetBuffer);
+  }
+};
+
 const fetchImages = async () => {
   console.log('fetching images');
   const data = {};
@@ -129,16 +147,40 @@ const fetchImages = async () => {
 };
 
 
+const fetchAssets = async () => {
+  console.log('fetching assets');
+  const data = [];
+  const table = base('tblu83db8I9HEHQgs'); // Assets table
+  return table.select({
+    view: 'API list all',
+  })
+    .all()
+    .then((records) => {
+      records.forEach(function(record) {
+        data.push(record.fields);
+      });
+      return data;
+    });
+};
+
+
 module.exports = async function() {
-  const asset = new AssetCache('airtable_pages');
+  const asset = new eleventyFetch.AssetCache('airtable_pages');
   if (asset.isCacheValid('1h')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
   }
   console.log('Fetching pages.');
-  const [pageList, resourceList, storiesList, imageList] = await Promise.all(
-    [fetchPages(), fetchGeneralResources(), fetchStories(), fetchImages()]);
+  const [
+    pageList,
+    resourceList,
+    storiesList,
+    imageList,
+    assetList,
+  ] = await Promise.all([fetchPages(), fetchGeneralResources(), fetchStories(),
+    fetchImages(), fetchAssets()]);
   await cacheStoryImages(storiesList);
+  await cacheAssets(assetList);
   const ret = {
     pages: pageList,
     images: imageList,

@@ -15,9 +15,6 @@ async function handler(event) {
       eleventyConfig.addCollection("housingListItems", function(collection) {
         return precompiledCollections.housingListItems;
       });
-      eleventyConfig.addCollection("resourceListItems", function(collection) {
-        return precompiledCollections.resourceListItems;
-      });
     },
   });
   try {

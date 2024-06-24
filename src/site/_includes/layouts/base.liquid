@@ -1,23 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y2D6F78X86"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    // Do not allow data sharing.
+    gtag('config', 'G-Y2D6F78X86', {
+      'allow_ad_personalization_signals': false,
+      'allow_google_signals': false
+    });
+  </script>
+  <script>window.gtranslateSettings = {"default_language":"en","native_language_names":true,"detect_browser_language":true,"languages":["en","es","vi","zh-CN"],"wrapper_selector":".gtranslate_wrapper"}</script>
+  <script src="/tp?q=https://cdn.gtranslate.net/widgets/latest/ln.js" defer></script>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% if title and title != '' %}{{title}} - {% endif %}The United Effort Organization</title>
   <link rel="stylesheet" href="/styles.css">
   <link rel="preload" href="/fonts/Inter-Variable-subset.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
   {{ pageHead }}
 </head>
 <body class="{{ pageClass }}">
   <header>
-    <div class="container">
-      {% include 'header' %}
-    </div>
+    {% include 'header' %}
   </header>
   <main>
     {% if global.siteContext == "preview" %}
@@ -31,10 +46,10 @@
     <div class="container">
       <h2>Contribute</h2>
       <p>
-        <a href="https://www.paypal.com/donate/?hosted_button_id=2GQ6FSYZX2TRY" class="btn btn_primary" rel="noopener">Donate Online</a>
+        {% render "donate-button" %}
       </p>
       <p>
-        Donations by check should be made out to <span class="bold">The United Effort Organization, Inc.</span> and mailed to 340 E Middlefield Road, Mountain View, CA 94043.
+        Donations by check should be made out to <span class="bold">The United Effort Organization, Inc.</span> and mailed to 748 Mercy St, Mountain View, CA 94041.
       </p>
       <p>
         The United Effort Organization, Inc is a 501(c)(3) tax-exempt organization with federal tax ID number 85-2290026.

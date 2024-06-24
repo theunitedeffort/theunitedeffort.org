@@ -45,10 +45,11 @@ maxHouseholdSize: 12
     If there is information here that you can't confirm via the property manager's website, do not delete it.  When in doubt, keep the information you see below.
   </div>
   <form id="housing-changes" name="housing_changes" method="POST" action="/contrib/affordable-housing/thank-you" netlify>
-  <input type="hidden" id="campaign" name="update_campaign" />
-  <input type="hidden" id="user-name" name="user_name" />
-  <input type="hidden" id="housing-table" name="housing_table" />
-  <input type="hidden" id="units-table" name="units_table" />
+    <p>All fields are optional. Leave a field blank if you can't find the information.</p>
+    <input type="hidden" id="campaign" name="update_campaign" />
+    <input type="hidden" id="user-name" name="user_name" />
+    <input type="hidden" id="housing-table" name="housing_table" />
+    <input type="hidden" id="units-table" name="units_table" />
     <div id="property-data">
       <input type="hidden" id="{{housingFields.ID.id}}" name="ID" />
       <input type="hidden" id="queue-record-id" name="queue_record_id" />
@@ -117,7 +118,8 @@ maxHouseholdSize: 12
         {% formField housingFields, "SUPPLEMENTAL_URL_4" %}
       </div>
 
-      {% fieldLabel "Total Units", housingFields, "NUM_TOTAL_UNITS" %}<br/>
+      {% fieldLabel "Total Units", housingFields, "NUM_TOTAL_UNITS" %}
+      <span class="form_hint label">Do not include manager units</span><br/>
       {% formField housingFields, "NUM_TOTAL_UNITS" %}
 
       <div class="multiselect" id="populations-served">
@@ -139,7 +141,8 @@ maxHouseholdSize: 12
       {% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}<br/>
 
       {% formField housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
-      {% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}<br/>
+      {% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
+      <span class="form_hint label">A displayed wheelchair icon is not sufficient to tick this</span><br/>
 
       {% formField housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}
       {% fieldLabel "Only accepts referral applications", housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}<br/>
@@ -274,6 +277,7 @@ maxHouseholdSize: 12
     <textarea id="user-notes" name="userNotes" class="extra_long"></textarea>
     <h3>Step 3</h3>
     <p class="bold">Submit this information for review by The United Effort Organization.</p>
+    <p id="user-name-reminder">Consider entering your name in the field at the top of this page so we know who to contact with questions.</p>
     <button type="button" id="submit-button" class="btn btn_primary">Submit for review</button>
   </form>
 </div>

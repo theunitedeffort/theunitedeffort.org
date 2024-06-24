@@ -8,7 +8,7 @@
         <a class="unstyled" href="{{storyUrl}}">{{story["Title"]}}</a>
       </h3>
       <p>
-        {{story["Content"] | truncatewords: 25}}
+        {{story["Content"] | markdownify | truncatewords: 25 | strip_html}}
       </p>
       <p>
         <a href="{{storyUrl}}">Read more</a>

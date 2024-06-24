@@ -74,6 +74,8 @@ function setUserName() {
   if (userName) {
     document.getElementById('user-name-input-container').setAttribute('hidden',
       'hidden');
+    document.getElementById('user-name-reminder').setAttribute('hidden',
+      'hidden');
     document.getElementById('edit-user-name').removeAttribute('hidden');
     document.getElementById('user-name').value = userName;
     userNameInput.value = userName;
@@ -85,6 +87,8 @@ function setUserName() {
 // Displays the relevant input field so a user can edit their name.
 function editUserName() {
   document.getElementById('user-name-input-container').removeAttribute(
+    'hidden');
+  document.getElementById('user-name-reminder').removeAttribute(
     'hidden');
   document.getElementById('edit-user-name').setAttribute('hidden', 'hidden');
   document.getElementById('welcome-name').textContent = '';

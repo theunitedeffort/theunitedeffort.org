@@ -11,7 +11,9 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(require("./src/config/eleventy-base-config.js"));
 
   // Pass through static assets and client-side js files.
-  eleventyConfig.addPassthroughCopy({ "src/assets": "/" });
+  eleventyConfig.addPassthroughCopy({ "src/assets/fonts": "/fonts" });
+  eleventyConfig.addPassthroughCopy({ "src/assets/images": "/images" });
+  eleventyConfig.addPassthroughCopy({ "src/assets/favicon": "/" });
   if (process.env.CONTEXT === 'dev' ) {
     // For builds that are not local development builds, the js files will
     // come from Babel instead (via babel.config.json and package.json)
