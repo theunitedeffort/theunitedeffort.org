@@ -272,7 +272,7 @@ const cnst = {
     ],
     ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
     MIN_ELIGIBLE_AGE: 19, // Years
-    MAX_ElIGIBLE_AGE: 64, // Years
+    MAX_ELIGIBLE_AGE: 64, // Years
   },
 };
 

@@ -1,0 +1,9 @@
+
+> demo-site@1.0.0 test
+> eleventy --config=src/site/_includes/js/test/config/eleventy-test-config.js && jest
+
+[11ty] Writing test/dist/benefits-eligibility/feedback/index.html from ./src/site/static/benefits-eligibility/eligibility-feedback.liquid
+[11ty] Writing test/dist/benefits-eligibility/feedback-sent/index.html from ./src/site/static/benefits-eligibility/eligibility-feedback-thank-you.liquid
+[11ty] Writing test/dist/benefits-eligibility/programs/index.html from ./src/site/static/benefits-eligibility/eligibility-programs.liquid
+[11ty] Writing test/dist/benefits-eligibility/index.html from ./src/site/static/benefits-eligibility/eligibility.liquid
+[11ty] Wrote 4 files in 0.08 seconds (v2.0.1)
