@@ -2153,7 +2153,7 @@ describe('Program eligibility', () => {
       input.existingRtcClipperMe = false;
       input.income.valid = true;
       input.age = elig.cnst.clipper.MIN_ELIGIBLE_AGE;
-      check(elig.clipperStartResult, input).isEligibleIf('existingRtcClipperMe').is(false);
+      check(elig.clipperStartResult, input).isNotEligibleIf('existingRtcClipperMe').is(true);
     });
 
     test('Age must be from 19 to 64 years', () => {
