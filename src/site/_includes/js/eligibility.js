@@ -2680,7 +2680,8 @@ function clipperStartResult(input) {
 
   const program = new Program();
   program.addCondition(new EligCondition(
-    `Be ${cnst.clipper.MIN_ELIGIBLE_AGE} - ${cnst.clipper.MAX_ELIGIBLE_AGE} years old`,
+    `Be ${cnst.clipper.MIN_ELIGIBLE_AGE} 
+    - ${cnst.clipper.MAX_ELIGIBLE_AGE} years old`,
     meetsAgeReq));
   program.addCondition(new EligCondition(
     `Have a household income below ${usdLimit(incomeLimit)} 
