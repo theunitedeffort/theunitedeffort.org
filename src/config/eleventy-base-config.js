@@ -14,7 +14,7 @@ const SORT_RANKING = new Map([
   ['Available', 1],
   ['Waitlist Open', 2],
   ['Waitlist Closed', 3],
-  ['Call for Status', 4],
+  ['Call for Availability', 4],
   // Populations Served
   ['General Population', 1],
   ['Seniors', 2],
