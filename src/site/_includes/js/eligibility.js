@@ -76,6 +76,22 @@ const cnst = {
     ],
     ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
   },
+  clipper: {
+    // https://www.clipperstartcard.com/s/
+    ANNUAL_INCOME_LIMITS: [ // USD per year
+      30120,
+      40880,
+      51640,
+      62400,
+      73160,
+      83920,
+      94680,
+      105440,
+    ],
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
+    MIN_ELIGIBLE_AGE: 19, // Years
+    MAX_ELIGIBLE_AGE: 64, // Years
+  },
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     // Effective through 5/31/2025
@@ -1193,6 +1209,7 @@ function mapResultFunctions() {
   document.getElementById('program-ssdi').result = ssdiResult;
   document.getElementById('program-va-pension').result = vaPensionResult;
   document.getElementById('program-wic').result = wicResult;
+  document.getElementById('program-clipper-start').result = clipperStartResult;
 }
 
 // Switches to the first form page in the document.
@@ -2647,6 +2664,35 @@ function wicResult(input) {
   return program.getResult();
 }
 
+function clipperStartResult(input) {
+  const meetsAgeReq = and(
+    ge(input.age, cnst.clipper.MIN_ELIGIBLE_AGE),
+    le(input.age, cnst.clipper.MAX_ELIGIBLE_AGE));
+
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
+    cnst.clipper.ANNUAL_INCOME_LIMITS,
+    cnst.clipper.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
+
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
+
+  const noRtc = not(input.existingRtcClipperMe);
+
+  const program = new Program();
+  program.addCondition(new EligCondition(
+    `Be ${cnst.clipper.MIN_ELIGIBLE_AGE} 
+    - ${cnst.clipper.MAX_ELIGIBLE_AGE} years old`,
+    meetsAgeReq));
+  program.addCondition(new EligCondition(
+    `Have a gross income below ${usdLimit(incomeLimit)} 
+    per month`,
+    underIncomeLimit));
+  program.addCondition(new EligCondition(
+    `Not have an RTC discounted Clipper card for people with disabilities`,
+    noRtc));
+  return program.getResult();
+}
+
 function clearUnusedPages() {
   const pages = [...document.querySelectorAll('div.elig_page')];
   // Reset usage tracking.
@@ -3118,5 +3164,6 @@ if (typeof module !== 'undefined' && module.exports) {
     renderFlags,
     showResultText,
     renderResultsSummaryFooter,
+    clipperStartResult,
   };
 }

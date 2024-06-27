@@ -1481,7 +1481,7 @@ describe('Navigation and UI', () => {
     const firstItem = summary.querySelector(itemSelector);
     expect(firstItem.querySelector('a').hash).toEqual(noFeeIdSelector);
     expect(summary.textContent).toContain('No-Fee ID Card');
-    expect(summary.textContent).toContain('checked\u200919\u2009programs');
+    expect(summary.textContent).toContain('checked\u200920\u2009programs');
     expect(summary.textContent).toContain('1\u2009you may qualify for');
     expect(summary.textContent).toContain('1 program you\'re already enrolled');
     expectResults(eligible, 1);
@@ -1682,6 +1682,8 @@ describe('buildInputObj', () => {
       existingPhaMe: true,
       existingSchipMe: true,
       existingSchipHousehold: true,
+      existingRtcClipperHousehold: true,
+      existingRtcClipperMe: true,
     };
     Object.preventExtensions(expected);
 
@@ -2007,6 +2009,15 @@ describe('buildInputObj', () => {
       expected.existingSchipHousehold);
     expect(getInput().existingSchipHousehold).toBe(
       expected.existingSchipHousehold);
+
+    document.getElementById('existing-rtc-clipper-me').checked = (
+      expected.existingRtcClipperMe);
+    expect(getInput().existingRtcClipperMe).toBe(expected.existingRtcClipperMe);
+
+    document.getElementById('existing-rtc-clipper-household').checked = (
+      expected.existingRtcClipperHousehold);
+    expect(getInput().existingSchipHousehold).toBe(
+      expected.existingRtcClipperHousehold);
 
     expect(getInput()).toEqual(expected);
   });
