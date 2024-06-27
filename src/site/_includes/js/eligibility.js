@@ -76,6 +76,22 @@ const cnst = {
     ],
     ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
   },
+  clipper: {
+    // https://www.clipperstartcard.com/s/
+    ANNUAL_INCOME_LIMITS: [ // USD per year
+      30120,
+      40880,
+      51640,
+      62400,
+      73160,
+      83920,
+      94680,
+      105440,
+    ],
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
+    MIN_ELIGIBLE_AGE: 19, // Years
+    MAX_ELIGIBLE_AGE: 64, // Years
+  },
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
     // Effective through 5/31/2025
@@ -257,22 +273,6 @@ const cnst = {
     MONTHLY_INCOME_LIMIT_ADDL_PERSON: 830, // USD per month per person
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
     CHILD_EXIT_AGE: 5, // Birthday at which a child is ineligible.
-  },
-  clipper: {
-    // https://www.clipperstartcard.com/s/
-    ANNUAL_INCOME_LIMITS: [ // USD per year
-      30120,
-      40880,
-      51640,
-      62400,
-      73160,
-      83920,
-      94680,
-      105440,
-    ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
-    MIN_ELIGIBLE_AGE: 19, // Years
-    MAX_ELIGIBLE_AGE: 64, // Years
   },
 };
 
@@ -2684,11 +2684,11 @@ function clipperStartResult(input) {
     - ${cnst.clipper.MAX_ELIGIBLE_AGE} years old`,
     meetsAgeReq));
   program.addCondition(new EligCondition(
-    `Have a household income below ${usdLimit(incomeLimit)} 
-    per month (200% federal poverty level)`,
+    `Have a gross income below ${usdLimit(incomeLimit)} 
+    per month`,
     underIncomeLimit));
   program.addCondition(new EligCondition(
-    `Not have an RTC Clipper Card for people with disabilities`,
+    `Not have an RTC discounted Clipper card for people with disabilities`,
     noRtc));
   return program.getResult();
 }
