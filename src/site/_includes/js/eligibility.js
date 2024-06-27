@@ -2667,7 +2667,7 @@ function wicResult(input) {
 function clipperStartResult(input) {
   const meetsAgeReq = and(
     ge(input.age, cnst.clipper.MIN_ELIGIBLE_AGE),
-    le(input.age, cnst.clipper.MAX_ElIGIBLE_AGE));
+    le(input.age, cnst.clipper.MAX_ELIGIBLE_AGE));
 
   const grossLimit = MonthlyIncomeLimits.fromAnnual(
     cnst.clipper.ANNUAL_INCOME_LIMITS,
