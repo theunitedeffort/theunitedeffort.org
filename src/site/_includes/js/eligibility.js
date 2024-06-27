@@ -2677,17 +2677,18 @@ function clipperStartResult(input) {
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
 
   const noRTC = not(input.existingRtcClipperMe);
-  
+
   const program = new Program();
   program.addCondition(new EligCondition(
     'Be 19-64 years old',
     meetsAgeReq));
   program.addCondition(new EligCondition(
-    `Have a household income below ${usdLimit(incomeLimit)} per month (200% federal poverty level)`,
+    `Have a household income below ${usdLimit(incomeLimit)} 
+    per month (200% federal poverty level)`,
     underIncomeLimit));
   program.addCondition(new EligCondition(
     `Not have an RTC Clipper Card for people with disabilities`,
-    noRTC)); 
+    noRTC));
   return program.getResult();
 }
 

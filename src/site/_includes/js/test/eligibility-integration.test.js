@@ -2009,7 +2009,7 @@ describe('buildInputObj', () => {
       expected.existingSchipHousehold);
     expect(getInput().existingSchipHousehold).toBe(
       expected.existingSchipHousehold);
-    
+
     document.getElementById('existing-rtc-clipper-me').checked = (
       expected.existingRtcClipperMe);
     expect(getInput().existingRtcClipperMe).toBe(expected.existingRtcClipperMe);

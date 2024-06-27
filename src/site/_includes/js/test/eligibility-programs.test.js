@@ -2170,6 +2170,7 @@ describe('Program eligibility', () => {
       input.age = elig.cnst.clipper.MIN_ELIGIBLE_AGE;
       check(elig.clipperStartResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.clipper.ANNUAL_INCOME_LIMITS[0] / 12);
     });
-    
+
   });
+
 });
