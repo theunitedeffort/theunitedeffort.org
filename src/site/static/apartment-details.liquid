@@ -104,7 +104,7 @@ eleventyComputed:
     {% assign occupancyLimit = units[0].occupancyLimit %}
     {% assign openStatus = units[0].openStatus %}
     {%- capture badgeMod -%}
-      {%- if openStatus == "Call for Availability" -%}
+      {%- if openStatus == "Call for Availability" or openStatus == "Call for Status" -%}
         badge__warn
       {%- elsif openStatus == "Waitlist Closed" -%}
         badge__bad
