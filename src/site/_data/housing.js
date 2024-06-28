@@ -120,7 +120,7 @@ const fetchUnitRecords = async () => {
         units.push({
           parent_id: record.get('_DISPLAY_ID')?.[0],
           type: record.get('TYPE'),
-          openStatus: record.get('STATUS'),
+          openStatus: record.get('STATUS') === 'Call for Status' ? 'Call for Availability' : record.get('STATUS'),
           occupancyLimit: {
             min: record.get('MIN_OCCUPANCY'),
             max: record.get('MAX_OCCUPANCY'),

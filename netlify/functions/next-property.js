@@ -17,7 +17,7 @@ const SORT_RANKING = new Map([
   ['Available', 1],
   ['Waitlist Open', 2],
   ['Waitlist Closed', 3],
-  ['Call for Status', 4],
+  ['Call for Availability', 4],
 ]);
 
 // Sorts rent offerings so that the generally cheaper offerings are first.
