@@ -260,7 +260,7 @@ module.exports = function(eleventyConfig) {
       'income',
       'populationsServed',
       'wheelchairAccessibleOnly',
-      'includeReferrals',
+      'excludeReferrals',
     ];
     let count = 0;
     for (const key in query) {
@@ -770,7 +770,7 @@ module.exports = function(eleventyConfig) {
     // will stay in housingListCopy, but the 'units' array within will be empty.
     // These apartments will be filtered out just prior to returning the
     // final filtered array.
-    if (!query.includeReferrals) {
+    if (query.excludeReferrals) {
       housingListCopy = housingListCopy.filter((a) => !a.disallowsPublicApps);
     }
 

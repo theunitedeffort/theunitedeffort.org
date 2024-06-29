@@ -194,9 +194,9 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         {% if query.wheelchairAccessibleOnly == "on" %}checked{% endif %}>
       <label for="wheelchair-accessible-only">Only show wheelchair-accessible properties</label>
       <br/>
-      <input type="checkbox" id="include-referrals" name="includeReferrals"
-        {% if query.includeReferrals == "on" %}checked{% endif %}>
-      <label for="include-referrals">Include properties requiring an agency referral</label>
+      <input type="checkbox" id="exclude-referrals" name="excludeReferrals"
+        {% if query.excludeReferrals == "on" %}checked{% endif %}>
+      <label for="exclude-referrals">Hide properties requiring an agency referral</label>
       <p data-toggletip data-toggletip-class="icon_query">  
         Some properties only accept applications by referral through a housing agency and do not allow the general public to apply.
       </p>
