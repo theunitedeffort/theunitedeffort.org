@@ -1,0 +1,9 @@
+.hero {
+  color: var(--color-orange);
+
+  a:link,
+  a:visited, {
+    color: var(--color-orange);
+    text-decoration-color: var(--color-orange);
+  }
+}
