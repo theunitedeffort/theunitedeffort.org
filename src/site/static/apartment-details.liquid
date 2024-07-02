@@ -72,8 +72,14 @@ eleventyComputed:
 
 <div class="rent_tables">
   {% assign defaultNoDataStr = "Call for info" %}
-  {% assign groupByKeys = "type,openStatus" | split: "," %}
-  {% assign sortKeys = "key0,key1" | split: "," %}
+  {% comment %}
+  Min & max occupancy are nested deep within the unit object, so we group by the
+  dedicated top-level 'occupancyGroup' property which just lists the min and
+  max as 'min,max'. This is to avoid supporting nested grouping keys in the
+  groupBy function.
+  {% endcomment %}
+  {% assign groupByKeys = "type,openStatus,occupancyGroup" | split: "," %}
+  {% assign sortKeys = "key0,key1,key2" | split: "," %}
   {% assign unitsByType = apartment.units | groupBy: groupByKeys | rankSort: sortKeys %}
   {% comment %}
   Only show the income bracket column in the rent table if there is more than
