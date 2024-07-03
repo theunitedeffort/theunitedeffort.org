@@ -101,6 +101,45 @@ module.exports = function(eleventyConfig) {
     return filtered;
   });
 
+  // Groups items in a collection by one or more keys.
+  // The result is a list of key/value pairs where all items having the same
+  // value for 'keys' in the original 'collection' are grouped.  Specify
+  // multiple grouping keys with a comma-separated list. The result
+  // is a list of group objects having the following properties:
+  //   key: The values of 'keys' in 'collection' that form this group
+  //   values: The items in 'collection' that form this group
+  //   key0..N: The values of keys used to create the group, one for each key
+  //
+  // Example:
+  // const myList = [
+  //   {'type': '1br', 'status': 'open', 'rent': 100},
+  //   {'type': '1br', 'status': 'closed', 'rent': 300},
+  //   {'type': '1br', 'status': 'open', 'rent': 500},
+  //   {'type': '2br', 'status': 'closed', 'rent': 300},
+  // ];
+  // groupBy(myList, 'type,status');
+  //   [
+  //     {
+  //       'key':'1br__open',
+  //       'values':
+  //         [{'type': '1br', 'status': 'open', 'rent': 100},
+  //          {'type': '1br', 'status': 'open', 'rent': 500}],
+  //       'key0': '1br',
+  //       'key1': 'open',
+  //     },
+  //     {
+  //       'key': '1br__closed',
+  //       'values':
+  //         [{'type': '1br', 'status': 'closed', 'rent': 300}]},
+  //       'key0': '1br',
+  //       'key1': 'closed',
+  //     {
+  //       'key': '2br__closed',
+  //       'values':
+  //         [{'type': '2br', 'status': 'closed', 'rent': 100}]},
+  //       'key0': '2br',
+  //       'key1': 'closed',
+  //   ]
   eleventyConfig.addFilter('groupBy', function(collection, keys) {
     const SEPARATOR = '__';
     const groupMap = {};
