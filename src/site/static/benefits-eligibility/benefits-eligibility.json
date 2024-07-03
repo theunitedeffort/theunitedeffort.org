@@ -135,6 +135,13 @@
       "applyUrl": "https://www.clipperstartcard.com/s/application",
       "infoUrl": "https://www.clipperstartcard.com/s/",
       "summary": "Clipper START provides discounted single ride transit fares for qualifying individuals. Applicable services include VTA, Caltrain, BART, and many more."
+    },
+    {
+      "name": "Medi-Cal",
+      "id": "medi-cal",
+      "applyUrl": "https://www.dhcs.ca.gov/Get-Medi-Cal/Pages/apply-for-medi-cal.aspx",
+      "infoUrl": "https://ca.db101.org/ca/programs/health_coverage/medi_cal/program.htm",
+      "summary": "Medi-Cal is California's version of the national Medicaid health coverage program.  It helps pay medical expenses for certain low-income individuals."
     }
   ]
 }

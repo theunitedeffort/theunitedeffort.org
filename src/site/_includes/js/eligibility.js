@@ -194,6 +194,9 @@ const cnst = {
     // https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf#page=4
     MONTHLY_INCOME_LIMIT_ADDL_PERSON: 166.32, // USD per month
   },
+  mediCal: {
+
+  },
   noFeeId: {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
     MIN_ELIGIBLE_AGE: 62, // Years
@@ -1210,6 +1213,7 @@ function mapResultFunctions() {
   document.getElementById('program-va-pension').result = vaPensionResult;
   document.getElementById('program-wic').result = wicResult;
   document.getElementById('program-clipper-start').result = clipperStartResult;
+  document.getElementById('program-medi-cal').result = mediCalResult;
 }
 
 // Switches to the first form page in the document.
@@ -2291,6 +2295,16 @@ function vtaParatransitResult(input) {
   return program.getResult();
 }
 
+function mediCalResult(input) {
+  // TODO: implement
+  const program = new Program();
+  program.addCondition(new EligCondition('Default eligible', true));
+  if (input.existingMedicalMe) {
+    program.markEnrolled();
+  }
+  return program.getResult();
+}
+
 function housingChoiceResult(input) {
   // https://www.huduser.gov/portal/datasets/il/il2023/2023IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2023&yy=23&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
   const extraCalc = function(numExtraPeople) {
@@ -3152,6 +3166,8 @@ if (typeof module !== 'undefined' && module.exports) {
     vaPensionResult,
     vtaParatransitResult,
     wicResult,
+    clipperStartResult,
+    mediCalResult,
     getValueOrNull,
     setElementVisible,
     modifyIds,
@@ -3164,6 +3180,5 @@ if (typeof module !== 'undefined' && module.exports) {
     renderFlags,
     showResultText,
     renderResultsSummaryFooter,
-    clipperStartResult,
   };
 }
