@@ -195,7 +195,12 @@ const cnst = {
     MONTHLY_INCOME_LIMIT_ADDL_PERSON: 166.32, // USD per month
   },
   mediCal: {
-
+    // https://ca.db101.org/ca/programs/health_coverage/medi_cal/program2a.htm
+    ADULT_INCOME_LIMIT_FACTOR: 1.38, // Times federal poverty level
+    CHILD_INCOME_LIMIT_FACTOR: 2.66, // Times federal poverty level
+    PREGNANT_INCOME_LIMIT_FACTOR: 2.13, // Times federal poverty level
+    MIN_ELDERLY_AGE: 65, // Years
+    AD_FPL_INCOME_LIMIT: 1732,  // USD per month
   },
   noFeeId: {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
