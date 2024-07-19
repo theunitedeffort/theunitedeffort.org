@@ -1224,6 +1224,7 @@ function mapResultFunctions() {
   document.getElementById('program-va-pension').result = vaPensionResult;
   document.getElementById('program-wic').result = wicResult;
   document.getElementById('program-clipper-start').result = clipperStartResult;
+  document.getElementById('program-homeless-prevention-system').result = homelessPreventionSystemResult;
 }
 
 // Switches to the first form page in the document.
@@ -2713,12 +2714,13 @@ function homelessPreventionSystemResult(input) {
     cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS,
     cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
 
-  const riskLosingHousing = document.getElementById('unhoused-risk').checked;
+  const riskLosingHousing = isOneOf(input.housingSituation, [
+    'unhoused-risk']);
 
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
   const program = new Program();
-  
+
   program.addCondition(new EligCondition(
     `Have a gross income below ${usdLimit(incomeLimit)} 
     per month`,

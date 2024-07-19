@@ -2173,4 +2173,21 @@ describe('Program eligibility', () => {
       check(elig.clipperStartResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.clipper.ANNUAL_INCOME_LIMITS[0] / 12);
     });
   });
+  describe('Homeless Prevention System Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.clipperStartResult(input).eligible).not.toBe(true);
+    });
+
+    test('Income must be at or below the limit', () => {
+      input.housingSituation = 'unhoused-risk';
+      input.income.valid = true;
+      check(elig.homelessPreventionSystemResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS[0] / 12);
+    });
+
+    test('Must be at risk of losing housing', () => {
+      input.housingSituation = 'housed';
+      input.income.valid = true;
+      check(elig.homelessPreventionSystemResult, input).isEligibleIf('housingSituation').is('unhoused-risk');
+    })
+  });
 });
