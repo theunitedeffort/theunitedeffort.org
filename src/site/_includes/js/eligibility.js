@@ -133,6 +133,20 @@ const cnst = {
     // "Personal Property - GA Policy [180]"
     MAX_RESOURCES: 500, // USD
   },
+  homelessPreventionSystem: {
+    // https://preventhomelessness.org/#eligibility
+    ANNUAL_INCOME_LIMITS: [ // USD per year
+      102300,
+      116900,
+      131500,
+      146100,
+      157800,
+      169500,
+      181200,
+      192900,
+    ],
+    // Aditional person income limit not specified
+  },
   housingChoice: {
     // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
     MIN_ELIGIBLE_AGE: 18,
@@ -2693,6 +2707,28 @@ function clipperStartResult(input) {
   return program.getResult();
 }
 
+function homelessPreventionSystemResult(input) {
+
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
+    cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS,
+    cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
+
+  const riskLosingHousing = document.getElementById('unhoused-risk').checked;
+
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
+  const program = new Program();
+  
+  program.addCondition(new EligCondition(
+    `Have a gross income below ${usdLimit(incomeLimit)} 
+    per month`,
+    underIncomeLimit));
+  program.addCondition(new EligCondition(
+    'Be at risk of losing your housing in the next 14 days',
+    riskLosingHousing));
+  return program.getResult();
+}
+
 function clearUnusedPages() {
   const pages = [...document.querySelectorAll('div.elig_page')];
   // Reset usage tracking.
@@ -3165,5 +3201,6 @@ if (typeof module !== 'undefined' && module.exports) {
     showResultText,
     renderResultsSummaryFooter,
     clipperStartResult,
+    homelessPreventionSystemResult,
   };
 }
