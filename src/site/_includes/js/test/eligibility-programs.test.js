@@ -2188,6 +2188,6 @@ describe('Program eligibility', () => {
       input.housingSituation = 'housed';
       input.income.valid = true;
       check(elig.homelessPreventionSystemResult, input).isEligibleIf('housingSituation').is('unhoused-risk');
-    })
+    });
   });
 });

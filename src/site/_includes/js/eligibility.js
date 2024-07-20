@@ -2709,7 +2709,6 @@ function clipperStartResult(input) {
 }
 
 function homelessPreventionSystemResult(input) {
-
   const grossLimit = MonthlyIncomeLimits.fromAnnual(
     cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS,
     cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
