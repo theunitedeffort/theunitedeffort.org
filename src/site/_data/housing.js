@@ -120,7 +120,12 @@ const fetchUnitRecords = async () => {
         units.push({
           parent_id: record.get('_DISPLAY_ID')?.[0],
           type: record.get('TYPE'),
-          openStatus: record.get('STATUS') === 'Call for Status' ? 'Call for Availability' : record.get('STATUS'),
+          openStatus: record.get('STATUS'),
+          // Combine min and max occupancy into a single string for easier
+          // grouping and sorting later.  This is a convenience only; the
+          // occupancyLimit property below should be used to render apartment
+          // occupancy limits.
+          occupancyGroup: `${record.get('MIN_OCCUPANCY')},${record.get('MAX_OCCUPANCY')}`,
           occupancyLimit: {
             min: record.get('MIN_OCCUPANCY'),
             max: record.get('MAX_OCCUPANCY'),
