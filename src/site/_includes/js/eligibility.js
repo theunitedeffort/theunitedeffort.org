@@ -135,6 +135,11 @@ const cnst = {
   },
   homelessPreventionSystem: {
     // https://preventhomelessness.org/#eligibility
+    // Effective through 4/1/25
+    INCOME_ROUND_UP_TO_NEAREST: 50, // USD
+    BASE_HOUSEHOLD_SIZE: 4, // People
+    FAMILY_SIZE_ADJ_8: 1.32,
+    INCREMENTAL_ADJ: 0.08,
     ANNUAL_INCOME_LIMITS: [ // USD per year
       102300,
       116900,
@@ -2709,12 +2714,21 @@ function clipperStartResult(input) {
 }
 
 function homelessPreventionSystemResult(input) {
+  const extraCalc = function(numExtraPeople) {
+    const limits = cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS;
+    const baseLimit = limits[cnst.homelessPreventionSystem.BASE_HOUSEHOLD_SIZE - 1];
+    const adjustment = (cnst.homelessPreventionSystem.FAMILY_SIZE_ADJ_8 +
+      cnst.homelessPreventionSystem.INCREMENTAL_ADJ * numExtraPeople);
+    const incomeLimit = baseLimit * adjustment;
+    const rounded = (cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
+      Math.trunc(incomeLimit) / cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST));
+    // Return incremental change ("ex`tra") from the max listed input value.
+    return rounded - limits[limits.length - 1];
+  };
+
   const grossLimit = MonthlyIncomeLimits.fromAnnual(
     cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS,
-    cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
-
-  const riskLosingHousing = isOneOf(input.housingSituation, [
-    'unhoused-risk']);
+    extraCalc);
 
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
@@ -2725,8 +2739,8 @@ function homelessPreventionSystemResult(input) {
     per month`,
     underIncomeLimit));
   program.addCondition(new EligCondition(
-    'Be at risk of losing your housing in the next 14 days',
-    riskLosingHousing));
+    'Be at risk of losing your housing',
+    input.unhousedRisk));
   return program.getResult();
 }
 
@@ -2789,6 +2803,7 @@ function buildInputObj() {
     housingSituation: getValueOrNull('housing-situation'),
     paysUtilities: getValueOrNull('pay-utilities'),
     hasKitchen: getValueOrNull('has-kitchen-yes'),
+    unhousedRisk: getValueOrNull('unhoused-risk'),
     immigrationStatus: getValueOrNull('immig_status'),
     usesGuideDog: getValueOrNull('use-guide-dog'),
     militaryDisabled: getValueOrNull('dis-military'),
