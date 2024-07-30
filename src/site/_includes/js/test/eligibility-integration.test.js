@@ -1602,6 +1602,7 @@ describe('buildInputObj', () => {
       householdDependents: [true, false],
       householdSize: 3,
       unbornChildren: '1',
+      unhousedRisk: true,
       housingSituation: 'housed',
       paysUtilities: true,
       hasKitchen: true,
@@ -1768,6 +1769,9 @@ describe('buildInputObj', () => {
 
     document.getElementById('has-kitchen-yes').checked = expected.hasKitchen;
     expect(getInput().hasKitchen).toBe(expected.hasKitchen);
+
+    setYesNo('unhoused-risk', expected.unhousedRisk);
+    expect(getInput().unhousedRisk).toBe(expected.unhousedRisk);
 
     document.getElementById(expected.immigrationStatus).checked = true;
     expect(getInput().immigrationStatus).toBe(expected.immigrationStatus);

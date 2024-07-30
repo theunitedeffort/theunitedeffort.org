@@ -526,6 +526,7 @@ describe('Program eligibility', () => {
       housingSituation: null,
       paysUtilities: null,
       hasKitchen: false,
+      unhousedRisk: null,
       immigrationStatus: null,
       usesGuideDog: null,
       militaryDisabled: null,
@@ -2179,15 +2180,14 @@ describe('Program eligibility', () => {
     });
 
     test('Income must be at or below the limit', () => {
-      input.housingSituation = 'unhoused-risk';
+      input.unhousedRisk = true;
       input.income.valid = true;
       check(elig.homelessPreventionSystemResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS[0] / 12);
     });
 
     test('Must be at risk of losing housing', () => {
-      input.housingSituation = 'housed';
       input.income.valid = true;
-      check(elig.homelessPreventionSystemResult, input).isEligibleIf('housingSituation').is('unhoused-risk');
+      check(elig.homelessPreventionSystemResult, input).isEligibleIf('unhousedRisk').is(true);
     });
   });
 });
