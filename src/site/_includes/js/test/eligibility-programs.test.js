@@ -2176,7 +2176,8 @@ describe('Program eligibility', () => {
   });
   describe('Homeless Prevention System Program', () => {
     test('Not eligible with default input', () => {
-      expect(elig.homelessPreventionSystemResult(input).eligible).not.toBe(true);
+      expect(elig.homelessPreventionSystemResult(input)
+      .eligible).not.toBe(true);
     });
 
     test('Income must be at or below the limit', () => {

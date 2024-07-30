@@ -2716,12 +2716,15 @@ function clipperStartResult(input) {
 function homelessPreventionSystemResult(input) {
   const extraCalc = function(numExtraPeople) {
     const limits = cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS;
-    const baseLimit = limits[cnst.homelessPreventionSystem.BASE_HOUSEHOLD_SIZE - 1];
+    const baseLimit = limits[
+      cnst.homelessPreventionSystem.BASE_HOUSEHOLD_SIZE - 1];
     const adjustment = (cnst.homelessPreventionSystem.FAMILY_SIZE_ADJ_8 +
       cnst.homelessPreventionSystem.INCREMENTAL_ADJ * numExtraPeople);
     const incomeLimit = baseLimit * adjustment;
-    const rounded = (cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
-      Math.trunc(incomeLimit) / cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST));
+    const rounded = (
+      cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
+      Math.trunc(incomeLimit) / 
+      cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST));
     // Return incremental change ("ex`tra") from the max listed input value.
     return rounded - limits[limits.length - 1];
   };
