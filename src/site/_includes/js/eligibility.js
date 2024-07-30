@@ -2722,7 +2722,7 @@ function homelessPreventionSystemResult(input) {
       cnst.homelessPreventionSystem.INCREMENTAL_ADJ * numExtraPeople);
     const incomeLimit = baseLimit * adjustment;
     const rounded = (
-        cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
+      cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
         Math.trunc(incomeLimit) /
       cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST));
     // Return incremental change ("ex`tra") from the max listed input value.
