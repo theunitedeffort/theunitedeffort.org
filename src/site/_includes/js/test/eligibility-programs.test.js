@@ -526,6 +526,7 @@ describe('Program eligibility', () => {
       housingSituation: null,
       paysUtilities: null,
       hasKitchen: false,
+      unhousedRisk: null,
       immigrationStatus: null,
       usesGuideDog: null,
       militaryDisabled: null,
@@ -2171,6 +2172,23 @@ describe('Program eligibility', () => {
       input.existingRtcClipperMe = false;
       input.age = elig.cnst.clipper.MIN_ELIGIBLE_AGE;
       check(elig.clipperStartResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.clipper.ANNUAL_INCOME_LIMITS[0] / 12);
+    });
+  });
+  describe('Homeless Prevention System Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.homelessPreventionSystemResult(input)
+        .eligible).not.toBe(true);
+    });
+
+    test('Income must be at or below the limit', () => {
+      input.unhousedRisk = true;
+      input.income.valid = true;
+      check(elig.homelessPreventionSystemResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS[0] / 12);
+    });
+
+    test('Must be at risk of losing housing', () => {
+      input.income.valid = true;
+      check(elig.homelessPreventionSystemResult, input).isEligibleIf('unhousedRisk').is(true);
     });
   });
 });

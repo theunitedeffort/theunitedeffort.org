@@ -133,6 +133,25 @@ const cnst = {
     // "Personal Property - GA Policy [180]"
     MAX_RESOURCES: 500, // USD
   },
+  homelessPreventionSystem: {
+    // https://preventhomelessness.org/#eligibility
+    // Effective through 4/1/25
+    INCOME_ROUND_UP_TO_NEAREST: 50, // USD
+    BASE_HOUSEHOLD_SIZE: 4, // People
+    FAMILY_SIZE_ADJ_8: 1.32,
+    INCREMENTAL_ADJ: 0.08,
+    ANNUAL_INCOME_LIMITS: [ // USD per year
+      102300,
+      116900,
+      131500,
+      146100,
+      157800,
+      169500,
+      181200,
+      192900,
+    ],
+    // Aditional person income limit not specified
+  },
   housingChoice: {
     // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
     MIN_ELIGIBLE_AGE: 18,
@@ -1210,6 +1229,7 @@ function mapResultFunctions() {
   document.getElementById('program-va-pension').result = vaPensionResult;
   document.getElementById('program-wic').result = wicResult;
   document.getElementById('program-clipper-start').result = clipperStartResult;
+  document.getElementById('program-homeless-prevention-system').result = homelessPreventionSystemResult;
 }
 
 // Switches to the first form page in the document.
@@ -2693,6 +2713,40 @@ function clipperStartResult(input) {
   return program.getResult();
 }
 
+function homelessPreventionSystemResult(input) {
+  const extraCalc = function(numExtraPeople) {
+    const limits = cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS;
+    const baseLimit = limits[
+      cnst.homelessPreventionSystem.BASE_HOUSEHOLD_SIZE - 1];
+    const adjustment = (cnst.homelessPreventionSystem.FAMILY_SIZE_ADJ_8 +
+      cnst.homelessPreventionSystem.INCREMENTAL_ADJ * numExtraPeople);
+    const incomeLimit = baseLimit * adjustment;
+    const rounded = (
+      cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
+        Math.trunc(incomeLimit) /
+      cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST));
+    // Return incremental change ("extra") from the max listed input value.
+    return rounded - limits[limits.length - 1];
+  };
+
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
+    cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS,
+    extraCalc);
+
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
+  const program = new Program();
+
+  program.addCondition(new EligCondition(
+    `Have a gross income below ${usdLimit(incomeLimit)} 
+    per month`,
+    underIncomeLimit));
+  program.addCondition(new EligCondition(
+    'Be at risk of losing your housing',
+    input.unhousedRisk));
+  return program.getResult();
+}
+
 function clearUnusedPages() {
   const pages = [...document.querySelectorAll('div.elig_page')];
   // Reset usage tracking.
@@ -2752,6 +2806,7 @@ function buildInputObj() {
     housingSituation: getValueOrNull('housing-situation'),
     paysUtilities: getValueOrNull('pay-utilities'),
     hasKitchen: getValueOrNull('has-kitchen-yes'),
+    unhousedRisk: getValueOrNull('unhoused-risk'),
     immigrationStatus: getValueOrNull('immig_status'),
     usesGuideDog: getValueOrNull('use-guide-dog'),
     militaryDisabled: getValueOrNull('dis-military'),
@@ -3165,5 +3220,6 @@ if (typeof module !== 'undefined' && module.exports) {
     showResultText,
     renderResultsSummaryFooter,
     clipperStartResult,
+    homelessPreventionSystemResult,
   };
 }

@@ -135,6 +135,13 @@
       "applyUrl": "https://www.clipperstartcard.com/s/application",
       "infoUrl": "https://www.clipperstartcard.com/s/",
       "summary": "Clipper START provides discounted single ride transit fares for qualifying individuals. Applicable services include VTA, Caltrain, BART, and many more."
+    },
+    {
+      "name": "Homelessness Prevention System",
+      "id": "homeless-prevention-system",
+      "applyUrl": "https://preventhomelessness.org/",
+      "infoUrl": "https://destinationhomesv.org/homelessness-prevention/",
+      "summary": "The Homelessness Prevention System provides services to certain individuals and families at risk of homelessness, including financial assistance, legal services, and case management."
     }
   ]
 }

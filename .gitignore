@@ -12,6 +12,8 @@ netlify/functions/serverless/**
 /src/coverage
 /cypress/videos
 /cypress/screenshots
+deno.lock
 
 # stryker temp files
 .stryker-tmp
+

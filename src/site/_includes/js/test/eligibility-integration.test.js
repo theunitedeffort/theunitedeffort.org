@@ -1481,7 +1481,7 @@ describe('Navigation and UI', () => {
     const firstItem = summary.querySelector(itemSelector);
     expect(firstItem.querySelector('a').hash).toEqual(noFeeIdSelector);
     expect(summary.textContent).toContain('No-Fee ID Card');
-    expect(summary.textContent).toContain('checked\u200920\u2009programs');
+    expect(summary.textContent).toContain('checked\u200921\u2009programs');
     expect(summary.textContent).toContain('1\u2009you may qualify for');
     expect(summary.textContent).toContain('1 program you\'re already enrolled');
     expectResults(eligible, 1);
@@ -1602,6 +1602,7 @@ describe('buildInputObj', () => {
       householdDependents: [true, false],
       householdSize: 3,
       unbornChildren: '1',
+      unhousedRisk: true,
       housingSituation: 'housed',
       paysUtilities: true,
       hasKitchen: true,
@@ -1768,6 +1769,9 @@ describe('buildInputObj', () => {
 
     document.getElementById('has-kitchen-yes').checked = expected.hasKitchen;
     expect(getInput().hasKitchen).toBe(expected.hasKitchen);
+
+    setYesNo('unhoused-risk', expected.unhousedRisk);
+    expect(getInput().unhousedRisk).toBe(expected.unhousedRisk);
 
     document.getElementById(expected.immigrationStatus).checked = true;
     expect(getInput().immigrationStatus).toBe(expected.immigrationStatus);
