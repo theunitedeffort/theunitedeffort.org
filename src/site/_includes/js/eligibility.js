@@ -2725,7 +2725,7 @@ function homelessPreventionSystemResult(input) {
       cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
         Math.trunc(incomeLimit) /
       cnst.homelessPreventionSystem.INCOME_ROUND_UP_TO_NEAREST));
-    // Return incremental change ("ex`tra") from the max listed input value.
+    // Return incremental change ("extra") from the max listed input value.
     return rounded - limits[limits.length - 1];
   };
 
