@@ -1574,7 +1574,7 @@ function complexImmigration(input,
 
 // Computes the incremental change in HUD income limit for large family sizes.
 // 'numExtraPeople' is the number of people beyond the max family size given
-// by the array of income limits given my 'limits'.  For example, if 'limits'
+// by the array of income limits given by 'limits'.  For example, if 'limits'
 // defines income limits for household sizes up to 8 people and 'numExtraPeople'
 // is 2, then this function would give the incremental increase from the
 // 8 person limit to the 10 person limit.
@@ -1586,7 +1586,7 @@ const hudLargeFamilyCalc = function(limits, numExtraPeople) {
   const incomeLimit = baseLimit * adjustment;
   const rounded = (cnst.common.hud.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
     Math.trunc(incomeLimit) / cnst.common.hud.INCOME_ROUND_UP_TO_NEAREST));
-  // Return incremental change ("extra") from the max listed income value.
+  // Return incremental change from the max listed income value.
   return rounded - limits[limits.length - 1];
 };
 
