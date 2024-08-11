@@ -1,6 +1,15 @@
 'use strict';
 
 const cnst = {
+  common: {
+    hud: {
+      // For income limits additional person calculations
+      // https://www.huduser.gov/portal/datasets/il/il2023/2023IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2023&yy=23&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+      INCOME_ROUND_UP_TO_NEAREST: 50, // USD
+      BASE_HOUSEHOLD_SIZE: 4, // People
+      INCREMENTAL_ADJ: 0.08,
+    },
+  },
   calfresh: {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/2CalFresh/CFMonthAllIncomeElig.htm
     // Section 2.1 "CalFresh Program Monthly Allotment and Income Eligibility
@@ -133,15 +142,24 @@ const cnst = {
     // "Personal Property - GA Policy [180]"
     MAX_RESOURCES: 500, // USD
   },
+  homelessPreventionSystem: {
+    // https://preventhomelessness.org/#eligibility
+    // Effective through 4/1/25
+    ANNUAL_INCOME_LIMITS: [ // USD per year
+      102300,
+      116900,
+      131500,
+      146100,
+      157800,
+      169500,
+      181200,
+      192900,
+    ],
+    // Aditional person income limit not specified
+  },
   housingChoice: {
     // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
     MIN_ELIGIBLE_AGE: 18,
-    // For income limits additional person calculations
-    // https://www.huduser.gov/portal/datasets/il/il2023/2023IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2023&yy=23&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
-    INCOME_ROUND_UP_TO_NEAREST: 50, // USD
-    BASE_HOUSEHOLD_SIZE: 4, // People
-    FAMILY_SIZE_ADJ_8: 1.32,
-    INCREMENTAL_ADJ: 0.08,
     // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
     // See "very low income" here:
     // https://www.huduser.gov/portal/datasets/il/il2024/2024summary.odn?states=6.0&data=2024&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2024&selection_type=county
@@ -1210,6 +1228,7 @@ function mapResultFunctions() {
   document.getElementById('program-va-pension').result = vaPensionResult;
   document.getElementById('program-wic').result = wicResult;
   document.getElementById('program-clipper-start').result = clipperStartResult;
+  document.getElementById('program-homeless-prevention-system').result = homelessPreventionSystemResult;
 }
 
 // Switches to the first form page in the document.
@@ -1552,6 +1571,24 @@ function complexImmigration(input,
     !input.citizen &&
     complexOptions.includes(input.immigrationStatus));
 }
+
+// Computes the incremental change in HUD income limit for large family sizes.
+// 'numExtraPeople' is the number of people beyond the max family size given
+// by the array of income limits given by 'limits'.  For example, if 'limits'
+// defines income limits for household sizes up to 8 people and 'numExtraPeople'
+// is 2, then this function would give the incremental increase from the
+// 8 person limit to the 10 person limit.
+const hudLargeFamilyCalc = function(limits, numExtraPeople) {
+  // https://www.huduser.gov/portal/datasets/il/il2023/2023IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2023&yy=23&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
+  const baseLimit = limits[cnst.common.hud.BASE_HOUSEHOLD_SIZE - 1];
+  const adjustment = 1 + cnst.common.hud.INCREMENTAL_ADJ * (
+    limits.length - cnst.common.hud.BASE_HOUSEHOLD_SIZE + numExtraPeople);
+  const incomeLimit = baseLimit * adjustment;
+  const rounded = (cnst.common.hud.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
+    Math.trunc(incomeLimit) / cnst.common.hud.INCOME_ROUND_UP_TO_NEAREST));
+  // Return incremental change from the max listed income value.
+  return rounded - limits[limits.length - 1];
+};
 
 class MonthlyIncomeLimits {
   // If 'addlPersonExtra' is a number, that much will be added to the
@@ -2292,17 +2329,9 @@ function vtaParatransitResult(input) {
 }
 
 function housingChoiceResult(input) {
-  // https://www.huduser.gov/portal/datasets/il/il2023/2023IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2023&yy=23&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
   const extraCalc = function(numExtraPeople) {
-    const limits = cnst.housingChoice.ANNUAL_INCOME_LIMITS;
-    const baseLimit = limits[cnst.housingChoice.BASE_HOUSEHOLD_SIZE - 1];
-    const adjustment = (cnst.housingChoice.FAMILY_SIZE_ADJ_8 +
-      cnst.housingChoice.INCREMENTAL_ADJ * numExtraPeople);
-    const incomeLimit = baseLimit * adjustment;
-    const rounded = (cnst.housingChoice.INCOME_ROUND_UP_TO_NEAREST * Math.ceil(
-      Math.trunc(incomeLimit) / cnst.housingChoice.INCOME_ROUND_UP_TO_NEAREST));
-    // Return incremental change ("extra") from the max listed input value.
-    return rounded - limits[limits.length - 1];
+    return hudLargeFamilyCalc(cnst.housingChoice.ANNUAL_INCOME_LIMITS,
+      numExtraPeople);
   };
 
   const grossLimit = MonthlyIncomeLimits.fromAnnual(
@@ -2693,6 +2722,31 @@ function clipperStartResult(input) {
   return program.getResult();
 }
 
+function homelessPreventionSystemResult(input) {
+  const extraCalc = function(numExtraPeople) {
+    return hudLargeFamilyCalc(
+      cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS,
+      numExtraPeople);
+  };
+
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
+    cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS,
+    extraCalc);
+
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
+  const program = new Program();
+
+  program.addCondition(new EligCondition(
+    `Have a gross income below ${usdLimit(incomeLimit)} 
+    per month`,
+    underIncomeLimit));
+  program.addCondition(new EligCondition(
+    'Be at risk of losing your housing',
+    input.unhousedRisk));
+  return program.getResult();
+}
+
 function clearUnusedPages() {
   const pages = [...document.querySelectorAll('div.elig_page')];
   // Reset usage tracking.
@@ -2752,6 +2806,7 @@ function buildInputObj() {
     housingSituation: getValueOrNull('housing-situation'),
     paysUtilities: getValueOrNull('pay-utilities'),
     hasKitchen: getValueOrNull('has-kitchen-yes'),
+    unhousedRisk: getValueOrNull('unhoused-risk'),
     immigrationStatus: getValueOrNull('immig_status'),
     usesGuideDog: getValueOrNull('use-guide-dog'),
     militaryDisabled: getValueOrNull('dis-military'),
@@ -3165,5 +3220,6 @@ if (typeof module !== 'undefined' && module.exports) {
     showResultText,
     renderResultsSummaryFooter,
     clipperStartResult,
+    homelessPreventionSystemResult,
   };
 }

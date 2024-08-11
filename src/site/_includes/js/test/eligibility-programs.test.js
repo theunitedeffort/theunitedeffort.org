@@ -526,6 +526,7 @@ describe('Program eligibility', () => {
       housingSituation: null,
       paysUtilities: null,
       hasKitchen: false,
+      unhousedRisk: null,
       immigrationStatus: null,
       usesGuideDog: null,
       militaryDisabled: null,
@@ -2171,6 +2172,46 @@ describe('Program eligibility', () => {
       input.existingRtcClipperMe = false;
       input.age = elig.cnst.clipper.MIN_ELIGIBLE_AGE;
       check(elig.clipperStartResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.clipper.ANNUAL_INCOME_LIMITS[0] / 12);
+    });
+  });
+  describe('Homeless Prevention System Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.homelessPreventionSystemResult(input)
+        .eligible).not.toBe(true);
+    });
+
+    test('Income must be at or below the limit', () => {
+      input.unhousedRisk = true;
+      input.income.valid = true;
+      check(elig.homelessPreventionSystemResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS[0] / 12);
+    });
+
+    test('Must be at risk of losing housing', () => {
+      input.income.valid = true;
+      check(elig.homelessPreventionSystemResult, input).isEligibleIf('unhousedRisk').is(true);
+    });
+
+    // This program has a particularly complex income limit calculation for
+    // household sizes above the maximum size listed in the limit table.  This
+    // Test ensures the calculation was done correctly by checking against the
+    // values given by the HUD income limit calculator.
+    test('Extended income limit is computed correctly', () => {
+      // https://www.huduser.gov/portal/datasets/il/il2024/2024ILCalc3080.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2024&yy=24&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=%24passname%24&incpath=%24incpath%24&level=80
+      const expectedAnnualLimitNinePpl = 204550;
+      const expectedAnnualLimitTwentyFivePpl = 391550;
+
+      input.income.valid = true;
+      input.unhousedRisk = true;
+
+      input.householdSize = 9;
+      let maxIncome = expectedAnnualLimitNinePpl / 12;
+      check(elig.homelessPreventionSystemResult, input)
+        .isEligibleIf('income.wages').isAtMost(maxIncome);
+
+      input.householdSize = 25;
+      maxIncome = expectedAnnualLimitTwentyFivePpl / 12;
+      check(elig.homelessPreventionSystemResult, input)
+        .isEligibleIf('income.wages').isAtMost(maxIncome);
     });
   });
 });
