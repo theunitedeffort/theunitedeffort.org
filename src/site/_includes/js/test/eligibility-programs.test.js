@@ -2214,4 +2214,34 @@ describe('Program eligibility', () => {
         .isEligibleIf('income.wages').isAtMost(maxIncome);
     });
   });
+
+  describe('HUD VASH Program', () => {
+    test('Not eligible with default input', () => {
+      expect(elig.hudVashResult(input).eligible).not.toBe(true);
+    });
+
+    test('Requires veteran status', () => {
+      input.disabled = true;
+      input.militaryDisabled = true;
+      input.dischargeStatus = 'honorable';
+      input.dutyPeriods = [{type: 'active-duty'}];
+      check(elig.vaDisabilityResult, input).isEligibleIf('veteran').is(true);
+    });
+
+    test('Eligible when unhoused', () => {
+      input.housingSituation = 'housed';
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('vehicle');
+      input.housingSituation = 'unlisted-stable-place';
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('transitional');
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('hotel');
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('shelter');
+      check(elig.noFeeIdResult, input)
+        .isEligibleIf('housingSituation').is('no-stable-place');
+    });
+  });
+
 });

@@ -1229,6 +1229,7 @@ function mapResultFunctions() {
   document.getElementById('program-wic').result = wicResult;
   document.getElementById('program-clipper-start').result = clipperStartResult;
   document.getElementById('program-homeless-prevention-system').result = homelessPreventionSystemResult;
+  document.getElementById('program-hud-vash').result = hudVashResult;
 }
 
 // Switches to the first form page in the document.
@@ -2747,6 +2748,21 @@ function homelessPreventionSystemResult(input) {
   return program.getResult();
 }
 
+function hudVashResult(input) {
+  const program = new Program();
+  const isUnhoused = isOneOf(input.housingSituation, [
+    'vehicle',
+    'transitional',
+    'hotel',
+    'shelter',
+    'no-stable-place']);
+  const isVeteran = input.veteran;
+  program.addCondition(new EligCondition('Be a U.S. veteran', isVeteran));
+  program.addCondition(new EligCondition('Be experiencing homelessness',
+    isUnhoused));
+  return program.getResult();
+}
+
 function clearUnusedPages() {
   const pages = [...document.querySelectorAll('div.elig_page')];
   // Reset usage tracking.
@@ -3221,5 +3237,6 @@ if (typeof module !== 'undefined' && module.exports) {
     renderResultsSummaryFooter,
     clipperStartResult,
     homelessPreventionSystemResult,
+    hudVashResult,
   };
 }

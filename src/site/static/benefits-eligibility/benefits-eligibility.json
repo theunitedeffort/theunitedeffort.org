@@ -142,6 +142,13 @@
       "applyUrl": "https://preventhomelessness.org/",
       "infoUrl": "https://destinationhomesv.org/homelessness-prevention/",
       "summary": "The Homelessness Prevention System provides services to certain individuals and families at risk of homelessness, including financial assistance, legal services, and case management."
+    },
+    {
+      "name": "Housing and Urban Development Veterans Affairs Supportive Housing (HUD-VASH)",
+      "id": "hud-vash",
+      "applyUrl": "https://www.va.gov/homeless/nationalcallcenter.asp",
+      "infoUrl": "https://www.va.gov/homeless/hud-vash.asp",
+      "summary": "HUD-VASH provides housing vouchers and supportive services to certain homeless veterans."
     }
   ]
 }
