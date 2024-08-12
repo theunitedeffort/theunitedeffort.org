@@ -2214,7 +2214,6 @@ describe('Program eligibility', () => {
         .isEligibleIf('income.wages').isAtMost(maxIncome);
     });
   });
-
   describe('HUD VASH Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.hudVashResult(input).eligible).not.toBe(true);
@@ -2243,5 +2242,4 @@ describe('Program eligibility', () => {
         .isEligibleIf('housingSituation').is('no-stable-place');
     });
   });
-
 });
