@@ -22,7 +22,7 @@ https://maps.google.com/maps?q={{ apartment.addresses[0] | url_encode}}+{{ apart
 {%- endif -%}
 {%- if apartment.website and apartment.website != '' -%}
   <p class="contact">
-    <a href="{{ apartment.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ apartment.aptName }}">View property website</a><sup>&#8599;</sup>
+    <a href="{{ apartment.website }}" target="_blank" rel="noopener" aria-label="Property website for {{ apartment.aptName }}">View property website</a>&#8599;
   </p>
 {%- endif -%}
 </li>
