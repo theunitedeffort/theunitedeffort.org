@@ -97,6 +97,12 @@ echo AIRTABLE_API_KEY={YOUR_ACCESS_TOKEN} >> .env
 netlify dev
 ```
 
+You can share a live development server via HTTPS tunneling with the following command:
+```bash
+netlify dev --live
+```
+This is particularly useful if you are building a feature that needs to be tested on another device.
+
 ## Hosting and Deployment
 
 The site is hosted on [Netlify](https://netlify.com/) and is managed in a Netlify team called `United Effort Org`.
@@ -106,3 +112,10 @@ After setting up the site with Netlify, you will have a CI/CD pipeline set up to
 ## Planning and contributing
 
 We collect and prioritise our efforts in [GitHub issues](https://github.com/philhawksworth/the-united-effort-orginization/issues), arranged into [Milestones](https://github.com/philhawksworth/the-united-effort-orginization/milestones) and coordinate our efforts on those issues in a GitHub [Project](https://github.com/users/philhawksworth/projects/1/views/1). To avoid duplicating effort, you should capture your tasks in [an issue](https://github.com/philhawksworth/the-united-effort-orginization/issues) and mark yourself as the assignee.
+
+### Branches
+To keep contributions organized and to ensure safe working, please create a new branch for any change you wish to make or issue you wish to resolve. When a branch is published to GitHub, Netlify will automatically create a "branch deploy," a development site that can be viewed at {branch_name}--ueo.netlify.app. For example, a branch called `foobar` will have an associated branch deploy with the URL foobar--ueo.netlify.app.
+
+If the branch name contains a slash (/), then the URL of the development site will have all slashes replaced with dashes (-). For example, branch `some/branch` becomes some-branch--ueo.netlify.app.
+
+Every time commits are pushed to a branch, Netlify will rebuild the development site for that branch.
