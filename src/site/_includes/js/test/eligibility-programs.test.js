@@ -2228,7 +2228,10 @@ describe('Program eligibility', () => {
     });
 
     test('Eligible when unhoused', () => {
-      input.housingSituation = 'housed';
+      input.disabled = true;
+      input.militaryDisabled = true;
+      input.dischargeStatus = 'honorable';
+      input.dutyPeriods = [{type: 'active-duty'}];
       check(elig.noFeeIdResult, input)
         .isEligibleIf('housingSituation').is('vehicle');
       input.housingSituation = 'unlisted-stable-place';
@@ -2240,6 +2243,25 @@ describe('Program eligibility', () => {
         .isEligibleIf('housingSituation').is('shelter');
       check(elig.noFeeIdResult, input)
         .isEligibleIf('housingSituation').is('no-stable-place');
+    });
+
+    test('Eligible when income is at or below the limit', () => {
+      input.income.valid = true;
+      input.veteran = true;
+      input.dischargeStatus = 'honorable';
+      input.housingSituation = 'no-stable-place';
+      check(elig.hudVashResult, input).isEligibleIf('income.wages')
+        .isAtMost(elig.cnst.hudvash.ANNUAL_INCOME_LIMITS[0] / 12);
+    });
+
+    test('Requires discharge that is not dishonorable', () => {
+      input.veteran = true;
+      input.dischargeStatus = 'honorable';
+      input.dutyPeriods = [{type: 'active-duty'}];
+      input.militaryDisabled = true;
+      input.disabled = true;
+      check(elig.vaDisabilityResult, input)
+        .isNotEligibleIf('dischargeStatus').is('bad-conduct');
     });
   });
 });

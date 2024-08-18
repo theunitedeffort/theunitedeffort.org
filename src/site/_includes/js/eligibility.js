@@ -176,6 +176,18 @@ const cnst = {
       121650,
     ],
   },
+  hudvash: {
+    ANNUAL_INCOME_LIMITS: [ // USD per year
+      103200,
+      117920,
+      132720,
+      147440,
+      159200,
+      171040,
+      182800,
+      194640,
+    ]
+  },
   ihss: {
     // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
     MIN_ELDERLY_AGE: 65, // Years
@@ -2757,9 +2769,20 @@ function hudVashResult(input) {
     'shelter',
     'no-stable-place']);
   const isVeteran = input.veteran;
+  const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
+    'dishonorable',
+  ]));
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
+    cnst.hudvash.ANNUAL_INCOME_LIMITS,
+    cnst.hudvash.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
+
   program.addCondition(new EligCondition('Be a U.S. veteran', isVeteran));
+  program.addCondition(new EligCondition('Not be dishonorably discharged', meetsDischargeReq));
   program.addCondition(new EligCondition('Be experiencing homelessness',
     isUnhoused));
+  program.addCondition(new EligCondition(`Have a gross income below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
   return program.getResult();
 }
 
