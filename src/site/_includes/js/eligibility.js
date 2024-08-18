@@ -186,7 +186,7 @@ const cnst = {
       171040,
       182800,
       194640,
-    ]
+    ],
   },
   ihss: {
     // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
@@ -2782,7 +2782,9 @@ function hudVashResult(input) {
   program.addCondition(new EligCondition('Not be dishonorably discharged', meetsDischargeReq));
   program.addCondition(new EligCondition('Be experiencing homelessness',
     isUnhoused));
-  program.addCondition(new EligCondition(`Have a gross income below ${usdLimit(incomeLimit)} per month`, underIncomeLimit));
+  program.addCondition(new EligCondition(
+    `Have a gross income below ${usdLimit(incomeLimit)} per month`,
+    underIncomeLimit));
   return program.getResult();
 }
 
