@@ -2220,28 +2220,28 @@ describe('Program eligibility', () => {
     });
 
     test('Requires veteran status', () => {
-      input.disabled = true;
-      input.militaryDisabled = true;
+      input.income.valid = true;
       input.dischargeStatus = 'honorable';
       input.dutyPeriods = [{type: 'active-duty'}];
-      check(elig.vaDisabilityResult, input).isEligibleIf('veteran').is(true);
+      input.housingSituation = 'no-stable-place';
+      check(elig.hudVashResult, input).isEligibleIf('veteran').is(true);
     });
 
     test('Eligible when unhoused', () => {
-      input.disabled = true;
-      input.militaryDisabled = true;
+      input.income.valid = true;
+      input.veteran = true;
       input.dischargeStatus = 'honorable';
+      input.housingSituation = 'housed';
       input.dutyPeriods = [{type: 'active-duty'}];
-      check(elig.noFeeIdResult, input)
+      check(elig.hudVashResult, input)
         .isEligibleIf('housingSituation').is('vehicle');
-      input.housingSituation = 'unlisted-stable-place';
-      check(elig.noFeeIdResult, input)
+      check(elig.hudVashResult, input)
         .isEligibleIf('housingSituation').is('transitional');
-      check(elig.noFeeIdResult, input)
+      check(elig.hudVashResult, input)
         .isEligibleIf('housingSituation').is('hotel');
-      check(elig.noFeeIdResult, input)
+      check(elig.hudVashResult, input)
         .isEligibleIf('housingSituation').is('shelter');
-      check(elig.noFeeIdResult, input)
+      check(elig.hudVashResult, input)
         .isEligibleIf('housingSituation').is('no-stable-place');
     });
 
@@ -2255,13 +2255,24 @@ describe('Program eligibility', () => {
     });
 
     test('Requires discharge that is not dishonorable', () => {
+      input.income.valid = true;
+      input.housingSituation = 'no-stable-place';
       input.veteran = true;
       input.dischargeStatus = 'honorable';
       input.dutyPeriods = [{type: 'active-duty'}];
-      input.militaryDisabled = true;
-      input.disabled = true;
-      check(elig.vaDisabilityResult, input)
-        .isNotEligibleIf('dischargeStatus').is('bad-conduct');
+      check(elig.hudVashResult, input)
+        .isNotEligibleIf('dischargeStatus').is('dishonorable');
     });
+
+    test('Eligible with U.S. citizenship', () => {
+      input.income.valid = true;
+      input.citizen = false;
+      input.veteran = true;
+      input.dischargeStatus = 'honorable';
+      input.housingSituation = 'no-stable-place';
+      check(elig.hudVashResult, input)
+        .isEligibleIf('citizen').is(true);
+    });
+
   });
 });

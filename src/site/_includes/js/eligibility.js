@@ -177,6 +177,8 @@ const cnst = {
     ],
   },
   hudvash: {
+    // https://siliconvalleyathome.org/resources/finding-affordable-housing/
+    // Last updated June 11, 2024
     ANNUAL_INCOME_LIMITS: [ // USD per year
       103200,
       117920,
@@ -2777,11 +2779,21 @@ function hudVashResult(input) {
     cnst.hudvash.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
-
+  const meetsImmigrationReq = or(
+    input.citizen,
+    validImmigration(input));
+  
+  // https://www.federalregister.gov/documents/2024/08/13/2024-17957/section-8-housing-choice-vouchers-revised-implementation-of-the-hud-veterans-affairs-supportive
+  program.addCondition(
+    new EligCondition('Be a U.S. citizen or qualified immigrant',
+      meetsImmigrationReq));
+  // Section II, Part A
   program.addCondition(new EligCondition('Be a U.S. veteran', isVeteran));
   program.addCondition(new EligCondition('Not be dishonorably discharged', meetsDischargeReq));
+  // Section II, Part A
   program.addCondition(new EligCondition('Be experiencing homelessness',
     isUnhoused));
+  // Section II, Part B
   program.addCondition(new EligCondition(
     `Have a gross income below ${usdLimit(incomeLimit)} per month`,
     underIncomeLimit));
