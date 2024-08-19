@@ -2273,6 +2273,5 @@ describe('Program eligibility', () => {
       check(elig.hudVashResult, input)
         .isEligibleIf('citizen').is(true);
     });
-
   });
 });

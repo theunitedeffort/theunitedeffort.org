@@ -2782,7 +2782,7 @@ function hudVashResult(input) {
   const meetsImmigrationReq = or(
     input.citizen,
     validImmigration(input));
-  
+
   // https://www.federalregister.gov/documents/2024/08/13/2024-17957/section-8-housing-choice-vouchers-revised-implementation-of-the-hud-veterans-affairs-supportive
   program.addCondition(
     new EligCondition('Be a U.S. citizen or qualified immigrant',
