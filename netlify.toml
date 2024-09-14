@@ -12,9 +12,10 @@ functions = "netlify/functions"
 command = 'sed -i "s|INJECTED_PASSWORD|${PRE_RELEASE_CONTENT_PASSWORD}|g" prod-headers && mkdir dist && cp prod-headers dist/_headers && npm run build'
 
 [[headers]]
-  for = "/data/*"
+for = "/data/*"
+
   [headers.values]
-    Content-Type = "application/json"
+  Content-Type = "application/json"
 
 [[redirects]]
 from = "/contrib/affordable-housing/start"
