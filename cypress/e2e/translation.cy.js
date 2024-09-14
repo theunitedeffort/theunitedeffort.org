@@ -13,11 +13,11 @@ describe('Client-side Translation', () => {
 
   it('translates to Vietnamese', () => {
     cy.findByRole('link', {name: 'Tiếng Việt'}).click();
-    cy.findByText('Nhiệm vụ của chúng ta').should('exist');
+    cy.findByText('Sứ mệnh của chúng tôi').should('exist');
   });
 
   it('translates to Chinese', () => {
     cy.findByRole('link', {name: '简体中文'}).click();
-    cy.findByText('我们的任务').should('exist');
+    cy.findByText('我们的使命').should('exist');
   });
 });

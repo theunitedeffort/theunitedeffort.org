@@ -34,11 +34,11 @@ const strs = {
   },
   'buttonAddAnother': {
     'en': 'Add another',
-    'es': 'Agregar otro',
+    'es': /((agregar)|(añadir)) otro/i,
   },
   'buttonAddNew': {
     'en': 'Add a new',
-    'es': 'Agregar un nuevo',
+    'es': /((agregar)|(añadir)) un nuevo/i,
   },
   'fieldYes': {
     'en': /yes/i,
@@ -58,7 +58,7 @@ const strs = {
   },
   'fieldVeteran': {
     'en': /i am a u.s. veteran/i,
-    'es': /soy un veterano de estados unidos/i,
+    'es': /soy un veterano de los estados unidos/i,
   },
   'fieldPregnant': {
     'en': /i am pregnant/i,
@@ -66,7 +66,7 @@ const strs = {
   },
   'fieldNoneDescribeMe': {
     'en': /none of these describe me/i,
-    'es': /ninguno de estos me describe/i,
+    'es': /ningun(o|a) de est(o|a)s me describe/i,
   },
   'fieldHeadHousehold': {
     'en': 'head of your household',
@@ -90,7 +90,7 @@ const strs = {
   },
   'dutyType': {
     'en': /duty type/i,
-    'es': /tipo de servicio/i,
+    'es': /tipo de ((servicio)|(deber))/i,
   },
   'startDate': {
     'en': /start date/i,
@@ -158,7 +158,7 @@ const strs = {
   },
   'unbornChildren': {
     'en': /unborn children/i,
-    'es': /niños por nacer/i,
+    'es': /niños ((por nacer)|(no nacidos))/i,
   },
   'apartment': {
     'en': /apartment/i,
@@ -170,7 +170,7 @@ const strs = {
   },
   'cookingFacilities': {
     'en': /have cooking facilities/i,
-    'es': /tiene instalaciones para cocinar/i,
+    'es': /tiene (usted)? instalaciones para cocinar/i,
   },
   'wages': {
     'en': /wages/i,
@@ -178,7 +178,7 @@ const strs = {
   },
   'selfEmployment': {
     'en': /self-employment/i,
-    'es': /trabajo por cuenta/i,
+    'es': /ingresos por cuenta propia/i,
   },
   'disability': {
     'en': /disability/i,
@@ -186,7 +186,7 @@ const strs = {
   },
   'unemployment': {
     'en': /unemployment benefits/i,
-    'es': /beneficios de desempleado/i,
+    'es': /beneficios de desemple(ad)?o/i,
   },
   'retirement': {
     'en': /retirement benefits/i,
@@ -198,11 +198,11 @@ const strs = {
   },
   'workersComp': {
     'en': /worker.s compensation/i,
-    'es': /compensación laboral/i,
+    'es': /compensación ((laboral)|(del trabajador))/i,
   },
   'childSupport': {
     'en': /child support/i,
-    'es': /manutención infantil/i,
+    'es': /manutención ((infantil)|(de los hijos))/i,
   },
   'otherSource': {
     'en': /other source/i,
@@ -218,7 +218,7 @@ const strs = {
   },
   'nextMoneyAdd': {
     'en': /add another ((entry)|(asset))/i,
-    'es': /agregar otr(a|o) ((entrada)|(activo))/i,
+    'es': /((agregar)|(añadir)) otr(a|o) ((entrada)|(activo))/i,
   },
   'moneyLabel': {
     'en': /income|value/i,
