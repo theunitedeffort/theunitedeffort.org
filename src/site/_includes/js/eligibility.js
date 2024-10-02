@@ -14,18 +14,18 @@ const cnst = {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/2CalFresh/CFMonthAllIncomeElig.htm
     // Section 2.1 "CalFresh Program Monthly Allotment and Income Eligibility
     //   Standards Charts"
-    // Effective through 9/30/24
+    // Effective through 9/30/25
     FED_POVERTY_LEVEL: [ // USD per month
-      1215,
-      1644,
-      2072,
-      2500,
-      2929,
-      3357,
-      3785,
-      4214,
+      1255,
+      1704,
+      2152,
+      2600,
+      3049,
+      3497,
+      3945,
+      4394,
     ],
-    FED_POVERTY_LEVEL_ADDL_PERSON: 429, // USD per month per person
+    FED_POVERTY_LEVEL_ADDL_PERSON: 449, // USD per month per person
     // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/CEHouseholds/MCE.htm
     // "Modified Categorical Eligibility (MCE)"
     GROSS_INCOME_LIMIT_MCE_FACTOR: 2.0, // Times federal poverty limit
