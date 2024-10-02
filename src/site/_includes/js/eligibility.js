@@ -177,17 +177,19 @@ const cnst = {
     ],
   },
   hudvash: {
-    // https://siliconvalleyathome.org/resources/finding-affordable-housing/
-    // Last updated June 11, 2024
+    // https://www.federalregister.gov/documents/2024/08/13/2024-17957/section-8-housing-choice-vouchers-revised-implementation-of-the-hud-veterans-affairs-supportive#p-55
+    // See 80% AMI ("Low") here:
+    // https://www.huduser.gov/portal/datasets/il/il2024/2024summary.odn?states=6.0&data=2024&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2024&selection_type=county
+    // Effective through 5/31/25
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      103200,
-      117920,
-      132720,
-      147440,
-      159200,
-      171040,
-      182800,
-      194640,
+      102300,
+      116900,
+      131500,
+      146100,
+      157800,
+      169500,
+      181200,
+      192900,
     ],
   },
   ihss: {
@@ -2763,6 +2765,13 @@ function homelessPreventionSystemResult(input) {
 }
 
 function hudVashResult(input) {
+  const extraCalc = function(numExtraPeople) {
+    return hudLargeFamilyCalc(
+      cnst.hudvash.ANNUAL_INCOME_LIMITS,
+      numExtraPeople);
+  };
+
+  // https://www.hud.gov/program_offices/public_indian_housing/programs/hcv/vash
   const program = new Program();
   const isUnhoused = isOneOf(input.housingSituation, [
     'vehicle',
@@ -2770,33 +2779,37 @@ function hudVashResult(input) {
     'hotel',
     'shelter',
     'no-stable-place']);
-  const isVeteran = input.veteran;
-  const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
-    'dishonorable',
-  ]));
+  const meetsDischargeReq = ne(input.dischargeStatus, 'dishonorable');
   const grossLimit = MonthlyIncomeLimits.fromAnnual(
-    cnst.hudvash.ANNUAL_INCOME_LIMITS,
-    cnst.hudvash.ANNUAL_INCOME_LIMIT_ADDL_PERSON);
+    cnst.hudvash.ANNUAL_INCOME_LIMITS, extraCalc);
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
   const meetsImmigrationReq = or(
     input.citizen,
     validImmigration(input));
 
-  // https://www.federalregister.gov/documents/2024/08/13/2024-17957/section-8-housing-choice-vouchers-revised-implementation-of-the-hud-veterans-affairs-supportive
+  // https://www.federalregister.gov/d/2024-17957/p-55
+  // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982/subpart-E/section-982.201#p-982.201(a)
   program.addCondition(
     new EligCondition('Be a U.S. citizen or qualified immigrant',
       meetsImmigrationReq));
-  // Section II, Part A
-  program.addCondition(new EligCondition('Be a U.S. veteran', isVeteran));
+  // https://www.federalregister.gov/d/2024-17957/p-43
+  program.addCondition(new EligCondition('Be a U.S. veteran', input.veteran));
+  // https://www.linkvet.org/s/article/HUD-VASH-Eligibility-Expansion
+  // https://www.law.cornell.edu/uscode/text/38/2002
   program.addCondition(new EligCondition('Not be dishonorably discharged', meetsDischargeReq));
-  // Section II, Part A
+  // https://www.federalregister.gov/d/2024-17957/p-43
   program.addCondition(new EligCondition('Be experiencing homelessness',
     isUnhoused));
-  // Section II, Part B
+  // https://www.federalregister.gov/d/2024-17957/p-55
   program.addCondition(new EligCondition(
     `Have a gross income below ${usdLimit(incomeLimit)} per month`,
     underIncomeLimit));
+
+  if (program.evaluate() && complexImmigration(input)) {
+    program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
+  }
+
   return program.getResult();
 }
 

@@ -2273,5 +2273,41 @@ describe('Program eligibility', () => {
       check(elig.hudVashResult, input)
         .isEligibleIf('citizen').is(true);
     });
+
+    testImmigration(() => {
+      input.income.valid = true;
+      input.veteran = true;
+      input.dischargeStatus = 'honorable';
+      input.housingSituation = 'no-stable-place';
+    },
+    elig.hudVashResult,
+    );
+
+    // TODO: test hudLargeFamilyCalc instead of copying this test code to each
+    // program that uses that function.
+    // This program has a particularly complex income limit calculation for
+    // household sizes above the maximum size listed in the limit table.  This
+    // Test ensures the calculation was done correctly by checking against the
+    // values given by the HUD income limit calculator.
+    test('Extended income limit is computed correctly', () => {
+      // https://www.huduser.gov/portal/datasets/il/il2024/2024ILCalc3080.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2024&yy=24&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=%24passname%24&incpath=%24incpath%24&level=80
+      const expectedAnnualLimitNinePpl = 204550;
+      const expectedAnnualLimitTwentyFivePpl = 391550;
+
+      input.income.valid = true;
+      input.veteran = true;
+      input.dischargeStatus = 'honorable';
+      input.housingSituation = 'no-stable-place';
+
+      input.householdSize = 9;
+      let maxIncome = expectedAnnualLimitNinePpl / 12;
+      check(elig.hudVashResult, input)
+        .isEligibleIf('income.wages').isAtMost(maxIncome);
+
+      input.householdSize = 25;
+      maxIncome = expectedAnnualLimitTwentyFivePpl / 12;
+      check(elig.hudVashResult, input)
+        .isEligibleIf('income.wages').isAtMost(maxIncome);
+    });
   });
 });
