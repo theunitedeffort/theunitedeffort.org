@@ -176,6 +176,22 @@ const cnst = {
       121650,
     ],
   },
+  hudvash: {
+    // https://www.federalregister.gov/documents/2024/08/13/2024-17957/section-8-housing-choice-vouchers-revised-implementation-of-the-hud-veterans-affairs-supportive#p-55
+    // See 80% AMI ("Low") here:
+    // https://www.huduser.gov/portal/datasets/il/il2024/2024summary.odn?states=6.0&data=2024&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2024&selection_type=county
+    // Effective through 5/31/25
+    ANNUAL_INCOME_LIMITS: [ // USD per year
+      102300,
+      116900,
+      131500,
+      146100,
+      157800,
+      169500,
+      181200,
+      192900,
+    ],
+  },
   ihss: {
     // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
     MIN_ELDERLY_AGE: 65, // Years
@@ -1229,6 +1245,7 @@ function mapResultFunctions() {
   document.getElementById('program-wic').result = wicResult;
   document.getElementById('program-clipper-start').result = clipperStartResult;
   document.getElementById('program-homeless-prevention-system').result = homelessPreventionSystemResult;
+  document.getElementById('program-hud-vash').result = hudVashResult;
 }
 
 // Switches to the first form page in the document.
@@ -2747,6 +2764,55 @@ function homelessPreventionSystemResult(input) {
   return program.getResult();
 }
 
+function hudVashResult(input) {
+  const extraCalc = function(numExtraPeople) {
+    return hudLargeFamilyCalc(
+      cnst.hudvash.ANNUAL_INCOME_LIMITS,
+      numExtraPeople);
+  };
+
+  // https://www.hud.gov/program_offices/public_indian_housing/programs/hcv/vash
+  const program = new Program();
+  const isUnhoused = isOneOf(input.housingSituation, [
+    'vehicle',
+    'transitional',
+    'hotel',
+    'shelter',
+    'no-stable-place']);
+  const meetsDischargeReq = ne(input.dischargeStatus, 'dishonorable');
+  const grossLimit = MonthlyIncomeLimits.fromAnnual(
+    cnst.hudvash.ANNUAL_INCOME_LIMITS, extraCalc);
+  const incomeLimit = grossLimit.getLimit(input.householdSize);
+  const underIncomeLimit = le(grossIncome(input), incomeLimit);
+  const meetsImmigrationReq = or(
+    input.citizen,
+    validImmigration(input));
+
+  // https://www.federalregister.gov/d/2024-17957/p-55
+  // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982/subpart-E/section-982.201#p-982.201(a)
+  program.addCondition(
+    new EligCondition('Be a U.S. citizen or qualified immigrant',
+      meetsImmigrationReq));
+  // https://www.federalregister.gov/d/2024-17957/p-43
+  program.addCondition(new EligCondition('Be a U.S. veteran', input.veteran));
+  // https://www.linkvet.org/s/article/HUD-VASH-Eligibility-Expansion
+  // https://www.law.cornell.edu/uscode/text/38/2002
+  program.addCondition(new EligCondition('Not be dishonorably discharged', meetsDischargeReq));
+  // https://www.federalregister.gov/d/2024-17957/p-43
+  program.addCondition(new EligCondition('Be experiencing homelessness',
+    isUnhoused));
+  // https://www.federalregister.gov/d/2024-17957/p-55
+  program.addCondition(new EligCondition(
+    `Have a gross income below ${usdLimit(incomeLimit)} per month`,
+    underIncomeLimit));
+
+  if (program.evaluate() && complexImmigration(input)) {
+    program.addFlag(FlagCodes.COMPLEX_IMMIGRATION);
+  }
+
+  return program.getResult();
+}
+
 function clearUnusedPages() {
   const pages = [...document.querySelectorAll('div.elig_page')];
   // Reset usage tracking.
@@ -3221,5 +3287,6 @@ if (typeof module !== 'undefined' && module.exports) {
     renderResultsSummaryFooter,
     clipperStartResult,
     homelessPreventionSystemResult,
+    hudVashResult,
   };
 }
