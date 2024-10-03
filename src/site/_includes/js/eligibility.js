@@ -142,7 +142,7 @@ const cnst = {
     // "Personal Property - GA Policy [180]"
     MAX_RESOURCES: 500, // USD
   },
-  homelessPreventionSystem: {
+  hps: {
     // https://preventhomelessness.org/#eligibility
     // Effective through 4/1/25
     ANNUAL_INCOME_LIMITS: [ // USD per year
@@ -1244,7 +1244,7 @@ function mapResultFunctions() {
   document.getElementById('program-va-pension').result = vaPensionResult;
   document.getElementById('program-wic').result = wicResult;
   document.getElementById('program-clipper-start').result = clipperStartResult;
-  document.getElementById('program-homeless-prevention-system').result = homelessPreventionSystemResult;
+  document.getElementById('program-homeless-prevention-system').result = homelessnessPreventionResult;
   document.getElementById('program-hud-vash').result = hudVashResult;
 }
 
@@ -2739,15 +2739,15 @@ function clipperStartResult(input) {
   return program.getResult();
 }
 
-function homelessPreventionSystemResult(input) {
+function homelessnessPreventionResult(input) {
   const extraCalc = function(numExtraPeople) {
     return hudLargeFamilyCalc(
-      cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS,
+      cnst.hps.ANNUAL_INCOME_LIMITS,
       numExtraPeople);
   };
 
   const grossLimit = MonthlyIncomeLimits.fromAnnual(
-    cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS,
+    cnst.hps.ANNUAL_INCOME_LIMITS,
     extraCalc);
 
   const isHoused = isOneOf(input.housingSituation, [
@@ -3291,7 +3291,7 @@ if (typeof module !== 'undefined' && module.exports) {
     showResultText,
     renderResultsSummaryFooter,
     clipperStartResult,
-    homelessPreventionSystemResult,
+    homelessnessPreventionResult,
     hudVashResult,
   };
 }
