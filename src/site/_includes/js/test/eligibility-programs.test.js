@@ -2158,27 +2158,32 @@ describe('Program eligibility', () => {
     test('Cannot have RTC Clipper Card', () => {
       input.income.valid = true;
       input.age = elig.cnst.clipper.MIN_ELIGIBLE_AGE;
-      check(elig.clipperStartResult, input).isNotEligibleIf('existingRtcClipperMe').is(true);
+      check(elig.clipperStartResult, input).isNotEligibleIf(
+        'existingRtcClipperMe').is(true);
     });
 
     test('Age must be within the limits', () => {
       input.income.valid = true;
       input.existingRtcClipperMe = false;
-      check(elig.clipperStartResult, input).isEligibleIf('age').isAtLeast(elig.cnst.clipper.MIN_ELIGIBLE_AGE);
-      check(elig.clipperStartResult, input).isEligibleIf('age').isAtMost(elig.cnst.clipper.MAX_ELIGIBLE_AGE);
+      check(elig.clipperStartResult, input).isEligibleIf(
+        'age').isAtLeast(elig.cnst.clipper.MIN_ELIGIBLE_AGE);
+      check(elig.clipperStartResult, input).isEligibleIf(
+        'age').isAtMost(elig.cnst.clipper.MAX_ELIGIBLE_AGE);
     });
 
     test('Income must be at or below the limit', () => {
       input.income.valid = true;
       input.existingRtcClipperMe = false;
       input.age = elig.cnst.clipper.MIN_ELIGIBLE_AGE;
-      check(elig.clipperStartResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.clipper.ANNUAL_INCOME_LIMITS[0] / 12);
+      check(elig.clipperStartResult, input).isEligibleIf(
+        'income.wages').isAtMost(
+        elig.cnst.clipper.ANNUAL_INCOME_LIMITS[0] / 12);
     });
   });
 
-  describe('Homeless Prevention System Program', () => {
+  describe('Homelessness Prevention System Program', () => {
     test('Not eligible with default input', () => {
-      expect(elig.homelessPreventionSystemResult(input)
+      expect(elig.homelessnessPreventionResult(input)
         .eligible).not.toBe(true);
     });
 
@@ -2186,23 +2191,25 @@ describe('Program eligibility', () => {
       input.unhousedRisk = true;
       input.income.valid = true;
       input.housingSituation = 'housed';
-      check(elig.homelessPreventionSystemResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS[0] / 12);
+      check(elig.homelessnessPreventionResult, input).isEligibleIf(
+        'income.wages').isAtMost(elig.cnst.hps.ANNUAL_INCOME_LIMITS[0] / 12);
     });
 
     test('Must be housed', () => {
       input.income.valid = true;
       input.unhousedRisk = true;
       input.housingSituation = 'no-stable-place';
-      check(elig.homelessPreventionSystemResult, input).isEligibleIf(
+      check(elig.homelessnessPreventionResult, input).isEligibleIf(
         'housingSituation').is('housed');
-      check(elig.homelessPreventionSystemResult, input).isEligibleIf(
+      check(elig.homelessnessPreventionResult, input).isEligibleIf(
         'housingSituation').is('unlisted-stable-place');
     });
 
     test('Must be at risk of losing housing', () => {
       input.income.valid = true;
       input.housingSituation = 'housed';
-      check(elig.homelessPreventionSystemResult, input).isEligibleIf('unhousedRisk').is(true);
+      check(elig.homelessnessPreventionResult, input).isEligibleIf(
+        'unhousedRisk').is(true);
     });
 
     // This program has a particularly complex income limit calculation for
@@ -2220,12 +2227,12 @@ describe('Program eligibility', () => {
 
       input.householdSize = 9;
       let maxIncome = expectedAnnualLimitNinePpl / 12;
-      check(elig.homelessPreventionSystemResult, input)
+      check(elig.homelessnessPreventionResult, input)
         .isEligibleIf('income.wages').isAtMost(maxIncome);
 
       input.householdSize = 25;
       maxIncome = expectedAnnualLimitTwentyFivePpl / 12;
-      check(elig.homelessPreventionSystemResult, input)
+      check(elig.homelessnessPreventionResult, input)
         .isEligibleIf('income.wages').isAtMost(maxIncome);
     });
   });
