@@ -2149,6 +2149,7 @@ describe('Program eligibility', () => {
         .is([elig.cnst.wic.CHILD_EXIT_AGE - 1, 99]);
     });
   });
+
   describe('Clipper START Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.clipperStartResult(input).eligible).not.toBe(true);
@@ -2196,7 +2197,6 @@ describe('Program eligibility', () => {
         'housingSituation').is('housed');
       check(elig.homelessPreventionSystemResult, input).isEligibleIf(
         'housingSituation').is('unlisted-stable-place');
-
     });
 
     test('Must be at risk of losing housing', () => {
