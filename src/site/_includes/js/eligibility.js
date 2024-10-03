@@ -2750,17 +2750,22 @@ function homelessPreventionSystemResult(input) {
     cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS,
     extraCalc);
 
+  const isHoused = isOneOf(input.housingSituation, [
+    'housed',
+    'unlisted-stable-place']);
+
   const incomeLimit = grossLimit.getLimit(input.householdSize);
   const underIncomeLimit = le(grossIncome(input), incomeLimit);
   const program = new Program();
 
-  program.addCondition(new EligCondition(
-    `Have a gross income below ${usdLimit(incomeLimit)} 
-    per month`,
-    underIncomeLimit));
+  program.addCondition(new EligCondition('Be housed', isHoused));
   program.addCondition(new EligCondition(
     'Be at risk of losing your housing',
     input.unhousedRisk));
+  program.addCondition(new EligCondition(
+    `Have a gross income below ${usdLimit(incomeLimit)}
+    per month`,
+    underIncomeLimit));
   return program.getResult();
 }
 

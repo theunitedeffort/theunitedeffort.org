@@ -2174,6 +2174,7 @@ describe('Program eligibility', () => {
       check(elig.clipperStartResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.clipper.ANNUAL_INCOME_LIMITS[0] / 12);
     });
   });
+
   describe('Homeless Prevention System Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.homelessPreventionSystemResult(input)
@@ -2183,11 +2184,24 @@ describe('Program eligibility', () => {
     test('Income must be at or below the limit', () => {
       input.unhousedRisk = true;
       input.income.valid = true;
+      input.housingSituation = 'housed';
       check(elig.homelessPreventionSystemResult, input).isEligibleIf('income.wages').isAtMost(elig.cnst.homelessPreventionSystem.ANNUAL_INCOME_LIMITS[0] / 12);
+    });
+
+    test('Must be housed', () => {
+      input.income.valid = true;
+      input.unhousedRisk = true;
+      input.housingSituation = 'no-stable-place';
+      check(elig.homelessPreventionSystemResult, input).isEligibleIf(
+        'housingSituation').is('housed');
+      check(elig.homelessPreventionSystemResult, input).isEligibleIf(
+        'housingSituation').is('unlisted-stable-place');
+
     });
 
     test('Must be at risk of losing housing', () => {
       input.income.valid = true;
+      input.housingSituation = 'housed';
       check(elig.homelessPreventionSystemResult, input).isEligibleIf('unhousedRisk').is(true);
     });
 
@@ -2202,6 +2216,7 @@ describe('Program eligibility', () => {
 
       input.income.valid = true;
       input.unhousedRisk = true;
+      input.housingSituation = 'housed';
 
       input.householdSize = 9;
       let maxIncome = expectedAnnualLimitNinePpl / 12;
@@ -2214,6 +2229,7 @@ describe('Program eligibility', () => {
         .isEligibleIf('income.wages').isAtMost(maxIncome);
     });
   });
+
   describe('HUD VASH Program', () => {
     test('Not eligible with default input', () => {
       expect(elig.hudVashResult(input).eligible).not.toBe(true);
