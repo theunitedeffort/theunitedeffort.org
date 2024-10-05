@@ -543,6 +543,8 @@ function e2eTest(lang) {
   cy.get('@income').should('be.enabled');
   cy.get('@existing').should('be.enabled');
   cy.get('@results').should('be.disabled');
+  // Ensure all rows spend time in the viewport so that the text gets translated
+  cy.scrollTo('bottom', {duration: 500});
   cy.get('@page')
     .findByRole('checkbox', {name: strs.gaExistingMe[lang]}).click();
   cy.get('@page')
