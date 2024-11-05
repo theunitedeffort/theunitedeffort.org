@@ -31,7 +31,7 @@ const fetchPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
-        if (record.get('Status') == 'Published') {
+        if (true) {
           const name = record.get('Page title');
           const path = record.get('Page path');
           const sectionID = record.get('Section')[0];
@@ -166,7 +166,6 @@ const fetchAssets = async () => {
 
 module.exports = async function() {
   const asset = new eleventyFetch.AssetCache('airtable_pages');
-  if (asset.isCacheValid('1h')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
   }

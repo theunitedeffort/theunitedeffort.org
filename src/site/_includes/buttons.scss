@@ -137,7 +137,7 @@ main {
 //     background-size: 2em 2em;
 //   }
 
-  .donate_wrapper a.btn {
+  .donate_wrapper .btn {
     font-size: 1rem;
     @include bp(mid) {
       font-size: 1.2rem;
