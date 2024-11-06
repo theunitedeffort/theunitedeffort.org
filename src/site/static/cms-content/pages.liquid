@@ -8,7 +8,6 @@ permalink: "{{ thisPage.url }}/index.html"
 eleventyComputed:
   pageClass: "page{{ thisPage.url | replace: '/', '-' }}"
   title: "{{ thisPage.name }}"
-  pageHead: "{%- if thisPage.url == '/donate-test' -%}<script async src=\"https://widgets.givebutter.com/latest.umd.cjs?acct=9yZD2j8yFG8jsP4t&p=other\"></script>{%- endif -%}"
 ---
 
 {% assign cardSet = false %}
