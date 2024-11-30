@@ -3,6 +3,7 @@ const base = new Airtable(
   {apiKey: process.env.AIRTABLE_WRITE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
 
 const HOUSING_CHANGE_QUEUE_TABLE = "tblKO2Ea4NGEoDGND";
+const CAMPAIGN_MANAGEMENT_TABLE = "tblVMRM364WssyOFK";
 const MAX_IN_PROGRESS_DURATION_HRS = 8;
 
 // Sort ranking for unit type.
@@ -165,6 +166,27 @@ const fetchHousingRecord = async(housingTableId, housingId) => {
   });
 }
 
+const fetchCampaignStatus = async(campaign) => {
+  if (!campaign) {
+    return false;
+  }
+  const table = base(CAMPAIGN_MANAGEMENT_TABLE);
+  let filterStr = `{Campaign Key} = "${campaign}"`;
+  return records = table.select({
+    fields: ["Accepting Submissions"],
+    filterByFormula: filterStr,
+    maxRecords: 1,
+  })
+  .all()
+  .then(records => {
+    if (records.length < 1) {
+      return false;
+    }
+    return records[0].get("Accepting Submissions");
+  });
+}
+
+
 // Gets the Airtable record ID string for the queue item belonging to
 // updates campaign 'campaign' and with housing ID 'housingId'.
 // If more than one such record exists, this returns the newest one.
@@ -285,12 +307,14 @@ exports.handler = async function(event) {
     console.log("fetching queue data");
     let queueData = await Promise.all([
       fetchQueueRecordId(campaign, housingId),
-      fetchQueueData(campaign)
+      fetchQueueData(campaign),
+      fetchCampaignStatus(campaign),
     ]);
     // Get the matching queue item for the given housing ID (if there is one).
     let queueRecordIdOverride = queueData[0]; 
     console.log(`queueRecordIdOverride = ${queueRecordIdOverride}`);
     data.queue = queueData[1];
+    data.acceptingSubmissions = queueData[2];
 
     if (housingId) {
       // A housing ID was given explicitly in the URL, and it matches an 
