@@ -66,6 +66,14 @@ function setInvalidHousingIdMessage(housingId, campaignPath) {
   setTerminalMessage(header, content);
 }
 
+function setNotAcceptingSubmissionsMessage() {
+  const header = 'Submissions are not being accepted.';
+  const content = (
+    'This campaign is over and is no longer accepting submissions.  Watch ' +
+    'your email for an announcement with the next campaign details.');
+  setTerminalMessage(header, content);
+}
+
 // Sets the value of the user's name from an input field.
 // Also saves the value to local storage for later retrieval.
 function setUserName() {
@@ -878,13 +886,17 @@ function initPage(data, params) {
       campaignPath);
     document.getElementById('housing-changes').setAttribute('action',
       `/contrib/affordable-housing/thank-you?campaign=${safeCampaign}`);
-    if (data.housing) {
-      initUnitVisibility(data);
-      prefillForm(data);
-    } else if (params.housingId) {
-      setInvalidHousingIdMessage(params.housingId, campaignPath);
+    if (data.acceptingSubmissions) {
+      if (data.housing) {
+        initUnitVisibility(data);
+        prefillForm(data);
+      } else if (params.housingId) {
+        setInvalidHousingIdMessage(params.housingId, campaignPath);
+      } else {
+        setEmptyQueueMessage(data.queue);
+      }
     } else {
-      setEmptyQueueMessage(data.queue);
+      setNotAcceptingSubmissionsMessage();
     }
   }
 }
