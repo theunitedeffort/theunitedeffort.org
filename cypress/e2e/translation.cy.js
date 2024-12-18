@@ -25,5 +25,4 @@ describe('Client-side Translation', () => {
     cy.findByRole('link', {name: 'Русский'}).click();
     cy.findByText('Наша миссия').should('exist');
   });
-
 });
