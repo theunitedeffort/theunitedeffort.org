@@ -1503,7 +1503,7 @@ describe('Program eligibility', () => {
     });
 
     test('Requires no substantial gainful activity for disabled applicants', () => {
-      let sgaLimit = elig.cnst.ssiCapi.SGA_NON_BLIND;
+      const sgaLimit = elig.cnst.ssiCapi.SGA_NON_BLIND;
       input.income.valid = true;
       input.assets.valid = true;
       input.disabled = true;
