@@ -1502,7 +1502,7 @@ describe('Program eligibility', () => {
         .isEligibleIf('age').isAtLeast(elig.cnst.ssiCapi.MIN_ELDERLY_AGE);
     });
 
-    test('Requires no substantial gainful activity for blind or disabled applicants', () => {
+    test('Requires no substantial gainful activity for disabled applicants', () => {
       let sgaLimit = elig.cnst.ssiCapi.SGA_NON_BLIND;
       input.income.valid = true;
       input.assets.valid = true;
@@ -1511,18 +1511,15 @@ describe('Program eligibility', () => {
       input.income.unemployment = [[1]];
       check(resultFn, input)
         .isEligibleIf('income.wages').isAtMost(sgaLimit);
-
-      sgaLimit = elig.cnst.ssiCapi.SGA_BLIND;
-      input.blind = true;
-      check(resultFn, input)
-        .isEligibleIf('income.wages').isAtMost(sgaLimit);
     });
 
-    test('Substantial gainful activity test not applied for non-disabled and non-blind applicants', () => {
+    test('Substantial gainful activity test not applied for non-disabled and blind applicants', () => {
       input.income.valid = true;
       input.assets.valid = true;
       input.age = elig.cnst.ssiCapi.MIN_ELDERLY_AGE;
       input.income.wages = [[elig.cnst.ssiCapi.SGA_NON_BLIND + 1]];
+      expect(resultFn(input).eligible).toBe(true);
+      input.blind = true;
       expect(resultFn(input).eligible).toBe(true);
     });
 
