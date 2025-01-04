@@ -246,9 +246,9 @@ const cnst = {
     // Note these max benefit amounts include the California state supplement.
     // TODO: Handle other living categories (e.g. non-medical out-of-home care).
     // Effective through 12/31/24
-    MAX_BENEFIT_NON_BLIND: 1182.94, // USD per month
-    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1311.81, // USD per month
-    MAX_BENEFIT_BLIND: 1267.32, // USD per month
+    MAX_BENEFIT_NON_BLIND: 1206.94, // USD per month
+    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1335.81, // USD per month
+    MAX_BENEFIT_BLIND: 1291.32, // USD per month
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
     // Effective through 12/31/23?
     MAX_RESOURCES: 2000, // USD
