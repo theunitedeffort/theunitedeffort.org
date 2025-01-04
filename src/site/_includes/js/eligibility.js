@@ -2407,8 +2407,7 @@ function ssiCapiBaseProgram(input) {
     input.blind,
     ge(input.age, cnst.ssiCapi.MIN_ELDERLY_AGE));
 
-  const sgaLimit = (
-    input.blind ? cnst.ssiCapi.SGA_BLIND : cnst.ssiCapi.SGA_NON_BLIND);
+  const sgaLimit = cnst.ssiCapi.SGA_NON_BLIND;
   let maxBenefit = cnst.ssiCapi.MAX_BENEFIT_NON_BLIND;
   if (input.blind) {
     maxBenefit = cnst.ssiCapi.MAX_BENEFIT_BLIND;
@@ -2432,10 +2431,10 @@ function ssiCapiBaseProgram(input) {
   program.addCondition(new EligCondition(
     `Be disabled, blind or age ${cnst.ssiCapi.MIN_ELDERLY_AGE} or older`,
     meetsDisabilityReq));
-  // Substantial gainful activity test is only applied to disabled or blind
-  // applicants.
+  // Substantial gainful activity test is only applied to disabled applicants.
   // https://www.ssa.gov/ssi/text-disable-ussi.htm
-  if (or(input.disabled, input.blind)) {
+  // https://www.ssa.gov/oact/cola/sgadet.html
+  if (input.disabled) {
     program.addCondition(new EligCondition(
       `Have income from employment below ${usdLimit(sgaLimit)} per month`,
       noSubstantialGainfulActivity));
