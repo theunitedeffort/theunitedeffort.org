@@ -242,10 +242,10 @@ const cnst = {
     // Effective through 12/31/24
     SGA_NON_BLIND: 1550, // USD per month
     SGA_BLIND: 2590, // USD per month
-    // https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACINs/2023/I-66_23.pdf?ver=2023-11-21-144047-077
+    // https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACINs/2024/I-61-24.pdf?ver=2024-12-02-135401-467
     // Note these max benefit amounts include the California state supplement.
     // TODO: Handle other living categories (e.g. non-medical out-of-home care).
-    // Effective through 12/31/24
+    // Effective through 12/31/25
     MAX_BENEFIT_NON_BLIND: 1206.94, // USD per month
     MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1335.81, // USD per month
     MAX_BENEFIT_BLIND: 1291.32, // USD per month
