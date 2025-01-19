@@ -220,8 +220,8 @@ const fetchShelterRecords = async () => {
             title: record.get('Title'),
             organization: record.get('Organization'),
             description: record.get('Description'),
-            address: record.get('Address') || "",
-            city: record.get('City') || "",
+            address: record.get('Address'),
+            city: record.get('City'),
             zip: record.get('ZIP Code'),
             phone: record.get('Phone'),
             website: record.get('URL'),
@@ -263,7 +263,7 @@ const compiledData = async () => {
     shelter.referrers = referrers.filter((r) => shelter.referrerIds.includes(r.id));
   }
 
-  // Pre-sort the list so that templates don't need to later.
+  // Pre-sort the lists so that templates don't need to later.
   const sorted_apts = apartments.sort((a, b) => {
     const nameA = a.aptName.toLowerCase();
     const nameB = b.aptName.toLowerCase();
@@ -276,7 +276,29 @@ const compiledData = async () => {
     return 0;
   });
 
-  return {housing: sorted_apts, shelters: shelters}
+  const sorted_shelters = shelters.sort((a, b) => {
+    // I mean, it works.
+    const cityA = a.city ? a.city.toLowerCase() : 'zzz';
+    const cityB = b.city ? b.city.toLowerCase() : 'zzz';
+    const nameA = a.title.toLowerCase();
+    const nameB = b.title.toLowerCase();
+    if (cityA < cityB) {
+      return -1;
+    }
+    if (cityA > cityB) {
+      return 1;
+    }
+    else {
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    }
+  });
+  return {housing: sorted_apts, shelters: sorted_shelters}
 };
 
 const shelterFilterOptions = (shelters) => {

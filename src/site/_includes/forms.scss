@@ -24,6 +24,16 @@
           border-bottom: solid 1px var(--color-gray-700);
         }
       }
+      fieldset.narrow {
+        @include bp(mid) {
+          width: 38%;
+        }
+      }
+      fieldset.wide {
+        @include bp(mid) {
+          width: 58%;
+        }
+      }
 
       label {
         font-size: 0.8em;
@@ -362,6 +372,10 @@
       columns: 8em 3;
     }
 
+    .option_columns + div {
+      margin-top: 0.6em;
+    }
+
     form.contact_us {
       display: block;
       input,
@@ -481,6 +495,12 @@
       }
       fieldset {
         width: 48%;
+      }
+      fieldset.narrow {
+        width: 38%;
+      }
+      fieldset.wide {
+        width: 58%
       }
 
       form#eligibility {

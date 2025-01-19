@@ -769,6 +769,9 @@ module.exports = function(eleventyConfig) {
     if (queryCopy['includeUnknownIncome'] && !queryCopy['income']) {
       delete queryCopy['includeUnknownIncome'];
     }
+    if (queryCopy['includeUnknownCity'] && !queryCopy['city']) {
+      delete queryCopy['includeUnknownCity'];
+    }
     const filtersApplied = [];
     for (const parameter in queryCopy) {
       if (Object.hasOwn(queryCopy, parameter)) {
@@ -933,7 +936,10 @@ module.exports = function(eleventyConfig) {
 
     if (query.city) {
       const cities = query.city.split(', ');
-      shelterListCopy = shelterListCopy.filter((a) => cities.includes(a.city));
+      shelterListCopy = shelterListCopy.filter((shelter) => {
+        return ((query.includeUnknownCity && !shelter.city) ||
+          cities.includes(shelter.city));
+      });
     }
 
     if (query.populationsServed) {

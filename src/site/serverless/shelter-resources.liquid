@@ -58,22 +58,25 @@ function ResetForm() {
 }
 
 // Show a hidden checkbox with id optionId depending on the value of inputId.
-function ToggleHiddenOption(optionId, inputId) {
-  let option = document.getElementById(optionId);
-  let input = document.getElementById(inputId);
-  if (input.value) {
+function ToggleHiddenOption(optionId, inputName) {
+  const option = document.getElementById(optionId);
+  const inputs = document.querySelectorAll(`[name="${inputName}"]`);
+  let doShow = false;
+  for (input of inputs) {
+    if (input.checked) {
+      doShow = true;
+      break;
+    }
+  }
+  if (doShow) {
     option.parentElement.removeAttribute("hidden");
   } else {
     option.parentElement.setAttribute("hidden", "hidden");
   }
 }
 
-function ToggleRentOption() {
-  ToggleHiddenOption("include-unknown-rent", "rent-max");
-}
-
-function ToggleIncomeOption() {
-  ToggleHiddenOption("include-unknown-income", "income");
+function ToggleCityOption() {
+  ToggleHiddenOption("include-unknown-city", "city");
 }
 
 // If the filtering form GETs the results page's url with
@@ -87,8 +90,7 @@ function ToggleIncomeOption() {
 // are shown if those fields are filled.
 {% if num_filters_applied > 0 %}
 function OnDomLoad() {
-  // ToggleRentOption();
-  // ToggleIncomeOption();
+  ToggleCityOption();
   location.hash = "#results";
 }
 document.addEventListener("DOMContentLoaded", function() {
@@ -104,8 +106,7 @@ function OnPageShow() {
   // prior to navigating away are cleared when navigating back.
   HideLoading();
   ResetForm();
-  ToggleRentOption();
-  ToggleIncomeOption();
+  ToggleCityOption();
 }
 
 window.onpageshow = function() {OnPageShow()};
@@ -133,7 +134,8 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% assign filterValues = housing.shelterFilterValues | updateFilterState: query %}
 
   {% for section in filterValues %}
-  <fieldset>
+  {% assign everyOther = forloop.index0 | modulo: 2 %}
+  <fieldset class="{%- if everyOther == 0 -%}narrow{%- else -%}wide{%- endif -%}">
     <legend>{{section.heading}}</legend>
     <div class="option_columns
     {% if section.name == "populationsServed" %}
@@ -144,7 +146,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     {% for opt in sortedOpts %}
       {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
       <div>
-        <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
+        <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if section.name == "city" %}oninput="ToggleCityOption();"{% endif %} {% if opt.selected %}checked{% endif %}>
         <label for="{{optId}}"
         {%- if section.name == "city" %}
           translate="no"
@@ -153,6 +155,13 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
       </div>
     {% endfor %}
     </div>
+    {% if section.name == "city" %}
+      <div id="include-unknown-city-container" hidden>
+        <input type="checkbox" id="include-unknown-city" name="includeUnknownCity"
+        {% if num_filters_applied == 0 or query.includeUnknownCity == "on" %}checked{% endif %}>
+        <label for="include-unknown-city">Include shelters with no listed address</label>
+      </div>
+    {% endif %}
   </fieldset>
   {% endfor %}
 
