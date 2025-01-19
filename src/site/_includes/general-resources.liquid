@@ -1,10 +1,11 @@
-{% assign uniqueCategories = data.resources | index: "Category" %}
+{% assign topLevelResources = data.resources | where: "Display", "Level 1" %}
+{% assign uniqueCategories = topLevelResources | index: "Category" %}
 {% for category in uniqueCategories %}
 <a href="#{{category | downcase | replace: " ", "-" }}">{{category}}</a><br/>
 {% endfor %}
 {% for category in uniqueCategories | sort %}
   <h2 id="{{category | downcase | replace: " ", "-" }}">{{category}}</h2>
-  {% assign links = data.resources | whereIncluded: "Category", category  %}
+  {% assign links = topLevelResources | whereIncluded: "Category", category  %}
   {% assign uniqueSubcategories = links | index: "Subcategory" | sort %}
   {% assign rangeEnd = uniqueSubcategories | size | plus: -1 %}
   {% comment %} Start at -1 to artificially insert an additional null subcategory first. {% endcomment %}

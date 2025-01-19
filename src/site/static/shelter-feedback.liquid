@@ -1,0 +1,18 @@
+---
+layout: "layouts/base.liquid"
+title: "Shelter List Feedback"
+pageClass: "page-resources"
+permalink: "/resources/shelter/feedback/index.html"
+---
+
+<h1>{{title}}</h1>
+
+<p>
+  Is there an issue with our shelter list?  Did you find an error? Let us know here.
+</p>
+
+{% render "contact-form" name: "shelter_feedback" action: "/resources/shelter/feedback-sent" %}
+
+<p>
+  If you prefer, you can also <a href="/contact">contact us</a> another way.
+</p>

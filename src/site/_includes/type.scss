@@ -280,12 +280,19 @@
     p.contact {
       line-height: 1.8em;
     }
+    p.description {
+      margin-bottom: 1em;
+    }
     h2 {
       display: inline-block;
       font-size: 1.3em;
       font-weight: 600;
       margin: 0 0 0.2em;
       padding: 0;
+    }
+    h2 + p.subtitle {
+      margin-top: -0.2em;
+      margin-bottom: 0.2em;
     }
   }
 

@@ -1,0 +1,265 @@
+---
+layout: layouts/base.liquid
+title: Find Shelters
+permalink:
+  build: "/protected/resources/shelter/index.html"
+  serverless: "/protected/resources/shelter/filter"
+pageClass: "page-resources"
+pageHead: '<script src="/js/accessibility.js" defer></script>
+  <script src="/js/transit.js" defer></script>
+  <script src="/js/affordable-housing-map.js" defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA17udd4ePocbxKrOkHiMhSUHlvf3daZMs&callback=initMap&v=weekly" defer></script>'
+---
+{% comment %}
+TODO: reduce this duplicated code (taken from affordable-housing.liquid)
+{% endcomment %}
+{% assign updateButtonStr = "Update results" %}
+{% assign query = eleventy.serverless.query %}
+{% assign summaryProps = "type,openStatus" | split: "," %}
+{% assign shelters = housing.shelterList | filterByQuery: query %}
+{% assign num_results = shelters | size %}
+{% assign num_filters_applied = query | numFiltersApplied %}
+{% capture num_results_snippet %}
+  Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {{num_results | pluralize: "shelter", "shelters"}}
+{% endcapture %}
+
+{% comment %}
+There is some startup time associated with a Netlify serverless function,
+so go ahead and fire it up now in preparation for a user's housing search.
+The function should still be 'warm' if the user executes a search in a
+reasonable timeframe.
+{% endcomment %}
+{% unless eleventy.serverless %}
+  <link rel="prefetch" href="/.netlify/functions/serverless">
+{% endunless %}
+
+<script>
+function CopyUrl() {
+  navigator.clipboard.writeText(window.location.href);
+  document.getElementById("copy-url-done").removeAttribute("hidden");
+  return false;
+}
+
+// Show a loading message by changing the submit button to say "Loading..."
+function ShowLoading() {
+  let submitButton = document.getElementById("filter-submit");
+  submitButton.value = "Loading...";
+  submitButton.disabled = "disabled";
+}
+
+function HideLoading() {
+  let submitButton = document.getElementById("filter-submit");
+  submitButton.value = "{{updateButtonStr}}";
+  submitButton.removeAttribute("disabled");
+}
+
+function ResetForm() {
+  document.getElementById("shelter-search").reset();
+}
+
+// Show a hidden checkbox with id optionId depending on the value of inputId.
+function ToggleHiddenOption(optionId, inputId) {
+  let option = document.getElementById(optionId);
+  let input = document.getElementById(inputId);
+  if (input.value) {
+    option.parentElement.removeAttribute("hidden");
+  } else {
+    option.parentElement.setAttribute("hidden", "hidden");
+  }
+}
+
+function ToggleRentOption() {
+  ToggleHiddenOption("include-unknown-rent", "rent-max");
+}
+
+function ToggleIncomeOption() {
+  ToggleHiddenOption("include-unknown-income", "income");
+}
+
+// If the filtering form GETs the results page's url with
+// the anchor hash (e.g. action="/affordable-housing/filter#results")
+// then the form submission button will be disabled and the
+// page will not reload if the user clicks on the submit button
+// without first changing the filter state.  So, to force a
+// page reload every time, have the form GET e.g.
+// /affordable-housing/filter and manually scroll to the anchor
+// after the page loads.  Also ensure the rent and income checkboxes
+// are shown if those fields are filled.
+{% if num_filters_applied > 0 %}
+function OnDomLoad() {
+  ToggleRentOption();
+  ToggleIncomeOption();
+  location.hash = "#results";
+}
+document.addEventListener("DOMContentLoaded", function() {
+  OnDomLoad();
+});
+{% endif %}
+
+function OnPageShow() {
+  // When the user departs the page by applying filters, the submit
+  // button text changes to a loading message.  Ensure that loading
+  // message is gone if the user returns to the page via the back
+  // navigation arrow.  Also ensure any filter options that were selected
+  // prior to navigating away are cleared when navigating back.
+  HideLoading();
+  ResetForm();
+  ToggleRentOption();
+  ToggleIncomeOption();
+}
+
+window.onpageshow = function() {OnPageShow()};
+
+</script>
+
+{% comment %}
+{% assign shelters = data.resources | whereIncluded: "Category", "Shelter" | where: "Display", "Level 2" | sort_undefined: "City" %}
+{% assign sheltersWithCity = shelters | where: "City" %}
+{% assign cities = shelters | map: "City" | uniq %}
+{% assign sortedCities = cities | sort_undefined %}
+{{ cities | log }}
+{{ sortedCities | log }}
+{% endcomment %}
+
+<h1>{{title}}
+<span class="subtitle">In Santa Clara County</span></h1>
+<p>
+  The United Effort Organization has compiled a comprehensive list of shelters located within Santa Clara County, CA.  Note that some shelters have a confidential and unlisted address.
+</p>
+<p class="noprint bold">
+{{num_results_snippet}}
+</p>
+{% if num_filters_applied == 0 %}
+<p>
+Narrow your search with the filter options below or <a href="#results">scroll</a> to the full list of shelters
+</p>
+{% else %}
+<p class="noprint">
+{{num_filters_applied}} {{num_filters_applied | pluralize: "filter is", "filters are"}} applied. <a href="/protected/resources/shelter">Clear filters</a>
+</p>
+{% endif %}
+<p>
+  <a href="/resources/shelter/feedback" class="noprint">Report an error</a>
+</p>
+<ul class="results_list">
+{% for shelter in shelters %}
+  <li>
+    <h2 translate="no">{{ shelter['Title'] }}</h2>
+    {% if shelter["Organization"] and shelter['Organization'] != '' %}
+      <p class="subtitle">
+        provided by {{ shelter["Organization"] }}
+      </p>
+    {% endif %}
+    {% if shelter["Populations Served"].length > 0 %}
+      {% assign populationsServed = shelter["Populations Served"] | uniq | sort %}
+      <p>
+        {% for population in populationsServed %}
+          <span class="badge">{{ population }}</span>
+        {% endfor %}
+      </p>
+    {% endif %}
+    {% if shelter["Description"] and shelter["Description"] != '' %}
+      <p class="description" translate="no">
+        {{ shelter["Description"] }}
+      </p>
+    {% endif %}
+    {% capture mapUrl %}
+    https://maps.google.com/maps?q={{ shelter['Address'] | url_encode}}+{{ shelter['City'] | url_encode}},+CA
+    {% endcapture %}
+    {% if shelter['Address'] and shelter['Address'] != '' %}
+      <p class="contact">
+      <span translate="no">{{ shelter['Address'] }}{% if shelter['City'] and shelter['City'] != '' %}, {{ shelter['City'] }}{% endif %}{% if shelter['ZIP Code'] and shelter['ZIP Code'] != '' %} {{ shelter['ZIP Code'] }}{% endif %}</span>
+        <span class="map_link_container noprint nowrap">
+          (<span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ shelter['Title'] }} on Google Maps">map</a><sup>&#8599;</sup></span>)
+        </span>
+      </p>
+    {% endif %}
+    {% if shelter["Email"] and shelter["Email"] != '' %}
+      <p class="contact" translate="no">
+        <a href="mailto:{{ shelter["Email"] | downcase }}" target="_blank" rel="noopener">{{ shelter["Email"] | downcase }}</a>
+      </p>
+    {% endif %}
+    {% if shelter['Phone'] and shelter['Phone'] != '' %}
+      <p class="contact">
+        {% assign formattedPhone = shelter['Phone'] | formatPhone %}
+        <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
+      </p>
+    {% endif %}
+    {% if shelter["URL"] and shelter["URL"] != '' %}
+      <p class="contact">
+        <a href="{{ shelter["URL"] }}" target="_blank" rel="noopener" aria-label="Property website for {{ shelter["URL"] }}">View shelter website</a><sup>&#8599;</sup>
+      </p>
+    {% endif %}
+    {% if shelter["Access"] and shelter["Access"] != '' %}
+      <p class="contact">
+        <span class="bold">Shelter access:</span> {{ shelter["Access"] }}
+          {% comment %}
+          TODO: Make referrers into links (phone numbers and websites), likely by
+          converting the relevant airtable field to a linked field and having
+          referrer records
+          {% endcomment %}
+          {% if shelter["Referrers"] and shelter["Referrers"].length > 0 %}
+            {% assign referrerNames = shelter['Referrer Names'] | split: '|' %}
+            {% assign referrerLinks = shelter['Referrer Links'] | split: '|' %}
+            {% assign range = referrerNames | size | minus: 1 %}
+            {% capture referrersString %}
+              {%- for i in (0..range) -%}
+                {%- if referrerLinks[i] -%}
+                  <a target="_blank" rel="noopener" href="{{ referrerLinks[i] }}">{{ referrerNames[i] }}</a>
+                {%- else -%}
+                  {{ referrerNames[i] }}
+                {%- endif -%}
+                |
+              {%- endfor -%}
+            {%- endcapture -%}
+            {% assign referrers = referrersString | split: '|' %}
+            via {{ referrers | join: " or " }}
+          {% endif %}
+      </p>
+    {% endif %}
+    {% comment %}
+    TODO: add min/max ages
+    {% endcomment %}
+    {% assign hasClientMaxAge = shelter['Client Max Age'] and shelter['Client Max Age'] != '' %}
+    {% assign hasClientMinAge = shelter['Client Min Age'] and shelter['Client Min Age'] != '' %}
+    {% assign hasDependentMaxAge = shelter['Dependent Max Age'] and shelter['Dependent Max Age'] != '' %}
+    {% assign hasDependentMinAge = shelter['Dependent Min Age'] and shelter['Dependent Min Age'] != '' %}
+
+    {% if hasClientMaxAge or hasClientMinAge %}
+      {%- capture clientAgeRangeStr -%}
+        {%- if hasClientMinAge and hasClientMaxAge %}
+          {{shelter['Client Min Age']}} - {{shelter['Client Max Age']}} years
+        {%- elsif hasClientMinAge %}
+          {{shelter['Client Min Age']}}+ years
+        {%- elsif hasClientMaxAge %}
+          {{shelter['Client Max Age']}} years and under
+        {%- endif -%}
+      {%- endcapture -%}
+      <p class="contact">
+        <span class="bold">Client age limit:</span> {{ clientAgeRangeStr }}
+      </p>
+    {% endif %}
+
+    {% if hasDependentMaxAge or hasDependentMinAge %}
+      {%- capture dependentAgeRangeStr -%}
+        {%- if hasDependentMinAge and hasDependentMaxAge %}
+          {{shelter['Dependent Min Age']}} - {{shelter['Dependent Max Age']}} years
+        {%- elsif hasDependentMinAge %}
+          {{shelter['Dependent Min Age']}}+ years
+        {%- elsif hasDependentMaxAge %}
+          {{shelter['Dependent Max Age']}} years and under
+        {%- endif -%}
+      {%- endcapture -%}
+      <p class="contact">
+        <span class="bold">Accompanying child age limit:</span> {{ dependentAgeRangeStr }}
+      </p>
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>
+
+<div>
+<p>
+  This shelter list is compiled by volunteers from The United Effort Organization. We strive to be as accurate as possible, but always confirm details with the shelter or referring group.
+</p>
+</div>

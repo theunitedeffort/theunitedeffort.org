@@ -288,6 +288,23 @@ module.exports = function(eleventyConfig) {
     return sorted;
   });
 
+  // There seems to be a bug? maybe? with LiquidJS sorting lists that include
+  // undefined values
+  eleventyConfig.addFilter('sort_undefined', function(values, prop='') {
+    const sorted = values.sort(function(a, b) {
+      const valA = prop ? a[prop] : a;
+      const valB = prop ? b[prop] : b;
+      if (valA < valB) {
+        return -1;
+      }
+      if (valA > valB) {
+        return 1;
+      }
+      return 0;
+    });
+    return sorted;
+  });
+
   eleventyConfig.addFilter('numFiltersApplied', function(query) {
     // TODO: Don't hardcode this list of filters here.
     const allowedFilters = [

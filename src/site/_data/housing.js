@@ -5,6 +5,8 @@ const base = new Airtable(
 
 const UNITS_TABLE = 'tblRtXBod9CC0mivK';
 const HOUSING_DATABASE_TABLE = 'tbl8LUgXQoTYEw2Yh';
+const RESOURCES_TABLE = 'tblyp7AurXeZEIW4J';
+const REFERRERS_TABLE = 'tblRBvQCTQDsp989R';
 const HIGH_CAPACITY_UNIT = 4; // Bedrooms
 
 // A group of checkboxes for filtering housing results.
@@ -24,7 +26,6 @@ function FilterCheckbox(name, label, selected) {
 const fetchApartmentRecords = async () => {
   const apartments = [];
   const table = base(HOUSING_DATABASE_TABLE);
-
   return table.select({
     fields: [
       'DISPLAY_ID',
@@ -155,18 +156,109 @@ const fetchUnitRecords = async () => {
     });
 };
 
-const housingData = async () => {
+const fetchReferrerRecords = async () => {
+  const referrers = [];
+  const table = base(REFERRERS_TABLE);
+  return table.select({
+    fields: [
+      'Name',
+      'Link',
+      'This Record ID',
+    ],
+  })
+    .all()
+    .then((records) => {
+      records.forEach(function(record) {
+        if (record.get('Name')) {
+          referrers.push({
+            id: record.get('This Record ID'),
+            name: record.get('Name'),
+            link: record.get('Link'),
+          });
+        }
+      });
+      return referrers;
+    });
+};
+
+const fetchShelterRecords = async () => {
+  const shelters = [];
+  const table = base(RESOURCES_TABLE);
+  return table.select({
+    fields: [
+      'Title',
+      'Organization',
+      'Description',
+      'Address',
+      'City',
+      'ZIP Code',
+      'Phone',
+      'Email',
+      'Access',
+      'Referrers',
+      'Populations Served',
+      'Client Min Age',
+      'Client Max Age',
+      'Dependent Min Age',
+      'Dependent Max Age',
+      'URL',
+    ],
+    filterByFormula: 'and({Category} = "Shelter", {Display} = "Level 2")',
+  })
+    .all()
+    .then((records) => {
+      records.forEach(function(record) {
+        // Only take apartments that have units associated with them and have
+        // been published (i.e. not a draft)
+        // TODO: filter by "show on website" or some other publish status.
+        if (record.get('Title')) {
+          shelters.push({
+            title: record.get('Title'),
+            organization: record.get('Organization'),
+            address: record.get('Address'),
+            city: record.get('City'),
+            zip: record.get('ZIP Code'),
+            phone: record.get('Phone'),
+            website: record.get('URL'),
+            email: record.get('Email'),
+            populationsServed: record.get('Populations Served') || [],
+            clientMinAge: record.get('Client Min Age'),
+            clientMaxAge: record.get('Client Max Age'),
+            dependentMinAge: record.get('Dependent Min Age'),
+            dependentMaxAge: record.get('Dependent Max Age'),
+            access: record.get('Access'),
+            referrerIds: record.get('Referrers') || [],
+          });
+        }
+      });
+      return shelters;
+    });
+};
+
+const compiledData = async () => {
   console.log('Fetching apartment and units data.');
-  const [apartments, units] = await Promise.all(
-    [fetchApartmentRecords(), fetchUnitRecords()]);
-  console.log(`got ${apartments.length} apartments and ${units.length} units.`);
+  const [apartments, units, shelters, referrers] = await Promise.all([
+    fetchApartmentRecords(),
+    fetchUnitRecords(),
+    fetchShelterRecords(),
+    fetchReferrerRecords(),
+  ]);
+  console.log(`got ${apartments.length} apartments, ${units.length} units, ` +
+    `${shelters.length} shelters, and ${referrers.length} referrers`);
 
   // Add the associated units to each apartment
   for (const apartment of apartments) {
     apartment.units = units.filter((u) => u.parent_id === apartment.id);
   }
+
+  // Add the associated referrers to each shelter
+  for (const shelter of shelters) {
+    shelter.referrers = referrers.filter((r) => shelter.referrerIds.includes(r.id));
+  }
+  console.log(shelters);
+
   // Pre-sort the list so that templates don't need to later.
-  return apartments.sort((a, b) => {
+  const sorted_apts = apartments.sort((a, b) => {
     const nameA = a.aptName.toLowerCase();
     const nameB = b.aptName.toLowerCase();
     if (nameA < nameB) {
@@ -177,6 +269,8 @@ const housingData = async () => {
     }
     return 0;
   });
+
+  return {housing: sorted_apts, shelters: shelters}
 };
 
 const filterOptions = (housing) => {
@@ -241,7 +335,7 @@ const filterOptions = (housing) => {
 module.exports = async function() {
   const asset = new AssetCache('affordable_housing_data');
   // This cache duration will only be used at build time.
-  let cacheDuration = '1h';
+  let cacheDuration = '1s';
   if (process.env.ELEVENTY_SERVERLESS) {
     // Use the serverless cache location specified in .eleventy.js
     asset.cacheDirectory = 'cache';
@@ -253,10 +347,13 @@ module.exports = async function() {
     return data;
   }
 
-  const housing = await housingData();
-  const filterVals = filterOptions(housing);
+  const compiled = await compiledData();
+  const filterVals = filterOptions(compiled.housing);
 
-  const data = {filterValues: filterVals, housingList: housing};
+  const data = {
+    filterValues: filterVals,
+    housingList: compiled.housing,
+    shelterList: compiled.shelters};
 
   await asset.save(data, 'json');
   return data;
