@@ -30,28 +30,16 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   </a>
 </div>
 <table id="shelter-table-summary" class="printed sortable">
-<!--   <colgroup>
-    <col style="width:10%;">
-    <col style="width:10%;">
-    <col style="width:10%;">
-    <col style="width:10%;">
-    <col style="width:10%;">
-    <col style="width:10%;">
-    <col style="width:10%;">
-    <col style="width:10%;">
-    <col style="width:10%;">
-    <col style="width:10%;">
-  </colgroup> -->
   <thead>
     <tr>
       <th style="width:8%;">Name<span class="noprint"> & Link</span></th>
       <th style="width:8%;">Provider</th>
-      <th style="width:34%;">Description</th>
+      <th style="width:32%;">Description</th>
       <th style="width:8%;">Address</th>
       <th style="width:7%;" class="sorttable_sorted">City</th>
       <th style="width:10%;">Phone</th>
-      <th style="width:8%;">Email</th>
-      <th style="width:7%;">Access</th>
+      <th style="width:9%;">Email</th>
+      <th style="width:8%;">Access</th>
       <th style="width:10%;">Populations Served</th>
     </tr>
   </thead>
@@ -72,7 +60,11 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
         <td translate="no">{{ shelter.city }}</td>
         <td>{{ shelter.phone }}</td>
         <td translate="no">{{ shelter.email }}</td>
-        <td>{{ shelter.access }}</td>
+        <td>{{ shelter.access }}
+          {% if shelter.referrers and shelter.referrers.length > 0 %}
+            via {{ shelter.referrers | map: "name" | join: " or " }}
+          {% endif %}
+        </td>
         <td> {{ shelter.populationsServed | join: ", " }}</td>
       </tr>
     {% endfor %}

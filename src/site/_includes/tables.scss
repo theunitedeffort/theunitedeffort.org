@@ -83,14 +83,14 @@ table.sortable th.sorttable_sorted_reverse::after {
 }
 
 table#shelter-table-summary {
-  font-size: 0.6em;
+  font-size: 14px;
   table-layout: fixed;
-  width: 100%;
+  width: 1200px;
 }
 
 table#shelter-table-summary td,
 table#shelter-table-summary th {
-  padding: 0.2em 0.5em;
+  padding: 0.2em 0.4em;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
