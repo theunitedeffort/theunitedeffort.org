@@ -18,9 +18,21 @@ const SORT_RANKING = new Map([
   // Populations Served
   ['General Population', 1],
   ['Seniors', 2],
-  ['Youth', 3],
-  ['Developmentally Disabled', 4],
-  ['Physically Disabled', 5],
+  ['Adults', 3],
+  ['Adult Men', 4],
+  ['Adult Women', 5],
+  ['Young Adults', 6],
+  ['Young Adult Women', 7],
+  ['Families', 8],
+  ['Pregnant Women', 9],
+  ['Women With Children', 10],
+  ['Young Adult Families', 11],
+  ['Youth', 12],
+  ['Domestic Violence Survivors', 13],
+  ['Domestic Violence Survivors With Children', 14],
+  ['Developmentally Disabled', 15],
+  ['Physically Disabled', 16],
+  ['Veterans', 17],
 ]);
 
 module.exports = function(eleventyConfig) {
@@ -912,6 +924,30 @@ module.exports = function(eleventyConfig) {
     // Some properties may have had all their associated units filtered out,
     // so remove those before returning the final list of filtered properties.
     return housingListCopy.filter((a) => a.units.length);
+  });
+
+  eleventyConfig.addFilter('filterSheltersByQuery', function(shelterList, query) {
+    query = query || '';
+    console.log(query);
+    let shelterListCopy = JSON.parse(JSON.stringify(shelterList));
+
+    if (query.city) {
+      const cities = query.city.split(', ');
+      shelterListCopy = shelterListCopy.filter((a) => cities.includes(a.city));
+    }
+
+    if (query.populationsServed) {
+      const populations = query.populationsServed.split(', ');
+      shelterListCopy = shelterListCopy.filter((shelter) => {
+        for (const population of populations) {
+          if (shelter.populationsServed.includes(population)) {
+            return true;
+          }
+        }
+      });
+    }
+
+    return shelterListCopy
   });
 
   eleventyConfig.addFilter('formatPhone', function(phoneStr) {

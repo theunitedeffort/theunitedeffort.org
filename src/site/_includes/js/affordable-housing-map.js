@@ -196,7 +196,7 @@
       map: map,
       title: '',
     };
-    for (const loc of aptLocations) {
+    for (const loc of markerLocations) {
       options.position.lat = loc.lat;
       options.position.lng = loc.lng;
       options.title = loc.name;

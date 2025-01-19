@@ -1,6 +1,6 @@
 ---
 layout: layouts/base.liquid
-title: Find Shelters
+title: Find Shelter
 permalink:
   build: "/protected/resources/shelter/index.html"
   serverless: "/protected/resources/shelter/filter"
@@ -16,7 +16,7 @@ TODO: reduce this duplicated code (taken from affordable-housing.liquid)
 {% assign updateButtonStr = "Update results" %}
 {% assign query = eleventy.serverless.query %}
 {% assign summaryProps = "type,openStatus" | split: "," %}
-{% assign shelters = housing.shelterList | filterByQuery: query %}
+{% assign shelters = housing.shelterList | filterSheltersByQuery: query %}
 {% assign num_results = shelters | size %}
 {% assign num_filters_applied = query | numFiltersApplied %}
 {% capture num_results_snippet %}
@@ -87,8 +87,8 @@ function ToggleIncomeOption() {
 // are shown if those fields are filled.
 {% if num_filters_applied > 0 %}
 function OnDomLoad() {
-  ToggleRentOption();
-  ToggleIncomeOption();
+  // ToggleRentOption();
+  // ToggleIncomeOption();
   location.hash = "#results";
 }
 document.addEventListener("DOMContentLoaded", function() {
@@ -112,20 +112,9 @@ window.onpageshow = function() {OnPageShow()};
 
 </script>
 
-{% comment %}
-{% assign shelters = data.resources | whereIncluded: "Category", "Shelter" | where: "Display", "Level 2" | sort_undefined: "City" %}
-{% assign sheltersWithCity = shelters | where: "City" %}
-{% assign cities = shelters | map: "City" | uniq %}
-{% assign sortedCities = cities | sort_undefined %}
-{{ cities | log }}
-{{ sortedCities | log }}
-{% endcomment %}
-
 <h1>{{title}}
 <span class="subtitle">In Santa Clara County</span></h1>
-<p>
-  The United Effort Organization has compiled a comprehensive list of shelters located within Santa Clara County, CA.  Note that some shelters have a confidential and unlisted address.
-</p>
+
 <p class="noprint bold">
 {{num_results_snippet}}
 </p>
@@ -138,128 +127,209 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 {{num_filters_applied}} {{num_filters_applied | pluralize: "filter is", "filters are"}} applied. <a href="/protected/resources/shelter">Clear filters</a>
 </p>
 {% endif %}
-<p>
-  <a href="/resources/shelter/feedback" class="noprint">Report an error</a>
-</p>
-<ul class="results_list">
-{% for shelter in shelters %}
-  <li>
-    <h2 translate="no">{{ shelter['Title'] }}</h2>
-    {% if shelter["Organization"] and shelter['Organization'] != '' %}
-      <p class="subtitle">
-        provided by {{ shelter["Organization"] }}
-      </p>
+
+<section aria-label="Shelter Filter Options">
+<form action="/protected/resources/shelter/filter" action="get" id="shelter-search" class="shelter_search" onsubmit="ShowLoading();">
+  {% assign filterValues = housing.shelterFilterValues | updateFilterState: query %}
+
+  {% for section in filterValues %}
+  <fieldset>
+    <legend>{{section.heading}}</legend>
+    <div class="option_columns
+    {% if section.name == "populationsServed" %}
+      wide
     {% endif %}
-    {% if shelter["Populations Served"].length > 0 %}
-      {% assign populationsServed = shelter["Populations Served"] | uniq | sort %}
-      <p>
-        {% for population in populationsServed %}
-          <span class="badge">{{ population }}</span>
-        {% endfor %}
-      </p>
-    {% endif %}
-    {% if shelter["Description"] and shelter["Description"] != '' %}
-      <p class="description" translate="no">
-        {{ shelter["Description"] }}
-      </p>
-    {% endif %}
-    {% capture mapUrl %}
-    https://maps.google.com/maps?q={{ shelter['Address'] | url_encode}}+{{ shelter['City'] | url_encode}},+CA
-    {% endcapture %}
-    {% if shelter['Address'] and shelter['Address'] != '' %}
-      <p class="contact">
-      <span translate="no">{{ shelter['Address'] }}{% if shelter['City'] and shelter['City'] != '' %}, {{ shelter['City'] }}{% endif %}{% if shelter['ZIP Code'] and shelter['ZIP Code'] != '' %} {{ shelter['ZIP Code'] }}{% endif %}</span>
-        <span class="map_link_container noprint nowrap">
-          (<span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ shelter['Title'] }} on Google Maps">map</a><sup>&#8599;</sup></span>)
-        </span>
-      </p>
-    {% endif %}
-    {% if shelter["Email"] and shelter["Email"] != '' %}
-      <p class="contact" translate="no">
-        <a href="mailto:{{ shelter["Email"] | downcase }}" target="_blank" rel="noopener">{{ shelter["Email"] | downcase }}</a>
-      </p>
-    {% endif %}
-    {% if shelter['Phone'] and shelter['Phone'] != '' %}
-      <p class="contact">
-        {% assign formattedPhone = shelter['Phone'] | formatPhone %}
-        <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
-      </p>
-    {% endif %}
-    {% if shelter["URL"] and shelter["URL"] != '' %}
-      <p class="contact">
-        <a href="{{ shelter["URL"] }}" target="_blank" rel="noopener" aria-label="Property website for {{ shelter["URL"] }}">View shelter website</a><sup>&#8599;</sup>
-      </p>
-    {% endif %}
-    {% if shelter["Access"] and shelter["Access"] != '' %}
-      <p class="contact">
-        <span class="bold">Shelter access:</span> {{ shelter["Access"] }}
-          {% comment %}
-          TODO: Make referrers into links (phone numbers and websites), likely by
-          converting the relevant airtable field to a linked field and having
-          referrer records
-          {% endcomment %}
-          {% if shelter["Referrers"] and shelter["Referrers"].length > 0 %}
-            {% assign referrerNames = shelter['Referrer Names'] | split: '|' %}
-            {% assign referrerLinks = shelter['Referrer Links'] | split: '|' %}
-            {% assign range = referrerNames | size | minus: 1 %}
-            {% capture referrersString %}
-              {%- for i in (0..range) -%}
-                {%- if referrerLinks[i] -%}
-                  <a target="_blank" rel="noopener" href="{{ referrerLinks[i] }}">{{ referrerNames[i] }}</a>
-                {%- else -%}
-                  {{ referrerNames[i] }}
-                {%- endif -%}
-                |
-              {%- endfor -%}
-            {%- endcapture -%}
-            {% assign referrers = referrersString | split: '|' %}
-            via {{ referrers | join: " or " }}
+    ">
+    {% assign sortedOpts = section.options | rankSort: "name" %}
+    {% for opt in sortedOpts %}
+      {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
+      <div>
+        <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if opt.selected %}checked{% endif %}>
+        <label for="{{optId}}"
+        {%- if section.name == "city" %}
+          translate="no"
+        {%- endif -%}
+        >{{opt.label}}</label>
+      </div>
+    {% endfor %}
+    </div>
+  </fieldset>
+  {% endfor %}
+
+  <div class="form_controls">
+    <input type="submit" id="filter-submit" class="btn btn_primary noprint" value="{{updateButtonStr}}"/>
+  </div>
+</form>
+</section>
+
+<section id="results" class="anchor_context" aria-label="Shelter Results">
+  <div class="align-right flex stack-reversed">
+    <p class="noprint bold">
+      {{num_results_snippet}}
+    </p>
+    <div class="grow_1">
+      {% if num_results > 0 %}
+        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/protected/resources/shelter/table?{{query | queryString}}">
+          Show printable summary
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  {% if num_filters_applied > 0 %}
+    <p class="noprint collapse_top">To save this search, bookmark this page or <a href="javascript:CopyUrl();">copy the URL</a> <span id="copy-url-done" hidden>&#10003;</span></p>
+  {% endif %}
+    <p>
+      <a href="/resources/shelter/feedback" class="noprint">Report an error</a>
+    </p>
+
+  <div class="flex results_container">
+    <div id="map-toggle" class="noprint hidden">
+      <button type="button" class="btn btn_secondary">Show Map</button>
+    </div>
+    <div id="list-container">
+      <ul class="results_list" aria-label="Results List">
+        {% for shelter in shelters %}
+        <li id="property-{{shelter.id}}">
+          <h2 translate="no">{{ shelter.title }}</h2>
+          {% if shelter.organization and shelter.organization != '' %}
+            <p class="subtitle">
+              provided by {{ shelter.organization }}
+            </p>
           {% endif %}
-      </p>
-    {% endif %}
-    {% comment %}
-    TODO: add min/max ages
-    {% endcomment %}
-    {% assign hasClientMaxAge = shelter['Client Max Age'] and shelter['Client Max Age'] != '' %}
-    {% assign hasClientMinAge = shelter['Client Min Age'] and shelter['Client Min Age'] != '' %}
-    {% assign hasDependentMaxAge = shelter['Dependent Max Age'] and shelter['Dependent Max Age'] != '' %}
-    {% assign hasDependentMinAge = shelter['Dependent Min Age'] and shelter['Dependent Min Age'] != '' %}
+          {% if shelter.populationsServed.length > 0 %}
+            {% assign populationsServed = shelter.populationsServed | uniq | sort %}
+            <p>
+              {% for population in populationsServed %}
+                <span class="badge">{{ population }}</span>
+              {% endfor %}
+            </p>
+          {% endif %}
+          {% if shelter.description and shelter.description != '' %}
+            <p class="description">
+              {{ shelter.description }}
+            </p>
+          {% endif %}
+          {% capture mapUrl %}
+          https://maps.google.com/maps?q={{ shelter.address | url_encode}}+{{ shelter.city | url_encode}},+CA
+          {% endcapture %}
+          {% if shelter.address and shelter.address != '' %}
+            <p class="contact">
+            <span translate="no">{{ shelter.address }}{% if shelter.city and shelter.city != '' %}, {{ shelter.city }}{% endif %}{% if shelter.zip and shelter.zip != '' %} {{ shelter.zip }}{% endif %}</span>
+              <span class="map_link_container noprint nowrap">
+                (<button type="button" class="map_link link hidden" aria-label="Highlight {{ shelter.title }} on map">Show on map</button><span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ shelter.title }} on Google Maps">map</a><sup>&#8599;</sup></span>)
+              </span>
+            </p>
+          {% endif %}
+          {% if shelter.email and shelter.email != '' %}
+            <p class="contact" translate="no">
+              <a href="mailto:{{ shelter.email | downcase }}" target="_blank" rel="noopener">{{ shelter.email | downcase }}</a>
+            </p>
+          {% endif %}
+          {% if shelter.phone and shelter.phone != '' %}
+            <p class="contact">
+              {% assign formattedPhone = shelter.phone | formatPhone %}
+              <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
+            </p>
+          {% endif %}
+          {% if shelter.website and shelter.website != '' %}
+            <p class="contact">
+              <a href="{{ shelter.website }}" target="_blank" rel="noopener" aria-label="Website for {{ shelter.website }}">View shelter website</a><sup>&#8599;</sup>
+            </p>
+          {% endif %}
+          {% if shelter.access and shelter.access != '' %}
+            <p class="contact">
+              <span class="bold">Shelter access:</span> {{ shelter.access }}
+                {% comment %}
+                TODO: Make referrers into links (phone numbers and websites), likely by
+                converting the relevant airtable field to a linked field and having
+                referrer records
+                {% endcomment %}
+                {% if shelter.referrers and shelter.referrers.length > 0 %}
+                  {% capture referrersString %}
+                    {%- for referrer in shelter.referrers -%}
+                      {%- if referrer.link and referrer.link != '' -%}
+                        <a target="_blank" rel="noopener" href="{{ referrer.link }}">{{ referrer.name }}</a>
+                      {%- else -%}
+                        {{ referrer.name }}
+                      {%- endif -%}
+                      |
+                    {%- endfor -%}
+                  {%- endcapture -%}
+                  {% assign formattedReferrers = referrersString | split: '|' %}
+                  via {{ formattedReferrers | join: " or " }}
+                {% endif %}
+            </p>
+          {% endif %}
+          {% comment %}
+          TODO: add min/max ages
+          {% endcomment %}
+          {% assign hasClientMaxAge = shelter.clientMaxAge and shelter.clientMaxAge != '' %}
+          {% assign hasClientMinAge = shelter.clientMinAge and shelter.clientMinAge != '' %}
+          {% assign hasDependentMaxAge = shelter.dependentMaxAge and shelter.dependentMaxAge != '' %}
+          {% assign hasDependentMinAge = shelter.dependentMinAge and shelter.dependentMinAge != '' %}
 
-    {% if hasClientMaxAge or hasClientMinAge %}
-      {%- capture clientAgeRangeStr -%}
-        {%- if hasClientMinAge and hasClientMaxAge %}
-          {{shelter['Client Min Age']}} - {{shelter['Client Max Age']}} years
-        {%- elsif hasClientMinAge %}
-          {{shelter['Client Min Age']}}+ years
-        {%- elsif hasClientMaxAge %}
-          {{shelter['Client Max Age']}} years and under
-        {%- endif -%}
-      {%- endcapture -%}
-      <p class="contact">
-        <span class="bold">Client age limit:</span> {{ clientAgeRangeStr }}
-      </p>
-    {% endif %}
+          {% if hasClientMaxAge or hasClientMinAge %}
+            {%- capture clientAgeRangeStr -%}
+              {%- if hasClientMinAge and hasClientMaxAge %}
+                {{shelter.clientMinAge}} - {{shelter.clientMaxAge}} years
+              {%- elsif hasClientMinAge %}
+                {{shelter.clientMinAge}}+ years
+              {%- elsif hasClientMaxAge %}
+                {{shelter.clientMaxAge}} years and under
+              {%- endif -%}
+            {%- endcapture -%}
+            <p class="contact">
+              <span class="bold">Client age limit:</span> {{ clientAgeRangeStr }}
+            </p>
+          {% endif %}
 
-    {% if hasDependentMaxAge or hasDependentMinAge %}
-      {%- capture dependentAgeRangeStr -%}
-        {%- if hasDependentMinAge and hasDependentMaxAge %}
-          {{shelter['Dependent Min Age']}} - {{shelter['Dependent Max Age']}} years
-        {%- elsif hasDependentMinAge %}
-          {{shelter['Dependent Min Age']}}+ years
-        {%- elsif hasDependentMaxAge %}
-          {{shelter['Dependent Max Age']}} years and under
-        {%- endif -%}
-      {%- endcapture -%}
-      <p class="contact">
-        <span class="bold">Accompanying child age limit:</span> {{ dependentAgeRangeStr }}
-      </p>
-    {% endif %}
-  </li>
-{% endfor %}
-</ul>
+          {% if hasDependentMaxAge or hasDependentMinAge %}
+            {%- capture dependentAgeRangeStr -%}
+              {%- if hasDependentMinAge and hasDependentMaxAge %}
+                {{shelter.dependentMinAge}} - {{shelter.dependentMaxAge}} years
+              {%- elsif hasDependentMinAge %}
+                {{shelter.dependentMinAge}}+ years
+              {%- elsif hasDependentMaxAge %}
+                {{shelter.dependentMaxAge}} years and under
+              {%- endif -%}
+            {%- endcapture -%}
+            <p class="contact">
+              <span class="bold">Accompanying child age limit:</span> {{ dependentAgeRangeStr }}
+            </p>
+          {% endif %}
+        </li>
+      {% endfor %}
+        {% if num_results == 0 %}
+          <li class="no_results">
+            Try changing the filter options above to broaden your search and see more results.
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+    <div id="map-container" class="map_container hidden">
+      <div class="split_right_container">
+        <div id="map"></div>
+        <div id="map-legend"></div>
+        <p class="attribution align-right">Transit data provided by <a href=http://www.511.org target="_blank" rel="noopener">511.org</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
 <div>
 <p>
   This shelter list is compiled by volunteers from The United Effort Organization. We strive to be as accurate as possible, but always confirm details with the shelter or referring group.
 </p>
 </div>
+
+<script>
+  const markerLocations = [
+  {%- for shelter in shelters -%}
+    {%- assign coords = shelter | getValidatedLocCoords -%}
+    {%- if coords -%}
+      {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{shelter.id}}"},
+    {%- endif -%}
+  {%- endfor -%}
+  ];
+</script>

@@ -11,7 +11,7 @@ th {
 th,
 td {
   padding: 0.2em 1em;
-  border-bottom: solid 1px var(--color-gray-900);
+  border-bottom: solid 1px var(--color-gray-700);
 }
 
 th[scope=colgroup] {
@@ -80,6 +80,19 @@ table.sortable th.sorttable_sorted_reverse::after {
 #affordable-housing-table-tracker td.received_by {
   min-width: 17em;
   max-width: 17em;
+}
+
+table#shelter-table-summary {
+  font-size: 0.6em;
+  table-layout: fixed;
+  width: 100%;
+}
+
+table#shelter-table-summary td,
+table#shelter-table-summary th {
+  padding: 0.2em 0.5em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 

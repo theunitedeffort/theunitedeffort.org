@@ -186,6 +186,7 @@ const fetchShelterRecords = async () => {
   const table = base(RESOURCES_TABLE);
   return table.select({
     fields: [
+      'This Record ID',
       'Title',
       'Organization',
       'Description',
@@ -202,6 +203,8 @@ const fetchShelterRecords = async () => {
       'Dependent Min Age',
       'Dependent Max Age',
       'URL',
+      'Loc Coords',
+      'Verified Loc Coords',
     ],
     filterByFormula: 'and({Category} = "Shelter", {Display} = "Level 2")',
   })
@@ -213,10 +216,12 @@ const fetchShelterRecords = async () => {
         // TODO: filter by "show on website" or some other publish status.
         if (record.get('Title')) {
           shelters.push({
+            id: record.get('This Record ID'),
             title: record.get('Title'),
             organization: record.get('Organization'),
-            address: record.get('Address'),
-            city: record.get('City'),
+            description: record.get('Description'),
+            address: record.get('Address') || "",
+            city: record.get('City') || "",
             zip: record.get('ZIP Code'),
             phone: record.get('Phone'),
             website: record.get('URL'),
@@ -228,6 +233,8 @@ const fetchShelterRecords = async () => {
             dependentMaxAge: record.get('Dependent Max Age'),
             access: record.get('Access'),
             referrerIds: record.get('Referrers') || [],
+            locCoords: record.get('Loc Coords'),
+            verifiedLocCoords: record.get('Verified Loc Coords'),
           });
         }
       });
@@ -236,7 +243,7 @@ const fetchShelterRecords = async () => {
 };
 
 const compiledData = async () => {
-  console.log('Fetching apartment and units data.');
+  console.log('Fetching apartment, units, shelter, and referrers data.');
   const [apartments, units, shelters, referrers] = await Promise.all([
     fetchApartmentRecords(),
     fetchUnitRecords(),
@@ -255,7 +262,6 @@ const compiledData = async () => {
   for (const shelter of shelters) {
     shelter.referrers = referrers.filter((r) => shelter.referrerIds.includes(r.id));
   }
-  console.log(shelters);
 
   // Pre-sort the list so that templates don't need to later.
   const sorted_apts = apartments.sort((a, b) => {
@@ -273,7 +279,22 @@ const compiledData = async () => {
   return {housing: sorted_apts, shelters: shelters}
 };
 
-const filterOptions = (housing) => {
+const shelterFilterOptions = (shelters) => {
+  const cities = [...new Set(shelters.map((s) => s.city).filter((c) => c))];
+  const allPopulationsServed = [...new Set(
+    shelters.map((s) => s.populationsServed).flat().filter((p) => p))];
+
+  const filterVals = [];
+  filterVals.push(new FilterSection('City', 'city',
+    cities.map((x) => new FilterCheckbox(x))));
+
+  filterVals.push(new FilterSection('Populations Served', 'populationsServed',
+    allPopulationsServed.map((x) => new FilterCheckbox(x))));
+
+  return filterVals;
+};
+
+const housingFilterOptions = (housing) => {
   const cities = [...new Set(housing.map((h) => h.city).filter((c) => c))];
   const openStatuses = [...new Set(
     housing.map((h) => h.units.map((u) => u.openStatus)).flat()
@@ -335,25 +356,28 @@ const filterOptions = (housing) => {
 module.exports = async function() {
   const asset = new AssetCache('affordable_housing_data');
   // This cache duration will only be used at build time.
-  let cacheDuration = '1s';
+  let cacheDuration = '1h';
   if (process.env.ELEVENTY_SERVERLESS) {
     // Use the serverless cache location specified in .eleventy.js
     asset.cacheDirectory = 'cache';
     cacheDuration = '*'; // Infinite duration (data refreshes at each build)
   }
   if (asset.isCacheValid(cacheDuration)) {
-    console.log('Returning cached housing and filter data.');
+    console.log('Returning cached housing, shelter, and filter data.');
     const data = await asset.getCachedValue();
     return data;
   }
 
   const compiled = await compiledData();
-  const filterVals = filterOptions(compiled.housing);
+  const housingFilterVals = housingFilterOptions(compiled.housing);
+  const shelterFilterVals = shelterFilterOptions(compiled.shelters);
 
   const data = {
-    filterValues: filterVals,
+    housingFilterValues: housingFilterVals,
     housingList: compiled.housing,
-    shelterList: compiled.shelters};
+    shelterFilterValues: shelterFilterVals,
+    shelterList: compiled.shelters,
+  };
 
   await asset.save(data, 'json');
   return data;
