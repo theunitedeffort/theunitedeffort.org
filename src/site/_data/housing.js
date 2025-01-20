@@ -198,6 +198,8 @@ const fetchShelterRecords = async () => {
       'Access',
       'Referrers',
       'Populations Served',
+      'Genders Allowed',
+      'Individual/Family',
       'Client Min Age',
       'Client Max Age',
       'Dependent Min Age',
@@ -227,6 +229,8 @@ const fetchShelterRecords = async () => {
             website: record.get('URL'),
             email: record.get('Email'),
             populationsServed: record.get('Populations Served') || [],
+            gendersAllowed: record.get('Genders Allowed'),
+            groupSizes: record.get('Individual/Family') || [],
             clientMinAge: record.get('Client Min Age'),
             clientMaxAge: record.get('Client Max Age'),
             dependentMinAge: record.get('Dependent Min Age'),
@@ -305,6 +309,9 @@ const shelterFilterOptions = (shelters) => {
   const cities = [...new Set(shelters.map((s) => s.city).filter((c) => c))];
   const allPopulationsServed = [...new Set(
     shelters.map((s) => s.populationsServed).flat().filter((p) => p))];
+  const genders = [...new Set(shelters.map((s) => s.gendersAllowed).filter((g) => g))];
+  const groupSizes = [...new Set(
+    shelters.map((s) => s.groupSizes).flat().filter((p) => p))];
 
   const filterVals = [];
   filterVals.push(new FilterSection('City', 'city',
@@ -312,6 +319,12 @@ const shelterFilterOptions = (shelters) => {
 
   filterVals.push(new FilterSection('Populations Served', 'populationsServed',
     allPopulationsServed.map((x) => new FilterCheckbox(x))));
+
+  filterVals.push(new FilterSection('Genders Allowed', 'gendersAllowed',
+    genders.map((x) => new FilterCheckbox(x))));
+
+  filterVals.push(new FilterSection('Group Size', 'groupSize',
+    groupSizes.map((x) => new FilterCheckbox(x))));
 
   return filterVals;
 };

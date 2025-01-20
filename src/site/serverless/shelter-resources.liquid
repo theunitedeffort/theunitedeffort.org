@@ -134,8 +134,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   {% assign filterValues = housing.shelterFilterValues | updateFilterState: query %}
 
   {% for section in filterValues %}
-  {% assign everyOther = forloop.index0 | modulo: 2 %}
-  <fieldset class="{%- if everyOther == 0 -%}narrow{%- else -%}wide{%- endif -%}">
+  <fieldset>
     <legend>{{section.heading}}</legend>
     <div class="option_columns
     {% if section.name == "populationsServed" %}

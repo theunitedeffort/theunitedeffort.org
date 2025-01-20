@@ -23,11 +23,11 @@ const SORT_RANKING = new Map([
   ['Adult Women', 5],
   ['Young Adults', 6],
   ['Young Adult Women', 7],
-  ['Families', 8],
-  ['Pregnant Women', 9],
-  ['Women With Children', 10],
-  ['Young Adult Families', 11],
-  ['Youth', 12],
+  ['Youth', 8],
+  ['Families', 9],
+  ['Young Adult Families', 10],
+  ['Pregnant Women', 11],
+  ['Women With Children', 12],
   ['Domestic Violence Survivors', 13],
   ['Domestic Violence Survivors With Children', 14],
   ['Developmentally Disabled', 15],
@@ -312,6 +312,8 @@ module.exports = function(eleventyConfig) {
       'populationsServed',
       'wheelchairAccessibleOnly',
       'excludeReferrals',
+      'gendersAllowed',
+      'groupSize',
     ];
     let count = 0;
     for (const key in query) {
@@ -744,6 +746,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode('querySummary', function(query) {
     // Copy the query so we don't modify it directly when making changes later.
     const queryCopy = JSON.parse(JSON.stringify(query));
+    // TODO: include gender filter
     // The includeUnknown(Rent|Income) parameters only apply if a rent or income
     // is supplied, so remove them if they do not apply.
     if (queryCopy['includeUnknownRent'] && !queryCopy['rentMax']) {
@@ -925,11 +928,29 @@ module.exports = function(eleventyConfig) {
       });
     }
 
+    if (query.gendersAllowed) {
+      const genders = query.gendersAllowed.split(', ');
+      shelterListCopy = shelterListCopy.filter((shelter) => {
+        return genders.includes(shelter.gendersAllowed);
+      });
+    }
+
     if (query.populationsServed) {
       const populations = query.populationsServed.split(', ');
       shelterListCopy = shelterListCopy.filter((shelter) => {
         for (const population of populations) {
           if (shelter.populationsServed.includes(population)) {
+            return true;
+          }
+        }
+      });
+    }
+
+    if (query.groupSize) {
+      const groupSizes = query.groupSize.split(', ');
+      shelterListCopy = shelterListCopy.filter((shelter) => {
+        for (const groupSize of groupSizes) {
+          if (shelter.groupSizes.includes(groupSize)) {
             return true;
           }
         }
