@@ -26,6 +26,7 @@ function FilterCheckbox(name, label, selected) {
 const fetchApartmentRecords = async () => {
   const apartments = [];
   const table = base(HOUSING_DATABASE_TABLE);
+
   return table.select({
     fields: [
       'DISPLAY_ID',
@@ -311,7 +312,8 @@ const shelterFilterOptions = (shelters) => {
   const cities = [...new Set(shelters.map((s) => s.city).filter((c) => c))];
   const allPopulationsServed = [...new Set(
     shelters.map((s) => s.populationsServed).flat().filter((p) => p))];
-  const genders = [...new Set(shelters.map((s) => s.genderRestriction).filter((g) => g))];
+  const genderRestrictions = [
+    ...new Set(shelters.map((s) => s.genderRestriction).filter((g) => g))];
   const groupSizes = [...new Set(
     shelters.map((s) => s.groupSizes).flat().filter((p) => p))];
 
@@ -323,7 +325,7 @@ const shelterFilterOptions = (shelters) => {
     allPopulationsServed.map((x) => new FilterCheckbox(x))));
 
   filterVals.push(new FilterSection('Gender Restriction', 'genderRestriction',
-    genders.map((x) => new FilterCheckbox(x))));
+    genderRestrictions.map((x) => new FilterCheckbox(x))));
 
   filterVals.push(new FilterSection('Group Size', 'groupSize',
     groupSizes.map((x) => new FilterCheckbox(x))));

@@ -50,7 +50,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
 
 {% comment %} TODO: actually check results for closed waitlists {% endcomment %}
 {% if query.availability == nil or query.availability == "" or query.availability contains "Waitlist Closed" %}
-  {% assign availabilities = housing.filterValues | where: "name", "availability" %}
+  {% assign availabilities = housing.housingFilterValues | where: "name", "availability" %}
   {% assign availabilities = availabilities[0].options | map: "name" %}
   {% assign newQuery = query | removeWaitlistClosed: availabilities %}
   <p class="note">
