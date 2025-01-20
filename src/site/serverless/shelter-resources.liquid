@@ -212,6 +212,11 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
               {% endfor %}
             </p>
           {% endif %}
+          {% if shelter.genderRestriction and shelter.genderRestriction != '' %}
+            <p>
+              <span class="badge">{{ shelter.genderRestriction }}</span>
+            </p>
+          {% endif %}
           {% if shelter.description and shelter.description != '' %}
             <p class="description">
               {{ shelter.description }}
@@ -272,9 +277,12 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
                 {% endif %}
             </p>
           {% endif %}
-          {% comment %}
-          TODO: add min/max ages
-          {% endcomment %}
+          {% if shelter.groupSizes.length > 0 %}
+            {% assign groupSizes = shelter.groupSizes | sort %}
+            <p class="contact">
+              <span class="bold">Allows {{ groupSizes | join: " and " }} {% if groupSizes.size == 1 -%}only{%-endif-%} </span>
+            </p>
+          {% endif %}
           {% assign hasClientMaxAge = shelter.clientMaxAge and shelter.clientMaxAge != '' %}
           {% assign hasClientMinAge = shelter.clientMinAge and shelter.clientMinAge != '' %}
           {% assign hasDependentMaxAge = shelter.dependentMaxAge and shelter.dependentMaxAge != '' %}

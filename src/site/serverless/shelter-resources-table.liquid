@@ -34,13 +34,15 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
     <tr>
       <th style="width:8%;">Name<span class="noprint"> & Link</span></th>
       <th style="width:8%;">Provider</th>
-      <th style="width:32%;">Description</th>
+      <th>Description</th>
       <th style="width:8%;">Address</th>
       <th style="width:7%;" class="sorttable_sorted">City</th>
       <th style="width:10%;">Phone</th>
-      <th style="width:9%;">Email</th>
-      <th style="width:8%;">Access</th>
-      <th style="width:10%;">Populations Served</th>
+      <th style="width:7%;">Email</th>
+      <th style="width:7%;">Access</th>
+      <th style="width:7%;">Population Served</th>
+      <th style="width:5%;">Gender</th>
+      <th style="width:7%;">Group Size</th>
     </tr>
   </thead>
   <tbody>
@@ -66,6 +68,8 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
           {% endif %}
         </td>
         <td> {{ shelter.populationsServed | join: ", " }}</td>
+        <td> {{ shelter.genderRestriction }}</td>
+        <td> {{ shelter.groupSizes | join: ", " }}</td>
       </tr>
     {% endfor %}
   </tbody>

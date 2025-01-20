@@ -312,7 +312,7 @@ module.exports = function(eleventyConfig) {
       'populationsServed',
       'wheelchairAccessibleOnly',
       'excludeReferrals',
-      'gendersAllowed',
+      'genderRestriction',
       'groupSize',
     ];
     let count = 0;
@@ -746,7 +746,6 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode('querySummary', function(query) {
     // Copy the query so we don't modify it directly when making changes later.
     const queryCopy = JSON.parse(JSON.stringify(query));
-    // TODO: include gender filter
     // The includeUnknown(Rent|Income) parameters only apply if a rent or income
     // is supplied, so remove them if they do not apply.
     if (queryCopy['includeUnknownRent'] && !queryCopy['rentMax']) {
@@ -928,10 +927,10 @@ module.exports = function(eleventyConfig) {
       });
     }
 
-    if (query.gendersAllowed) {
-      const genders = query.gendersAllowed.split(', ');
+    if (query.genderRestriction) {
+      const genders = query.genderRestriction.split(', ');
       shelterListCopy = shelterListCopy.filter((shelter) => {
-        return genders.includes(shelter.gendersAllowed);
+        return genders.includes(shelter.genderRestriction);
       });
     }
 
