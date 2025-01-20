@@ -225,14 +225,14 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           {% capture mapUrl %}
           https://maps.google.com/maps?q={{ shelter.address | url_encode}}+{{ shelter.city | url_encode}},+CA
           {% endcapture %}
-          {% if shelter.address and shelter.address != '' %}
+          {% if shelter.address and shelter.address != '' and shelter.confidentialLoc == false %}
             <p class="contact">
             <span translate="no">{{ shelter.address }}{% if shelter.city and shelter.city != '' %}, {{ shelter.city }}{% endif %}{% if shelter.zip and shelter.zip != '' %} {{ shelter.zip }}{% endif %}</span>
               <span class="map_link_container noprint nowrap">
                 (<button type="button" class="map_link link hidden" aria-label="Highlight {{ shelter.title }} on map">Show on map</button><span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ shelter.title }} on Google Maps">map</a><sup>&#8599;</sup></span>)
               </span>
             </p>
-          {% else if shelter.city and shelter.city != '' %}
+          {% else if shelter.city and shelter.city != '' and shelter.confidentialLoc == false %}
             <p class="contact">
               {{ shelter.city }}
             </p>

@@ -207,6 +207,7 @@ const fetchShelterRecords = async () => {
       'URL',
       'Loc Coords',
       'Verified Loc Coords',
+      'Location is Confidential',
     ],
     filterByFormula: 'and({Category} = "Shelter", {Display} = "Level 2")',
   })
@@ -239,6 +240,7 @@ const fetchShelterRecords = async () => {
             referrerIds: record.get('Referrers') || [],
             locCoords: record.get('Loc Coords'),
             verifiedLocCoords: record.get('Verified Loc Coords'),
+            confidentialLoc: record.get('Location is Confidential'),
           });
         }
       });
