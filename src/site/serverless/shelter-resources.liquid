@@ -280,7 +280,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           {% if shelter.groupSizes.length > 0 %}
             {% assign groupSizes = shelter.groupSizes | sort %}
             <p class="contact">
-              <span class="bold">Allows {{ groupSizes | join: " and " }} {% if groupSizes.size == 1 -%}only{%-endif-%} </span>
+              <span class="bold">Allows {{ groupSizes | join: " and " | downcase }} {% if groupSizes.size == 1 -%}only{%-endif-%} </span>
             </p>
           {% endif %}
           {% assign hasClientMaxAge = shelter.clientMaxAge and shelter.clientMaxAge != '' %}
