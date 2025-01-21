@@ -279,8 +279,19 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           {% endif %}
           {% if shelter.groupSizes.length > 0 %}
             {% assign groupSizes = shelter.groupSizes | sort %}
+            {%- capture groupSizesString -%}
+              {%- for groupSize in groupSizes -%}
+                {%- if groupSize == "With family" -%}
+                  {{ groupSize | prepend: "clients " }}
+                {%- else if groupSize == "Individual" -%}
+                  {{ groupSize | append: "s" }}
+                {%- endif -%}
+                |
+              {%- endfor -%}
+            {%- endcapture -%}
+            {% assign formattedGroupSizes = groupSizesString | split: '|' %}
             <p class="contact">
-              <span class="bold">Allows {{ groupSizes | join: " and " | downcase }} {% if groupSizes.size == 1 -%}only{%-endif-%} </span>
+              <span class="bold">Allows {{ formattedGroupSizes | join: " and " | downcase }} {% if formattedGroupSizes.size == 1 -%}only{%-endif-%} </span>
             </p>
           {% endif %}
           {% assign hasClientMaxAge = shelter.clientMaxAge and shelter.clientMaxAge != '' %}
