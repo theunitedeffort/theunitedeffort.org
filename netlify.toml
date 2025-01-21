@@ -12,14 +12,14 @@ functions = "netlify/functions"
 command = 'sed -i "s|INJECTED_PASSWORD|${PRE_RELEASE_CONTENT_PASSWORD}|g" prod-headers && mkdir dist && cp prod-headers dist/_headers && npm run build'
 
 [[redirects]]
-from = "/protected/resources/shelter/table"
+from = "/resources/shelter/table"
 to = "/.netlify/functions/serverless"
 status = 200
 force = true
 _generated_by_eleventy_serverless = "serverless"
 
 [[redirects]]
-from = "/protected/resources/shelter/filter"
+from = "/resources/shelter/filter"
 to = "/.netlify/functions/serverless"
 status = 200
 force = true

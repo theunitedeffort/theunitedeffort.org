@@ -2,8 +2,8 @@
 layout: layouts/base.liquid
 title: Find Shelter
 permalink:
-  build: "/protected/resources/shelter/index.html"
-  serverless: "/protected/resources/shelter/filter"
+  build: "/resources/shelter/index.html"
+  serverless: "/resources/shelter/filter"
 pageClass: "page-resources"
 pageHead: '<script src="/js/accessibility.js" defer></script>
   <script src="/js/transit.js" defer></script>
@@ -125,12 +125,12 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 </p>
 {% else %}
 <p class="noprint">
-{{num_filters_applied}} {{num_filters_applied | pluralize: "filter is", "filters are"}} applied. <a href="/protected/resources/shelter">Clear filters</a>
+{{num_filters_applied}} {{num_filters_applied | pluralize: "filter is", "filters are"}} applied. <a href="/resources/shelter">Clear filters</a>
 </p>
 {% endif %}
 
 <section aria-label="Shelter Filter Options">
-<form action="/protected/resources/shelter/filter" action="get" id="shelter-search" class="shelter_search" onsubmit="ShowLoading();">
+<form action="/resources/shelter/filter" action="get" id="shelter-search" class="shelter_search" onsubmit="ShowLoading();">
   {% assign filterValues = housing.shelterFilterValues | updateFilterState: query %}
 
   {% for section in filterValues %}
@@ -177,7 +177,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     </p>
     <div class="grow_1">
       {% if num_results > 0 %}
-        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/protected/resources/shelter/table?{{query | queryString}}">
+        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/resources/shelter/table?{{query | queryString}}">
           Show printable summary
         </a>
       {% endif %}

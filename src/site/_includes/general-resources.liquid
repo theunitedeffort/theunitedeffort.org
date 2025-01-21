@@ -17,7 +17,7 @@
       {% assign subcategoryLinks = links | whereIncluded: "Subcategory", subcategory %}
       <h3>{{subcategory}}</h3>
     {% endif %}
-    <ul>
+    <ul class="collapse_margins">
       {% for link in subcategoryLinks %}
         {% if link.Markdown %}
           <li>{{ link.Markdown | markdownify }}</li>
