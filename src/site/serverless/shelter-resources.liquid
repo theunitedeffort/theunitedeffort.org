@@ -269,6 +269,10 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
                       {%- else -%}
                         {{ referrer.name }}
                       {%- endif -%}
+                      {%- if referrer.phone and referrer.phone != '' %}
+                        {% assign formattedPhone = referrer.phone | formatPhone %}
+                        (<a target="_blank" rel="noopener" href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{ formattedPhone }}</a>)
+                      {%- endif -%}
                       |
                     {%- endfor -%}
                   {%- endcapture -%}

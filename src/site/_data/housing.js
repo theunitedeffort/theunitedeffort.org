@@ -164,6 +164,7 @@ const fetchReferrerRecords = async () => {
     fields: [
       'Name',
       'Link',
+      'Phone',
       'This Record ID',
     ],
   })
@@ -175,6 +176,7 @@ const fetchReferrerRecords = async () => {
             id: record.get('This Record ID'),
             name: record.get('Name'),
             link: record.get('Link'),
+            phone: record.get('Phone'),
           });
         }
       });
