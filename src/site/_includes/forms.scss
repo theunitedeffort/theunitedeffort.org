@@ -362,6 +362,10 @@
       columns: 8em 3;
     }
 
+    .option_columns + div {
+      margin-top: 0.6em;
+    }
+
     form.contact_us {
       display: block;
       input,

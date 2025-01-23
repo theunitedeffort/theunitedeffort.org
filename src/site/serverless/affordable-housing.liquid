@@ -129,7 +129,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 <section aria-label="Housing Filter Options">
 <form action="/housing/affordable-housing/filter" action="get" id="housing-search" class="housing_search" onsubmit="ShowLoading();">
 
-  {% assign filterValues = housing.filterValues | updateFilterState: query %}
+  {% assign filterValues = housing.housingFilterValues | updateFilterState: query %}
 
   {% for section in filterValues %}
   <fieldset>
@@ -321,7 +321,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
 </div>
 
 <script>
-  const aptLocations = [
+  const markerLocations = [
   {%- for apartment in housingdb -%}
     {%- assign coords = apartment | getValidatedLocCoords -%}
     {%- if coords -%}

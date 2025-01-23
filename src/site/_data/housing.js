@@ -5,6 +5,8 @@ const base = new Airtable(
 
 const UNITS_TABLE = 'tblRtXBod9CC0mivK';
 const HOUSING_DATABASE_TABLE = 'tbl8LUgXQoTYEw2Yh';
+const RESOURCES_TABLE = 'tblyp7AurXeZEIW4J';
+const REFERRERS_TABLE = 'tblRBvQCTQDsp989R';
 const HIGH_CAPACITY_UNIT = 4; // Bedrooms
 
 // A group of checkboxes for filtering housing results.
@@ -155,18 +157,124 @@ const fetchUnitRecords = async () => {
     });
 };
 
-const housingData = async () => {
-  console.log('Fetching apartment and units data.');
-  const [apartments, units] = await Promise.all(
-    [fetchApartmentRecords(), fetchUnitRecords()]);
-  console.log(`got ${apartments.length} apartments and ${units.length} units.`);
+const fetchReferrerRecords = async () => {
+  const referrers = [];
+  const table = base(REFERRERS_TABLE);
+  return table.select({
+    fields: [
+      'Name',
+      'Link',
+      'Phone',
+      'This Record ID',
+    ],
+  })
+    .all()
+    .then((records) => {
+      records.forEach(function(record) {
+        if (record.get('Name')) {
+          referrers.push({
+            id: record.get('This Record ID'),
+            name: record.get('Name'),
+            link: record.get('Link'),
+            phone: record.get('Phone'),
+          });
+        }
+      });
+      return referrers;
+    });
+};
+
+const fetchShelterRecords = async () => {
+  const shelters = [];
+  const table = base(RESOURCES_TABLE);
+  return table.select({
+    fields: [
+      'This Record ID',
+      'Show on website',
+      'Title',
+      'Organization',
+      'Description',
+      'Address',
+      'City',
+      'ZIP Code',
+      'Phone',
+      'Email',
+      'Access',
+      'Referrers',
+      'Populations Served',
+      'Gender Restriction',
+      'Individual/Family',
+      'Client Min Age',
+      'Client Max Age',
+      'Dependent Min Age',
+      'Dependent Max Age',
+      'URL',
+      'Loc Coords',
+      'Verified Loc Coords',
+      'Location is Confidential',
+    ],
+    filterByFormula: 'and({Category} = "Shelter", {Display} = "Level 2")',
+  })
+    .all()
+    .then((records) => {
+      records.forEach(function(record) {
+        // Only take shelters that have a title and have been marked for
+        // publication. (i.e. not a draft)
+        if (record.get('Title') && record.get('Show on website')) {
+          shelters.push({
+            id: record.get('This Record ID'),
+            title: record.get('Title'),
+            organization: record.get('Organization'),
+            description: record.get('Description'),
+            address: record.get('Address'),
+            city: record.get('City'),
+            zip: record.get('ZIP Code'),
+            phone: record.get('Phone'),
+            website: record.get('URL'),
+            email: record.get('Email'),
+            populationsServed: record.get('Populations Served') || [],
+            genderRestriction: record.get('Gender Restriction'),
+            groupSizes: record.get('Individual/Family') || [],
+            clientMinAge: record.get('Client Min Age'),
+            clientMaxAge: record.get('Client Max Age'),
+            dependentMinAge: record.get('Dependent Min Age'),
+            dependentMaxAge: record.get('Dependent Max Age'),
+            access: record.get('Access'),
+            referrerIds: record.get('Referrers') || [],
+            locCoords: record.get('Loc Coords'),
+            verifiedLocCoords: record.get('Verified Loc Coords'),
+            confidentialLoc: record.get('Location is Confidential'),
+          });
+        }
+      });
+      return shelters;
+    });
+};
+
+const compiledData = async () => {
+  console.log('Fetching apartment, units, shelter, and referrers data.');
+  const [apartments, units, shelters, referrers] = await Promise.all([
+    fetchApartmentRecords(),
+    fetchUnitRecords(),
+    fetchShelterRecords(),
+    fetchReferrerRecords(),
+  ]);
+  console.log(`got ${apartments.length} apartments, ${units.length} units, ` +
+    `${shelters.length} shelters, and ${referrers.length} referrers`);
 
   // Add the associated units to each apartment
   for (const apartment of apartments) {
     apartment.units = units.filter((u) => u.parent_id === apartment.id);
   }
-  // Pre-sort the list so that templates don't need to later.
-  return apartments.sort((a, b) => {
+
+  // Add the associated referrers to each shelter
+  for (const shelter of shelters) {
+    shelter.referrers = referrers.filter(
+      (r) => shelter.referrerIds.includes(r.id));
+  }
+
+  // Pre-sort the lists so that templates don't need to later.
+  const sortedApts = apartments.sort((a, b) => {
     const nameA = a.aptName.toLowerCase();
     const nameB = b.aptName.toLowerCase();
     if (nameA < nameB) {
@@ -177,9 +285,57 @@ const housingData = async () => {
     }
     return 0;
   });
+
+  const sortedShelters = shelters.sort((a, b) => {
+    // I mean, it works.
+    const cityA = a.city ? a.city.toLowerCase() : 'zzz';
+    const cityB = b.city ? b.city.toLowerCase() : 'zzz';
+    const nameA = a.title.toLowerCase();
+    const nameB = b.title.toLowerCase();
+    if (cityA < cityB) {
+      return -1;
+    }
+    if (cityA > cityB) {
+      return 1;
+    } else {
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    }
+  });
+  return {housing: sortedApts, shelters: sortedShelters};
 };
 
-const filterOptions = (housing) => {
+const shelterFilterOptions = (shelters) => {
+  const cities = [...new Set(shelters.map((s) => s.city).filter((c) => c))];
+  const allPopulationsServed = [...new Set(
+    shelters.map((s) => s.populationsServed).flat().filter((p) => p))];
+  const genderRestrictions = [
+    ...new Set(shelters.map((s) => s.genderRestriction).filter((g) => g))];
+  const groupSizes = [...new Set(
+    shelters.map((s) => s.groupSizes).flat().filter((p) => p))];
+
+  const filterVals = [];
+  filterVals.push(new FilterSection('City', 'city',
+    cities.map((x) => new FilterCheckbox(x))));
+
+  filterVals.push(new FilterSection('Populations Served', 'populationsServed',
+    allPopulationsServed.map((x) => new FilterCheckbox(x))));
+
+  filterVals.push(new FilterSection('Gender Restriction', 'genderRestriction',
+    genderRestrictions.map((x) => new FilterCheckbox(x))));
+
+  filterVals.push(new FilterSection('Group Size', 'groupSize',
+    groupSizes.map((x) => new FilterCheckbox(x))));
+
+  return filterVals;
+};
+
+const housingFilterOptions = (housing) => {
   const cities = [...new Set(housing.map((h) => h.city).filter((c) => c))];
   const openStatuses = [...new Set(
     housing.map((h) => h.units.map((u) => u.openStatus)).flat()
@@ -248,15 +404,21 @@ module.exports = async function() {
     cacheDuration = '*'; // Infinite duration (data refreshes at each build)
   }
   if (asset.isCacheValid(cacheDuration)) {
-    console.log('Returning cached housing and filter data.');
+    console.log('Returning cached housing, shelter, and filter data.');
     const data = await asset.getCachedValue();
     return data;
   }
 
-  const housing = await housingData();
-  const filterVals = filterOptions(housing);
+  const compiled = await compiledData();
+  const housingFilterVals = housingFilterOptions(compiled.housing);
+  const shelterFilterVals = shelterFilterOptions(compiled.shelters);
 
-  const data = {filterValues: filterVals, housingList: housing};
+  const data = {
+    housingFilterValues: housingFilterVals,
+    housingList: compiled.housing,
+    shelterFilterValues: shelterFilterVals,
+    shelterList: compiled.shelters,
+  };
 
   await asset.save(data, 'json');
   return data;

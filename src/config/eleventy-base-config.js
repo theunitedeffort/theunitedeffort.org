@@ -18,9 +18,11 @@ const SORT_RANKING = new Map([
   // Populations Served
   ['General Population', 1],
   ['Seniors', 2],
-  ['Youth', 3],
-  ['Developmentally Disabled', 4],
-  ['Physically Disabled', 5],
+  ['Adults', 3],
+  ['Young Adults', 4],
+  ['Youth', 5],
+  ['Developmentally Disabled', 6],
+  ['Physically Disabled', 7],
 ]);
 
 module.exports = function(eleventyConfig) {
@@ -300,6 +302,8 @@ module.exports = function(eleventyConfig) {
       'populationsServed',
       'wheelchairAccessibleOnly',
       'excludeReferrals',
+      'genderRestriction',
+      'groupSize',
     ];
     let count = 0;
     for (const key in query) {
@@ -740,6 +744,9 @@ module.exports = function(eleventyConfig) {
     if (queryCopy['includeUnknownIncome'] && !queryCopy['income']) {
       delete queryCopy['includeUnknownIncome'];
     }
+    if (queryCopy['includeUnknownCity'] && !queryCopy['city']) {
+      delete queryCopy['includeUnknownCity'];
+    }
     const filtersApplied = [];
     for (const parameter in queryCopy) {
       if (Object.hasOwn(queryCopy, parameter)) {
@@ -895,6 +902,51 @@ module.exports = function(eleventyConfig) {
     // Some properties may have had all their associated units filtered out,
     // so remove those before returning the final list of filtered properties.
     return housingListCopy.filter((a) => a.units.length);
+  });
+
+  eleventyConfig.addFilter('filterSheltersByQuery', function(shelterList, query) {
+    query = query || '';
+    console.log(query);
+    let shelterListCopy = JSON.parse(JSON.stringify(shelterList));
+
+    if (query.city) {
+      const cities = query.city.split(', ');
+      shelterListCopy = shelterListCopy.filter((shelter) => {
+        return ((query.includeUnknownCity && !shelter.city) ||
+          cities.includes(shelter.city));
+      });
+    }
+
+    if (query.genderRestriction) {
+      const genders = query.genderRestriction.split(', ');
+      shelterListCopy = shelterListCopy.filter((shelter) => {
+        return genders.includes(shelter.genderRestriction);
+      });
+    }
+
+    if (query.populationsServed) {
+      const populations = query.populationsServed.split(', ');
+      shelterListCopy = shelterListCopy.filter((shelter) => {
+        for (const population of populations) {
+          if (shelter.populationsServed.includes(population)) {
+            return true;
+          }
+        }
+      });
+    }
+
+    if (query.groupSize) {
+      const groupSizes = query.groupSize.split(', ');
+      shelterListCopy = shelterListCopy.filter((shelter) => {
+        for (const groupSize of groupSizes) {
+          if (shelter.groupSizes.includes(groupSize)) {
+            return true;
+          }
+        }
+      });
+    }
+
+    return shelterListCopy;
   });
 
   eleventyConfig.addFilter('formatPhone', function(phoneStr) {

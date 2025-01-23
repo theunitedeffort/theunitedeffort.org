@@ -1,0 +1,365 @@
+---
+layout: layouts/base.liquid
+title: Find Shelter
+permalink:
+  build: "/resources/shelter/index.html"
+  serverless: "/resources/shelter/filter"
+pageClass: "page-resources"
+pageHead: '<script src="/js/accessibility.js" defer></script>
+  <script src="/js/transit.js" defer></script>
+  <script src="/js/affordable-housing-map.js" defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA17udd4ePocbxKrOkHiMhSUHlvf3daZMs&callback=initMap&v=weekly" defer></script>'
+---
+{% comment %}
+TODO: reduce this duplicated code (taken from affordable-housing.liquid)
+{% endcomment %}
+{% assign updateButtonStr = "Update results" %}
+{% assign query = eleventy.serverless.query %}
+{% assign summaryProps = "type,openStatus" | split: "," %}
+{% assign shelters = housing.shelterList | filterSheltersByQuery: query %}
+{% assign num_results = shelters | size %}
+{% assign num_filters_applied = query | numFiltersApplied %}
+{% capture num_results_snippet %}
+  Showing {% if num_filters_applied == 0 %}all {% endif %}{{num_results}} {{num_results | pluralize: "shelter", "shelters"}}
+{% endcapture %}
+
+{% comment %}
+There is some startup time associated with a Netlify serverless function,
+so go ahead and fire it up now in preparation for a user's housing search.
+The function should still be 'warm' if the user executes a search in a
+reasonable timeframe.
+{% endcomment %}
+{% unless eleventy.serverless %}
+  <link rel="prefetch" href="/.netlify/functions/serverless">
+{% endunless %}
+
+<script>
+function CopyUrl() {
+  navigator.clipboard.writeText(window.location.href);
+  document.getElementById("copy-url-done").removeAttribute("hidden");
+  return false;
+}
+
+// Show a loading message by changing the submit button to say "Loading..."
+function ShowLoading() {
+  let submitButton = document.getElementById("filter-submit");
+  submitButton.value = "Loading...";
+  submitButton.disabled = "disabled";
+}
+
+function HideLoading() {
+  let submitButton = document.getElementById("filter-submit");
+  submitButton.value = "{{updateButtonStr}}";
+  submitButton.removeAttribute("disabled");
+}
+
+function ResetForm() {
+  document.getElementById("shelter-search").reset();
+}
+
+// Show a hidden checkbox with id optionId depending on the value of inputId.
+function ToggleHiddenOption(optionId, inputName) {
+  const option = document.getElementById(optionId);
+  const inputs = document.querySelectorAll(`[name="${inputName}"]`);
+  let doShow = false;
+  for (input of inputs) {
+    if (input.checked) {
+      doShow = true;
+      break;
+    }
+  }
+  if (doShow) {
+    option.parentElement.removeAttribute("hidden");
+  } else {
+    option.parentElement.setAttribute("hidden", "hidden");
+  }
+}
+
+function ToggleCityOption() {
+  ToggleHiddenOption("include-unknown-city", "city");
+}
+
+// If the filtering form GETs the results page's url with
+// the anchor hash (e.g. action="/affordable-housing/filter#results")
+// then the form submission button will be disabled and the
+// page will not reload if the user clicks on the submit button
+// without first changing the filter state.  So, to force a
+// page reload every time, have the form GET e.g.
+// /affordable-housing/filter and manually scroll to the anchor
+// after the page loads.  Also ensure the rent and income checkboxes
+// are shown if those fields are filled.
+{% if num_filters_applied > 0 %}
+function OnDomLoad() {
+  ToggleCityOption();
+  location.hash = "#results";
+}
+document.addEventListener("DOMContentLoaded", function() {
+  OnDomLoad();
+});
+{% endif %}
+
+function OnPageShow() {
+  // When the user departs the page by applying filters, the submit
+  // button text changes to a loading message.  Ensure that loading
+  // message is gone if the user returns to the page via the back
+  // navigation arrow.  Also ensure any filter options that were selected
+  // prior to navigating away are cleared when navigating back.
+  HideLoading();
+  ResetForm();
+  ToggleCityOption();
+}
+
+window.onpageshow = function() {OnPageShow()};
+
+</script>
+
+<h1>{{title}}
+<span class="subtitle">In Santa Clara County</span></h1>
+
+<p class="noprint bold">
+{{num_results_snippet}}
+</p>
+{% if num_filters_applied == 0 %}
+<p>
+Narrow your search with the filter options below or <a href="#results">scroll</a> to the full list of shelters
+</p>
+{% else %}
+<p class="noprint">
+{{num_filters_applied}} {{num_filters_applied | pluralize: "filter is", "filters are"}} applied. <a href="/resources/shelter">Clear filters</a>
+</p>
+{% endif %}
+
+<section aria-label="Shelter Filter Options">
+<form action="/resources/shelter/filter" action="get" id="shelter-search" class="shelter_search" onsubmit="ShowLoading();">
+  {% assign filterValues = housing.shelterFilterValues | updateFilterState: query %}
+
+  {% for section in filterValues %}
+  <fieldset>
+    <legend>{{section.heading}}</legend>
+    <div class="option_columns
+    {% if section.name == "populationsServed" %}
+      wide
+    {% endif %}
+    ">
+    {% assign sortedOpts = section.options | rankSort: "name" %}
+    {% for opt in sortedOpts %}
+      {% assign optId = section.name | append : '-' | append: opt.name | downcase | replace: ' ', '-' %}
+      <div>
+        <input type="checkbox" id="{{optId}}" value="{{opt.name}}" name="{{section.name}}" {% if section.name == "city" %}oninput="ToggleCityOption();"{% endif %} {% if opt.selected %}checked{% endif %}>
+        <label for="{{optId}}"
+        {%- if section.name == "city" %}
+          translate="no"
+        {%- endif -%}
+        >{{opt.label}}</label>
+      </div>
+    {% endfor %}
+    </div>
+    {% if section.name == "city" %}
+      <div id="include-unknown-city-container" hidden>
+        <input type="checkbox" id="include-unknown-city" name="includeUnknownCity"
+        {% if num_filters_applied == 0 or query.includeUnknownCity == "on" %}checked{% endif %}>
+        <label for="include-unknown-city">Include shelters with no listed address</label>
+      </div>
+    {% endif %}
+  </fieldset>
+  {% endfor %}
+
+  <div class="form_controls">
+    <input type="submit" id="filter-submit" class="btn btn_primary noprint" value="{{updateButtonStr}}"/>
+  </div>
+</form>
+</section>
+
+<section id="results" class="anchor_context" aria-label="Shelter Results">
+  <div class="align-right flex stack-reversed">
+    <p class="noprint bold">
+      {{num_results_snippet}}
+    </p>
+    <div class="grow_1">
+      {% if num_results > 0 %}
+        <a class="btn btn_secondary noprint btn_print " title="Get printable summary of results" href="/resources/shelter/table?{{query | queryString}}">
+          Show printable summary
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  {% if num_filters_applied > 0 %}
+    <p class="noprint collapse_top">To save this search, bookmark this page or <button class="link" onclick="CopyUrl()">copy the URL</button> <span id="copy-url-done" hidden>&#10003;</span></p>
+  {% endif %}
+  <p>
+    <a href="/resources/shelter/feedback" class="noprint">Report an error</a>
+  </p>
+
+  <div class="flex results_container">
+    <div id="map-toggle" class="noprint hidden">
+      <button type="button" class="btn btn_secondary">Show Map</button>
+    </div>
+    <div id="list-container">
+      <ul class="results_list" aria-label="Results List">
+        {% for shelter in shelters %}
+        <li id="property-{{shelter.id}}">
+          <h2 translate="no">{{ shelter.title }}</h2>
+          {% if shelter.organization and shelter.organization != '' %}
+            <p class="subtitle">
+              provided by {{ shelter.organization }}
+            </p>
+          {% endif %}
+          {% if shelter.populationsServed.length > 0 %}
+            {% assign populationsServed = shelter.populationsServed | uniq | sort %}
+            <p>
+              {% for population in populationsServed %}
+                <span class="badge">{{ population }}</span>
+              {% endfor %}
+            </p>
+          {% endif %}
+          {% if shelter.genderRestriction and shelter.genderRestriction != '' %}
+            <p>
+              <span class="badge">{{ shelter.genderRestriction }}</span>
+            </p>
+          {% endif %}
+          {% if shelter.description and shelter.description != '' %}
+            <p class="description">
+              {{ shelter.description }}
+            </p>
+          {% endif %}
+          {% capture mapUrl %}
+          https://maps.google.com/maps?q={{ shelter.address | url_encode}}+{{ shelter.city | url_encode}},+CA
+          {% endcapture %}
+          {% if shelter.address and shelter.address != '' and shelter.confidentialLoc != true %}
+            <p class="contact">
+            <span translate="no">{{ shelter.address }}{% if shelter.city and shelter.city != '' %}, {{ shelter.city }}{% endif %}{% if shelter.zip and shelter.zip != '' %} {{ shelter.zip }}{% endif %}</span>
+              <span class="map_link_container noprint nowrap">
+                (<button type="button" class="map_link link hidden" aria-label="Highlight {{ shelter.title }} on map">Show on map</button><span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ shelter.title }} on Google Maps">map</a><sup>&#8599;</sup></span>)
+              </span>
+            </p>
+          {% elsif shelter.city and shelter.city != '' and shelter.confidentialLoc != true %}
+            <p class="contact">
+              {{ shelter.city }}
+            </p>
+          {% endif %}
+          {% if shelter.email and shelter.email != '' %}
+            <p class="contact" translate="no">
+              <a href="mailto:{{ shelter.email | downcase }}" target="_blank" rel="noopener">{{ shelter.email | downcase }}</a>
+            </p>
+          {% endif %}
+          {% if shelter.phone and shelter.phone != '' %}
+            <p class="contact">
+              {% assign formattedPhone = shelter.phone | formatPhone %}
+              <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
+            </p>
+          {% endif %}
+          {% if shelter.website and shelter.website != '' %}
+            <p class="contact">
+              <a href="{{ shelter.website }}" target="_blank" rel="noopener" aria-label="Website for {{ shelter.website }}">View shelter website</a><sup>&#8599;</sup>
+            </p>
+          {% endif %}
+          {% if shelter.access and shelter.access != '' %}
+            <p class="contact">
+              <span class="bold">Shelter access:</span> {{ shelter.access }}
+                {% if shelter.referrers and shelter.referrers.length > 0 %}
+                  {% capture referrersString %}
+                    {%- for referrer in shelter.referrers -%}
+                      {%- if referrer.link and referrer.link != '' -%}
+                        <a target="_blank" rel="noopener" href="{{ referrer.link }}">{{ referrer.name }}</a>
+                      {%- else -%}
+                        {{ referrer.name }}
+                      {%- endif -%}
+                      {%- if referrer.phone and referrer.phone != '' %}
+                        {% assign formattedPhone = referrer.phone | formatPhone %}
+                        (<a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{ formattedPhone }}</a>)
+                      {%- endif -%}
+                      |
+                    {%- endfor -%}
+                  {%- endcapture -%}
+                  {% assign formattedReferrers = referrersString | split: '|' %}
+                  via {{ formattedReferrers | join: " or " }}
+                {% endif %}
+            </p>
+          {% endif %}
+          {% if shelter.groupSizes.length > 0 %}
+            {% assign groupSizes = shelter.groupSizes | sort %}
+            {%- capture groupSizesString -%}
+              {%- for groupSize in groupSizes -%}
+                {%- if groupSize == "With family" -%}
+                  {{ groupSize | prepend: "clients " }}
+                {%- elsif groupSize == "Individual" -%}
+                  {{ groupSize | append: "s" }}
+                {%- endif -%}
+                |
+              {%- endfor -%}
+            {%- endcapture -%}
+            {% assign formattedGroupSizes = groupSizesString | split: '|' %}
+            <p class="contact">
+              <span class="bold">Group size:</span> {{ formattedGroupSizes | join: " or " | downcase | capitalize }} {% if formattedGroupSizes.size == 1 -%}only{%-endif-%}
+            </p>
+          {% endif %}
+          {% assign hasClientMaxAge = shelter.clientMaxAge and shelter.clientMaxAge != '' %}
+          {% assign hasClientMinAge = shelter.clientMinAge and shelter.clientMinAge != '' %}
+          {% assign hasDependentMaxAge = shelter.dependentMaxAge and shelter.dependentMaxAge != '' %}
+          {% assign hasDependentMinAge = shelter.dependentMinAge and shelter.dependentMinAge != '' %}
+
+          {% if hasClientMaxAge or hasClientMinAge %}
+            {%- capture clientAgeRangeStr -%}
+              {%- if hasClientMinAge and hasClientMaxAge %}
+                {{shelter.clientMinAge}} - {{shelter.clientMaxAge}} years
+              {%- elsif hasClientMinAge %}
+                {{shelter.clientMinAge}}+ years
+              {%- elsif hasClientMaxAge %}
+                {{shelter.clientMaxAge}} years and under
+              {%- endif -%}
+            {%- endcapture -%}
+            <p class="contact">
+              <span class="bold">Client age limit:</span> {{ clientAgeRangeStr }}
+            </p>
+          {% endif %}
+
+          {% if hasDependentMaxAge or hasDependentMinAge %}
+            {%- capture dependentAgeRangeStr -%}
+              {%- if hasDependentMinAge and hasDependentMaxAge %}
+                {{shelter.dependentMinAge}} - {{shelter.dependentMaxAge}} years
+              {%- elsif hasDependentMinAge %}
+                {{shelter.dependentMinAge}}+ years
+              {%- elsif hasDependentMaxAge %}
+                {{shelter.dependentMaxAge}} years and under
+              {%- endif -%}
+            {%- endcapture -%}
+            <p class="contact">
+              <span class="bold">Accompanying child age limit:</span> {{ dependentAgeRangeStr }}
+            </p>
+          {% endif %}
+        </li>
+      {% endfor %}
+        {% if num_results == 0 %}
+          <li class="no_results">
+            Try changing the filter options above to broaden your search and see more results.
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+    <div id="map-container" class="map_container hidden">
+      <div class="split_right_container">
+        <div id="map"></div>
+        <div id="map-legend"></div>
+        <p class="attribution align-right">Transit data provided by <a href=http://www.511.org target="_blank" rel="noopener">511.org</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div>
+<p>
+  This shelter list is compiled by volunteers from The United Effort Organization. We strive to be as accurate as possible, but always confirm details with the shelter or referring group.
+</p>
+</div>
+
+<script>
+  const markerLocations = [
+  {%- for shelter in shelters -%}
+    {%- assign coords = shelter | getValidatedLocCoords -%}
+    {%- if coords -%}
+      {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{shelter.id}}"},
+    {%- endif -%}
+  {%- endfor -%}
+  ];
+</script>

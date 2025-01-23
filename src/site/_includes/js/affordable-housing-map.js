@@ -1,6 +1,6 @@
 'use strict';
 
-/* global transitStops, aptLocations, google */
+/* global transitStops, markerLocations, google */
 (function() {
   const MAP_CENTER_LAT = 37.233907; // Center of Santa Clara County.
   const MAP_CENTER_LNG = -121.756180; // Center of Santa Clara County.
@@ -196,7 +196,7 @@
       map: map,
       title: '',
     };
-    for (const loc of aptLocations) {
+    for (const loc of markerLocations) {
       options.position.lat = loc.lat;
       options.position.lng = loc.lng;
       options.title = loc.name;
