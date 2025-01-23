@@ -805,9 +805,9 @@ function addListeners() {
   document.getElementById(SUPPLEMENTAL_URL_4_FIELD_ID).addEventListener(
     'change', updateSupplementalLink);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:seniors`)
-    .addEventListener('change', updateAgeVisibility);
+    ?.addEventListener('change', updateAgeVisibility);
   document.getElementById(`${POPULATIONS_SERVED_FIELD_ID}:youth`)
-    .addEventListener('change', updateAgeVisibility);
+    ?.addEventListener('change', updateAgeVisibility);
   for (const occupancy of document.querySelectorAll('[name*=OCCUPANCY]')) {
     occupancy.addEventListener('change', updateMaxIncomeRowsVisibility);
   }
