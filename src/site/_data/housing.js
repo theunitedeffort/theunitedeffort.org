@@ -269,11 +269,12 @@ const compiledData = async () => {
 
   // Add the associated referrers to each shelter
   for (const shelter of shelters) {
-    shelter.referrers = referrers.filter((r) => shelter.referrerIds.includes(r.id));
+    shelter.referrers = referrers.filter(
+      (r) => shelter.referrerIds.includes(r.id));
   }
 
   // Pre-sort the lists so that templates don't need to later.
-  const sorted_apts = apartments.sort((a, b) => {
+  const sortedApts = apartments.sort((a, b) => {
     const nameA = a.aptName.toLowerCase();
     const nameB = b.aptName.toLowerCase();
     if (nameA < nameB) {
@@ -285,7 +286,7 @@ const compiledData = async () => {
     return 0;
   });
 
-  const sorted_shelters = shelters.sort((a, b) => {
+  const sortedShelters = shelters.sort((a, b) => {
     // I mean, it works.
     const cityA = a.city ? a.city.toLowerCase() : 'zzz';
     const cityB = b.city ? b.city.toLowerCase() : 'zzz';
@@ -296,8 +297,7 @@ const compiledData = async () => {
     }
     if (cityA > cityB) {
       return 1;
-    }
-    else {
+    } else {
       if (nameA < nameB) {
         return -1;
       }
@@ -307,7 +307,7 @@ const compiledData = async () => {
       return 0;
     }
   });
-  return {housing: sorted_apts, shelters: sorted_shelters}
+  return {housing: sortedApts, shelters: sortedShelters};
 };
 
 const shelterFilterOptions = (shelters) => {

@@ -946,7 +946,7 @@ module.exports = function(eleventyConfig) {
       });
     }
 
-    return shelterListCopy
+    return shelterListCopy;
   });
 
   eleventyConfig.addFilter('formatPhone', function(phoneStr) {
