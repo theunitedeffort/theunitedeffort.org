@@ -86,10 +86,6 @@ maxHouseholdSize: 12
         {% formField housingFields, "SECOND_EMAIL" %}
       </div>
 
-
-      {% fieldLabel "Management Company", housingFields, "MANAGEMENT_COMPANY" %}<br/>
-      {% formField housingFields, "MANAGEMENT_COMPANY" %}
-
       {% fieldLabel "URL", housingFields, "PROPERTY_URL" %}
       <a href="javascript:void(0)" target="_blank" rel="noopener" class="label property-link">Visit this page</a><sup>&#8599;</sup>
       <span class="label"><button type="button" class="link show_extra_field" data-controls="second-url">Add a second URL</button></span><br/>
@@ -118,37 +114,6 @@ maxHouseholdSize: 12
         {% formField housingFields, "SUPPLEMENTAL_URL_4" %}
       </div>
 
-      {% fieldLabel "Total Units", housingFields, "NUM_TOTAL_UNITS" %}
-      <span class="form_hint label">Do not include manager units</span><br/>
-      {% formField housingFields, "NUM_TOTAL_UNITS" %}
-
-      <div class="multiselect" id="populations-served">
-      {% fieldLabel "Target Populations", housingFields, "POPULATIONS_SERVED" %}<br/>
-      {% formField housingFields, "POPULATIONS_SERVED" %}
-      </div>
-
-      <div id="min-age" hidden>
-      {% fieldLabel "Minimum Resident Age", housingFields, "MIN_RESIDENT_AGE" %}<br/>
-      {% formField housingFields, "MIN_RESIDENT_AGE", "short" %}
-      </div>
-
-      <div id="max-age" hidden>
-      {% fieldLabel "Maximum Resident Age", housingFields, "MAX_RESIDENT_AGE" %}<br/>
-      {% formField housingFields, "MAX_RESIDENT_AGE", "short" %}
-      </div>
-
-      {% formField housingFields, "ACCEPTS_VOUCHERS" %}
-      {% fieldLabel "Accepts Vouchers", housingFields, "ACCEPTS_VOUCHERS" %}<br/>
-
-      {% formField housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
-      {% fieldLabel "Wheelchair Accessible Units", housingFields, "HAS_WHEELCHAIR_ACCESSIBLE_UNITS" %}
-      <span class="form_hint label">A displayed wheelchair icon is not sufficient to tick this</span><br/>
-
-      {% formField housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}
-      {% fieldLabel "Only accepts referral applications", housingFields, "DISALLOWS_PUBLIC_APPLICATIONS" %}<br/>
-
-      {% formField housingFields, "PREFERS_LOCAL_APPLICANTS" %}
-      {% fieldLabel "Prefers applicants within the local city", housingFields, "PREFERS_LOCAL_APPLICANTS" %}<br/>
     </div>
     <p class="note">It is <span class="bold">not</span> required to input the unit types and rent offerings in sorted order.</p>
     <div id="all-units">
@@ -170,29 +135,8 @@ maxHouseholdSize: 12
 
               {% indexedFieldLabel unitIdx, "Status", unitsFields, "STATUS" %}<br/>
               {% indexedFormField unitIdx, unitsFields, "STATUS", "short" %}
+              <p class="note">Try looking for the property manager's portfolio if you can't find the availability status in the linked property page</p>
 
-              <span class="label">Occupancy Limits</span>
-              <p data-toggletip data-toggletip-class="icon_query">The minimum and maximum number of people allowed to live in this unit.</p>
-              <br/>
-              {% indexedFormField unitIdx, unitsFields, "MIN_OCCUPANCY", "short inline" %} to
-              {% indexedFormField unitIdx, unitsFields, "MAX_OCCUPANCY", "short inline" %} people<br/>
-
-              {% assign alternateMinIncomeStr = "" %}
-              {% for offerIdx in (0..offeringEndIdx) %}
-                {% assign alternateMinIncomeStr = alternateMinIncomeStr | append: "OVERRIDE_MIN_YEARLY_INCOME_USD:" | append: unitIdx | append: ":" | append: offerIdx %}
-                {% if forloop.last == false %}
-                  {% assign alternateMinIncomeStr = alternateMinIncomeStr | append: "," %}
-                {% endif %}
-              {% endfor %}
-              <input type="checkbox" id="is-alternate-min-income:{{unitIdx}}" class="form_conditional is_alternate_min_income" data-primary-field="MIN_INCOME_RENT_FACTOR:{{unitIdx}}" data-alternate-field="{{alternateMinIncomeStr}}" data-conflict-resolution="alternate"> <label for="is-alternate-min-income:{{unitIdx}}">The minimum income is not calculated based on rent for this unit</label>
-              <p data-toggletip data-toggletip-class="icon_query">Most properties calculate the minimum income for a unit type by multiplying the yearly rent by a scale factor.  For example, "2.5 times 12 months' rent".  You should use this type of minimum income in this form whenever possible.<br/><br/> However, in rare cases, a property will not give a scale factor and will <span class="bold">only</span> give the dollar amount. </p><br/>
-              <div class="min_income">
-                {% indexedFieldLabel unitIdx, "Minimum Income", unitsFields, "MIN_INCOME_RENT_FACTOR" %}<br/>
-                {% indexedFormField unitIdx, unitsFields, "MIN_INCOME_RENT_FACTOR", "inline" %} times yearly rent<br/>
-              </div>
-              <div class="min_income_alternate form_hint" hidden>
-                Input the minimum income dollar amount within each rent offering below.
-              </div>
               <div class="all_offerings">
                 {% for offerNum in (0..offeringEndIdx) %}
                   <div id="unit-{{unitNum}}-offering-{{offerNum}}" class="fieldset_box" hidden>
@@ -217,47 +161,6 @@ maxHouseholdSize: 12
                       <div class="rent_alternate" hidden>
                         {% indexedFieldLabel offerIdx, "Rent Description", unitsFields, "ALTERNATE_RENT_DESCRIPTION" %}<br/>
                         {% indexedFormField offerIdx, unitsFields, "ALTERNATE_RENT_DESCRIPTION", "long"%}
-                      </div>
-
-                      <div class="min_income_alternate" hidden>
-                        {% indexedFieldLabel offerIdx, "Minimum Income", unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD" %}<br/>
-                        {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MIN_YEARLY_INCOME_USD", "long inline" %} $/year<br/>
-                      </div>
-
-                      {% assign primaryMaxIncomeStr = "" %}
-                      {% for hhSize in (1..maxHouseholdSize) %}
-                        {% assign primaryMaxIncomeStr = primaryMaxIncomeStr | append: "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD:" | append: offerIdx %}
-                        {% if forloop.last == false %}
-                          {% assign primaryMaxIncomeStr = primaryMaxIncomeStr | append: "," %}
-                        {% endif %}
-                      {% endfor %}
-                      <input type="checkbox" id="is-alternate-max-income:{{offerIdx}}" class="form_conditional is_alternate_max_income" data-primary-field="{{primaryMaxIncomeStr}}" data-alternate-field="OVERRIDE_MAX_YEARLY_INCOME_LOW_USD:{{offerIdx}},OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD:{{offerIdx}}" data-conflict-resolution="alternate"> <label for="is-alternate-max-income:{{offerIdx}}">The maximum income is not broken down by household size for this rent offering</label><br/>
-
-                      <table class="max_income">
-                        <tr>
-                          <th>Household Size</th>
-                          <th>Maximum Income</th>
-                        </tr>
-                        {% for hhSize in (1..maxHouseholdSize) %}
-                          <tr>
-                          {% assign fieldname = "MAX_YEARLY_INCOME_HH_" | append: hhSize | append: "_USD" %}
-                          {% if hhSize == 1 %}
-                            {% assign hhSizeStr = hhSize | append: " person" %}
-                          {% else %}
-                            {% assign hhSizeStr = hhSize | append: " people" %}
-                          {% endif %}
-                            <td>{% indexedFieldLabel offerIdx, hhSizeStr, unitsFields, fieldname %}</td>
-                            <td>${% indexedFormField offerIdx, unitsFields, fieldname, "long inline" %} per year</td>
-                          </tr>
-                        {% endfor %}
-                      </table>
-                      <div class="max_income_alternate" hidden>
-                        <span class="label">Maximum Income Range<span>
-                        <p data-toggletip data-toggletip-class="icon_query">Most properties list the maximum allowed income based on household size.<br/>However, if the maximum income is just given as a simple range of values (e.g. Maximum Income $54,000 - $77,000), then enter the range here.</p>
-                        <br/>
-                        {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_LOW_USD", "long inline" %} to
-                        {% indexedFormField offerIdx, unitsFields, "OVERRIDE_MAX_YEARLY_INCOME_HIGH_USD", "long inline" %} $/year
-                        <br/>
                       </div>
                     </div>
                   </fieldset>
