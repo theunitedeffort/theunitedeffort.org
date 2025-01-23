@@ -31,7 +31,7 @@ const fetchPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
-        if (true) {
+        if (record.get('Status') == 'Published') {
           const name = record.get('Page title');
           const path = record.get('Page path');
           const sectionID = record.get('Section')[0];
@@ -74,7 +74,7 @@ const fetchGeneralResources = async () => {
     .all()
     .then((records) => {
       records.forEach(function(record) {
-        if (true) {
+        if (record.get('Show on website')) {
           data.push(record.fields);
         }
       });

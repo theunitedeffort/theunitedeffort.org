@@ -190,6 +190,7 @@ const fetchShelterRecords = async () => {
   return table.select({
     fields: [
       'This Record ID',
+      'Show on website',
       'Title',
       'Organization',
       'Description',
@@ -217,10 +218,9 @@ const fetchShelterRecords = async () => {
     .all()
     .then((records) => {
       records.forEach(function(record) {
-        // Only take apartments that have units associated with them and have
-        // been published (i.e. not a draft)
-        // TODO: filter by "show on website" or some other publish status.
-        if (record.get('Title')) {
+        // Only take shelters that have a title and have been marked for
+        // publication. (i.e. not a draft)
+        if (record.get('Title') && record.get('Show on website')) {
           shelters.push({
             id: record.get('This Record ID'),
             title: record.get('Title'),

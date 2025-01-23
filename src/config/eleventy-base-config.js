@@ -21,12 +21,8 @@ const SORT_RANKING = new Map([
   ['Adults', 3],
   ['Young Adults', 4],
   ['Youth', 5],
-  ['LGBTQ+', 6],
-  ['Pregnant Women', 7],
-  ['Domestic Violence Survivors', 8],
   ['Developmentally Disabled', 9],
   ['Physically Disabled', 10],
-  ['Veterans', 11],
 ]);
 
 module.exports = function(eleventyConfig) {

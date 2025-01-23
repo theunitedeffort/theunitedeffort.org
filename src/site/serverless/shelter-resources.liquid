@@ -256,11 +256,6 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
           {% if shelter.access and shelter.access != '' %}
             <p class="contact">
               <span class="bold">Shelter access:</span> {{ shelter.access }}
-                {% comment %}
-                TODO: Make referrers into links (phone numbers and websites), likely by
-                converting the relevant airtable field to a linked field and having
-                referrer records
-                {% endcomment %}
                 {% if shelter.referrers and shelter.referrers.length > 0 %}
                   {% capture referrersString %}
                     {%- for referrer in shelter.referrers -%}
