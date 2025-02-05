@@ -163,6 +163,14 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
     {% endif %}
   </fieldset>
   {% endfor %}
+  <fieldset>
+    <legend>More Filters</legend>
+    <div>
+      <label for="shelter-name">Shelter Name</label>
+      <input type="text" id="shelter-name" value="{{query.shelterName | escape}}" name="shelterName">
+      </p>
+    </div>
+  </fieldset>
 
   <div class="form_controls">
     <input type="submit" id="filter-submit" class="btn btn_primary noprint" value="{{updateButtonStr}}"/>

@@ -297,6 +297,7 @@ module.exports = function(eleventyConfig) {
       'availability',
       'unitType',
       'propertyName',
+      'shelterName',
       'rentMax',
       'income',
       'populationsServed',
@@ -944,6 +945,12 @@ module.exports = function(eleventyConfig) {
           }
         }
       });
+    }
+
+    if (query.shelterName) {
+      const shelterName = query.shelterName.toLowerCase();
+      shelterListCopy = shelterListCopy.filter(
+        (a) => a.title.toLowerCase().includes(shelterName));
     }
 
     return shelterListCopy;
