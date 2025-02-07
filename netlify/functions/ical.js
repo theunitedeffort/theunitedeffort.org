@@ -58,11 +58,10 @@ exports.handler = async function(event) {
   if (!SECRET) {
     return serverError();
   }
-  const path = event.path;
-  const requestParams = event.queryStringParameters;
-  const obfuscated = requestParams.data;
+
+  const obfuscated = event.queryStringParameters.data;
   if (!obfuscated) {
-    console.warn(`Missing data parameter. Event path: ${path}`);
+    console.warn('Missing data parameter.');
     return badRequest();
   }
   console.log(`Received: ${obfuscated}`);
