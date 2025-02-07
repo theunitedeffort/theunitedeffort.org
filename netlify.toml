@@ -96,8 +96,8 @@ to = "/.netlify/functions/ecfr"
 status = 200
 
 [[redirects]]
-from = "/event-gen/*"
-to = "/.netlify/functions/event-gen"
+from = "/ical/*"
+to = "/.netlify/functions/ical"
 status = 200
 
 [[redirects]]
