@@ -1,6 +1,7 @@
 // Generates an ical file based on obfuscated query parameters
 
-const SECRET = 'Txlr3Auwrpd4Db05qN7ObU8CbfShx2eI';
+const SECRET = process.env.ICS_OBFUSCATION_KEY;
+// TODO: check if the key exists
 
 exports.handler = async function(event) {
   const path = event.path;
