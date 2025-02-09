@@ -45,21 +45,21 @@ table.deflist {
   }
 }
 
-table.sortable_active th {
+table.sortable_active th:last-child {
   cursor: pointer;
 }
 
-table.sortable th::after {
+table.sortable tr:last-child th::after {
   content: "\a0\2193";
   visibility: hidden;
 }
 
-table.sortable th.sorttable_sorted::after {
+table.sortable tr:last-child th.sorttable_sorted::after {
   content: "\a0\2193";
   visibility: visible;
 }
 
-table.sortable th.sorttable_sorted_reverse::after {
+table.sortable tr:last-child th.sorttable_sorted_reverse::after {
   content: "\a0\2191";
   visibility: visible;
 }
@@ -82,14 +82,14 @@ table.sortable th.sorttable_sorted_reverse::after {
   max-width: 17em;
 }
 
-table#shelter-table-summary {
+table.high-density {
   font-size: 14px;
   table-layout: fixed;
   width: 1200px;
 }
 
-table#shelter-table-summary td,
-table#shelter-table-summary th {
+table.high-density td,
+table.high-density th {
   padding: 0.2em 0.3em;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -104,6 +104,14 @@ table.printed {
   }
   thead {
     display: table-header-group;
+  }
+  thead tr:first-child {
+    font-size: 1.3em;
+    th {
+      padding-left: 0;
+      padding-bottom: 1em;
+      border: none;
+    }
   }
 }
 
@@ -138,10 +146,14 @@ form#eligibility {
 
 @media print {
   table.printed {
+    font-size: 10pt;
     th,
     td {
       border-color: var(--color-black);
       padding: 0.2em 0.5em;
     }
   }
+  // table.high-density {
+  //   width: 100%;
+  // }
 }

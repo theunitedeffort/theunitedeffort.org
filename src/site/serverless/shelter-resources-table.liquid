@@ -3,7 +3,7 @@ layout: layouts/base.liquid
 title: Shelter Results Summary
 permalink: 
   serverless: "/resources/shelter/table"
-pageClass: "page-resources page_housing_table"
+pageClass: "page-resources page_printable_table"
 pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   <script src="/js/sorttable.js" defer></script>'
 ---
@@ -32,20 +32,36 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
 <p>
   <a href="/resources/shelter/feedback" class="noprint">Report an error</a>
 </p>
-<table id="shelter-table-summary" class="printed sortable">
+<table id="shelter-table-summary" class="printed high-density sortable">
+  <colgroup>
+    <col style="width: 8%;">
+    <col style="width: 8%;">
+    <col>
+    <col style="width: 8%;">
+    <col style="width: 7%;">
+    <col style="width: 10%;">
+    <col style="width: 7%;">
+    <col style="width: 7%;">
+    <col style="width: 7%;">
+    <col style="width: 6%;">
+    <col style="width: 7%;">
+  </colgroup>
   <thead>
+    <tr class="only_print">
+      <th colspan="11"><img src="/images/ueo-logo.svg" width="100px" height="30px"></th>
+    </tr>
     <tr>
-      <th style="width:8%;">Name<span class="noprint"> & Link</span></th>
-      <th style="width:8%;">Provider</th>
+      <th>Name<span class="noprint"> & Link</span></th>
+      <th>Provider</th>
       <th>Description</th>
-      <th style="width:8%;">Address</th>
-      <th style="width:7%;" class="sorttable_sorted">City</th>
-      <th style="width:10%;">Phone</th>
-      <th style="width:7%;">Email</th>
-      <th style="width:7%;">Access</th>
-      <th style="width:7%;">Population Served</th>
-      <th style="width:5%;">Gender</th>
-      <th style="width:7%;">Group Size</th>
+      <th>Address</th>
+      <th class="sorttable_sorted">City</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Access</th>
+      <th>Population Served</th>
+      <th>Gender</th>
+      <th>Group Size</th>
     </tr>
   </thead>
   <tbody>

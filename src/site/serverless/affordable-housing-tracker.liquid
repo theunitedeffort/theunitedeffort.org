@@ -3,7 +3,7 @@ layout: layouts/base.liquid
 title: Affordable Housing Application Tracker
 permalink: 
   serverless: "/housing/affordable-housing/tracker"
-pageClass: "page-housing page_housing_table"
+pageClass: "page-housing page_printable_table"
 pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>'
 ---
 
@@ -82,6 +82,9 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   <colgroup span="3"></colgroup>
   <colgroup span="3"></colgroup>
   <thead>
+    <tr class="only_print">
+      <th colspan="11"><img src="/images/ueo-logo.svg" width="100px" height="30px"></th>
+    </tr>
     <tr>
       <th rowspan="2" class="apartment">Apartment</th>
       <th colspan="3" scope="colgroup">Waitlist Application</th>
