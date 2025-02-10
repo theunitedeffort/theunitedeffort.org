@@ -355,7 +355,7 @@ iframe.url_preview {
 }
 
 $default-margin: 0.4in;
-$logo-height: 31px;
+$logo-height: 30px;
 @page header {
   margin-top: calc($default-margin + $logo-height + 0.2in);
   @top-left{
@@ -371,11 +371,3 @@ $logo-height: 31px;
     margin-top: 0;
   }
 }
-
-// @page no-header {
-//   margin-top: $default-margin;
-//   @top-left {
-//     content: "";
-//     margin-top: 0;
-//   }
-// }
