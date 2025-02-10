@@ -3,7 +3,7 @@ layout: layouts/base.liquid
 title: Affordable Housing Results Summary
 permalink: 
   serverless: "/housing/affordable-housing/table"
-pageClass: "page-housing page_housing_table"
+pageClass: "page-housing page_printable_table"
 pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   <script src="/js/sorttable.js" defer></script>'
 ---
@@ -31,6 +31,9 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
 </div>
 <table id="affordable-housing-table-summary" class="printed sortable">
   <thead>
+    <tr class="only_print">
+      <th colspan="11"><img src="/images/ueo-logo.svg" width="100px" height="30px"></th>
+    </tr>
     <tr>
       <th class="sorttable_sorted">Apartment Name<span class="noprint"> & Link</span></th>
       <th>Address</th>

@@ -49,7 +49,6 @@ const sorttable = {
       table.tHead = table.getElementsByTagName('thead')[0];
     }
 
-    if (table.tHead.rows.length != 1) return; // can't cope with two header rows
 
     // Sorttable v1 put rows with a class of "sortbottom" at the bottom (as
     // "total" rows, for example). This is B&R, since what you're supposed
@@ -74,7 +73,7 @@ const sorttable = {
     }
 
     // work through each column and calculate its type
-    const headrow = table.tHead.rows[0].cells;
+    const headrow = table.tHead.rows[table.tHead.rows.length - 1].cells;
     for (let i=0; i<headrow.length; i++) {
       // manually override the type with a sorttable_type attribute
       if (!headrow[i].className.match(/\bsorttable_nosort\b/)) {
