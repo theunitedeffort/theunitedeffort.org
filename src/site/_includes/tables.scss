@@ -45,7 +45,7 @@ table.deflist {
   }
 }
 
-table.sortable_active th:last-child {
+table.sortable_active tr:last-child th {
   cursor: pointer;
 }
 
