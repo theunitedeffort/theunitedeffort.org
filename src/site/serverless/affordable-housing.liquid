@@ -112,16 +112,16 @@ window.onpageshow = function() {OnPageShow()};
 
 <h1>{{title}}
 <span class="subtitle">In Santa Clara County</span></h1>
-<p class="noprint bold">
+<p class="bold">
 {{num_results_snippet}}
 </p>
 {% if num_filters_applied == 0 %}
-<p>
+<p class="noprint">
 Narrow your search with the filter options below or <a href="#results">scroll</a> to the full list of properties 
 </p>
 {% else %}
-<p class="noprint">
-{{num_filters_applied}} {{num_filters_applied | pluralize: "filter is", "filters are"}} applied. <a href="/housing/affordable-housing">Clear filters</a>
+<p>
+{{num_filters_applied}} {{num_filters_applied | pluralize: "filter is", "filters are"}} applied. <span class="noprint"><a href="/housing/affordable-housing">Clear filters</a></span>
 </p>
 {% endif %}
 
@@ -304,7 +304,7 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
         {% endif %}
       </ul>
     </div>
-    <div id="map-container" class="map_container hidden">
+    <div id="map-container" class="map_container hidden noprint">
       <div class="split_right_container">
         <div id="map"></div>
         <div id="map-legend"></div>
