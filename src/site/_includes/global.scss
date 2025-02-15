@@ -371,3 +371,9 @@ $logo-height: 30px;
     margin-top: 0;
   }
 }
+
+@media print {
+  .responsive_split {
+    width: 100%;
+  }
+}
