@@ -5,10 +5,7 @@ permalink:
   build: "/resources/shelter/index.html"
   serverless: "/resources/shelter/filter"
 pageClass: "page-resources"
-pageHead: '<script src="/js/accessibility.js" defer></script>
-  <script src="/js/transit.js" defer></script>
-  <script src="/js/affordable-housing-map.js" defer></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA17udd4ePocbxKrOkHiMhSUHlvf3daZMs&callback=initMap&v=weekly" defer></script>'
+pageHead: '<script src="/js/accessibility.js" defer></script>'
 ---
 {% comment %}
 TODO: reduce this duplicated code (taken from affordable-housing.liquid)
@@ -199,158 +196,146 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   </p>
 
   <div class="flex results_container">
-    <div id="map-toggle" class="noprint hidden">
-      <button type="button" class="btn btn_secondary">Show Map</button>
-    </div>
-    <div id="list-container">
-      <ul class="results_list" aria-label="Results List">
-        {% for shelter in shelters %}
-        <li id="property-{{shelter.id}}">
-          <h2 translate="no">{{ shelter.title }}</h2>
-          {% if shelter.organization and shelter.organization != '' %}
-            <p class="subtitle">
-              provided by {{ shelter.organization }}
-            </p>
-          {% endif %}
-          {% if shelter.populationsServed.length > 0 %}
-            {% assign populationsServed = shelter.populationsServed | uniq | sort %}
-            <p>
-              {% for population in populationsServed %}
-                <span class="badge">{{ population }}</span>
-              {% endfor %}
-            </p>
-          {% endif %}
-          {% if shelter.genderRestriction and shelter.genderRestriction != '' %}
-            <p>
-              <span class="badge">{{ shelter.genderRestriction }}</span>
-            </p>
-          {% endif %}
-          {% if shelter.description and shelter.description != '' %}
-            <p class="description">
-              {{ shelter.description }}
-            </p>
-          {% endif %}
-          {% capture mapUrl %}
-          https://maps.google.com/maps?q={{ shelter.address | url_encode}}+{{ shelter.city | url_encode}},+CA
-          {% endcapture %}
-          {% if shelter.address and shelter.address != '' and shelter.confidentialLoc != true %}
-            <p class="contact">
-            <span translate="no">{{ shelter.address }}{% if shelter.city and shelter.city != '' %}, {{ shelter.city }}{% endif %}{% if shelter.zip and shelter.zip != '' %} {{ shelter.zip }}{% endif %}</span>
-              <span class="map_link_container noprint nowrap">
-                (<button type="button" class="map_link link hidden" aria-label="Highlight {{ shelter.title }} on map">Show on map</button><span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ shelter.title }} on Google Maps">map</a><sup>&#8599;</sup></span>)
-              </span>
-            </p>
-          {% elsif shelter.city and shelter.city != '' and shelter.confidentialLoc != true %}
-            <p class="contact">
-              {{ shelter.city }}
-            </p>
-          {% endif %}
-          {% if shelter.email and shelter.email != '' %}
-            <p class="contact" translate="no">
-              <a href="mailto:{{ shelter.email | downcase }}" target="_blank" rel="noopener">{{ shelter.email | downcase }}</a>
-            </p>
-          {% endif %}
-          {% if shelter.phone and shelter.phone != '' %}
-            <p class="contact">
-              {% assign formattedPhone = shelter.phone | formatPhone %}
-              <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
-            </p>
-          {% endif %}
-          {% if shelter.website and shelter.website != '' %}
-            <p class="contact">
-              <a href="{{ shelter.website }}" target="_blank" rel="noopener" aria-label="Website for {{ shelter.website }}">View shelter website</a><sup>&#8599;</sup>
-            </p>
-          {% endif %}
-          {% if shelter.access and shelter.access != '' %}
-            <p class="contact">
-              <span class="bold">Shelter access:</span> {{ shelter.access }}
-                {% if shelter.referrers and shelter.referrers.length > 0 %}
-                  {% capture referrersString %}
-                    {%- for referrer in shelter.referrers -%}
-                      {%- if referrer.link and referrer.link != '' -%}
-                        <a target="_blank" rel="noopener" href="{{ referrer.link }}">{{ referrer.name }}</a>
-                      {%- else -%}
-                        {{ referrer.name }}
-                      {%- endif -%}
-                      {%- if referrer.phone and referrer.phone != '' %}
-                        {% assign formattedPhone = referrer.phone | formatPhone %}
-                        (<a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{ formattedPhone }}</a>)
-                      {%- endif -%}
-                      |
-                    {%- endfor -%}
-                  {%- endcapture -%}
-                  {% assign formattedReferrers = referrersString | split: '|' %}
-                  via {{ formattedReferrers | join: " or " }}
-                {% endif %}
-            </p>
-          {% endif %}
-          {% if shelter.groupSizes.length > 0 %}
-            {% assign groupSizes = shelter.groupSizes | sort %}
-            {%- capture groupSizesString -%}
-              {%- for groupSize in groupSizes -%}
-                {%- if groupSize == "With family" -%}
-                  {{ groupSize | prepend: "clients " }}
-                {%- elsif groupSize == "Individual" -%}
-                  {{ groupSize | append: "s" }}
-                {%- endif -%}
-                |
-              {%- endfor -%}
-            {%- endcapture -%}
-            {% assign formattedGroupSizes = groupSizesString | split: '|' %}
-            <p class="contact">
-              <span class="bold">Group size:</span> {{ formattedGroupSizes | join: " or " | downcase | capitalize }} {% if formattedGroupSizes.size == 1 -%}only{%-endif-%}
-            </p>
-          {% endif %}
-          {% assign hasClientMaxAge = shelter.clientMaxAge and shelter.clientMaxAge != '' %}
-          {% assign hasClientMinAge = shelter.clientMinAge and shelter.clientMinAge != '' %}
-          {% assign hasDependentMaxAge = shelter.dependentMaxAge and shelter.dependentMaxAge != '' %}
-          {% assign hasDependentMinAge = shelter.dependentMinAge and shelter.dependentMinAge != '' %}
-
-          {% if hasClientMaxAge or hasClientMinAge %}
-            {%- capture clientAgeRangeStr -%}
-              {%- if hasClientMinAge and hasClientMaxAge %}
-                {{shelter.clientMinAge}} - {{shelter.clientMaxAge}} years
-              {%- elsif hasClientMinAge %}
-                {{shelter.clientMinAge}}+ years
-              {%- elsif hasClientMaxAge %}
-                {{shelter.clientMaxAge}} years and under
-              {%- endif -%}
-            {%- endcapture -%}
-            <p class="contact">
-              <span class="bold">Client age limit:</span> {{ clientAgeRangeStr }}
-            </p>
-          {% endif %}
-
-          {% if hasDependentMaxAge or hasDependentMinAge %}
-            {%- capture dependentAgeRangeStr -%}
-              {%- if hasDependentMinAge and hasDependentMaxAge %}
-                {{shelter.dependentMinAge}} - {{shelter.dependentMaxAge}} years
-              {%- elsif hasDependentMinAge %}
-                {{shelter.dependentMinAge}}+ years
-              {%- elsif hasDependentMaxAge %}
-                {{shelter.dependentMaxAge}} years and under
-              {%- endif -%}
-            {%- endcapture -%}
-            <p class="contact">
-              <span class="bold">Accompanying child age limit:</span> {{ dependentAgeRangeStr }}
-            </p>
-          {% endif %}
-        </li>
-      {% endfor %}
-        {% if num_results == 0 %}
-          <li class="no_results">
-            Try changing the filter options above to broaden your search and see more results.
-          </li>
+    <ul class="results_list" aria-label="Results List">
+      {% for shelter in shelters %}
+      <li id="property-{{shelter.id}}">
+        <h2 translate="no">{{ shelter.title }}</h2>
+        {% if shelter.organization and shelter.organization != '' %}
+          <p class="subtitle">
+            provided by {{ shelter.organization }}
+          </p>
         {% endif %}
-      </ul>
-    </div>
-    <div id="map-container" class="map_container hidden noprint">
-      <div class="split_right_container">
-        <div id="map"></div>
-        <div id="map-legend"></div>
-        <p class="attribution align-right">Transit data provided by <a href=http://www.511.org target="_blank" rel="noopener">511.org</a></p>
-      </div>
-    </div>
+        {% if shelter.populationsServed.length > 0 %}
+          {% assign populationsServed = shelter.populationsServed | uniq | sort %}
+          <p>
+            {% for population in populationsServed %}
+              <span class="badge">{{ population }}</span>
+            {% endfor %}
+          </p>
+        {% endif %}
+        {% if shelter.genderRestriction and shelter.genderRestriction != '' %}
+          <p>
+            <span class="badge">{{ shelter.genderRestriction }}</span>
+          </p>
+        {% endif %}
+        {% if shelter.description and shelter.description != '' %}
+          <p class="description">
+            {{ shelter.description }}
+          </p>
+        {% endif %}
+        {% capture mapUrl %}
+        https://maps.google.com/maps?q={{ shelter.address | url_encode}}+{{ shelter.city | url_encode}},+CA
+        {% endcapture %}
+        {% if shelter.address and shelter.address != '' and shelter.confidentialLoc != true %}
+          <p class="contact">
+          <span translate="no">{{ shelter.address }}{% if shelter.city and shelter.city != '' %}, {{ shelter.city }}{% endif %}{% if shelter.zip and shelter.zip != '' %} {{ shelter.zip }}{% endif %}</span>
+            <span class="map_link_container noprint nowrap">
+              (<span class="ext_map_link"><a href="{{mapUrl}}" target="_blank" rel="noopener" aria-label="View {{ shelter.title }} on Google Maps">map</a><sup>&#8599;</sup></span>)
+            </span>
+          </p>
+        {% elsif shelter.city and shelter.city != '' and shelter.confidentialLoc != true %}
+          <p class="contact">
+            {{ shelter.city }}{% if shelter.zip and shelter.zip != '' %} {{ shelter.zip }}{% endif %}
+          </p>
+        {% endif %}
+        {% if shelter.email and shelter.email != '' %}
+          <p class="contact" translate="no">
+            <a href="mailto:{{ shelter.email | downcase }}" target="_blank" rel="noopener">{{ shelter.email | downcase }}</a>
+          </p>
+        {% endif %}
+        {% if shelter.phone and shelter.phone != '' %}
+          <p class="contact">
+            {% assign formattedPhone = shelter.phone | formatPhone %}
+            <a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{formattedPhone}}</a>
+          </p>
+        {% endif %}
+        {% if shelter.website and shelter.website != '' %}
+          <p class="contact">
+            <a href="{{ shelter.website }}" target="_blank" rel="noopener" aria-label="Website for {{ shelter.website }}">View shelter website</a><sup>&#8599;</sup>
+          </p>
+        {% endif %}
+        {% if shelter.access and shelter.access != '' %}
+          <p class="contact">
+            <span class="bold">Shelter access:</span> {{ shelter.access }}
+              {% if shelter.referrers and shelter.referrers.length > 0 %}
+                {% capture referrersString %}
+                  {%- for referrer in shelter.referrers -%}
+                    {%- if referrer.link and referrer.link != '' -%}
+                      <a target="_blank" rel="noopener" href="{{ referrer.link }}">{{ referrer.name }}</a>
+                    {%- else -%}
+                      {{ referrer.name }}
+                    {%- endif -%}
+                    {%- if referrer.phone and referrer.phone != '' %}
+                      {% assign formattedPhone = referrer.phone | formatPhone %}
+                      (<a href="tel:+1{{ formattedPhone | replace: '-', '' }}">{{ formattedPhone }}</a>)
+                    {%- endif -%}
+                    |
+                  {%- endfor -%}
+                {%- endcapture -%}
+                {% assign formattedReferrers = referrersString | split: '|' %}
+                via {{ formattedReferrers | join: " or " }}
+              {% endif %}
+          </p>
+        {% endif %}
+        {% if shelter.groupSizes.length > 0 %}
+          {% assign groupSizes = shelter.groupSizes | sort %}
+          {%- capture groupSizesString -%}
+            {%- for groupSize in groupSizes -%}
+              {%- if groupSize == "With family" -%}
+                {{ groupSize | prepend: "clients " }}
+              {%- elsif groupSize == "Individual" -%}
+                {{ groupSize | append: "s" }}
+              {%- endif -%}
+              |
+            {%- endfor -%}
+          {%- endcapture -%}
+          {% assign formattedGroupSizes = groupSizesString | split: '|' %}
+          <p class="contact">
+            <span class="bold">Group size:</span> {{ formattedGroupSizes | join: " or " | downcase | capitalize }} {% if formattedGroupSizes.size == 1 -%}only{%-endif-%}
+          </p>
+        {% endif %}
+        {% assign hasClientMaxAge = shelter.clientMaxAge and shelter.clientMaxAge != '' %}
+        {% assign hasClientMinAge = shelter.clientMinAge and shelter.clientMinAge != '' %}
+        {% assign hasDependentMaxAge = shelter.dependentMaxAge and shelter.dependentMaxAge != '' %}
+        {% assign hasDependentMinAge = shelter.dependentMinAge and shelter.dependentMinAge != '' %}
+
+        {% if hasClientMaxAge or hasClientMinAge %}
+          {%- capture clientAgeRangeStr -%}
+            {%- if hasClientMinAge and hasClientMaxAge %}
+              {{shelter.clientMinAge}} - {{shelter.clientMaxAge}} years
+            {%- elsif hasClientMinAge %}
+              {{shelter.clientMinAge}}+ years
+            {%- elsif hasClientMaxAge %}
+              {{shelter.clientMaxAge}} years and under
+            {%- endif -%}
+          {%- endcapture -%}
+          <p class="contact">
+            <span class="bold">Client age limit:</span> {{ clientAgeRangeStr }}
+          </p>
+        {% endif %}
+
+        {% if hasDependentMaxAge or hasDependentMinAge %}
+          {%- capture dependentAgeRangeStr -%}
+            {%- if hasDependentMinAge and hasDependentMaxAge %}
+              {{shelter.dependentMinAge}} - {{shelter.dependentMaxAge}} years
+            {%- elsif hasDependentMinAge %}
+              {{shelter.dependentMinAge}}+ years
+            {%- elsif hasDependentMaxAge %}
+              {{shelter.dependentMaxAge}} years and under
+            {%- endif -%}
+          {%- endcapture -%}
+          <p class="contact">
+            <span class="bold">Accompanying child age limit:</span> {{ dependentAgeRangeStr }}
+          </p>
+        {% endif %}
+      </li>
+    {% endfor %}
+      {% if num_results == 0 %}
+        <li class="no_results">
+          Try changing the filter options above to broaden your search and see more results.
+        </li>
+      {% endif %}
+    </ul>
   </div>
 </section>
 
@@ -360,14 +345,3 @@ Narrow your search with the filter options below or <a href="#results">scroll</a
   This shelter list is compiled by volunteers from The United Effort Organization. We strive to be as accurate as possible, but always confirm details with the shelter or referring group.
 </p>
 </div>
-
-<script>
-  const markerLocations = [
-  {%- for shelter in shelters -%}
-    {%- assign coords = shelter | getValidatedLocCoords -%}
-    {%- if coords -%}
-      {lat:{{coords[0]}},lng:{{coords[1]}},id:"{{shelter.id}}"},
-    {%- endif -%}
-  {%- endfor -%}
-  ];
-</script>

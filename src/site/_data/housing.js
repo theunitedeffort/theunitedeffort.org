@@ -218,6 +218,13 @@ const fetchShelterRecords = async () => {
     .all()
     .then((records) => {
       records.forEach(function(record) {
+        // We hide the address for non-walk-in shelters even though the
+        // address is in our internal database.  Shelters with a confidential
+        // location don't even have the address stored in our database at all.
+        function showLocation(record) {
+          return record.get('Access') == 'Arrive in-person';
+        }
+
         // Only take shelters that have a title and have been marked for
         // publication. (i.e. not a draft)
         if (record.get('Title') && record.get('Show on website')) {
@@ -226,7 +233,7 @@ const fetchShelterRecords = async () => {
             title: record.get('Title'),
             organization: record.get('Organization'),
             description: record.get('Description'),
-            address: record.get('Address'),
+            address: showLocation(record) ? record.get('Address') : undefined,
             city: record.get('City'),
             zip: record.get('ZIP Code'),
             phone: record.get('Phone'),
@@ -241,7 +248,8 @@ const fetchShelterRecords = async () => {
             dependentMaxAge: record.get('Dependent Max Age'),
             access: record.get('Access'),
             referrerIds: record.get('Referrers') || [],
-            locCoords: record.get('Loc Coords'),
+            locCoords:
+              showLocation(record) ? record.get('Loc Coords') : undefined,
             verifiedLocCoords: record.get('Verified Loc Coords'),
             confidentialLoc: record.get('Location is Confidential'),
           });
