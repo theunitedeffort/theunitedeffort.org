@@ -1594,7 +1594,7 @@ function complexImmigration(input,
 function complexDischarge(input,
   complexOptions=['dishonorable', 'oth', 'bad-conduct']) {
   return (
-  complexOptions.includes(input.dischargeStatus));
+    complexOptions.includes(input.dischargeStatus));
 }
 
 // Computes the incremental change in HUD income limit for large family sizes.
