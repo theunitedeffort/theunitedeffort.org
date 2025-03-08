@@ -1592,10 +1592,9 @@ function complexImmigration(input,
 // Returns true if discharge status is other-than-honorable, bad conduct,
 // or dishonorable. Used to determine complex discharge flag.
 function complexDischarge(input,
-  complexOptions=['dishonorable', 'oth', 'bad-conduct',]) {
-    return (
-    complexOptions.includes(input.dischargeStatus));
-  
+  complexOptions=['dishonorable', 'oth', 'bad-conduct']) {
+  return (
+  complexOptions.includes(input.dischargeStatus));
 }
 
 // Computes the incremental change in HUD income limit for large family sizes.
@@ -3039,7 +3038,7 @@ function renderFlags(flags, listElem) {
       break;
     case FlagCodes.COMPLEX_DISCHARGE:
       flagMsg = 'Veterans receiving undesirable, bad conduct, and other ' +
-        'than honorable discharges may qualify for VA benefits depending ' + 
+        'than honorable discharges may qualify for VA benefits depending ' +
         'on a determination made by VA. ' +
         '<a href="https://www.benefits.va.gov/benefits/character_of_discharge.asp" ' +
         'target="_blank" rel="noopener">Learn More</a>';
