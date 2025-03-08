@@ -347,6 +347,8 @@ describe('renderFlags', () => {
     expectedStrs[elig.FlagCodes.COMPLEX_IMMIGRATION] = (
       'immigrant eligibility rules');
     expectedStrs[elig.FlagCodes.COMPLEX_RETIREMENT_AGE] = 'full retirement age';
+    expectedStrs[elig.FlagCodes.COMPLEX_DISCHARGE] = (
+      'undesirable, bad conduct, and other than honorable discharges');
   });
 
   test.each(Object.values(elig.FlagCodes))('Renders %s flag', (flag) => {
