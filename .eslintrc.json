@@ -26,7 +26,8 @@
         "ignoreUrls": true,
         "ignoreStrings": true
       }
-    ]
+    ],
+    "linebreak-style": 0
   },
   "ignorePatterns": []
 }
