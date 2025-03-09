@@ -499,6 +499,14 @@ describe('Navigation and UI', () => {
           },
         },
         {
+          pageId: 'page-income-details-guaranteed',
+          setUp: function() {
+            click(nextButton, 4);
+            document.getElementById('income-has-guaranteed').checked = true;
+            click(nextButton);
+          },
+        },
+        {
           pageId: 'page-income-details-other',
           setUp: function() {
             click(nextButton, 4);
@@ -847,6 +855,7 @@ describe('Navigation and UI', () => {
     click(document.getElementById('income-has-veterans'));
     click(document.getElementById('income-has-workers-comp'));
     click(document.getElementById('income-has-child-support'));
+    click(document.getElementById('income-has-guaranteed'));
     click(document.getElementById('income-has-other'));
     selector = ':scope > li';
     const incomePages = getIncomePages();
@@ -1351,6 +1360,10 @@ describe('Navigation and UI', () => {
     document.getElementById('income-has-child-support').checked = true;
     expectPagesUsed(expectedPages);
 
+    expectedPages.push('page-income-details-guaranteed');
+    document.getElementById('income-has-guaranteed').checked = true;
+    expectPagesUsed(expectedPages);
+
     expectedPages.push('page-income-details-other');
     document.getElementById('income-has-other').checked = true;
     expectPagesUsed(expectedPages);
@@ -1633,7 +1646,8 @@ describe('buildInputObj', () => {
         veterans: [[15, 55], [250], [3500]],
         workersComp: [[16, 56], [260], [3600]],
         childSupport: [[17, 57], [270], [3700]],
-        other: [[18, 58], [280], [3800]],
+        guaranteed: [[18, 58], [280], [3800]],
+        other: [[19, 59], [290], [3900]],
       },
       assets: {
         valid: true,
@@ -1817,6 +1831,7 @@ describe('buildInputObj', () => {
     addIncome('veterans', expected.income.veterans);
     addIncome('workers-comp', expected.income.workersComp);
     addIncome('child-support', expected.income.childSupport);
+    addIncome('guaranteed', expected.income.guaranteed);
     addIncome('other', expected.income.other);
     expect(getInput().income).toEqual(expected.income);
 
