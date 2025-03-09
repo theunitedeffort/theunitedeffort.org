@@ -206,7 +206,7 @@ const strs = {
   },
   'guaranteed': {
     'en': /guaranteed income/i,
-    // TODO: Translate to Spanish
+    'es': /ingreso garantizado/i,
   },
   'otherSource': {
     'en': /other source/i,
