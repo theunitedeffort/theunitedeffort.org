@@ -19,6 +19,11 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   <p>Filters Applied:<br/> {% querySummary query %}</p>
 {% endif %}
 
+{% comment %} TODO: remove this note after fixing #160 {% endcomment %}
+<p class="note noprint">
+  Printing this table on Safari may cause some text and table rows to print incorrectly. If you experience this issue, please try printing using a different browser.
+</p>
+
 <div class="flex align_end">
   <h3>Showing {% if numFiltersApplied == 0 %}all {% endif %} {{numResults}} {{numResults | pluralize: "property", "properties"}}</h3>
 

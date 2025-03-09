@@ -64,6 +64,11 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
   </p>
 {% endif %}
 
+{% comment %} TODO: remove this note after fixing #160 {% endcomment %}
+<p class="note noprint">
+  Printing this table on Safari may cause some text and table rows to print incorrectly. If you experience this issue, please try printing using a different browser.
+</p>
+
 <h3>{{numResults}} {{numResults | pluralize: "property", "properties"}} total</h3>
 <div class="flex">
   <p class="noprint collapse_top">
