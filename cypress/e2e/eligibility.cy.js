@@ -178,7 +178,7 @@ const strs = {
   },
   'selfEmployment': {
     'en': /self-employment/i,
-    'es': /ingresos por cuenta propia/i,
+    'es': /ingresos (del trabajo )?por cuenta propia/i,
   },
   'disability': {
     'en': /disability/i,
