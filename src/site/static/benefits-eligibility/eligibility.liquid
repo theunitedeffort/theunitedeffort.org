@@ -4,6 +4,7 @@ title: Find Assistance Programs For You
 permalink:
   build: "/benefits-eligibility/index.html"
 pageClass: "page-benefits-eligibility"
+pageHead: '<script src="/js/accessibility.js" defer></script>'
 ---
 
 <h1>{{title}}
@@ -43,6 +44,7 @@ pageClass: "page-benefits-eligibility"
         <div>
           <label for="age">How old are you?</label>
           <input id="age" class="short" type="number" min="1" max="130" /> years
+          <p data-toggletip data-toggletip-class="icon_info">Many programs have age requirements that must be met.</p>
         </div>
 
         <p>Select any of the following that describe you:</p>
@@ -51,30 +53,37 @@ pageClass: "page-benefits-eligibility"
             <li>
               <input id="not-citizen" type="checkbox">
               <label for="not-citizen">I am <span class="italic">not</span> a U.S. citizen</label>
+              <p data-toggletip data-toggletip-class="icon_info">Some public benefits require applicants be U.S. citizens or qualified immigrants.</p>
             </li>
             <li>
               <input id="disabled" type="checkbox">
               <label for="disabled">I am disabled</label>
+              <p data-toggletip data-toggletip-class="icon_info">There are many programs for those with disabilities like VTA Paratransit.</p>
             </li>
             <li>
               <input id="blind" type="checkbox">
               <label for="blind">I am blind</label>
+              <p data-toggletip data-toggletip-class="icon_info">Some programs provide benefits to individuals who are blind.</p>
             </li>
             <li>
               <input id="deaf" type="checkbox">
               <label for="deaf">I am deaf or hard of hearing</label>
+              <p data-toggletip data-toggletip-class="icon_info">Some programs provide benefits to individuals who are deaf.</p>
             </li>
             <li>
               <input id="veteran" type="checkbox">
               <label for="veteran">I am a U.S. veteran</label>
+              <p data-toggletip data-toggletip-class="icon_info">Veterans qualify for additional disability, pension, and housing programs, often through the Department of Veterans Affairs.</p>
             </li>
             <li>
               <input id="pregnant" type="checkbox">
               <label for="pregnant">I am pregnant or was pregnant within the last 6 months</label>
+              <p data-toggletip data-toggletip-class="icon_info">Households with pregnant or recently pregnant persons may qualify for programs like CalWORKs and WIC.</p>
             </li>
             <li>
               <input id="feeding" type="checkbox">
               <label for="feeding">I am breastfeeding a child younger than 1 year old</label>
+              <p data-toggletip data-toggletip-class="icon_info">Programs like WIC provide benefits to those with a breastfeeding person in their household.</p>
             </li>
             <li>
               <input id="yourself-details-none" type="checkbox">
@@ -89,17 +98,24 @@ pageClass: "page-benefits-eligibility"
       <div>
         <p>Are you the head of your household?</p>
         {% yesNo "head-household" %}
+        <p data-toggletip data-toggletip-class="icon_info">Some programs like CalWORKs require a designated head of household.</p>
       </div>
     {% endeligPage %}
 
     {% eligPage "disability-details" %}
       <h3>About Your Disability</h3>
       <div>
-        <p>Do you use a guide, signal or service dog?</p>
+        <p>
+          Do you use a guide, signal or service dog?
+          <span data-toggletip data-toggletip-class="icon_info">Programs like ADSA provide benefits to individuals with service dogs.</span>
+        </p>
         {% yesNo "use-guide-dog" %}
       </div>
       <div id="military-disability-wrapper" class="hidden">
-        <p>Is your disability related to your military service?</p>
+        <p>
+          Is your disability related to your military service?
+          <span data-toggletip data-toggletip-class="icon_info">Many veterans with service-related disabilities are entitled to certain benefits from VA.</span>
+        </p>
         {% yesNo "dis-military" %}
       </div>
     {% endeligPage %}
@@ -109,6 +125,7 @@ pageClass: "page-benefits-eligibility"
 
       <div>
         <label for="your-discharge-status">What is your discharge status?</label>
+        <p data-toggletip data-toggletip-class="icon_info">Benefits for veterans often require specific discharge conditions.</p>
         <select id="your-discharge-status">
           <option value="">--Please choose an option--</option>
           <option value="honorable">Honorable</option>
@@ -120,7 +137,10 @@ pageClass: "page-benefits-eligibility"
       </div>
 
       <div>
-        <p>Enter details for your duty periods below:</p>
+        <p>
+          Enter details for your duty periods below:
+          <span data-toggletip data-toggletip-class="icon_info">Some benefits for veterans have requirements in terms of duty type and length.</span>
+        </p>
         {% capture dutyPeriodDetailsTempl %}
           <h4>Duty Period 1</h4>
           <div>
@@ -153,6 +173,7 @@ pageClass: "page-benefits-eligibility"
       {% capture dutyPeriodTempl %}
         <p>
           This question is about your <span class="bold">active duty period</span> from&thinsp;<span id="served-from-ref" class="bold" translate="no"></span>&thinsp;until&thinsp;<span id="served-until-ref" class="bold" translate="no"></span>.
+          <span data-toggletip data-toggletip-class="icon_info">Some benefits for veterans require service for the full duration of which the veteran was called or ordered to active duty.</span>
         </p>
         <div>
           <p><span class="bold">Did you serve the full duration for which you were called or ordered to active duty?</span></p>
@@ -181,6 +202,7 @@ pageClass: "page-benefits-eligibility"
       <h3>About Your Immigration Status</h3>
 
       <p>Select <span class="bold">one</span> of the following that most accurately describes you:
+      <span data-toggletip data-toggletip-class="icon_info">Some public benefits require applicants be qualified immigrants if not U.S. citizens.</span>
       </p>
       <div>
         {% singleselect "immig_status" %}
@@ -207,7 +229,10 @@ pageClass: "page-benefits-eligibility"
 
     {% eligPage "household-members" %}
       <p>
-        Enter details for each person living in your household. Include all adults and children who live in your home and share income and household expenses like bills and food. 
+        Enter details for each person living in your household. Include all adults and children who live in your home and share income and household expenses like bills and food.
+        <span data-toggletip-class="icon_info" data-toggletip>
+          Some programs require information about all household members to determine eligibility, such as the number of children or pregnant persons in the household.
+        </span>
       </p>
 
       {% capture hhTemplate %}
@@ -263,7 +288,10 @@ pageClass: "page-benefits-eligibility"
     {% endeligPage %}
 
     {% eligPage "household-situation" %}
-      <p>Select the option below that best describes your current housing situation:</p>
+      <p>Select the option below that best describes your current housing situation:
+        <span data-toggletip data-toggletip-class="icon_info">Some programs, such as housing voucher programs and the homelessness prevention system, require individuals be in 
+          specific housing situations in order to recieve benefits.
+      </p>
       <div>
         {% singleselect "housing-situation" %}
           {% option "housed" %}
@@ -293,15 +321,20 @@ pageClass: "page-benefits-eligibility"
 
     {% eligPage "household-housed" %}
       <div>
-        <p>Does your household pay a gas or electric bill?</p>
+        <p>Does your household pay a gas or electric bill?
+          <span data-toggletip data-toggletip-class="icon_info">Some programs like FERA require applicants to pay utility bills to qualify for benefits.</span>
+        </p>
         {% yesNo "pay-utilities" %}
       </div>
       <div>
-        <p>Do you have cooking facilities and a place to store food in your home?</p>
+        <p>Do you have cooking facilities and a place to store food in your home?
+          <span data-toggletip data-toggletip-class="icon_info">Some programs like SSI require applicants to have adequate cooking and food storage facilities.</span>
+        </p>
         {% yesNo "has-kitchen" %}
       </div>
       <div>
         <p>Do you feel you are at risk of losing your home?
+          <span data-toggletip data-toggletip-class="icon_info">Some programs like the Homelessness Prevention System provide benefits to those who are housed but at risk of losing their housing.</span>
           <span class="subtitle">For example, you can't pay upcoming rent or must leave your current housing for any reason, including eviction or safety concerns</span>
         </p>
         {% yesNo "unhoused-risk" %}
@@ -315,6 +348,7 @@ pageClass: "page-benefits-eligibility"
     {% eligPage "income" %}
       <p>
         Select all sources of income for you and your household. Include income from <span class="bold">all members of your household, including yourself</span>.
+        <span data-toggletip data-toggletip-class="icon_info">Many programs have individual or household income requirements that must be met in order to qualify for benefits. Some programs have specific rules on what sources of income are counted when determining eligibility.</span>
       </p>
       <div>
         <ul id="income-types" class="multiselect">
@@ -406,7 +440,9 @@ pageClass: "page-benefits-eligibility"
 
     {% eligPage "ss-taxes" %}
       <div>
-        <p>In the last 10 years, have you worked <span class="bold">and</span> paid Social Security taxes on your earnings?</p>
+        <p>In the last 10 years, have you worked <span class="bold">and</span> paid Social Security taxes on your earnings?
+          <span data-toggletip data-toggletip-class="icon_info">Some programs like SSDI require applicants to have paid Social Security taxes to qualify for benefits.</span>
+        </p>
         {% yesNo "ss-taxes" %}
       </div>
     {% endeligPage %}
@@ -414,6 +450,7 @@ pageClass: "page-benefits-eligibility"
     {% eligPage "income-assets" %}
       {% capture assetPreamble %}
         Enter the values of all assets or resources you and your household have.  This includes cash you have on hand, in a checking account, or in a savings account.  If you live in a home or drive a car to work, do not include the value of those items.
+        <span data-toggletip data-toggletip-class="icon_info">Some programs have asset limits that must be met in order to qualify for benefits.</span>
       {% endcapture %}
       {% capture assetEpilogue %}
         <div>
@@ -430,6 +467,7 @@ pageClass: "page-benefits-eligibility"
     {% eligPage "existing-benefits" %}
       <p>
         Mark any public assistance and benefits you or your household already receive.
+        <span data-toggletip data-toggletip-class="icon_info">Some programs have rules that prevent individuals or households from receiving benefits if they are already participating in another program.</span>
       </p>
 
      {% capture columns -%}
