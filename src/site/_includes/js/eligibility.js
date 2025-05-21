@@ -1592,7 +1592,7 @@ function complexImmigration(input,
 // Returns true if discharge status is other-than-honorable, bad conduct,
 // or dishonorable. Used to determine complex discharge flag.
 function complexDischarge(input,
-  complexOptions=['dishonorable', 'oth', 'bad-conduct']) {
+  complexOptions=['oth', 'bad-conduct']) {
   return (
     complexOptions.includes(input.dischargeStatus));
 }
@@ -2099,8 +2099,6 @@ function vaDisabilityResult(input) {
 
   const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
     'dishonorable',
-    'oth',
-    'bad-conduct',
   ]));
 
   const isServiceDisabled = and(
@@ -2118,14 +2116,13 @@ function vaDisabilityResult(input) {
       'duty training',
       meetsDutyReq));
   program.addCondition(
-    new EligCondition('Have a discharge status that is not dishonorable, ' +
-      'bad conduct, or other-than-honorable',
-    meetsDischargeReq));
+    new EligCondition('Have a discharge status that is not dishonorable.',
+      meetsDischargeReq));
 
   if (input.existingVaDisabilityMe) {
     program.markEnrolled();
   }
-  if (complexDischarge(input)) {
+  if (program.evaluate() && complexDischarge(input)) {
     program.addFlag(FlagCodes.COMPLEX_DISCHARGE);
   }
   return program.getResult();
@@ -2586,8 +2583,6 @@ function vaPensionResult(input) {
 
   const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
     'dishonorable',
-    'oth',
-    'bad-conduct',
   ]));
 
   const meetsAgeReq = ge(input.age, cnst.vaPension.MIN_ELDERLY_AGE);
@@ -2663,7 +2658,7 @@ function vaPensionResult(input) {
   if (input.existingVaPensionMe) {
     program.markEnrolled();
   }
-  if (complexDischarge(input)) {
+  if (program.evaluate() && complexDischarge(input)) {
     program.addFlag(FlagCodes.COMPLEX_DISCHARGE);
   }
   return program.getResult();
@@ -3037,8 +3032,8 @@ function renderFlags(flags, listElem) {
         'complex, and not all immigrants are eligible.';
       break;
     case FlagCodes.COMPLEX_DISCHARGE:
-      flagMsg = 'Veterans receiving undesirable, bad conduct, and other ' +
-        'than honorable discharges may qualify for VA benefits depending ' +
+      flagMsg = 'Veterans with a bad conduct or other ' +
+        'than honorable discharge may qualify for VA benefits depending ' +
         'on a determination made by VA. ' +
         '<a href="https://www.benefits.va.gov/benefits/character_of_discharge.asp" ' +
         'target="_blank" rel="noopener">Learn More</a>';
