@@ -2032,7 +2032,7 @@ function careResult(input) {
       underIncomeLimit),
     new EligCondition('Be receiving or eligible for SSI, LIHEAP, WIC, ' +
         'CalWORKS, CalFresh, Medi-Cal, CFAP, NSLP, SCHIP, or Bureau ' +
-        'of Indian Affairs General Assistance',
+        'of Indian Affairs GA',
     isCategoricallyEligible),
   ]);
 
