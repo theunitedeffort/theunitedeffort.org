@@ -2012,6 +2012,8 @@ function careResult(input) {
     input.existingNslpHousehold,
     input.existingSchipMe,
     input.existingSchipHousehold,
+    input.existingBiaGaMe,
+    input.existingBiaGaHousehold,
     // TODO: Add Medi-Cal eligibility check here once supported.
     ssiResult(input).eligible,
     liheapResult(input).eligible,
@@ -2029,7 +2031,8 @@ function careResult(input) {
       `Have a gross income below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
     new EligCondition('Be receiving or eligible for SSI, LIHEAP, WIC, ' +
-        'CalWORKS, CalFresh, Medi-Cal, CFAP, NSLP or SCHIP',
+        'CalWORKS, CalFresh, Medi-Cal, CFAP, NSLP, SCHIP, or Bureau ' +
+        'of Indian Affairs General Assistance',
     isCategoricallyEligible),
   ]);
 
@@ -2283,6 +2286,8 @@ function lifelineResult(input) {
     input.existingCalworksHousehold,
     input.existingVaPensionMe,
     input.existingVaPensionHousehold,
+    input.existingBiaGaMe,
+    input.existingBiaGaHousehold,
     liheapResult(input).eligible,
     ssiResult(input).eligible,
     calfreshResult(input).eligible,
@@ -2296,8 +2301,8 @@ function lifelineResult(input) {
       `Have a gross income below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
     new EligCondition('Be receiving or eligible for SSI, LIHEAP, WIC, ' +
-        'CalWORKS, CalFresh, Medi-Cal, NSLP, Public Housing Assistance, or ' +
-        'VA Pension',
+        'CalWORKS, CalFresh, Medi-Cal, NSLP, Public Housing Assistance, ' +
+        'Bureau of Indian Affairs GA, or VA Pension',
     isProgramQualified),
   ]);
 
