@@ -279,17 +279,17 @@ const cnst = {
       ['1990-08-02', ''], // Gulf war, no end date yet.
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
-    // Effective through 11/30/24
-    ANNUAL_NET_WORTH_LIMIT: 155356, // USD per year
+    // Effective through 11/30/25
+    ANNUAL_NET_WORTH_LIMIT: 159240, // USD per year
     // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
-    // Effective through 11/30/24
+    // Effective through 11/30/25
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      16551,
-      21674,
+      16965,
+      22216,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2831, // USD per year
-    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 14600, // USD per year
+    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2902, // USD per year
+    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 15000, // USD per year
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
