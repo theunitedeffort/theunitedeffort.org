@@ -188,7 +188,7 @@ const fetchBmrAdminRecords = async () => {
       });
       return admins;
     });
-}
+};
 
 const fetchReferrerRecords = async () => {
   const referrers = [];
@@ -294,13 +294,14 @@ const fetchShelterRecords = async () => {
 
 const compiledData = async () => {
   console.log('Fetching apartment, units, shelter, and referrers data.');
-  const [apartments, units, bmrAdmins, shelters, referrers] = await Promise.all([
-    fetchApartmentRecords(),
-    fetchUnitRecords(),
-    fetchBmrAdminRecords(),
-    fetchShelterRecords(),
-    fetchReferrerRecords(),
-  ]);
+  const [apartments, units, bmrAdmins, shelters, referrers] = (
+    await Promise.all([
+      fetchApartmentRecords(),
+      fetchUnitRecords(),
+      fetchBmrAdminRecords(),
+      fetchShelterRecords(),
+      fetchReferrerRecords(),
+    ]));
   console.log(`got ${apartments.length} apartments, ${units.length} units, ` +
     `${Object.keys(bmrAdmins).length} BMR admins, ` +
     `${shelters.length} shelters, and ${referrers.length} referrers`);
