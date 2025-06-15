@@ -44,6 +44,7 @@ const fetchApartmentRecords = async () => {
       'LOC_COORDS',
       'VERIFIED_LOC_COORDS',
       'NUM_TOTAL_UNITS',
+      'NUM_RESTRICTED_UNITS',
       'POPULATIONS_SERVED',
       'MIN_RESIDENT_AGE',
       'MAX_RESIDENT_AGE',
@@ -77,6 +78,7 @@ const fetchApartmentRecords = async () => {
             emails: [record.get('EMAIL'), record.get('SECOND_EMAIL')]
               .filter((e) => e),
             numTotalUnits: record.get('NUM_TOTAL_UNITS'),
+            numRestrictedUnits: record.get('NUM_RESTRICTED_UNITS'),
             populationsServed: record.get('POPULATIONS_SERVED') || [],
             minAge: record.get('MIN_RESIDENT_AGE'),
             maxAge: record.get('MAX_RESIDENT_AGE'),
