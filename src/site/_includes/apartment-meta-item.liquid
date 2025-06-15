@@ -37,6 +37,19 @@
     </ul>
   {%- elsif label == "City" -%}
     <span translate="no">{{ item }}</span>
+  {%- elsif label == "Affordable Program Administrator" -%}
+    {%- if item.website and item.website != '' -%}
+      <a href="{{ item.website }}" target="_blank" rel="noopener" translate="no">{{ item.name }}</a>
+    {%- else -%}
+      <span translate="no">{{ item.name }}</span>
+    {%- endif -%}
+    {%- if item.email and item.email != '' -%}
+      <br><a href="mailto:{{ item.email }}">{{ item.email }}</a>
+    {%- endif -%}
+    {%- if item.phone and item.phone != '' -%}
+      {%- assign formattedPhone = item.phone | formatPhone -%}
+      <br><a href="tel:{{ formattedPhone }}">{{ formattedPhone }}</a>
+    {%- endif -%}
   {%- else -%}
     {{ item }}
   {%- endif -%}

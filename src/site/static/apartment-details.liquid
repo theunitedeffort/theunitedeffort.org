@@ -12,6 +12,7 @@ eleventyComputed:
 ---
 
 <h1 translate="no">{{title}}</h1>
+
 {% assign hasTotal = apartment.numTotalUnits and apartment.numTotalUnits > 0 %}
 {% capture unitsStr -%}
   {%- if apartment.numRestrictedUnits and apartment.numRestrictedUnits > 0 -%}
@@ -24,6 +25,7 @@ eleventyComputed:
     {{apartment.numTotalUnits}} total
   {% endif -%}
 {%- endcapture %}
+
 <table class="deflist">
   {% render "apartment-meta-item" label: "Address", item: apartment.addresses, apartment: apartment %}
   {% render "apartment-meta-item" label: "City", item: apartment.city %}
@@ -32,16 +34,33 @@ eleventyComputed:
   {% render "apartment-meta-item" label: "Phone", item: apartment.phones %}
   {% render "apartment-meta-item" label: "Website", item: apartment.website %}
   {% render "apartment-meta-item" label: "Additional Info", item: apartment.supplementalUrls %}
+  {% render "apartment-meta-item" label: "Affordable Program Administrator", item: apartment.bmrAdmin %}
 </table>
 
 {% if apartment.numTotalUnits > 0 and apartment.numRestrictedUnits > 0 %}
   {% assign marketRateFraction = apartment.numTotalUnits | minus: apartment.numRestrictedUnits | divided_by: apartment.numTotalUnits %}
   {% if marketRateFraction < 1.0 and marketRateFraction > 0.1 %}
     <p class="note">
-      {{marketRateFraction | times: 100 | round}}% of rental units at this property are full-price market-rate units.  Be sure to inquire specifically about below-market-rate (BMR) units when contacting this property.
+      {{marketRateFraction | times: 100 | round}}% of rental units at this property are full-price market-rate units.  Inquire specifically about below-market-rate (BMR) units when contacting this property
+      {%- if apartment.bmrAdmin -%}
+        , or reach out to {{ apartment.bmrAdmin.name }}
+      {%- endif -%}
+      .
     </p>
   {% endif %}
 {% endif %}
+
+{% comment %}
+{% if apartment.bmrAdmin %}
+  <p><span class="bold">Affordable Program Administrator:</span> This property's affordable housing program is managed separately by {% if apartment.bmrAdmin.website and apartment.bmrAdmin.website != "" %}
+      <a href="{{apartment.bmrAdmin.website}}">{{apartment.bmrAdmin.name}}</a>
+    {% else %}
+      {{apartment.bmrAdmin.name}}
+    {% endif %}
+  </p>
+{% endif %}
+{% endcomment %}
+
 {% assign genPop = "General Population" %}
 {% assign specialPopulations = apartment.populationsServed | except: genPop %}
 {% assign numSpecialPopulations = specialPopulations | size %}
