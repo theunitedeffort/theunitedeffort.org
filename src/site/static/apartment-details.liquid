@@ -50,17 +50,6 @@ eleventyComputed:
   {% endif %}
 {% endif %}
 
-{% comment %}
-{% if apartment.bmrAdmin %}
-  <p><span class="bold">Affordable Program Administrator:</span> This property's affordable housing program is managed separately by {% if apartment.bmrAdmin.website and apartment.bmrAdmin.website != "" %}
-      <a href="{{apartment.bmrAdmin.website}}">{{apartment.bmrAdmin.name}}</a>
-    {% else %}
-      {{apartment.bmrAdmin.name}}
-    {% endif %}
-  </p>
-{% endif %}
-{% endcomment %}
-
 {% assign genPop = "General Population" %}
 {% assign specialPopulations = apartment.populationsServed | except: genPop %}
 {% assign numSpecialPopulations = specialPopulations | size %}

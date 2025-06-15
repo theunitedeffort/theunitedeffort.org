@@ -162,7 +162,7 @@ const fetchUnitRecords = async () => {
     });
 };
 
-const fetchBmrAdminRecords = async () =>{
+const fetchBmrAdminRecords = async () => {
   const admins = {};
   const table = base(BMR_ADMINS_TABLE);
   return table.select({
