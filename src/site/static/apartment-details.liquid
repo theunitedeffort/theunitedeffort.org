@@ -12,15 +12,43 @@ eleventyComputed:
 ---
 
 <h1 translate="no">{{title}}</h1>
+
+{% assign hasTotal = apartment.numTotalUnits and apartment.numTotalUnits > 0 %}
+{% capture unitsStr -%}
+  {%- if apartment.numRestrictedUnits and apartment.numRestrictedUnits > 0 -%}
+    {{apartment.numRestrictedUnits}} affordable
+    {%- if hasTotal %}
+    of
+    {% endif -%}
+  {%- endif -%}
+  {%- if hasTotal %}
+    {{apartment.numTotalUnits}} total
+  {% endif -%}
+{%- endcapture %}
+
 <table class="deflist">
   {% render "apartment-meta-item" label: "Address", item: apartment.addresses, apartment: apartment %}
   {% render "apartment-meta-item" label: "City", item: apartment.city %}
-  {% render "apartment-meta-item" label: "Units", item: apartment.numTotalUnits %}
+  {% render "apartment-meta-item" label: "Units", item: unitsStr | strip %}
   {% render "apartment-meta-item" label: "Email", item: apartment.emails %}
   {% render "apartment-meta-item" label: "Phone", item: apartment.phones %}
   {% render "apartment-meta-item" label: "Website", item: apartment.website %}
   {% render "apartment-meta-item" label: "Additional Info", item: apartment.supplementalUrls %}
+  {% render "apartment-meta-item" label: "Affordable Program Administrator", item: apartment.bmrAdmin %}
 </table>
+
+{% if apartment.numTotalUnits > 0 and apartment.numRestrictedUnits > 0 %}
+  {% assign marketRateFraction = apartment.numTotalUnits | minus: apartment.numRestrictedUnits | divided_by: apartment.numTotalUnits %}
+  {% if marketRateFraction < 1.0 and marketRateFraction > 0.1 %}
+    <p class="note">
+      {{marketRateFraction | times: 100 | round}}% of rental units at this property are full-price market-rate units.  Inquire specifically about below-market-rate (BMR) units when contacting this property
+      {%- if apartment.bmrAdmin -%}
+        , or reach out to {{ apartment.bmrAdmin.name }}
+      {%- endif -%}
+      .
+    </p>
+  {% endif %}
+{% endif %}
 
 {% assign genPop = "General Population" %}
 {% assign specialPopulations = apartment.populationsServed | except: genPop %}

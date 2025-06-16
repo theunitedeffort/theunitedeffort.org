@@ -1,6 +1,6 @@
-{% if item and item.size != 0 %}
+{% if item and item.size != 0 and item != "" %}
 <tr>
-  <td class="definition_term">{{ label }}</td>
+  <td class="definition_term">{{ label }}:</td>
   <td class="definition">
   {%- if label == "Email" -%}
     <ul>
@@ -20,11 +20,11 @@
       {%- endfor -%}
     </ul>
   {%- elsif label == "Website" -%}
-    <a href="{{ item }}" target="_blank" rel="noopener" translate="no">{{ item }}</a>
+    <a href="{{ item }}" target="_blank" rel="noopener" translate="no">{{ item | pretty_url }}</a>
   {%- elsif label == "Additional Info" -%}
     <ul>
       {%- for link in item -%}
-        <li><a href="{{ link }}" target="_blank" rel="noopener" translate="no">{{ link }}</a></li>
+        <li><a href="{{ link }}" target="_blank" rel="noopener" translate="no">{{ link | pretty_url }}</a></li>
       {%- endfor -%}
     </ul>
   {%- elsif label == "Address" -%}
@@ -37,6 +37,19 @@
     </ul>
   {%- elsif label == "City" -%}
     <span translate="no">{{ item }}</span>
+  {%- elsif label == "Affordable Program Administrator" -%}
+    {%- if item.website and item.website != '' -%}
+      <a href="{{ item.website }}" target="_blank" rel="noopener" translate="no">{{ item.name }}</a>
+    {%- else -%}
+      <span translate="no">{{ item.name }}</span>
+    {%- endif -%}
+    {%- if item.email and item.email != '' -%}
+      <br><a href="mailto:{{ item.email }}">{{ item.email }}</a>
+    {%- endif -%}
+    {%- if item.phone and item.phone != '' -%}
+      {%- assign formattedPhone = item.phone | formatPhone -%}
+      <br><a href="tel:{{ formattedPhone }}">{{ formattedPhone }}</a>
+    {%- endif -%}
   {%- else -%}
     {{ item }}
   {%- endif -%}
