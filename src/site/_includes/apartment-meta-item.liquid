@@ -6,7 +6,7 @@
     <ul>
       {%- for email in item -%}
         {%- if email and email != '' -%}
-          <li><a href="mailto:{{ email }}">{{ email }}</a></li>
+          <li><a href="mailto:{{ email }}" translate="no">{{ email }}</a></li>
         {%- endif -%}
       {%- endfor -%}
     </ul>
@@ -44,7 +44,7 @@
       <span translate="no">{{ item.name }}</span>
     {%- endif -%}
     {%- if item.email and item.email != '' -%}
-      <br><a href="mailto:{{ item.email }}">{{ item.email }}</a>
+      <br><a href="mailto:{{ item.email }}" translate="no">{{ item.email }}</a>
     {%- endif -%}
     {%- if item.phone and item.phone != '' -%}
       {%- assign formattedPhone = item.phone | formatPhone -%}
