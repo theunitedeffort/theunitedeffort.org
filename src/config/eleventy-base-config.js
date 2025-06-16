@@ -964,6 +964,10 @@ module.exports = function(eleventyConfig) {
     return phoneStr.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
   });
 
+  eleventyConfig.addFilter('pretty_url', function(url) {
+    return url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  });
+
   eleventyConfig.addFilter('except', function(collection, value) {
     return collection.filter((x) => x != value);
   });

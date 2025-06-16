@@ -20,11 +20,11 @@
       {%- endfor -%}
     </ul>
   {%- elsif label == "Website" -%}
-    <a href="{{ item }}" target="_blank" rel="noopener" translate="no">{{ item }}</a>
+    <a href="{{ item }}" target="_blank" rel="noopener" translate="no">{{ item | pretty_url }}</a>
   {%- elsif label == "Additional Info" -%}
     <ul>
       {%- for link in item -%}
-        <li><a href="{{ link }}" target="_blank" rel="noopener" translate="no">{{ link }}</a></li>
+        <li><a href="{{ link }}" target="_blank" rel="noopener" translate="no">{{ link | pretty_url }}</a></li>
       {%- endfor -%}
     </ul>
   {%- elsif label == "Address" -%}
