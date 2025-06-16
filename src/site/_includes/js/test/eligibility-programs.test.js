@@ -504,6 +504,23 @@ describe('Program eligibility', () => {
     });
   }
 
+  function testDischargeStatus(setupFn, resultFn, testCases) {
+    describe.each(testCases)('Discharge status "$dischargeStatus"', (
+      {dischargeStatus, expectedFlag}) => {
+      test(`Complex discharge flag ${expectedFlag ? 'is' : 'is not'} present`, () => {
+        input.veteran = true;
+        input.dischargeStatus = dischargeStatus;
+        setupFn(input);
+        const result = resultFn(input);
+        if (expectedFlag) {
+          expect(result.flags).toContain(elig.FlagCodes.COMPLEX_DISCHARGE);
+        } else {
+          expect(result.flags).not.toContain(elig.FlagCodes.COMPLEX_DISCHARGE);
+        }
+      });
+    });
+  }
+
   beforeEach(() => {
     input = {
       age: null,
@@ -1735,19 +1752,31 @@ describe('Program eligibility', () => {
         .isEligibleIf('militaryDisabled').is(true);
     });
 
-    test('Requires discharge that is not other-than-honorable, bad conduct, or dishonorable', () => {
+    test('Requires discharge that is not dishonorable', () => {
       input.veteran = true;
       input.dischargeStatus = 'honorable';
       input.dutyPeriods = [{type: 'active-duty'}];
       input.militaryDisabled = true;
       input.disabled = true;
       check(elig.vaDisabilityResult, input)
-        .isNotEligibleIf('dischargeStatus').is('oth');
-      check(elig.vaDisabilityResult, input)
         .isNotEligibleIf('dischargeStatus').is('dishonorable');
-      check(elig.vaDisabilityResult, input)
-        .isNotEligibleIf('dischargeStatus').is('bad-conduct');
     });
+
+    testDischargeStatus(
+      (input) => {
+        input.disabled = true;
+        input.militaryDisabled = true;
+        input.dutyPeriods = [{type: 'active-duty'}];
+      },
+      elig.vaDisabilityResult,
+      [
+        {dischargeStatus: 'honorable', expectedFlag: false},
+        {dischargeStatus: 'general', expectedFlag: false},
+        {dischargeStatus: 'oth', expectedFlag: true},
+        {dischargeStatus: 'bad-conduct', expectedFlag: true},
+        {dischargeStatus: 'dishonorable', expectedFlag: false},
+      ],
+    );
   });
 
   describe('VA Pension Program', () => {
@@ -1816,6 +1845,22 @@ describe('Program eligibility', () => {
         ];
         expect(elig.vaPensionCountableIncome(input)).toBe(300);
       });
+
+      testDischargeStatus(
+        (input) => {
+          input.disabled = true;
+          input.militaryDisabled = true;
+          input.dutyPeriods = [{type: 'active-duty'}];
+        },
+        elig.vaDisabilityResult,
+        [
+          {dischargeStatus: 'honorable', expectedFlag: false},
+          {dischargeStatus: 'general', expectedFlag: false},
+          {dischargeStatus: 'oth', expectedFlag: true},
+          {dischargeStatus: 'bad-conduct', expectedFlag: true},
+          {dischargeStatus: 'dishonorable', expectedFlag: false},
+        ],
+      );
     });
 
     describe('Net worth', () => {
@@ -1865,7 +1910,7 @@ describe('Program eligibility', () => {
       check(elig.vaPensionResult, input).isEligibleIf('veteran').is(true);
     });
 
-    test('Requires discharge that is not other-than-honorable, bad conduct, or dishonorable', () => {
+    test('Requires discharge that is not dishonorable', () => {
       input.income.valid = true;
       input.assets.valid = true;
       input.veteran = true;
@@ -1873,11 +1918,7 @@ describe('Program eligibility', () => {
       input.dutyPeriods = [validDutyPeriod];
       input.dischargeStatus = 'honorable';
       check(elig.vaPensionResult, input)
-        .isNotEligibleIf('dischargeStatus').is('oth');
-      check(elig.vaPensionResult, input)
         .isNotEligibleIf('dischargeStatus').is('dishonorable');
-      check(elig.vaPensionResult, input)
-        .isNotEligibleIf('dischargeStatus').is('bad-conduct');
     });
 
     test('Requires adjusted income to be at or below the limit', () => {
