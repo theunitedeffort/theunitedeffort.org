@@ -36,20 +36,20 @@ const cnst = {
   calworks: {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/1CalWorksRCAECATCVAP/NonExEmpAUStndsCht.htm
     // Section 1.2 "Non-Exempt (Employable) AU Standards Chart Region 1"
-    // Effective through 6/30/25
+    // Effective through 6/30/26
     MBSAC: [ // USD per month
-      899,
-      1476,
-      1829,
-      2170,
-      2476,
-      2785,
-      3061,
-      3331,
-      3614,
-      3922,
+      930,
+      1526,
+      1892,
+      2244,
+      2561,
+      2880,
+      3166,
+      3445,
+      3738,
+      4056,
     ],
-    MBSAC_ADDL_PERSON: 35, // USD per month per person
+    MBSAC_ADDL_PERSON: 36, // USD per month per person
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/14Property_Gen/Property_Limit.htm
     // "Property General - Property Limit"
     // Effective through 12/31/2025
