@@ -193,7 +193,7 @@ const cnst = {
     ],
   },
   ihss: {
-    // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
+    // https://ssa.santaclaracounty.gov/supportive-services/in-home-supportive-services
     MIN_ELDERLY_AGE: 65, // Years
   },
   lifeline: {
