@@ -36,13 +36,13 @@ eleventyComputed:
   <div class="{{section.type | downcase }}">
     {% if section.type == "Pancake" %}
       <div class="container">
-      {{ section.content | markdownify | unplaceholder: images}}
+      {{ section.content | markdownify | unplaceholder: cms.images }}
       </div>
     {% elsif section.type == "Render-partial" %}
       {% assign partialName = section.content | strip %}
-      {% render partialName, data: partialsData %}
+      {% render partialName, data: cms.partialsData %}
     {% else %}
-      {{ section.content | markdownify | unplaceholder: images}}
+      {{ section.content | markdownify | unplaceholder: cms.images }}
     {% endif %}
 
   </div>
