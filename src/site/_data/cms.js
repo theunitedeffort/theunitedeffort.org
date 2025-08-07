@@ -117,7 +117,7 @@ const fetchNews = async () => {
     .all()
     .then((records) => {
       records.forEach(function(record) {
-        if (true) {
+        if (useRecord(record.get('Status'))) {
           data.push(record.fields);
         }
       });
