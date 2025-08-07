@@ -10,7 +10,7 @@ const useRecord = (status) => {
   const isProdContext = (
     ['PRODUCTION', 'DEPLOY_PREVIEW'].includes(process.env.DEPLOY_CONTEXT));
   return (
-    (isProdContext && record.get('Status') == 'Published') ||
+    (isProdContext && status == 'Published') ||
     (!isProdContext && ['Published', 'Preview'].includes(status)));
 };
 
