@@ -1,0 +1,35 @@
+---
+layout: "layouts/base.liquid"
+pagination:
+  data: cms.partialsData.articles
+  size: 1
+  alias: article
+pageClass: "page-about"
+permalink: "/protected/about/news/{{article['Title'] | slugify}}/index.html"
+
+eleventyComputed:
+  title: '{{article["Title"] | default: "News Article"}}'
+---
+
+<h1>{{article["Title"]}}</h1>
+{% if article["Subtitle"] and article["Subtitle"] != '' %}
+  <p class="subtitle">{{article["Subtitle"]}}</p>
+{% endif %}
+<div class="story_content">
+  {% if article.image %}
+    <figure>
+      <img src="{{article.image.url}}" width="{{article.image.width}}" height="{{article.image.height}}" alt="{{article["Photo Description"]}}" />
+      <figcaption>
+        {{article["Photo Caption"]}}
+        {% if article["Photo Credit"] and article["Photo Credit"] != '' %}
+          (Image credit <span translate="no">{{article["Photo Credit"]}}</span>)
+        {% endif %}
+      </figcaption>
+    </figure>
+  {% endif %}
+  {{article["Content"] | markdownify | unplaceholder}}
+</div>
+
+<p class="noprint">
+  <a href="/protected/about/news">&#8592; Back to more news</a>
+</p>

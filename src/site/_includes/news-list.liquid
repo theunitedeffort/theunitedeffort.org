@@ -1,0 +1,21 @@
+<div class="card-set">
+  {% for article in data.articles %}
+    {% capture articleUrl -%}
+      /protected/about/news/{{article["Title"] | slugify}}
+    {%- endcapture %}
+    <div class="card">
+      <p>
+        {{article["Date"] | date: '%B %e, %Y'}}
+      </p>
+      <h3>
+        <a class="unstyled" href="{{articleUrl}}">{{article["Title"]}}</a>
+      </h3>
+<!--       <p>
+        {{article["Content"] | markdownify | truncatewords: 25 | strip_html}}
+      </p> -->
+      <p>
+        <a href="{{articleUrl}}">Read more</a>
+      </p>
+    </div>
+  {% endfor %}
+</div>
