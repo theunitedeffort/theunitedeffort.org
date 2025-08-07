@@ -6,7 +6,7 @@ const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
 const isProdContext = (
-  ['PRODUCTION', 'DEPLOY_PREVIEW'].includes(global.deployContext));
+  ['PRODUCTION', 'DEPLOY_PREVIEW'].includes(process.env.DEPLOY_CONTEXT));
 
 const fetchSection = (id) => {
   const table = base('tblAkC6dlPJc4o0Je'); // sections table
