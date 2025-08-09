@@ -14,6 +14,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/assets/fonts": "/fonts" });
   eleventyConfig.addPassthroughCopy({ "src/assets/images": "/images" });
   eleventyConfig.addPassthroughCopy({ "src/assets/favicon": "/" });
+  eleventyConfig.addPassthroughCopy({ "src/site/_includes/dflip": "/dflip" });
   if (process.env.CONTEXT === 'dev' ) {
     // For builds that are not local development builds, the js files will
     // come from Babel instead (via babel.config.json and package.json)
