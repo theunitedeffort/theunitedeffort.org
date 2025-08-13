@@ -87,17 +87,18 @@ const cnst = {
   },
   clipper: {
     // https://www.clipperstartcard.com/s/
+    // Effective through 1/15/2026?
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      30120,
-      40880,
-      51640,
-      62400,
-      73160,
-      83920,
-      94680,
-      105440,
+      31300,
+      42300,
+      53300,
+      64300,
+      75300,
+      86300,
+      97300,
+      108300,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11000, // USD per year per person
     MIN_ELIGIBLE_AGE: 19, // Years
     MAX_ELIGIBLE_AGE: 64, // Years
   },
