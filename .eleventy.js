@@ -11,6 +11,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(require("./src/config/eleventy-base-config.js"));
 
   // Pass through static assets and client-side js files.
+  eleventyConfig.addPassthroughCopy({ "src/assets/training": "/training" });
   eleventyConfig.addPassthroughCopy({ "src/assets/fonts": "/fonts" });
   eleventyConfig.addPassthroughCopy({ "src/assets/images": "/images" });
   eleventyConfig.addPassthroughCopy({ "src/assets/favicon": "/" });
