@@ -1589,8 +1589,8 @@ function complexImmigration(input,
     complexOptions.includes(input.immigrationStatus));
 }
 
-// Returns true if discharge status is other-than-honorable, bad conduct,
-// or dishonorable. Used to determine complex discharge flag.
+// Returns true if discharge status is other-than-honorable or bad conduct.
+// Used to determine complex discharge flag.
 function complexDischarge(input,
   complexOptions=['oth', 'bad-conduct']) {
   return (
@@ -2636,7 +2636,7 @@ function vaPensionResult(input) {
   program.addCondition(new EligCondition('Be a U.S. veteran', input.veteran));
   program.addCondition(
     new EligCondition(
-      'Have been discharged honorably or under honorable conditions',
+      'Have a discharge status that is not dishonorable',
       meetsDischargeReq));
   program.addCondition(new EligCondition(
     'Meet specific duty type and duration ' +

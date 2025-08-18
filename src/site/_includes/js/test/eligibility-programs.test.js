@@ -506,11 +506,22 @@ describe('Program eligibility', () => {
 
   function testDischargeStatus(setupFn, resultFn, testCases) {
     describe.each(testCases)('Discharge status "$dischargeStatus"', (
-      {dischargeStatus, expectedFlag}) => {
+      {dischargeStatus, expectedFlag, expectedEligible}) => {
+      beforeEach(() => {
+        setupFn(input);
+      });
+
+      if (expectedEligible !== undefined) {
+        test(`Eligibility result is ${expectedEligible}`, () => {
+          input.veteran = true;
+          input.dischargeStatus = dischargeStatus;
+          expect(resultFn(input).eligible).toBe(expectedEligible);
+        });
+      }
+
       test(`Complex discharge flag ${expectedFlag ? 'is' : 'is not'} present`, () => {
         input.veteran = true;
         input.dischargeStatus = dischargeStatus;
-        setupFn(input);
         const result = resultFn(input);
         if (expectedFlag) {
           expect(result.flags).toContain(elig.FlagCodes.COMPLEX_DISCHARGE);
@@ -1770,11 +1781,11 @@ describe('Program eligibility', () => {
       },
       elig.vaDisabilityResult,
       [
-        {dischargeStatus: 'honorable', expectedFlag: false},
-        {dischargeStatus: 'general', expectedFlag: false},
-        {dischargeStatus: 'oth', expectedFlag: true},
-        {dischargeStatus: 'bad-conduct', expectedFlag: true},
-        {dischargeStatus: 'dishonorable', expectedFlag: false},
+        {dischargeStatus: 'honorable', expectedFlag: false, expectedEligible: true},
+        {dischargeStatus: 'general', expectedFlag: false, expectedEligible: true},
+        {dischargeStatus: 'oth', expectedFlag: true, expectedEligible: true},
+        {dischargeStatus: 'bad-conduct', expectedFlag: true, expectedEligible: true},
+        {dischargeStatus: 'dishonorable', expectedFlag: false, expectedEligible: false},
       ],
     );
   });
@@ -1854,11 +1865,11 @@ describe('Program eligibility', () => {
         },
         elig.vaDisabilityResult,
         [
-          {dischargeStatus: 'honorable', expectedFlag: false},
-          {dischargeStatus: 'general', expectedFlag: false},
-          {dischargeStatus: 'oth', expectedFlag: true},
-          {dischargeStatus: 'bad-conduct', expectedFlag: true},
-          {dischargeStatus: 'dishonorable', expectedFlag: false},
+          {dischargeStatus: 'honorable', expectedFlag: false, expectedEligible: true},
+          {dischargeStatus: 'general', expectedFlag: false, expectedEligible: true},
+          {dischargeStatus: 'oth', expectedFlag: true, expectedEligible: true},
+          {dischargeStatus: 'bad-conduct', expectedFlag: true, expectedEligible: true},
+          {dischargeStatus: 'dishonorable', expectedFlag: false, expectedEligible: false},
         ],
       );
     });
