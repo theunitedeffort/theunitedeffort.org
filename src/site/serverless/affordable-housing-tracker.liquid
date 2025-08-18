@@ -125,7 +125,7 @@ pageHead: '<style type="text/css" media="print">@page {size: landscape;}</style>
           {% for email in apartment.emails %}
             {% if email and email != '' %}
               <p>
-                <span class="italic">{{ email }}</span>
+                <span class="italic" translate="no">{{ email }}</span>
               </p>
             {% endif %}
           {% endfor %}
