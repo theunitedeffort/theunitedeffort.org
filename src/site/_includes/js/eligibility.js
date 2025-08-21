@@ -36,20 +36,20 @@ const cnst = {
   calworks: {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/1CalWorksRCAECATCVAP/NonExEmpAUStndsCht.htm
     // Section 1.2 "Non-Exempt (Employable) AU Standards Chart Region 1"
-    // Effective through 6/30/25
+    // Effective through 6/30/26
     MBSAC: [ // USD per month
-      899,
-      1476,
-      1829,
-      2170,
-      2476,
-      2785,
-      3061,
-      3331,
-      3614,
-      3922,
+      930,
+      1526,
+      1892,
+      2244,
+      2561,
+      2880,
+      3166,
+      3445,
+      3738,
+      4056,
     ],
-    MBSAC_ADDL_PERSON: 35, // USD per month per person
+    MBSAC_ADDL_PERSON: 36, // USD per month per person
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/14Property_Gen/Property_Limit.htm
     // "Property General - Property Limit"
     // Effective through 12/31/2025
@@ -72,50 +72,50 @@ const cnst = {
   },
   care: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    // Effective through 5/31/2025
+    // Effective through 5/31/2026
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      40880,
-      40880,
-      51640,
-      62400,
-      73160,
-      83920,
-      94680,
-      105440,
+      42300,
+      42300,
+      53300,
+      64300,
+      75300,
+      86300,
+      97300,
+      108300,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11000, // USD per year per person
   },
   clipper: {
     // https://www.clipperstartcard.com/s/
+    // Effective through 1/15/2026?
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      30120,
-      40880,
-      51640,
-      62400,
-      73160,
-      83920,
-      94680,
-      105440,
+      31300,
+      42300,
+      53300,
+      64300,
+      75300,
+      86300,
+      97300,
+      108300,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11000, // USD per year per person
     MIN_ELIGIBLE_AGE: 19, // Years
     MAX_ELIGIBLE_AGE: 64, // Years
   },
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    // Effective through 5/31/2025
+    // Effective through 5/31/2026
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      64550, // Min household size 3.
-      64550, // Min household size 3.
-      64550,
-      78000,
-      91450,
-      104900,
-      118350,
-      131800,
+      52875,
+      52875,
+      66625,
+      80375,
+      94125,
+      107875,
+      121625,
+      135375,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 13450, // USD per year per person
-    MIN_HOUSEHOLD_SIZE: 3, // People
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 13750, // USD per year per person
   },
   ga: {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/4GA/NeedStnds.htm
@@ -193,7 +193,7 @@ const cnst = {
     ],
   },
   ihss: {
-    // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
+    // https://ssa.santaclaracounty.gov/supportive-services/in-home-supportive-services
     MIN_ELDERLY_AGE: 65, // Years
   },
   lifeline: {
@@ -2062,9 +2062,6 @@ function feraResult(input) {
   const incomeLimitFera = grossLimit.getLimit(input.householdSize);
   const underFeraIncomeLimit = le(grossIncome(input), incomeLimitFera);
 
-  const meetsHouseholdSizeReq = ge(input.householdSize,
-    cnst.fera.MIN_HOUSEHOLD_SIZE);
-
   const program = new Program();
   program.addCondition(
     new EligCondition('Be housed', isHoused));
@@ -2079,10 +2076,6 @@ function feraResult(input) {
     new EligCondition(`Have a gross income under the FERA program limit of ` +
       `${usdLimit(incomeLimitFera)} per month`,
     underFeraIncomeLimit));
-  program.addCondition(
-    new EligCondition(`Have a household of at least ` +
-      `${cnst.fera.MIN_HOUSEHOLD_SIZE} people`,
-    meetsHouseholdSizeReq));
 
   if (input.existingFeraMe || input.existingFeraHousehold) {
     program.markEnrolled();

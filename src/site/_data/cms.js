@@ -6,6 +6,13 @@ const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
 
+const useRecord = (status) => {
+  const isProdContext = (
+    ['PRODUCTION', 'DEPLOY_PREVIEW'].includes(process.env.DEPLOY_CONTEXT));
+  return (
+    (isProdContext && status == 'Published') ||
+    (!isProdContext && ['Published', 'Preview'].includes(status)));
+};
 
 const fetchSection = (id) => {
   const table = base('tblAkC6dlPJc4o0Je'); // sections table
@@ -31,7 +38,7 @@ const fetchPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
-        if (record.get('Status') == 'Published') {
+        if (useRecord(record.get('Status'))) {
           const name = record.get('Page title');
           const path = record.get('Page path');
           const sectionID = record.get('Section')[0];
@@ -92,7 +99,7 @@ const fetchStories = async () => {
     .all()
     .then((records) => {
       records.forEach(function(record) {
-        if (record.get('Status') == 'Published') {
+        if (useRecord(record.get('Status'))) {
           data.push(record.fields);
         }
       });
@@ -165,6 +172,12 @@ const fetchAssets = async () => {
 
 
 module.exports = async function() {
+  // Only housing pages run serverless, so there is no need to fetch
+  // all this content when this data file is executed from a serverless
+  // environment.
+  if (process.env.ELEVENTY_SERVERLESS) {
+    return {};
+  }
   const asset = new eleventyFetch.AssetCache('airtable_pages');
   if (asset.isCacheValid('1h')) {
     console.log('Returning cached pages data.');

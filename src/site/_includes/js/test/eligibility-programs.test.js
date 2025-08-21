@@ -1058,9 +1058,8 @@ describe('Program eligibility', () => {
   describe('FERA Program', () => {
     let expectedLowIncomeLimit;
     beforeEach(() => {
-      const incomeIdx = elig.cnst.fera.MIN_HOUSEHOLD_SIZE - 1;
       expectedLowIncomeLimit = (
-        elig.cnst.care.ANNUAL_INCOME_LIMITS[incomeIdx] / 12);
+        elig.cnst.care.ANNUAL_INCOME_LIMITS[input.householdSize - 1] / 12);
     });
 
     test('Not eligible with default input', () => {
@@ -1073,20 +1072,7 @@ describe('Program eligibility', () => {
         'existingFeraHousehold').is(true);
     });
 
-    test('Requires minimum household size', () => {
-      input.income.valid = true;
-      input.income.wages = [[expectedLowIncomeLimit + 1]];
-      input.housingSituation = 'housed';
-      input.paysUtilities = true;
-      // Start with a household that's too small.
-      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE - 1;
-      // Then ensure a result of eligible when the household size is increased.
-      check(elig.feraResult, input)
-        .isEligibleIf('householdSize').is(elig.cnst.fera.MIN_HOUSEHOLD_SIZE);
-    });
-
     test('Requires utility bill payment', () => {
-      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       input.income.valid = true;
       input.income.wages = [[expectedLowIncomeLimit + 1]];
       input.housingSituation = 'housed';
@@ -1094,7 +1080,6 @@ describe('Program eligibility', () => {
     });
 
     test('Requires being housed', () => {
-      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       input.income.valid = true;
       input.income.wages = [[expectedLowIncomeLimit + 1]];
       input.paysUtilities = true;
@@ -1106,7 +1091,6 @@ describe('Program eligibility', () => {
     });
 
     test('Requires income above CARE limit', () => {
-      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       input.income.valid = true;
       input.housingSituation = 'housed';
       input.paysUtilities = true;
@@ -1116,7 +1100,6 @@ describe('Program eligibility', () => {
     });
 
     test('Requires income at or below FERA limit', () => {
-      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       const testIncome = (
         elig.cnst.fera.ANNUAL_INCOME_LIMITS[input.householdSize - 1] / 12);
       input.income.valid = true;

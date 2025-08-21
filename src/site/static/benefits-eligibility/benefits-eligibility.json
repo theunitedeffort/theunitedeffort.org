@@ -48,8 +48,8 @@
     {
       "name": "General Assistance (GA)",
       "id": "ga",
-      "applyUrl": "https://socialservices.sccgov.org/how-do-i/apply-for-benefits",
-      "infoUrl": "https://socialservices.sccgov.org/financial-assistance/financial-assistance-adults-without-dependent-children-general-assistance",
+      "applyUrl": "https://ssa.santaclaracounty.gov/apply-public-benefits",
+      "infoUrl": "https://ssa.santaclaracounty.gov/financial-assistance/get-financial-assistance-adults-without-dependent-children-general-assistance",
       "summary": "GA provides cash assistance and employment services to certain low-income individuals with no dependent children."
     },
     {
@@ -69,7 +69,7 @@
     {
       "name": "In-Home Supportive Services (IHSS)",
       "id": "ihss",
-      "applyUrl": "https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients",
+      "applyUrl": "https://ssa.santaclaracounty.gov/supportive-services/in-home-supportive-services/apply-home-supportive-services",
       "infoUrl": "https://ca.db101.org/ca/programs/health_coverage/medi_cal/ihss/program.htm",
       "summary": "IHSS provides in-home personal assistance to certain low-income individuals who are blind, disabled, or elderly so they can continue to live at home safely."
     },
