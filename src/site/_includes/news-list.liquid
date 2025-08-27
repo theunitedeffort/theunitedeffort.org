@@ -5,6 +5,7 @@
         {{article["Title"]}}
       </h3>
       <p class="subtitle">
+        {{article["Date"] | date: '%B %e, %Y', 'UTC'}}
       </p>
       <p>
         {{article["Content"] | markdownify}}
