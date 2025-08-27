@@ -1,0 +1,15 @@
+<div class="card-set">
+  {% for article in data.articles %}
+    <div class="card">
+      <h3>
+        {{article["Title"]}}
+      </h3>
+      <p class="subtitle">
+        {{article["Date"] | date: '%B %e, %Y', 'UTC'}}
+      </p>
+      <p>
+        {{article["Content"] | markdownify}}
+      </p>
+    </div>
+  {% endfor %}
+</div>

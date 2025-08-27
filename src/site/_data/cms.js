@@ -107,6 +107,24 @@ const fetchStories = async () => {
     });
 };
 
+// Fetch the list of news articles from the Airtable API.
+const fetchNews = async () => {
+  const data = [];
+  const table = base('tblFuiL7dLunQsKPe'); // News articles table
+  return table.select({
+    view: 'API list all',
+  })
+    .all()
+    .then((records) => {
+      records.forEach(function(record) {
+        if (useRecord(record.get('Status'))) {
+          data.push(record.fields);
+        }
+      });
+      return data;
+    });
+};
+
 const cacheStoryImages = async (stories) => {
   for (const story of stories) {
     if (story['Photo'] && story['Photo'].length > 0) {
@@ -188,10 +206,11 @@ module.exports = async function() {
     pageList,
     resourceList,
     storiesList,
+    newsList,
     imageList,
     assetList,
   ] = await Promise.all([fetchPages(), fetchGeneralResources(), fetchStories(),
-    fetchImages(), fetchAssets()]);
+    fetchNews(), fetchImages(), fetchAssets()]);
   await cacheStoryImages(storiesList);
   await cacheAssets(assetList);
   const ret = {
@@ -200,6 +219,7 @@ module.exports = async function() {
     partialsData: {
       resources: resourceList,
       stories: storiesList,
+      articles: newsList,
     },
   };
   await asset.save(ret, 'json');
