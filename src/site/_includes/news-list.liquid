@@ -5,7 +5,7 @@
     {%- endcapture %}
     <div class="card">
       <p>
-        {{article["Date"] | date: '%B %e, %Y'}}
+        {{article["Date"] | date: '%B %e, %Y', 'UTC'}}
       </p>
       <h3>
         <a class="unstyled" href="{{articleUrl}}">{{article["Title"]}}</a>
