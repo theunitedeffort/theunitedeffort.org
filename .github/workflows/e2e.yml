@@ -9,6 +9,9 @@ env:
   AIRTABLE_API_KEY: ${{secrets.AIRTABLE_API_KEY}}
   AIRTABLE_BASE_ID: ${{vars.AIRTABLE_BASE_ID}}
   CYPRESS_RECORD_KEY: ${{secrets.CYPRESS_RECORD_KEY}}
+  # Make the deployment act like a production deploy for the purposes
+  # of content rendering.
+  DEPLOY_CONTEXT: DEPLOY_PREVIEW
 
 jobs:
   chrome-browser-tests:
