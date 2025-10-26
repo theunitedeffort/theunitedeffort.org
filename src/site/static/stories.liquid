@@ -46,7 +46,7 @@ eleventyComputed:
       {% endif %}
     </div>
   {% endif %}
-  {{story["Content"] | markdownify | unplaceholder}}
+  {{story["Content"] | markdownify | unplaceholder: cms.images}}
 </div>
 
 <p class="noprint">
