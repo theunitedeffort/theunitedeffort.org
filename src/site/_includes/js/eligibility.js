@@ -178,17 +178,17 @@ const cnst = {
   hudvash: {
     // https://www.federalregister.gov/documents/2024/08/13/2024-17957/section-8-housing-choice-vouchers-revised-implementation-of-the-hud-veterans-affairs-supportive#p-55
     // See 80% AMI ("Low") here:
-    // https://www.huduser.gov/portal/datasets/il/il2024/2024summary.odn?states=6.0&data=2024&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2024&selection_type=county
-    // Effective through 5/31/25
+    // https://www.huduser.gov/portal/datasets/il/il2025/2025summary.odn?STATES=6.0&INPUTNAME=METRO41940M41940*0608599999%2BSanta+Clara+County&statelist=&stname=California&wherefrom=&statefp=06&year=2025&ne_flag=&selection_type=county&incpath=&data=2025&SubmitButton=View+County+Calculations
+    // Effective through 5/31/26
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      102300,
-      116900,
-      131500,
-      146100,
-      157800,
-      169500,
-      181200,
-      192900,
+      111700,
+      127650,
+      143600,
+      159550,
+      172350,
+      185100,
+      197850,
+      210650,
     ],
   },
   ihss: {
