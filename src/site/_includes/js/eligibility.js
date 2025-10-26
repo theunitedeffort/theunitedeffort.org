@@ -166,14 +166,14 @@ const cnst = {
     // https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/
     // Effective through 4/1/26
     ANNUAL_INCOME_LIMITS: [ // USD per month
-      70315,
-      80360,
-      90405,
+      70350,
+      80400,
+      90450,
       100450,
-      108486,
-      116522,
-      124558,
-      132594,
+      108500,
+      116550,
+      124600,
+      132600,
     ],
   },
   hudvash: {
