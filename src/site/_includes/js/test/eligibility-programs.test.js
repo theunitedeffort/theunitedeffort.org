@@ -511,13 +511,11 @@ describe('Program eligibility', () => {
         setupFn(input);
       });
 
-      if (expectedEligible !== undefined) {
-        test(`Eligibility result is ${expectedEligible}`, () => {
-          input.veteran = true;
-          input.dischargeStatus = dischargeStatus;
-          expect(resultFn(input).eligible).toBe(expectedEligible);
-        });
-      }
+      test(`Eligibility result is ${expectedEligible}`, () => {
+        input.veteran = true;
+        input.dischargeStatus = dischargeStatus;
+        expect(resultFn(input).eligible).toBe(expectedEligible);
+      });
 
       test(`Complex discharge flag ${expectedFlag ? 'is' : 'is not'} present`, () => {
         input.veteran = true;
@@ -1758,6 +1756,7 @@ describe('Program eligibility', () => {
 
     testDischargeStatus(
       (input) => {
+        input.veteran = true;
         input.disabled = true;
         input.militaryDisabled = true;
         input.dutyPeriods = [{type: 'active-duty'}];
@@ -1842,11 +1841,18 @@ describe('Program eligibility', () => {
 
       testDischargeStatus(
         (input) => {
+          input.veteran = true;
           input.disabled = true;
           input.militaryDisabled = true;
-          input.dutyPeriods = [{type: 'active-duty'}];
+          input.dutyPeriods = [{
+            type: 'active-duty',
+            start: new Date('1955-11-01T00:00'),
+            end: new Date('1956-11-01T00:00'),
+          }];
+          input.income.valid = true;
+          input.assets.valid = true;
         },
-        elig.vaDisabilityResult,
+        elig.vaPensionResult,
         [
           {dischargeStatus: 'honorable', expectedFlag: false, expectedEligible: true},
           {dischargeStatus: 'general', expectedFlag: false, expectedEligible: true},
