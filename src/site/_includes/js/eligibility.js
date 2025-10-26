@@ -144,18 +144,17 @@ const cnst = {
   },
   hps: {
     // https://preventhomelessness.org/#eligibility
-    // Effective through 4/1/25
+    // Effective through 4/1/26
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      102300,
-      116900,
-      131500,
-      146100,
-      157800,
-      169500,
-      181200,
-      192900,
+      111700,
+      127650,
+      143600,
+      159550,
+      172350,
+      185100,
+      197850,
+      210650,
     ],
-    // Aditional person income limit not specified
   },
   housingChoice: {
     // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
