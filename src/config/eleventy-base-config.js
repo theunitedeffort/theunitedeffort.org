@@ -67,8 +67,9 @@ module.exports = function(eleventyConfig) {
         str = str.replace(match[0], imageTag);
       }
     }
-    for (const match of str.matchAll(/{{video ([a-z0-9\-\.\/]+) (\d*)}}/g)) {
-      const videoTag = `<video width="${match[2]}" src="${match[1]}" controls />`
+    for (const match of str.matchAll(/{{video ([a-z0-9\-./]+) (\d*)}}/g)) {
+      const videoTag = (
+        `<video width="${match[2]}" src="${match[1]}" controls />`);
       str = str.replace(match[0], videoTag);
     }
     return str;
