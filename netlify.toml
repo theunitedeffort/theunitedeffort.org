@@ -130,3 +130,8 @@ status = 301
 from = "/about/stories/local-resident-protects-a-ueo-client-s-piano/"
 to = "/about/stories/local-resident-protects-a-united-effort-client-s-piano/"
 status = 301
+
+[[redirects]]
+from = "/about/stories/from-homeless-to-hope/"
+to = "/about/stories/from-homeless-to-giving-hope/"
+status = 301
