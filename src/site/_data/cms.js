@@ -54,7 +54,7 @@ const fetchPages = async () => {
               name: name,
               // Hack alert!
               // Avoids putting this js load on every page.
-              head: path.includes('donate') ? '<script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=9yZD2j8yFG8jsP4t&p=other"></script>' : ''
+              head: path.includes('donate') ? '<script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=9yZD2j8yFG8jsP4t&p=other"></script>' : '',
             };
           }
 
