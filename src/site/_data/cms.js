@@ -6,6 +6,9 @@ const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
 
+const CONTENT_BLOCKS_TABLE = 'tblAkC6dlPJc4o0Je';
+const PAGES_TABLE = 'tblTqhITQfO1MJQaE';
+
 const useRecord = (status) => {
   const isProdContext = (
     ['PRODUCTION', 'DEPLOY_PREVIEW'].includes(process.env.DEPLOY_CONTEXT));
@@ -15,7 +18,7 @@ const useRecord = (status) => {
 };
 
 const fetchSection = (id) => {
-  const table = base('tblAkC6dlPJc4o0Je'); // sections table
+  const table = base(CONTENT_BLOCKS_TABLE);
   return table.find(id).then((record) => {
     if (record.get('Type') == 'Markdown page') {
       return record.get('Markdown');
@@ -30,7 +33,7 @@ const fetchSection = (id) => {
 const fetchPages = async () => {
   const pages = [];
   const data = [];
-  const table = base('tblTqhITQfO1MJQaE'); // Structured pages table
+  const table = base(PAGES_TABLE);
 
   return table.select({
     view: 'API page content',
@@ -49,6 +52,9 @@ const fetchPages = async () => {
               url: path,
               sections: [],
               name: name,
+              // Hack alert!
+              // Avoids putting this js load on every page.
+              head: path.includes('donate') ? '<script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=9yZD2j8yFG8jsP4t&p=other"></script>' : ''
             };
           }
 
