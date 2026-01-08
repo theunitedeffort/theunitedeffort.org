@@ -282,7 +282,7 @@ const cnst = {
     ANNUAL_NET_WORTH_LIMIT: 163699, // USD per year
     // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
-    // Effective through 11/30/25
+    // Effective through 11/30/26
     ANNUAL_INCOME_LIMITS: [ // USD per year
       17441,
       22839,
