@@ -52,9 +52,9 @@ const cnst = {
     MBSAC_ADDL_PERSON: 36, // USD per month per person
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/14Property_Gen/Property_Limit.htm
     // "Property General - Property Limit"
-    // Effective through 12/31/2025
-    BASE_RESOURCE_LIMIT: 12137, // USD
-    DISABLED_ELDERLY_RESOURCE_LIMIT: 18206, // USD
+    // Effective through 12/31/2026
+    BASE_RESOURCE_LIMIT: 12552, // USD
+    DISABLED_ELDERLY_RESOURCE_LIMIT: 18829, // USD
     MIN_ELDERLY_AGE: 60, // Years
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/33Financial_Eligibility/Applicant_GI_Test.htm
     // "Applicant Gross Income Test"
@@ -279,17 +279,17 @@ const cnst = {
       ['1990-08-02', ''], // Gulf war, no end date yet.
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
-    // Effective through 11/30/25
-    ANNUAL_NET_WORTH_LIMIT: 159240, // USD per year
+    // Effective through 11/30/26
+    ANNUAL_NET_WORTH_LIMIT: 163699, // USD per year
     // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
-    // Effective through 11/30/25
+    // Effective through 11/30/26
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      16965,
-      22216,
+      17441,
+      22839,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2902, // USD per year
-    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 15000, // USD per year
+    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2984, // USD per year
+    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 16100, // USD per year
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
