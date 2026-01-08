@@ -8,6 +8,7 @@ permalink: "{{ thisPage.url }}/index.html"
 eleventyComputed:
   pageClass: "page{{ thisPage.url | replace: '/', '-' }}"
   title: "{{ thisPage.name }}"
+  pageHead: "{{ thisPage.head }}"
 ---
 
 {% assign cardSet = false %}
