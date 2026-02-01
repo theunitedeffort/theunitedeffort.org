@@ -211,22 +211,22 @@ const cnst = {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
     // LIHEAP income limits are set at 60% of State Median Income:
     //   https://www.acf.hhs.gov/ocs/policy-guidance/liheap-im-2024-02-federal-poverty-guidelines-and-state-median-income-estimates
-    // Effective through 11/1/25 (despite federal fiscal year starting 10/1)
+    // Effective through 11/1/26 (despite federal fiscal year starting 10/1)
     MONTHLY_INCOME_LIMITS: [ // USD per month
-      3170.00,
-      4145.41,
-      5120.83,
-      6096.25,
-      7071.58,
-      8047.00,
-      8229.91,
-      8412.75,
-      8595.66,
-      8778.58,
+      3331.66,
+      4356.83,
+      5382.00,
+      6407.16,
+      7432.25,
+      8457.41,
+      8649.66,
+      8841.83,
+      9034.08,
+      9226.25,
     ],
     // 3% of 4-person limit, as documented here:
     // https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf#page=4
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 182.89, // USD per month
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 192.21, // USD per month
   },
   noFeeId: {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
