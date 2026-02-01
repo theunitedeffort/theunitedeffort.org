@@ -87,18 +87,19 @@ const cnst = {
   },
   clipper: {
     // https://www.clipperstartcard.com/s/
-    // Effective through 1/15/2026?
+    // Equivalent to 200% federal poverty level
+    // Effective through 1/15/2027
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      31300,
-      42300,
-      53300,
-      64300,
-      75300,
-      86300,
-      97300,
-      108300,
+      31300, // Possibly erroneous on clipperstartcard.com.  Should be 31920?
+      43280,
+      54640,
+      66000,
+      77360,
+      88720,
+      100080,
+      111440, // matches FAQ value and 200% FPL value. (https://www.clipperstartcard.com/s/faqs)
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11000, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11360, // USD per year per person
     MIN_ELIGIBLE_AGE: 19, // Years
     MAX_ELIGIBLE_AGE: 64, // Years
   },
