@@ -29,13 +29,13 @@
     {
       "name": "California Alternate Rates for Energy (CARE)",
       "id": "care",
-      "applyUrl": "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/california-alternate-rates-for-energy",
+      "applyUrl": "https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program",
       "summary": "CARE provides a discount on electricity and natural gas bills for certain low-income individuals and families."
     },
     {
       "name": "Family Electric Rate Assistance (FERA)",
       "id": "fera",
-      "applyUrl": "https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/family-electric-rate-assistance-program",
+      "applyUrl": "https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program",
       "summary": "FERA provides a discount on electricity bills for certain low-income families."
     },
     {
