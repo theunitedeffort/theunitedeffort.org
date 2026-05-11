@@ -145,7 +145,7 @@ const cnst = {
   },
   hps: {
     // https://preventhomelessness.org/#eligibility
-    // Effective through 4/1/26
+    // Effective through 4/1/27
     ANNUAL_INCOME_LIMITS: [ // USD per year
       113700,
       129950,
