@@ -147,14 +147,14 @@ const cnst = {
     // https://preventhomelessness.org/#eligibility
     // Effective through 4/1/26
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      111700,
-      127650,
-      143600,
-      159550,
-      172350,
-      185100,
-      197850,
-      210650,
+      113700,
+      129950,
+      146200,
+      162400,
+      175400,
+      188400,
+      201400,
+      214400,
     ],
   },
   housingChoice: {
