@@ -6,9 +6,19 @@ const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
 
+const CONTENT_BLOCKS_TABLE = 'tblAkC6dlPJc4o0Je';
+const PAGES_TABLE = 'tblTqhITQfO1MJQaE';
+
+const useRecord = (status) => {
+  const isProdContext = (
+    ['PRODUCTION', 'DEPLOY_PREVIEW'].includes(process.env.DEPLOY_CONTEXT));
+  return (
+    (isProdContext && status == 'Published') ||
+    (!isProdContext && ['Published', 'Preview'].includes(status)));
+};
 
 const fetchSection = (id) => {
-  const table = base('tblAkC6dlPJc4o0Je'); // sections table
+  const table = base(CONTENT_BLOCKS_TABLE);
   return table.find(id).then((record) => {
     if (record.get('Type') == 'Markdown page') {
       return record.get('Markdown');
@@ -23,7 +33,7 @@ const fetchSection = (id) => {
 const fetchPages = async () => {
   const pages = [];
   const data = [];
-  const table = base('tblTqhITQfO1MJQaE'); // Structured pages table
+  const table = base(PAGES_TABLE);
 
   return table.select({
     view: 'API page content',
@@ -31,7 +41,7 @@ const fetchPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
-        if (record.get('Status') == 'Published') {
+        if (useRecord(record.get('Status'))) {
           const name = record.get('Page title');
           const path = record.get('Page path');
           const sectionID = record.get('Section')[0];
@@ -42,6 +52,9 @@ const fetchPages = async () => {
               url: path,
               sections: [],
               name: name,
+              // Hack alert!
+              // Avoids putting this js load on every page.
+              head: path.includes('donate') ? '<script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=9yZD2j8yFG8jsP4t&p=other"></script>' : '',
             };
           }
 
@@ -92,7 +105,25 @@ const fetchStories = async () => {
     .all()
     .then((records) => {
       records.forEach(function(record) {
-        if (record.get('Status') == 'Published') {
+        if (useRecord(record.get('Status'))) {
+          data.push(record.fields);
+        }
+      });
+      return data;
+    });
+};
+
+// Fetch the list of news articles from the Airtable API.
+const fetchNews = async () => {
+  const data = [];
+  const table = base('tblFuiL7dLunQsKPe'); // News articles table
+  return table.select({
+    view: 'API list all',
+  })
+    .all()
+    .then((records) => {
+      records.forEach(function(record) {
+        if (useRecord(record.get('Status'))) {
           data.push(record.fields);
         }
       });
@@ -165,6 +196,12 @@ const fetchAssets = async () => {
 
 
 module.exports = async function() {
+  // Only housing pages run serverless, so there is no need to fetch
+  // all this content when this data file is executed from a serverless
+  // environment.
+  if (process.env.ELEVENTY_SERVERLESS) {
+    return {};
+  }
   const asset = new eleventyFetch.AssetCache('airtable_pages');
   if (asset.isCacheValid('1h')) {
     console.log('Returning cached pages data.');
@@ -175,10 +212,11 @@ module.exports = async function() {
     pageList,
     resourceList,
     storiesList,
+    newsList,
     imageList,
     assetList,
   ] = await Promise.all([fetchPages(), fetchGeneralResources(), fetchStories(),
-    fetchImages(), fetchAssets()]);
+    fetchNews(), fetchImages(), fetchAssets()]);
   await cacheStoryImages(storiesList);
   await cacheAssets(assetList);
   const ret = {
@@ -187,6 +225,7 @@ module.exports = async function() {
     partialsData: {
       resources: resourceList,
       stories: storiesList,
+      articles: newsList,
     },
   };
   await asset.save(ret, 'json');

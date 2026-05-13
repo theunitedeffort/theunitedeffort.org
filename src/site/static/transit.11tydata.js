@@ -1,8 +1,26 @@
 const eleventyFetch = require('@11ty/eleventy-fetch');
 
+const MAX_FETCH_ATTEMPTS = 5;
 const OPERATOR_ID_MAP = {
   'SC': 'VTA',
   'MV': 'MVgo',
+};
+
+// https://www.pupismyname.com/articles/fetch-retry/
+const eleventyFetchRetry = async (url, options, attempts=1) => {
+  try {
+    return await eleventyFetch(url, options);
+  } catch (e) {
+    console.error(`attempt ${attempts} of ${MAX_FETCH_ATTEMPTS}: ${e.message}`);
+    if (attempts >= MAX_FETCH_ATTEMPTS) {
+      console.error(`Fetch failed for ${url}`);
+      throw e;
+    } else {
+      attempts++;
+      console.error(`Retrying ${url}`);
+      return await eleventyFetchRetry(url, options, attempts);
+    }
+  }
 };
 
 const fetchTransitData = async (operatorId) => {
@@ -20,7 +38,9 @@ const fetchTransitData = async (operatorId) => {
   // the beginning, so the built-in eleventy-fetch json parsing
   // (type: "json") will not work.
   const options = {type: 'text', duration: '1h'};
-  const response = await eleventyFetch(endpoint, options);
+  console.log(`Fetching "${operatorId}" transit data`);
+  const response = await eleventyFetchRetry(endpoint, options);
+  console.log(`Got "${operatorId}" transit data`);
   const data = JSON.parse(response.trim());
   return data.Contents.dataObjects.ScheduledStopPoint.map((x) => ({
     name: x.Name,
