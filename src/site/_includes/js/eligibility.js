@@ -52,9 +52,9 @@ const cnst = {
     MBSAC_ADDL_PERSON: 36, // USD per month per person
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/14Property_Gen/Property_Limit.htm
     // "Property General - Property Limit"
-    // Effective through 12/31/2025
-    BASE_RESOURCE_LIMIT: 12137, // USD
-    DISABLED_ELDERLY_RESOURCE_LIMIT: 18206, // USD
+    // Effective through 12/31/2026
+    BASE_RESOURCE_LIMIT: 12552, // USD
+    DISABLED_ELDERLY_RESOURCE_LIMIT: 18829, // USD
     MIN_ELDERLY_AGE: 60, // Years
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/33Financial_Eligibility/Applicant_GI_Test.htm
     // "Applicant Gross Income Test"
@@ -87,18 +87,19 @@ const cnst = {
   },
   clipper: {
     // https://www.clipperstartcard.com/s/
-    // Effective through 1/15/2026?
+    // Equivalent to 200% federal poverty level
+    // Effective through 1/15/2027
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      31300,
-      42300,
-      53300,
-      64300,
-      75300,
-      86300,
-      97300,
-      108300,
+      31920,
+      43280,
+      54640,
+      66000,
+      77360,
+      88720,
+      100080,
+      111440,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11000, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11360, // USD per year per person
     MIN_ELIGIBLE_AGE: 19, // Years
     MAX_ELIGIBLE_AGE: 64, // Years
   },
@@ -144,16 +145,16 @@ const cnst = {
   },
   hps: {
     // https://preventhomelessness.org/#eligibility
-    // Effective through 4/1/26
+    // Effective through 4/1/27
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      111700,
-      127650,
-      143600,
-      159550,
-      172350,
-      185100,
-      197850,
-      210650,
+      113700,
+      129950,
+      146200,
+      162400,
+      175400,
+      188400,
+      201400,
+      214400,
     ],
   },
   housingChoice: {
@@ -210,22 +211,22 @@ const cnst = {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
     // LIHEAP income limits are set at 60% of State Median Income:
     //   https://www.acf.hhs.gov/ocs/policy-guidance/liheap-im-2024-02-federal-poverty-guidelines-and-state-median-income-estimates
-    // Effective through 11/1/25 (despite federal fiscal year starting 10/1)
+    // Effective through 11/1/26 (despite federal fiscal year starting 10/1)
     MONTHLY_INCOME_LIMITS: [ // USD per month
-      3170.00,
-      4145.41,
-      5120.83,
-      6096.25,
-      7071.58,
-      8047.00,
-      8229.91,
-      8412.75,
-      8595.66,
-      8778.58,
+      3331.66,
+      4356.83,
+      5382.00,
+      6407.16,
+      7432.25,
+      8457.41,
+      8649.66,
+      8841.83,
+      9034.08,
+      9226.25,
     ],
     // 3% of 4-person limit, as documented here:
     // https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf#page=4
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 182.89, // USD per month
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 192.21, // USD per month
   },
   noFeeId: {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
@@ -238,16 +239,17 @@ const cnst = {
   },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
-    // Effective through 12/31/25
-    SGA_NON_BLIND: 1620, // USD per month
-    SGA_BLIND: 2700, // USD per month
+    // Effective through 12/31/26
+    SGA_NON_BLIND: 1690, // USD per month
+    SGA_BLIND: 2830, // USD per month
     // https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACINs/2024/I-61-24.pdf?ver=2024-12-02-135401-467
+    // https://www.ssa.gov/pubs/EN-05-11125.pdf
     // Note these max benefit amounts include the California state supplement.
     // TODO: Handle other living categories (e.g. non-medical out-of-home care).
-    // Effective through 12/31/25
-    MAX_BENEFIT_NON_BLIND: 1206.94, // USD per month
-    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1335.81, // USD per month
-    MAX_BENEFIT_BLIND: 1291.32, // USD per month
+    // Effective through 12/31/26
+    MAX_BENEFIT_NON_BLIND: 1233.94, // USD per month
+    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1362.81, // USD per month
+    MAX_BENEFIT_BLIND: 1318.32, // USD per month
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
     // Effective through 12/31/23?
     MAX_RESOURCES: 2000, // USD
@@ -278,17 +280,17 @@ const cnst = {
       ['1990-08-02', ''], // Gulf war, no end date yet.
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
-    // Effective through 11/30/25
-    ANNUAL_NET_WORTH_LIMIT: 159240, // USD per year
+    // Effective through 11/30/26
+    ANNUAL_NET_WORTH_LIMIT: 163699, // USD per year
     // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
-    // Effective through 11/30/25
+    // Effective through 11/30/26
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      16965,
-      22216,
+      17441,
+      22839,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2902, // USD per year
-    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 15000, // USD per year
+    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2984, // USD per year
+    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 16100, // USD per year
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf

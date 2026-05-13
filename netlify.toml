@@ -9,7 +9,7 @@ publish = "dist"
 functions = "netlify/functions"
 
 [context.production]
-command = 'sed -i "s|INJECTED_PASSWORD|${PRE_RELEASE_CONTENT_PASSWORD}|g" prod-headers && mkdir dist && cp prod-headers dist/_headers && npm run build'
+command = 'sed -i "s|INJECTED_PASSWORD|${PRE_RELEASE_CONTENT_PASSWORD}|g" prod-headers && mkdir -p dist && cp prod-headers dist/_headers && npm run build'
 
 [[headers]]
 for = "/data/*"
@@ -129,4 +129,9 @@ status = 301
 [[redirects]]
 from = "/about/stories/local-resident-protects-a-ueo-client-s-piano/"
 to = "/about/stories/local-resident-protects-a-united-effort-client-s-piano/"
+status = 301
+
+[[redirects]]
+from = "/about/stories/from-homeless-to-hope/"
+to = "/about/stories/from-homeless-to-giving-hope/"
 status = 301
