@@ -5,6 +5,7 @@ const base = new Airtable(
 
 const UNITS_TABLE = 'tblRtXBod9CC0mivK';
 const HOUSING_DATABASE_TABLE = 'tbl8LUgXQoTYEw2Yh';
+const BMR_ADMINS_TABLE = 'tbls9XCbcM7PTZm6e';
 const RESOURCES_TABLE = 'tblyp7AurXeZEIW4J';
 const REFERRERS_TABLE = 'tblRBvQCTQDsp989R';
 const HIGH_CAPACITY_UNIT = 4; // Bedrooms
@@ -44,6 +45,7 @@ const fetchApartmentRecords = async () => {
       'LOC_COORDS',
       'VERIFIED_LOC_COORDS',
       'NUM_TOTAL_UNITS',
+      'NUM_RESTRICTED_UNITS',
       'POPULATIONS_SERVED',
       'MIN_RESIDENT_AGE',
       'MAX_RESIDENT_AGE',
@@ -51,6 +53,7 @@ const fetchApartmentRecords = async () => {
       'HAS_WHEELCHAIR_ACCESSIBLE_UNITS',
       'PREFERS_LOCAL_APPLICANTS',
       'PUBLISH_STATUS',
+      '_BMR_ADMIN_ID',
     ],
   })
     .all()
@@ -77,6 +80,7 @@ const fetchApartmentRecords = async () => {
             emails: [record.get('EMAIL'), record.get('SECOND_EMAIL')]
               .filter((e) => e),
             numTotalUnits: record.get('NUM_TOTAL_UNITS'),
+            numRestrictedUnits: record.get('NUM_RESTRICTED_UNITS'),
             populationsServed: record.get('POPULATIONS_SERVED') || [],
             minAge: record.get('MIN_RESIDENT_AGE'),
             maxAge: record.get('MAX_RESIDENT_AGE'),
@@ -86,6 +90,7 @@ const fetchApartmentRecords = async () => {
               'HAS_WHEELCHAIR_ACCESSIBLE_UNITS'),
             prefersLocalApplicants: record.get(
               'PREFERS_LOCAL_APPLICANTS'),
+            bmrAdmin: record.get('_BMR_ADMIN_ID'),
           });
         }
       });
@@ -154,6 +159,34 @@ const fetchUnitRecords = async () => {
         });
       });
       return units;
+    });
+};
+
+const fetchBmrAdminRecords = async () => {
+  const admins = {};
+  const table = base(BMR_ADMINS_TABLE);
+  return table.select({
+    fields: [
+      'COMPANY_NAME',
+      'URL',
+      'EMAIL',
+      'PHONE',
+      'ID',
+    ],
+  })
+    .all()
+    .then((records) => {
+      records.forEach(function(record) {
+        if (record.get('COMPANY_NAME') && record.get('ID')) {
+          admins[record.get('ID')] = {
+            name: record.get('COMPANY_NAME'),
+            email: record.get('EMAIL'),
+            website: record.get('URL'),
+            phone: record.get('PHONE'),
+          };
+        }
+      });
+      return admins;
     });
 };
 
@@ -261,18 +294,24 @@ const fetchShelterRecords = async () => {
 
 const compiledData = async () => {
   console.log('Fetching apartment, units, shelter, and referrers data.');
-  const [apartments, units, shelters, referrers] = await Promise.all([
-    fetchApartmentRecords(),
-    fetchUnitRecords(),
-    fetchShelterRecords(),
-    fetchReferrerRecords(),
-  ]);
+  const [apartments, units, bmrAdmins, shelters, referrers] = (
+    await Promise.all([
+      fetchApartmentRecords(),
+      fetchUnitRecords(),
+      fetchBmrAdminRecords(),
+      fetchShelterRecords(),
+      fetchReferrerRecords(),
+    ]));
   console.log(`got ${apartments.length} apartments, ${units.length} units, ` +
+    `${Object.keys(bmrAdmins).length} BMR admins, ` +
     `${shelters.length} shelters, and ${referrers.length} referrers`);
 
-  // Add the associated units to each apartment
+  // Add the associated units and bmr admin to each apartment
   for (const apartment of apartments) {
     apartment.units = units.filter((u) => u.parent_id === apartment.id);
+    if (apartment.bmrAdmin) {
+      apartment.bmrAdmin = bmrAdmins[apartment.bmrAdmin];
+    }
   }
 
   // Add the associated referrers to each shelter

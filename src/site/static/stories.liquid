@@ -1,7 +1,7 @@
 ---
 layout: "layouts/base.liquid"
 pagination:
-  data: partialsData.stories
+  data: cms.partialsData.stories
   size: 1
   alias: story
 pageClass: "page-about"
@@ -46,7 +46,7 @@ eleventyComputed:
       {% endif %}
     </div>
   {% endif %}
-  {{story["Content"] | markdownify | unplaceholder}}
+  {{story["Content"] | markdownify | unplaceholder: cms.images}}
 </div>
 
 <p class="noprint">

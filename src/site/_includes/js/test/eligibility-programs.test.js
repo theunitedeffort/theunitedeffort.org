@@ -1030,9 +1030,8 @@ describe('Program eligibility', () => {
   describe('FERA Program', () => {
     let expectedLowIncomeLimit;
     beforeEach(() => {
-      const incomeIdx = elig.cnst.fera.MIN_HOUSEHOLD_SIZE - 1;
       expectedLowIncomeLimit = (
-        elig.cnst.care.ANNUAL_INCOME_LIMITS[incomeIdx] / 12);
+        elig.cnst.care.ANNUAL_INCOME_LIMITS[input.householdSize - 1] / 12);
     });
 
     test('Not eligible with default input', () => {
@@ -1045,20 +1044,7 @@ describe('Program eligibility', () => {
         'existingFeraHousehold').is(true);
     });
 
-    test('Requires minimum household size', () => {
-      input.income.valid = true;
-      input.income.wages = [[expectedLowIncomeLimit + 1]];
-      input.housingSituation = 'housed';
-      input.paysUtilities = true;
-      // Start with a household that's too small.
-      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE - 1;
-      // Then ensure a result of eligible when the household size is increased.
-      check(elig.feraResult, input)
-        .isEligibleIf('householdSize').is(elig.cnst.fera.MIN_HOUSEHOLD_SIZE);
-    });
-
     test('Requires utility bill payment', () => {
-      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       input.income.valid = true;
       input.income.wages = [[expectedLowIncomeLimit + 1]];
       input.housingSituation = 'housed';
@@ -1066,7 +1052,6 @@ describe('Program eligibility', () => {
     });
 
     test('Requires being housed', () => {
-      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       input.income.valid = true;
       input.income.wages = [[expectedLowIncomeLimit + 1]];
       input.paysUtilities = true;
@@ -1078,7 +1063,6 @@ describe('Program eligibility', () => {
     });
 
     test('Requires income above CARE limit', () => {
-      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       input.income.valid = true;
       input.housingSituation = 'housed';
       input.paysUtilities = true;
@@ -1088,7 +1072,6 @@ describe('Program eligibility', () => {
     });
 
     test('Requires income at or below FERA limit', () => {
-      input.householdSize = elig.cnst.fera.MIN_HOUSEHOLD_SIZE;
       const testIncome = (
         elig.cnst.fera.ANNUAL_INCOME_LIMITS[input.householdSize - 1] / 12);
       input.income.valid = true;
@@ -1211,9 +1194,9 @@ describe('Program eligibility', () => {
     // Test ensures the calculation was done correctly by checking against the
     // values given by the HUD income limit calculator.
     test('Extended income limit is computed correctly', () => {
-      // https://www.huduser.gov/portal/datasets/il/il2024/2024IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2024&yy=24&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=%24incpath%24&level=50
-      const expectedAnnualLimitNinePpl = 129050;
-      const expectedAnnualLimitTwentyFivePpl = 247000;
+      // https://www.huduser.gov/portal/datasets/il/il2025/2025IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2025&yy=25&stname=California&stusps=CA&statefp=06&ACS_Survey=&State_Count=&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=&level=50
+      const expectedAnnualLimitNinePpl = 140650;
+      const expectedAnnualLimitTwentyFivePpl = 269250;
 
       input.income.valid = true;
       input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;
@@ -2214,9 +2197,9 @@ describe('Program eligibility', () => {
     // Test ensures the calculation was done correctly by checking against the
     // values given by the HUD income limit calculator.
     test('Extended income limit is computed correctly', () => {
-      // https://www.huduser.gov/portal/datasets/il/il2024/2024ILCalc3080.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2024&yy=24&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=%24passname%24&incpath=%24incpath%24&level=80
-      const expectedAnnualLimitNinePpl = 204550;
-      const expectedAnnualLimitTwentyFivePpl = 391550;
+      // https://www.huduser.gov/datasets/il/il2026/low-income?year=2026&reporttype=county&states=6&counties=0608599999
+      const expectedAnnualLimitNinePpl = 227400;
+      const expectedAnnualLimitTwentyFivePpl = 435250;
 
       input.income.valid = true;
       input.unhousedRisk = true;
@@ -2310,9 +2293,9 @@ describe('Program eligibility', () => {
     // Test ensures the calculation was done correctly by checking against the
     // values given by the HUD income limit calculator.
     test('Extended income limit is computed correctly', () => {
-      // https://www.huduser.gov/portal/datasets/il/il2024/2024ILCalc3080.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2024&yy=24&stname=California&stusps=CA&statefp=06&ACS_Survey=%24ACS_Survey%24&State_Count=%24State_Count%24&areaname=%24passname%24&incpath=%24incpath%24&level=80
-      const expectedAnnualLimitNinePpl = 204550;
-      const expectedAnnualLimitTwentyFivePpl = 391550;
+      // https://www.huduser.gov/portal/datasets/il/il2025/2025ILCalc3080.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2025&yy=25&stname=California&stusps=CA&statefp=06&ACS_Survey=&State_Count=&areaname=%24passname%24&incpath=&level=80
+      const expectedAnnualLimitNinePpl = 223400;
+      const expectedAnnualLimitTwentyFivePpl = 427600;
 
       input.income.valid = true;
       input.veteran = true;

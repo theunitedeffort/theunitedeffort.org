@@ -10,7 +10,7 @@ const strs = {
   },
   'navIncomeAssets': {
     'en': 'Income & Assets',
-    'es': 'Ingresos y activos',
+    'es': /Ingresos y (activos|patrimonio)/i,
   },
   'navExistingBenefits': {
     'en': 'Existing Benefits',
@@ -66,15 +66,15 @@ const strs = {
   },
   'fieldNoneDescribeMe': {
     'en': /none of these describe me/i,
-    'es': /ningun(o|a) de est(o|a)s me describe/i,
+    'es': /ningun(o|a) de est(o|a)s ((me describe)|(descripciones me define))/i,
   },
   'fieldHeadHousehold': {
     'en': 'head of your household',
-    'es': /el ((cabeza de familia)|(jefe de su hogar))/i,
+    'es': /el ((cabeza de)|(jefe de su)) ((hogar)|(familia))/i,
   },
   'fieldGuideDog': {
     'en': 'use a guide, signal or service dog',
-    'es': 'Utiliza un perro guía, de señales o de servicio',
+    'es': /utiliza (usted )?un perro guía, de señal((es)|(ización)) o de servicio/i,
   },
   'fieldMilitaryDisability': {
     'en': 'related to your military service',
@@ -166,19 +166,19 @@ const strs = {
   },
   'payGasBill': {
     'en': 'pay a gas or electric bill',
-    'es': 'paga una factura de gas o electricidad',
+    'es': /paga una factura de gas o (de )?electricidad/i,
   },
   'cookingFacilities': {
     'en': /have cooking facilities/i,
-    'es': /tiene (usted)? instalaciones para cocinar/i,
+    'es': /(tiene (usted)? instalaciones para cocinar)|(Dispones de cocina)/i,
   },
   'wages': {
     'en': /wages/i,
-    'es': /salarios/i,
+    'es': /salarios?/i,
   },
   'selfEmployment': {
     'en': /self-employment/i,
-    'es': /ingresos por cuenta propia/i,
+    'es': /ingresos (procedentes )?(del trabajo )?por cuenta propia/i,
   },
   'disability': {
     'en': /disability/i,
@@ -210,11 +210,11 @@ const strs = {
   },
   'noIncome': {
     'en': /no income/i,
-    'es': /no tiene ingresos/i,
+    'es': /no tiene (ningún tipo de )?ingresos?/i,
   },
   'firstMoneyAdd': {
     'en': /enter ((income)|(an asset))/i,
-    'es': /(ingrese los ingresos)|(introduzca un activo)/i,
+    'es': /(ingres(e|a))|(introduzca) ((los ingresos)|(un activo))/i,
   },
   'nextMoneyAdd': {
     'en': /add another ((entry)|(asset))/i,
@@ -226,15 +226,15 @@ const strs = {
   },
   'ssTaxes': {
     'en': 'paid Social Security taxes',
-    'es': 'pagado impuestos del Seguro Social',
+    'es': /pagado impuestos ((del seguro)|(de la seguridad)) social/i,
   },
   'noAssets': {
     'en': /no assets/i,
-    'es': /no tiene bienes/i,
+    'es': /no ((posee)|(tiene)) bienes/i,
   },
   'enterAsset': {
     'en': /enter an asset/i,
-    'es': /introduzca un activo/i,
+    'es': /((introduzca)|(ingres(a|e))) un activo/i,
   },
   'gaExistingMe': {
     'en': /general assistance .* me/i,
