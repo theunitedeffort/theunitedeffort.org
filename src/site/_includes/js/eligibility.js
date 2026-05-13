@@ -1590,6 +1590,14 @@ function complexImmigration(input,
     complexOptions.includes(input.immigrationStatus));
 }
 
+// Returns true if discharge status is other-than-honorable or bad conduct.
+// Used to determine complex discharge flag.
+function complexDischarge(input,
+  complexOptions=['oth', 'bad-conduct']) {
+  return (
+    complexOptions.includes(input.dischargeStatus));
+}
+
 // Computes the incremental change in HUD income limit for large family sizes.
 // 'numExtraPeople' is the number of people beyond the max family size given
 // by the array of income limits given by 'limits'.  For example, if 'limits'
@@ -1655,6 +1663,7 @@ const FlagCodes = {
   NEAR_INCOME_LIMIT: 'NEAR_INCOME_LIMIT',
   TOO_COMPLEX: 'TOO_COMPLEX',
   COMPLEX_IMMIGRATION: 'COMPLEX_IMMIGRATION',
+  COMPLEX_DISCHARGE: 'COMPLEX_DISCHARGE',
   COMPLEX_RETIREMENT_AGE: 'COMPLEX_RETIREMENT_AGE',
   MORE_INFO_NEEDED: 'MORE_INFO_NEEDED',
 };
@@ -2087,8 +2096,6 @@ function vaDisabilityResult(input) {
 
   const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
     'dishonorable',
-    'oth',
-    'bad-conduct',
   ]));
 
   const isServiceDisabled = and(
@@ -2106,12 +2113,14 @@ function vaDisabilityResult(input) {
       'duty training',
       meetsDutyReq));
   program.addCondition(
-    new EligCondition('Have a discharge status that is not dishonorable, ' +
-      'bad conduct, or other-than-honorable',
-    meetsDischargeReq));
+    new EligCondition('Have a discharge status that is not dishonorable.',
+      meetsDischargeReq));
 
   if (input.existingVaDisabilityMe) {
     program.markEnrolled();
+  }
+  if (program.evaluate() && complexDischarge(input)) {
+    program.addFlag(FlagCodes.COMPLEX_DISCHARGE);
   }
   return program.getResult();
 }
@@ -2573,8 +2582,6 @@ function vaPensionResult(input) {
 
   const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
     'dishonorable',
-    'oth',
-    'bad-conduct',
   ]));
 
   const meetsAgeReq = ge(input.age, cnst.vaPension.MIN_ELDERLY_AGE);
@@ -2628,7 +2635,7 @@ function vaPensionResult(input) {
   program.addCondition(new EligCondition('Be a U.S. veteran', input.veteran));
   program.addCondition(
     new EligCondition(
-      'Have been discharged honorably or under honorable conditions',
+      'Have a discharge status that is not dishonorable',
       meetsDischargeReq));
   program.addCondition(new EligCondition(
     'Meet specific duty type and duration ' +
@@ -2649,6 +2656,9 @@ function vaPensionResult(input) {
   ]);
   if (input.existingVaPensionMe) {
     program.markEnrolled();
+  }
+  if (program.evaluate() && complexDischarge(input)) {
+    program.addFlag(FlagCodes.COMPLEX_DISCHARGE);
   }
   return program.getResult();
 }
@@ -3019,6 +3029,13 @@ function renderFlags(flags, listElem) {
     case FlagCodes.COMPLEX_IMMIGRATION:
       flagMsg = 'The immigrant eligibility rules for this program are ' +
         'complex, and not all immigrants are eligible.';
+      break;
+    case FlagCodes.COMPLEX_DISCHARGE:
+      flagMsg = 'Veterans with a bad conduct or other ' +
+        'than honorable discharge may qualify for VA benefits depending ' +
+        'on a determination made by VA. ' +
+        '<a href="https://www.benefits.va.gov/benefits/character_of_discharge.asp" ' +
+        'target="_blank" rel="noopener">Learn More</a>';
       break;
     case FlagCodes.COMPLEX_RETIREMENT_AGE:
       flagMsg = 'To be eligible for this program, you must be younger than ' +
