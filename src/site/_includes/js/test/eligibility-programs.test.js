@@ -1044,8 +1044,8 @@ describe('Program eligibility', () => {
       check(elig.careResult, input).isEligibleIf('existingCalworksHousehold').is(true);
       check(elig.careResult, input).isEligibleIf('existingSchipMe').is(true);
       check(elig.careResult, input).isEligibleIf('existingSchipHousehold').is(true);
-      check(elig.lifelineResult, input).isEligibleIf('existingBiaGaMe').is(true);
-      check(elig.lifelineResult, input).isEligibleIf('existingBiaGaHousehold').is(true);
+      check(elig.careResult, input).isEligibleIf('existingBiaGaMe').is(true);
+      check(elig.careResult, input).isEligibleIf('existingBiaGaHousehold').is(true);
 
       check(elig.careResult, input).isEligibleIf(wicMadeEligible);
       check(elig.careResult, input).isEligibleIf(calfreshMadeEligible);
