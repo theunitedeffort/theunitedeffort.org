@@ -1699,6 +1699,8 @@ describe('buildInputObj', () => {
       existingSchipHousehold: true,
       existingRtcClipperHousehold: true,
       existingRtcClipperMe: true,
+      existingBiaGaMe: true,
+      existingBiaGaHousehold: true,
     };
     Object.preventExtensions(expected);
 
@@ -2037,6 +2039,15 @@ describe('buildInputObj', () => {
       expected.existingRtcClipperHousehold);
     expect(getInput().existingSchipHousehold).toBe(
       expected.existingRtcClipperHousehold);
+
+    document.getElementById('existing-bia-ga-me').checked = (
+      expected.existingBiaGaMe);
+    expect(getInput().existingBiaGaMe).toBe(expected.existingBiaGaMe);
+
+    document.getElementById('existing-bia-ga-household').checked = (
+      expected.existingBiaGaHousehold);
+    expect(getInput().existingBiaGaHousehold).toBe(
+      expected.existingBiaGaHousehold);
 
     expect(getInput()).toEqual(expected);
   });

@@ -14,18 +14,18 @@ const cnst = {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/2CalFresh/CFMonthAllIncomeElig.htm
     // Section 2.1 "CalFresh Program Monthly Allotment and Income Eligibility
     //   Standards Charts"
-    // Effective through 9/30/25
+    // Effective through 9/30/26
     FED_POVERTY_LEVEL: [ // USD per month
-      1255,
-      1704,
-      2152,
-      2600,
-      3049,
-      3497,
-      3945,
-      4394,
+      1305,
+      1763,
+      2221,
+      2680,
+      3138,
+      3596,
+      4055,
+      4513,
     ],
-    FED_POVERTY_LEVEL_ADDL_PERSON: 449, // USD per month per person
+    FED_POVERTY_LEVEL_ADDL_PERSON: 459, // USD per month per person
     // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/CEHouseholds/MCE.htm
     // "Modified Categorical Eligibility (MCE)"
     GROSS_INCOME_LIMIT_MCE_FACTOR: 2.0, // Times federal poverty limit
@@ -36,25 +36,25 @@ const cnst = {
   calworks: {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/1CalWorksRCAECATCVAP/NonExEmpAUStndsCht.htm
     // Section 1.2 "Non-Exempt (Employable) AU Standards Chart Region 1"
-    // Effective through 6/30/25
+    // Effective through 6/30/26
     MBSAC: [ // USD per month
-      899,
-      1476,
-      1829,
-      2170,
-      2476,
-      2785,
-      3061,
-      3331,
-      3614,
-      3922,
+      930,
+      1526,
+      1892,
+      2244,
+      2561,
+      2880,
+      3166,
+      3445,
+      3738,
+      4056,
     ],
-    MBSAC_ADDL_PERSON: 35, // USD per month per person
+    MBSAC_ADDL_PERSON: 36, // USD per month per person
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/14Property_Gen/Property_Limit.htm
     // "Property General - Property Limit"
-    // Effective through 12/31/2025
-    BASE_RESOURCE_LIMIT: 12137, // USD
-    DISABLED_ELDERLY_RESOURCE_LIMIT: 18206, // USD
+    // Effective through 12/31/2026
+    BASE_RESOURCE_LIMIT: 12552, // USD
+    DISABLED_ELDERLY_RESOURCE_LIMIT: 18829, // USD
     MIN_ELDERLY_AGE: 60, // Years
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/33Financial_Eligibility/Applicant_GI_Test.htm
     // "Applicant Gross Income Test"
@@ -72,50 +72,51 @@ const cnst = {
   },
   care: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    // Effective through 5/31/2025
+    // Effective through 5/31/2026
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      40880,
-      40880,
-      51640,
-      62400,
-      73160,
-      83920,
-      94680,
-      105440,
+      42300,
+      42300,
+      53300,
+      64300,
+      75300,
+      86300,
+      97300,
+      108300,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11000, // USD per year per person
   },
   clipper: {
     // https://www.clipperstartcard.com/s/
+    // Equivalent to 200% federal poverty level
+    // Effective through 1/15/2027
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      30120,
-      40880,
-      51640,
-      62400,
-      73160,
-      83920,
-      94680,
-      105440,
+      31920,
+      43280,
+      54640,
+      66000,
+      77360,
+      88720,
+      100080,
+      111440,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 10760, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11360, // USD per year per person
     MIN_ELIGIBLE_AGE: 19, // Years
     MAX_ELIGIBLE_AGE: 64, // Years
   },
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    // Effective through 5/31/2025
+    // Effective through 5/31/2026
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      64550, // Min household size 3.
-      64550, // Min household size 3.
-      64550,
-      78000,
-      91450,
-      104900,
-      118350,
-      131800,
+      52875,
+      52875,
+      66625,
+      80375,
+      94125,
+      107875,
+      121625,
+      135375,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 13450, // USD per year per person
-    MIN_HOUSEHOLD_SIZE: 3, // People
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 13750, // USD per year per person
   },
   ga: {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/4GA/NeedStnds.htm
@@ -144,18 +145,17 @@ const cnst = {
   },
   hps: {
     // https://preventhomelessness.org/#eligibility
-    // Effective through 4/1/25
+    // Effective through 4/1/27
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      102300,
-      116900,
-      131500,
-      146100,
-      157800,
-      169500,
-      181200,
-      192900,
+      113700,
+      129950,
+      146200,
+      162400,
+      175400,
+      188400,
+      201400,
+      214400,
     ],
-    // Aditional person income limit not specified
   },
   housingChoice: {
     // https://www.scchousingauthority.org/wp-content/uploads/2022/08/Eng-_Interest_List_Flyer.pdf
@@ -166,67 +166,67 @@ const cnst = {
     // https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/
     // Effective through 4/1/26
     ANNUAL_INCOME_LIMITS: [ // USD per month
-      70315,
-      80360,
-      90405,
+      70350,
+      80400,
+      90450,
       100450,
-      108486,
-      116522,
-      124558,
-      132594,
+      108500,
+      116550,
+      124600,
+      132600,
     ],
   },
   hudvash: {
     // https://www.federalregister.gov/documents/2024/08/13/2024-17957/section-8-housing-choice-vouchers-revised-implementation-of-the-hud-veterans-affairs-supportive#p-55
     // See 80% AMI ("Low") here:
-    // https://www.huduser.gov/portal/datasets/il/il2024/2024summary.odn?states=6.0&data=2024&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2024&selection_type=county
-    // Effective through 5/31/25
+    // https://www.huduser.gov/portal/datasets/il/il2025/2025summary.odn?STATES=6.0&INPUTNAME=METRO41940M41940*0608599999%2BSanta+Clara+County&statelist=&stname=California&wherefrom=&statefp=06&year=2025&ne_flag=&selection_type=county&incpath=&data=2025&SubmitButton=View+County+Calculations
+    // Effective through 5/31/26
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      102300,
-      116900,
-      131500,
-      146100,
-      157800,
-      169500,
-      181200,
-      192900,
+      111700,
+      127650,
+      143600,
+      159550,
+      172350,
+      185100,
+      197850,
+      210650,
     ],
   },
   ihss: {
-    // https://socialservices.sccgov.org/other-services/in-home-supportive-services/in-home-supportive-services-recipients
+    // https://ssa.santaclaracounty.gov/supportive-services/in-home-supportive-services
     MIN_ELDERLY_AGE: 65, // Years
   },
   lifeline: {
     // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
-    // Effective through 5/31/25
+    // Effective through 5/31/26
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      23400,
-      31700,
-      40000,
-      48400,
+      24200,
+      32600,
+      41100,
+      49600,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 8400, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 8500, // USD per year per person
   },
   liheap: {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
     // LIHEAP income limits are set at 60% of State Median Income:
     //   https://www.acf.hhs.gov/ocs/policy-guidance/liheap-im-2024-02-federal-poverty-guidelines-and-state-median-income-estimates
-    // Effective through 11/1/25 (despite federal fiscal year starting 10/1)
+    // Effective through 11/1/26 (despite federal fiscal year starting 10/1)
     MONTHLY_INCOME_LIMITS: [ // USD per month
-      3170.00,
-      4145.41,
-      5120.83,
-      6096.25,
-      7071.58,
-      8047.00,
-      8229.91,
-      8412.75,
-      8595.66,
-      8778.58,
+      3331.66,
+      4356.83,
+      5382.00,
+      6407.16,
+      7432.25,
+      8457.41,
+      8649.66,
+      8841.83,
+      9034.08,
+      9226.25,
     ],
     // 3% of 4-person limit, as documented here:
     // https://www.acf.hhs.gov/sites/default/files/documents/ocs/COMM_LIHEAP_Att1SMITable_FY2023.pdf#page=4
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 182.89, // USD per month
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 192.21, // USD per month
   },
   noFeeId: {
     // https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/identification-id-cards/
@@ -239,16 +239,17 @@ const cnst = {
   },
   ssiCapi: {
     // https://www.ssa.gov/oact/cola/sga.html
-    // Effective through 12/31/25
-    SGA_NON_BLIND: 1620, // USD per month
-    SGA_BLIND: 2700, // USD per month
+    // Effective through 12/31/26
+    SGA_NON_BLIND: 1690, // USD per month
+    SGA_BLIND: 2830, // USD per month
     // https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACINs/2024/I-61-24.pdf?ver=2024-12-02-135401-467
+    // https://www.ssa.gov/pubs/EN-05-11125.pdf
     // Note these max benefit amounts include the California state supplement.
     // TODO: Handle other living categories (e.g. non-medical out-of-home care).
-    // Effective through 12/31/25
-    MAX_BENEFIT_NON_BLIND: 1206.94, // USD per month
-    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1335.81, // USD per month
-    MAX_BENEFIT_BLIND: 1291.32, // USD per month
+    // Effective through 12/31/26
+    MAX_BENEFIT_NON_BLIND: 1233.94, // USD per month
+    MAX_BENEFIT_NON_BLIND_NO_KITCHEN: 1362.81, // USD per month
+    MAX_BENEFIT_BLIND: 1318.32, // USD per month
     // https://www.ssa.gov/ssi/text-resources-ussi.htm
     // Effective through 12/31/23?
     MAX_RESOURCES: 2000, // USD
@@ -279,17 +280,17 @@ const cnst = {
       ['1990-08-02', ''], // Gulf war, no end date yet.
     ],
     // https://www.va.gov/pension/veterans-pension-rates/
-    // Effective through 11/30/24
-    ANNUAL_NET_WORTH_LIMIT: 155356, // USD per year
+    // Effective through 11/30/26
+    ANNUAL_NET_WORTH_LIMIT: 163699, // USD per year
     // TODO (#394): Somehow handle higher income limits for housebound and
     // aid & attendance disabilities
-    // Effective through 11/30/24
+    // Effective through 11/30/26
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      16551,
-      21674,
+      17441,
+      22839,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2831, // USD per year
-    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 14600, // USD per year
+    ANNUAL_INCOME_LIMIT_ADDL_DEPENDENT: 2984, // USD per year
+    MAX_DEPENDENT_ANNUAL_WAGES_EXCLUSION: 16100, // USD per year
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
@@ -1597,6 +1598,14 @@ function complexImmigration(input,
     complexOptions.includes(input.immigrationStatus));
 }
 
+// Returns true if discharge status is other-than-honorable or bad conduct.
+// Used to determine complex discharge flag.
+function complexDischarge(input,
+  complexOptions=['oth', 'bad-conduct']) {
+  return (
+    complexOptions.includes(input.dischargeStatus));
+}
+
 // Computes the incremental change in HUD income limit for large family sizes.
 // 'numExtraPeople' is the number of people beyond the max family size given
 // by the array of income limits given by 'limits'.  For example, if 'limits'
@@ -1662,6 +1671,7 @@ const FlagCodes = {
   NEAR_INCOME_LIMIT: 'NEAR_INCOME_LIMIT',
   TOO_COMPLEX: 'TOO_COMPLEX',
   COMPLEX_IMMIGRATION: 'COMPLEX_IMMIGRATION',
+  COMPLEX_DISCHARGE: 'COMPLEX_DISCHARGE',
   COMPLEX_RETIREMENT_AGE: 'COMPLEX_RETIREMENT_AGE',
   MORE_INFO_NEEDED: 'MORE_INFO_NEEDED',
 };
@@ -2022,6 +2032,8 @@ function careResult(input) {
     input.existingNslpHousehold,
     input.existingSchipMe,
     input.existingSchipHousehold,
+    input.existingBiaGaMe,
+    input.existingBiaGaHousehold,
     // TODO: Add Medi-Cal eligibility check here once supported.
     ssiResult(input).eligible,
     liheapResult(input).eligible,
@@ -2039,7 +2051,8 @@ function careResult(input) {
       `Have a gross income below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
     new EligCondition('Be receiving or eligible for SSI, LIHEAP, WIC, ' +
-        'CalWORKS, CalFresh, Medi-Cal, CFAP, NSLP or SCHIP',
+        'CalWORKS, CalFresh, Medi-Cal, CFAP, NSLP, SCHIP, or Bureau ' +
+        'of Indian Affairs GA',
     isCategoricallyEligible),
   ]);
 
@@ -2063,9 +2076,6 @@ function feraResult(input) {
   const incomeLimitFera = grossLimit.getLimit(input.householdSize);
   const underFeraIncomeLimit = le(grossIncome(input), incomeLimitFera);
 
-  const meetsHouseholdSizeReq = ge(input.householdSize,
-    cnst.fera.MIN_HOUSEHOLD_SIZE);
-
   const program = new Program();
   program.addCondition(
     new EligCondition('Be housed', isHoused));
@@ -2080,10 +2090,6 @@ function feraResult(input) {
     new EligCondition(`Have a gross income under the FERA program limit of ` +
       `${usdLimit(incomeLimitFera)} per month`,
     underFeraIncomeLimit));
-  program.addCondition(
-    new EligCondition(`Have a household of at least ` +
-      `${cnst.fera.MIN_HOUSEHOLD_SIZE} people`,
-    meetsHouseholdSizeReq));
 
   if (input.existingFeraMe || input.existingFeraHousehold) {
     program.markEnrolled();
@@ -2100,8 +2106,6 @@ function vaDisabilityResult(input) {
 
   const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
     'dishonorable',
-    'oth',
-    'bad-conduct',
   ]));
 
   const isServiceDisabled = and(
@@ -2119,12 +2123,14 @@ function vaDisabilityResult(input) {
       'duty training',
       meetsDutyReq));
   program.addCondition(
-    new EligCondition('Have a discharge status that is not dishonorable, ' +
-      'bad conduct, or other-than-honorable',
-    meetsDischargeReq));
+    new EligCondition('Have a discharge status that is not dishonorable.',
+      meetsDischargeReq));
 
   if (input.existingVaDisabilityMe) {
     program.markEnrolled();
+  }
+  if (program.evaluate() && complexDischarge(input)) {
+    program.addFlag(FlagCodes.COMPLEX_DISCHARGE);
   }
   return program.getResult();
 }
@@ -2293,6 +2299,8 @@ function lifelineResult(input) {
     input.existingCalworksHousehold,
     input.existingVaPensionMe,
     input.existingVaPensionHousehold,
+    input.existingBiaGaMe,
+    input.existingBiaGaHousehold,
     liheapResult(input).eligible,
     ssiResult(input).eligible,
     calfreshResult(input).eligible,
@@ -2306,8 +2314,8 @@ function lifelineResult(input) {
       `Have a gross income below ${usdLimit(incomeLimit)} per month`,
       underIncomeLimit),
     new EligCondition('Be receiving or eligible for SSI, LIHEAP, WIC, ' +
-        'CalWORKS, CalFresh, Medi-Cal, NSLP, Public Housing Assistance, or ' +
-        'VA Pension',
+        'CalWORKS, CalFresh, Medi-Cal, NSLP, Public Housing Assistance, ' +
+        'Bureau of Indian Affairs GA, or VA Pension',
     isProgramQualified),
   ]);
 
@@ -2584,8 +2592,6 @@ function vaPensionResult(input) {
 
   const meetsDischargeReq = not(isOneOf(input.dischargeStatus, [
     'dishonorable',
-    'oth',
-    'bad-conduct',
   ]));
 
   const meetsAgeReq = ge(input.age, cnst.vaPension.MIN_ELDERLY_AGE);
@@ -2639,7 +2645,7 @@ function vaPensionResult(input) {
   program.addCondition(new EligCondition('Be a U.S. veteran', input.veteran));
   program.addCondition(
     new EligCondition(
-      'Have been discharged honorably or under honorable conditions',
+      'Have a discharge status that is not dishonorable',
       meetsDischargeReq));
   program.addCondition(new EligCondition(
     'Meet specific duty type and duration ' +
@@ -2660,6 +2666,9 @@ function vaPensionResult(input) {
   ]);
   if (input.existingVaPensionMe) {
     program.markEnrolled();
+  }
+  if (program.evaluate() && complexDischarge(input)) {
+    program.addFlag(FlagCodes.COMPLEX_DISCHARGE);
   }
   return program.getResult();
 }
@@ -3030,6 +3039,13 @@ function renderFlags(flags, listElem) {
     case FlagCodes.COMPLEX_IMMIGRATION:
       flagMsg = 'The immigrant eligibility rules for this program are ' +
         'complex, and not all immigrants are eligible.';
+      break;
+    case FlagCodes.COMPLEX_DISCHARGE:
+      flagMsg = 'Veterans with a bad conduct or other ' +
+        'than honorable discharge may qualify for VA benefits depending ' +
+        'on a determination made by VA. ' +
+        '<a href="https://www.benefits.va.gov/benefits/character_of_discharge.asp" ' +
+        'target="_blank" rel="noopener">Learn More</a>';
       break;
     case FlagCodes.COMPLEX_RETIREMENT_AGE:
       flagMsg = 'To be eligible for this program, you must be younger than ' +

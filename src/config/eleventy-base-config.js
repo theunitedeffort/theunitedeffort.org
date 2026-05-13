@@ -67,6 +67,11 @@ module.exports = function(eleventyConfig) {
         str = str.replace(match[0], imageTag);
       }
     }
+    for (const match of str.matchAll(/{{video ([a-z0-9\-./]+) (\d*)}}/g)) {
+      const videoTag = (
+        `<video width="${match[2]}" src="${match[1]}" controls />`);
+      str = str.replace(match[0], videoTag);
+    }
     return str;
   });
 
@@ -962,6 +967,10 @@ module.exports = function(eleventyConfig) {
     if (phoneStr.length < 10) return temp;
     if (phoneStr.length > 10) return phoneStr.replace(/(\d{3})(\d{3})(\d{4})(\d{1,})/, '$1-$2-$3 ext $4');
     return phoneStr.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+  });
+
+  eleventyConfig.addFilter('pretty_url', function(url) {
+    return url.replace(/^https?:\/\//, '').replace(/\/$/, '');
   });
 
   eleventyConfig.addFilter('except', function(collection, value) {
