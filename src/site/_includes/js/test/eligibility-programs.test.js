@@ -512,13 +512,11 @@ describe('Program eligibility', () => {
       });
 
       test(`Eligibility result is ${expectedEligible}`, () => {
-        input.veteran = true;
         input.dischargeStatus = dischargeStatus;
         expect(resultFn(input).eligible).toBe(expectedEligible);
       });
 
       test(`Complex discharge flag ${expectedFlag ? 'is' : 'is not'} present`, () => {
-        input.veteran = true;
         input.dischargeStatus = dischargeStatus;
         const result = resultFn(input);
         if (expectedFlag) {
