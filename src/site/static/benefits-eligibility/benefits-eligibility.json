@@ -9,7 +9,8 @@
     {
       "name": "CalFresh",
       "id": "calfresh",
-      "applyUrl": "https://www.cdss.ca.gov/calfresh",
+      "applyUrl": "https://www.getcalfresh.org/en/howtoapply/",
+      "infoUrl": "https://cdss.ca.gov/inforesources/calfresh",
       "summary": "CalFresh provides monthly food benefits to certain low-income individuals and families."
     },
     {
