@@ -162,18 +162,18 @@ const cnst = {
     MIN_ELIGIBLE_AGE: 18,
     // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
     // See "very low income" here:
-    // https://www.huduser.gov/portal/datasets/il/il2025/2025summary.odn?states=6.0&data=2025&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2025&selection_type=county
+    // https://www.huduser.gov/datasets/il/il2026/summary?reporttype=county&year=2026&counties=0608599999&states=6&q=Santa%20Clara%20County,%20CA
     // https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/
-    // Effective through 4/1/26
+    // Effective through 4/1/27
     ANNUAL_INCOME_LIMITS: [ // USD per month
-      70350,
-      80400,
-      90450,
-      100450,
-      108500,
-      116550,
-      124600,
-      132600,
+      71950,
+      82200,
+      92500,
+      102750,
+      111000,
+      119200,
+      127450,
+      135650,
     ],
   },
   hudvash: {
