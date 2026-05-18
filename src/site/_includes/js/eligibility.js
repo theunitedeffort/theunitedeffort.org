@@ -294,18 +294,18 @@ const cnst = {
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
-    // Effective through 6/30/26
+    // Effective through 6/30/27
     MONTHLY_INCOME_LIMITS: [ // USD per month
-      2413,
-      3261,
-      4109,
-      4957,
-      5805,
-      6653,
-      7501,
-      8349,
+      2461,
+      3337,
+      4212,
+      5088,
+      5964,
+      6839,
+      7715,
+      8591,
     ],
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 848, // USD per month per person
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 876, // USD per month per person
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
     CHILD_EXIT_AGE: 5, // Birthday at which a child is ineligible.
   },
