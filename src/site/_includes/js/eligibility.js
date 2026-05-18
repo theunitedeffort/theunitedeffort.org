@@ -162,18 +162,18 @@ const cnst = {
     MIN_ELIGIBLE_AGE: 18,
     // https://www.ecfr.gov/current/title-24/subtitle-B/chapter-IX/part-982#p-982.201(b)(1)(i)
     // See "very low income" here:
-    // https://www.huduser.gov/portal/datasets/il/il2025/2025summary.odn?states=6.0&data=2025&inputname=METRO41940M41940*0608599999%2BSanta+Clara+County&stname=California&statefp=06&year=2025&selection_type=county
+    // https://www.huduser.gov/datasets/il/il2026/summary?reporttype=county&year=2026&counties=0608599999&states=6&q=Santa%20Clara%20County,%20CA
     // https://www.scchousingauthority.org/section-8/for-participants/for-new-applicants/applicant-portal/
-    // Effective through 4/1/26
+    // Effective through 4/1/27
     ANNUAL_INCOME_LIMITS: [ // USD per month
-      70350,
-      80400,
-      90450,
-      100450,
-      108500,
-      116550,
-      124600,
-      132600,
+      71950,
+      82200,
+      92500,
+      102750,
+      111000,
+      119200,
+      127450,
+      135650,
     ],
   },
   hudvash: {
@@ -294,18 +294,18 @@ const cnst = {
   },
   wic: {
     // https://www.cdph.ca.gov/Programs/CFH/DWICSN/CDPH%20Document%20Library/LocalAgencies/WPPM/980-1060WICIncomeGuidelinesTable.pdf
-    // Effective through 6/30/26
+    // Effective through 6/30/27
     MONTHLY_INCOME_LIMITS: [ // USD per month
-      2413,
-      3261,
-      4109,
-      4957,
-      5805,
-      6653,
-      7501,
-      8349,
+      2461,
+      3337,
+      4212,
+      5088,
+      5964,
+      6839,
+      7715,
+      8591,
     ],
-    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 848, // USD per month per person
+    MONTHLY_INCOME_LIMIT_ADDL_PERSON: 876, // USD per month per person
     // https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-A/part-246#p-246.2(Children)
     CHILD_EXIT_AGE: 5, // Birthday at which a child is ineligible.
   },

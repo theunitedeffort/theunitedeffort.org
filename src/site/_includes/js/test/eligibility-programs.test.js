@@ -1223,9 +1223,9 @@ describe('Program eligibility', () => {
     // Test ensures the calculation was done correctly by checking against the
     // values given by the HUD income limit calculator.
     test('Extended income limit is computed correctly', () => {
-      // https://www.huduser.gov/portal/datasets/il/il2025/2025IlCalc.odn?inputname=Santa+Clara+County&area_id=METRO41940M41940&fips=0608599999&type=county&year=2025&yy=25&stname=California&stusps=CA&statefp=06&ACS_Survey=&State_Count=&areaname=San+Jose-Sunnyvale-Santa+Clara%2C+CA+HUD+Metro+FMR+Area&incpath=&level=50
-      const expectedAnnualLimitNinePpl = 140650;
-      const expectedAnnualLimitTwentyFivePpl = 269250;
+      // https://www.huduser.gov/datasets/il/il2026/very-low-income?year=2026&reporttype=county&states=6&counties=0608599999
+      const expectedAnnualLimitNinePpl = 143850;
+      const expectedAnnualLimitTwentyFivePpl = 275400;
 
       input.income.valid = true;
       input.age = elig.cnst.housingChoice.MIN_ELIGIBLE_AGE;

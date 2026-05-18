@@ -241,8 +241,8 @@ const strs = {
     'es': /((introduzca)|(ingres(a|e))) un activo/i,
   },
   'gaExistingMe': {
-    'en': /general assistance .* me/i,
-    'es': /asistencia general .* mí/i,
+    'en': /general assistance \(ga\) me/i,
+    'es': /asistencia general \(ag\).* mí/i,
   },
   'lifelineExistingHouse': {
     'en': /lifeline .* household/i,
