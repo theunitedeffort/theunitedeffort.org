@@ -122,6 +122,11 @@ to = "/resources"
 status = 301
 
 [[redirects]]
+from = "/about/team/"
+to = "/about/"
+status = 301
+
+[[redirects]]
 from = "/about/stories/ueo-helped-save-my-life/"
 to = "/about/stories/the-united-effort-organization-helped-save-my-life/"
 status = 301
@@ -134,9 +139,4 @@ status = 301
 [[redirects]]
 from = "/about/stories/from-homeless-to-hope/"
 to = "/about/stories/from-homeless-to-giving-hope/"
-status = 301
-
-[[redirects]]
-from = "/about/team/"
-to = "/about/"
 status = 301
