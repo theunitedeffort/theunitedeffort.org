@@ -138,5 +138,5 @@ status = 301
 
 [[redirects]]
 from = "/about/team/"
-to = "/about"
+to = "/about/"
 status = 301
