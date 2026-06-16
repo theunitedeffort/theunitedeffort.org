@@ -351,6 +351,10 @@ pageClass: "page-benefits-eligibility"
             <label for="income-has-child-support">Child support and alimony</label>
           </li>
           <li>
+            <input id="income-has-guaranteed" type="checkbox">
+            <label for="income-has-guaranteed">Guaranteed Income <span class="subtitle">Through the State-funded GI Pilot Program or another GI program</span></label>
+          </li>
+          <li>
             <input id="income-has-other" type="checkbox">
             <label for="income-has-other">Other source of income not listed here <span class="subtitle">Including cash assistance, interest, and investment income</span></label>
           </li>
@@ -398,6 +402,10 @@ pageClass: "page-benefits-eligibility"
 
     {% eligPage "income-details-child-support" %}
       {% render "eligibility-income-details" desc: "child support and alimony", heading: "Payment", id: "child-support"  %}
+    {% endeligPage %}
+
+    {% eligPage "income-details-guaranteed" %}
+    {% render "eligibility-income-details" desc: "guaranteed income", heading: "Payment", id: "guaranteed"  %}
     {% endeligPage %}
 
     {% eligPage "income-details-other" %}

@@ -566,6 +566,7 @@ describe('Program eligibility', () => {
         veterans: [[]],
         workersComp: [[]],
         childSupport: [[]],
+        guaranteed: [[]],
         retirement: [[]],
         other: [[]],
       },
