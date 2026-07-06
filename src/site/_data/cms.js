@@ -1,10 +1,15 @@
 const eleventyFetch = require('@11ty/eleventy-fetch');
 const eleventyImage = require('@11ty/eleventy-img');
 const fs = require('fs');
+const ical = require('node-ical');
 const path = require('path');
 const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
+
+const MYCONNECTSV_CALENDAR_URL = 'https://calendar.google.com/calendar/ical/c_bc13a42e047ab729ab123f1352170ee36f9be68d01c9c0a5cd773b92e4f67a18%40group.calendar.google.com/public/basic.ics';
+const LOOKAHEAD_DAYS = 30;
+const NEXT_N_EVENTS = 5;
 
 const CONTENT_BLOCKS_TABLE = 'tblAkC6dlPJc4o0Je';
 const PAGES_TABLE = 'tblTqhITQfO1MJQaE';
@@ -194,6 +199,50 @@ const fetchAssets = async () => {
     });
 };
 
+const sortByDate = (a, b) => {
+  return a.start - b.start;
+};
+
+const makeEventEntry = (event) => {
+  let location = event.location;
+  if (event.event) {
+    // Expanded instances of a recurring event have the location info in
+    // the base event object.
+    location = event.event.location;
+  }
+  const entry = {
+    'start': event.start,
+    'end': event.end,
+    'title': event.summary,
+    'location': location,
+  };
+  return entry;
+};
+
+const fetchEventData = async (url) => {
+  console.log('fetching events');
+  const data = await ical.fromURL(url);
+  events = [];
+  for (const event of Object.values(data)) {
+    if (event.type === 'VEVENT') {
+      if (event.rrule) {
+        const instances = ical.expandRecurringEvent(event, {
+          from: new Date(),
+          to: new Date(Date.now() + LOOKAHEAD_DAYS * 24 * 60 * 60 * 1000)
+        });
+        for (const instance of instances) {
+          events.push(makeEventEntry(instance))
+        }
+      } else {
+        events.push(makeEventEntry(event));
+      }
+    }
+  }
+  events.sort(sortByDate);
+  events = events.slice(0, NEXT_N_EVENTS);
+  return events;
+};
+
 
 module.exports = async function() {
   // Only housing pages run serverless, so there is no need to fetch
@@ -215,8 +264,9 @@ module.exports = async function() {
     newsList,
     imageList,
     assetList,
+    eventsList,
   ] = await Promise.all([fetchPages(), fetchGeneralResources(), fetchStories(),
-    fetchNews(), fetchImages(), fetchAssets()]);
+    fetchNews(), fetchImages(), fetchAssets(), fetchEventData(MYCONNECTSV_CALENDAR_URL)]);
   await cacheStoryImages(storiesList);
   await cacheAssets(assetList);
   const ret = {
@@ -226,6 +276,7 @@ module.exports = async function() {
       resources: resourceList,
       stories: storiesList,
       articles: newsList,
+      events: eventsList,
     },
   };
   await asset.save(ret, 'json');

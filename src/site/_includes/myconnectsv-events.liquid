@@ -1,0 +1,8 @@
+{% for event in data.events %}
+<ul>
+	<li>
+    <p>{{ event.start | date: '%A, %B %e %l:%M%P'}} - {{ event.end | date: '%l:%M%P' }}
+    <br/>{{ event.title }} (<a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query={{ event.location | url_encode }}">map</a>)</p>
+</li>
+</ul>
+{% endfor %}
