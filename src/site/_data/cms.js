@@ -132,6 +132,7 @@ const fetchDocsPages = async () => {
             url: path,
             sections: contents,
             name: record.get('Page Title'),
+            parent: record.get('Parent Page Path') || null,
             lastUpdated: record.get('Content Last Updated'),
           };
         } else {

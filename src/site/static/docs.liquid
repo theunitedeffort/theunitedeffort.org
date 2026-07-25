@@ -4,12 +4,19 @@ pagination:
   data: cms.docs
   size: 1
   alias: thisPage
+  addAllPagesToCollections: true
 permalink: "{{ thisPage.url }}/index.html"
 eleventyComputed:
   pageClass: "page{{ thisPage.url | replace: '/', '-' }}"
   title: "{{ thisPage.name }}"
   pageHead: "{{ thisPage.head }}"
+  eleventyNavigation:
+    key: "{{ thisPage.url }}"
+    title: "{{ thisPage.name }}"
+    parent: "{{ thisPage.parent }}"
 ---
+
+
 <h1>{{ thisPage.name }}</h1>
 <p>Last Updated {{ thisPage.lastUpdated | date: '%B %e, %Y' }}</p>
 {%- for section in thisPage.sections -%}

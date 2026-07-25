@@ -4,6 +4,7 @@ const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 // so include it here to be sure it makes it into the serverless bundle.
 const EleventyFetch = require("@11ty/eleventy-fetch");
 const pluginToc = require('eleventy-plugin-toc');
+const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 
 
 module.exports = function(eleventyConfig) {
@@ -21,6 +22,7 @@ module.exports = function(eleventyConfig) {
   }
 
   eleventyConfig.addPlugin(pluginToc);
+  eleventyConfig.addPlugin(eleventyNavigationPlugin);
 
   // Eleventy Serverless plugin
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {

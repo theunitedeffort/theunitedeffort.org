@@ -2,18 +2,19 @@
 layout: "layouts/root.liquid"
 ---
 <div class="docs-container">
-<aside class="left-sidebar">
-  <ul><li>One</li><li>Two</li><li>Three</li></ul>
-</aside>
+	<aside class="left-sidebar">
+	  <nav>
+	    {{ collections.all | eleventyNavigation | eleventyNavigationToHtml }}
+	  </nav>
+  </aside>
+  <main>
+    {{ content }}
+  </main>
 
-<main>
-  {{ content }}
-</main>
-
-<aside class="right-sidebar">
-  <div class="sticky-toc">
-    <h4>On this page</h4>
-    {{ content | toc }}
-  </div>
-</aside>
+	<aside class="right-sidebar">
+	  <div class="sticky-toc">
+	    <h4>On this page</h4>
+	    {{ content | toc }}
+	  </div>
+  </aside>
 </div>

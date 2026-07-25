@@ -96,6 +96,11 @@ main {
 
 .left-sidebar {
   padding-top: 4em;
+  padding-right: 1em;
+}
+
+.left-sidebar nav ul {
+  padding-left: 1em;
 }
 
 figcaption,
@@ -146,10 +151,19 @@ nav.toc ol{
 .docs-container {
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
-  width: 90%;
+  width: 95%;
   margin: 0 auto;
   text-align: left;
   font-size: 0.8em;
+  @include bp(mid) {
+    width: 95%;
+  }
+  @include bp(wide) {
+    width: 95%;
+  }
+  @include bp(ultra) {
+    width: 1368px;
+  }
 }
 
 .story_content {
