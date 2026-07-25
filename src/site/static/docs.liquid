@@ -10,7 +10,7 @@ eleventyComputed:
   title: "{{ thisPage.name }}"
   pageHead: "{{ thisPage.head }}"
 ---
-<h1>{{ name }}</h1>
+<h1>{{ thisPage.name }}</h1>
 {%- for section in thisPage.sections -%}
   <div class="{{section.type | downcase}}">
     {% if section.type == "Process-Table" %}
