@@ -11,6 +11,10 @@
   color: black;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   counter-reset: step-indicator;
   min-height: 100vh;
@@ -73,7 +77,6 @@ video {
 }
 
 footer,
-main,
 .pre-footer {
   padding-top: 1rem;
 }
@@ -81,6 +84,18 @@ main,
 main {
   padding-top: 2em;
   padding-bottom: 4em;
+}
+
+.right-sidebar  {
+  padding-top: 2em;
+  padding-left: 1em;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.left-sidebar {
+  padding-top: 4em;
 }
 
 figcaption,
@@ -126,6 +141,15 @@ nav.toc ol{
   @include bp(ultra) {
     width: 1200px;
   }
+}
+
+.docs-container {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  width: 90%;
+  margin: 0 auto;
+  text-align: left;
+  font-size: 0.8em;
 }
 
 .story_content {
@@ -382,7 +406,7 @@ $logo-height: 30px;
 .process-table {
   display: grid;
   grid-template-columns: min-content 1fr min-content;
-  width: 80%;
+  width: 100%;
   border-style: solid;
   border-color: var(--color-gray-200);
   border-width: 1px 1px 0 1px;

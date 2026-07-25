@@ -3,7 +3,7 @@ const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 // This requirement is somehow not propagated from affordable-housing.11tydata.js
 // so include it here to be sure it makes it into the serverless bundle.
 const EleventyFetch = require("@11ty/eleventy-fetch");
-const pluginToc = require('eleventy-plugin-nesting-toc');
+const pluginToc = require('eleventy-plugin-toc');
 
 
 module.exports = function(eleventyConfig) {
