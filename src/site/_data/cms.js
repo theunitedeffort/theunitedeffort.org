@@ -328,7 +328,7 @@ module.exports = async function() {
   const asset = new eleventyFetch.AssetCache('airtable_pages');
   console.log('checking if asset is valid')
   console.log(asset.cachedObject);
-  console.log(asset.cachedObject.cachedAt);
+  console.log(asset.cachedObject?.cachedAt);
   if (asset.isCacheValid('24h')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
