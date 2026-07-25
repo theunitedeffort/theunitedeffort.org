@@ -80,6 +80,9 @@ const fetchDocsContent = async (id) => {
 config:
   flowchart:
     curve: stepAfter
+    nodeSpacing: 50
+    rankSpacing: 35
+    wrappingWidth: 250
 ---`;
       const source = `${frontmatter}\n${record.get('Markdown')}`;
       const data = Buffer.from(source, 'utf8');
@@ -113,9 +116,6 @@ const fetchDocsPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
-        const name = record.get('Page Title');
-        console.log(`docs page ${name}`);
-        const path = record.get('Page Path');
         let contentIds = record.get('Content');
         if (!contentIds) {
           contentIds = [];
@@ -126,11 +126,13 @@ const fetchDocsPages = async () => {
           contents.push(await fetchDocsContent(contentId));
         }
 
+        const path = record.get('Page Path');
         if (!data[path]) {
           data[path] = {
             url: path,
             sections: contents,
-            name: name,
+            name: record.get('Page Title'),
+            lastUpdated: record.get('Content Last Updated'),
           };
         } else {
           data[path].sections.push(...contents);
@@ -324,6 +326,9 @@ module.exports = async function() {
     return {};
   }
   const asset = new eleventyFetch.AssetCache('airtable_pages');
+  console.log('checking if asset is valid')
+  console.log(asset.cachedObject);
+  console.log(asset.cachedObject.cachedAt);
   if (asset.isCacheValid('24h')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
