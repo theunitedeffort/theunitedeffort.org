@@ -75,6 +75,28 @@ module.exports = function(eleventyConfig) {
     return str;
   });
 
+  eleventyConfig.addFilter('stepNumbers', (tableData) => {
+    // Map steps to step numbers
+    const stepNumbers = {};
+    console.log(JSON.stringify(tableData, null, 2));
+    for (const [i, step] of tableData.steps.entries()) {
+      stepNumbers[step.name] = i + 1;
+    }
+    for (const step of tableData.steps) {
+      for (const match of step.content.matchAll(/\${(.*?)}/g)) {
+        // TODO: what if it doesn't exist
+        const stepNumber = stepNumbers[match[1]];
+        step.content = step.content.replace(match[0], `STEP #${stepNumber}`);
+      }
+      for (const match of step.next_step.matchAll(/\${(.*?)}/g)) {
+        // TODO: what if it doesn't exist
+        const stepNumber = stepNumbers[match[1]];
+        step.next_step = step.next_step.replace(match[0], `STEP #${stepNumber}`);
+      }
+    }
+    return tableData;
+  });
+
 
   // Get all of the unique values of a property
   eleventyConfig.addFilter('index', function(collection, property) {
@@ -778,6 +800,15 @@ module.exports = function(eleventyConfig) {
     }
     return filtersApplied.join(' ');
   });
+
+  eleventyConfig.addShortcode('processTable',
+    function(tableData) {
+      const stepsHtml = []
+      for (const step of tableData.content.steps) {
+        stepsHtml.push(`<div class="process-table-step">${step}`)
+      }
+      `<div class="process-table-wrapper">`
+    });
 
   // Summarizes the 'units' array of each item in 'housingList' by the
   // 'summarizeBy' keys.

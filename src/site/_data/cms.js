@@ -1,6 +1,7 @@
 const eleventyFetch = require('@11ty/eleventy-fetch');
 const eleventyImage = require('@11ty/eleventy-img');
 const fs = require('fs');
+const pako = require('pako');
 const path = require('path');
 const Airtable = require('airtable');
 const base = new Airtable(
@@ -8,6 +9,10 @@ const base = new Airtable(
 
 const CONTENT_BLOCKS_TABLE = 'tblAkC6dlPJc4o0Je';
 const PAGES_TABLE = 'tblTqhITQfO1MJQaE';
+const DOC_CONTENT_BLOCKS_TABLE = 'tblKinGxInIRE8uxT';
+const DOC_PAGES_TABLE = 'tblbM9n0xnYHdUHYL';
+const DOC_PROCESSES_TABLE = 'tbl4JhQIQ8Qtk9K8m';
+const DOC_PROCESS_STEPS_TABLE = 'tblKDlARlHGvatITg';
 
 const useRecord = (status) => {
   const isProdContext = (
@@ -26,6 +31,122 @@ const fetchSection = (id) => {
       return record.get('Content');
     }
   });
+};
+
+
+const fetchDocsProcessStep = (id) => {
+  console.log(`getting process step ${id}`);
+  const table = base(DOC_PROCESS_STEPS_TABLE);
+  return table.find(id).then((record) => {
+    return {
+      content: record.get('Step Content Markdown'),
+      next_step: record.get('Next Instruction Markdown'),
+      name: record.get('Name'),
+      who: record.get('Who'),
+    };
+  });
+};
+
+
+const fetchDocsProcess = async (id) => {
+  console.log(`getting process ${id}`);
+  const table = base(DOC_PROCESSES_TABLE);
+  return table.find(id).then(async (record) => {
+    const stepIds = record.get('Steps');
+    const steps = [];
+    for (const stepId of stepIds) {
+      const stepContent = await fetchDocsProcessStep(stepId);
+      steps.push(stepContent);
+    }
+    return {
+      steps: steps,
+      name: record.get('Name'),
+    };
+  });
+};
+
+
+const fetchDocsContent = async (id) => {
+  console.log(`getting docs content item ${id}`);
+  const table = base(DOC_CONTENT_BLOCKS_TABLE);
+  return table.find(id).then(async (record) => {
+    const type = record.get('Type');
+    let content = '';
+    if (type == 'Markdown') {
+      content = record.get('Markdown');
+    } else if (type == 'Diagram') {
+      const frontmatter = `
+---
+config:
+  flowchart:
+    curve: stepAfter
+---`;
+      const source = `${frontmatter}\n${record.get('Markdown')}`;
+      const data = Buffer.from(source, 'utf8');
+      const compressed = pako.deflate(data, {level: 9});
+      const result = Buffer.from(compressed)
+        .toString('base64')
+        .replace(/\+/g, '-').replace(/\//g, '_');
+      const url = `https://kroki.io/mermaid/svg/${result}`;
+      console.log(url);
+      content = await eleventyFetch(url, {type: 'text'});
+    } else {
+      content = await fetchDocsProcess(record.get('Process')[0]);
+    }
+    return {
+      type: type.replace(' ', '-'),
+      content: content,
+    }
+  });
+};
+
+
+// Fetch content for our docs from Airtable
+const fetchDocsPages = async () => {
+  const pages = [];
+  const data = [];
+  const table = base(DOC_PAGES_TABLE);
+
+  return table.select({
+    view: 'Grid view',
+  })
+    .all()
+    .then(async (records) => {
+      for (const record of records) {
+        const name = record.get('Page Title');
+        console.log(`docs page ${name}`);
+        const path = record.get('Page Path');
+        let contentIds = record.get('Content');
+        if (!contentIds) {
+          contentIds = [];
+        }
+
+        const contents = [];
+        for (const contentId of contentIds) {
+          contents.push(await fetchDocsContent(contentId));
+        }
+
+        if (!data[path]) {
+          data[path] = {
+            url: path,
+            sections: contents,
+            name: name,
+          };
+        } else {
+          data[path].sections.push(...contents);
+        }
+      }
+
+      // Collect each page array into our pages array
+      for (const key in data) {
+        if (Object.hasOwn(data, key)) {
+          const element = data[key];
+          pages.push(element);
+        }
+      }
+
+      return pages;
+    });
 };
 
 
@@ -203,24 +324,27 @@ module.exports = async function() {
     return {};
   }
   const asset = new eleventyFetch.AssetCache('airtable_pages');
-  if (asset.isCacheValid('1h')) {
+  if (asset.isCacheValid('24h')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
   }
   console.log('Fetching pages.');
   const [
     pageList,
+    docsList,
     resourceList,
     storiesList,
     newsList,
     imageList,
     assetList,
-  ] = await Promise.all([fetchPages(), fetchGeneralResources(), fetchStories(),
-    fetchNews(), fetchImages(), fetchAssets()]);
+  ] = await Promise.all([fetchPages(), fetchDocsPages(), fetchGeneralResources(),
+    fetchStories(), fetchNews(), fetchImages(), fetchAssets()]);
   await cacheStoryImages(storiesList);
   await cacheAssets(assetList);
+  console.log(JSON.stringify(docsList, null, 2));
   const ret = {
     pages: pageList,
+    docs: docsList,
     images: imageList,
     partialsData: {
       resources: resourceList,

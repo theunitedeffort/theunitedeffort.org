@@ -20,11 +20,12 @@
   "license": "ISC",
   "dependencies": {
     "@11ty/eleventy": "^2.0.0",
-    "@11ty/eleventy-fetch": "^4.0.0",
+    "@11ty/eleventy-fetch": "^5.0.0",
     "@11ty/eleventy-img": "^4.0.0",
     "airtable": "^0.12.2",
     "eleventy-plugin-nesting-toc": "^1.3.0",
     "marked": "^12.0.1",
+    "pako": "^3.0.1",
     "sass": "^1.49.9"
   },
   "devDependencies": {

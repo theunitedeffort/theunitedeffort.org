@@ -1,0 +1,36 @@
+---
+layout: "layouts/base.liquid"
+pagination:
+  data: cms.docs
+  size: 1
+  alias: thisPage
+permalink: "{{ thisPage.url }}/index.html"
+eleventyComputed:
+  pageClass: "page{{ thisPage.url | replace: '/', '-' }}"
+  title: "{{ thisPage.name }}"
+  pageHead: "{{ thisPage.head }}"
+---
+<h1>{{ name }}</h1>
+{%- for section in thisPage.sections -%}
+  <div class="{{section.type | downcase}}">
+    {% if section.type == "Process-Table" %}
+      <div class="process-header-steps bold">Process Steps</div>
+      <div class="process-header-who bold">Who</div>
+      {% assign table = section.content | stepNumbers %}
+      {% for step in table.steps %}
+          <div class="process-step-number bold">#{{ forloop.index }}</div>
+          <div class="process-step-wrapper">
+            <div class="process-step-content">{{ step.content | markdownify }}</div>
+            <div class="process-step-next">{{ step.next_step | markdownify }}</div>
+          </div>
+          <div class="process-step-who">{{ step.who }}</div>
+      {% endfor %}
+    {% elsif section.type == "Diagram" %}
+      {{ section.content }}
+    {% else %}
+      {% if section.content %}
+        {{ section.content | markdownify | unplaceholder: cms.images }}
+      {% endif %}
+    {% endif %}
+  </div>
+{%- endfor -%}
