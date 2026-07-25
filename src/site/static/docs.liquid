@@ -11,7 +11,7 @@ eleventyComputed:
   pageHead: "{{ thisPage.head }}"
 ---
 <h1>{{ thisPage.name }}</h1>
-<p>Last Updated {{ thisPage.lastUpdated | date: '%B %e, %Y }}</p>
+<p>Last Updated {{ thisPage.lastUpdated | date: '%B %e, %Y' }}</p>
 {%- for section in thisPage.sections -%}
   <div class="{{section.type | downcase}}">
     {% if section.type == "Process-Table" %}
