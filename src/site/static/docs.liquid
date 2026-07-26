@@ -14,13 +14,25 @@ eleventyComputed:
     key: "{{ thisPage.url }}"
     title: "{{ thisPage.name }}"
     parent: "{{ thisPage.parent }}"
+  navOptions:
+    includeSelf: true
+    activeAnchorClass: active
+    activeKey: "{{ eleventyNavigation.key }}"
 ---
 
-
+{% assign breadcrumbs = collections.all | eleventyNavigationBreadcrumb: thisPage.url, navOptions %}
+<nav class="breadcrumbs">
+  <ol>
+    <li><a href="/">Home</a></li>
+    {% for crumb in breadcrumbs %}
+      <li><a href="{{ crumb.url }}">{{ crumb.title }}</a></li>
+    {% endfor %}
+  </ol>
+</nav>
 <h1>{{ thisPage.name }}</h1>
 <p>Last Updated {{ thisPage.lastUpdated | date: '%B %e, %Y' }}</p>
 {%- for section in thisPage.sections -%}
-  <div class="{{section.type | downcase}}">
+  <div class="{{ section.type | downcase }}">
     {% if section.type == "Process-Table" %}
       <div class="process-header-steps bold">Process Steps</div>
       <div class="process-header-who bold">Who</div>
