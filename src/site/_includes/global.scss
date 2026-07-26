@@ -88,13 +88,22 @@ main {
 
 .right-sidebar  {
   padding-top: 2em;
-  padding-left: 3em;
+  padding-left: 2.7em;
   position: sticky;
   top: 0;
   height: 100vh;
-
+  a {
+    text-decoration: none;
+  }
   nav li {
-    padding-bottom: 1em;
+    margin-bottom: 0.8em;
+    padding-left: 0.3em;
+    border-width: 0 0 0 3px;
+    border-style: solid;
+    border-color: var(--color-white);
+  }
+  nav li.active-section {
+    border-color: var(--color-orange);
   }
 }
 
@@ -109,7 +118,7 @@ main {
   a {
     text-decoration: none;
   }
-  a.active {
+  a.active-page {
     text-decoration: underline;
     text-decoration-thickness: 3px;
     text-underline-offset: 2px;
@@ -199,7 +208,7 @@ nav.toc ol{
 
 .docs-container {
   display: grid;
-  grid-template-columns: 1.4fr 4fr 1fr;
+  grid-template-columns: 1.4fr 3.9fr 1.2fr;
   width: 95%;
   margin: 0 auto;
   text-align: left;

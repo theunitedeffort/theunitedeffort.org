@@ -16,7 +16,7 @@ eleventyComputed:
     parent: "{{ thisPage.parent }}"
   navOptions:
     includeSelf: true
-    activeAnchorClass: active
+    activeAnchorClass: active-page
     activeKey: "{{ eleventyNavigation.key }}"
 ---
 
@@ -29,6 +29,7 @@ eleventyComputed:
     {% endfor %}
   </ol>
 </nav>
+
 <h1>{{ thisPage.name }}</h1>
 <p>Last Updated {{ thisPage.lastUpdated | date: '%B %e, %Y' }}</p>
 {%- for section in thisPage.sections -%}
@@ -47,6 +48,8 @@ eleventyComputed:
       {% endfor %}
     {% elsif section.type == "Diagram" %}
       {{ section.content }}
+    {% elsif section.type == "Include" %}
+      {% include section.content %}
     {% else %}
       {% if section.content %}
         {{ section.content | markdownify | unplaceholder: cms.images }}
@@ -54,3 +57,31 @@ eleventyComputed:
     {% endif %}
   </div>
 {%- endfor -%}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const activeClass = 'active-section';
+      const id = entry.target.getAttribute('id');
+      const tocLink = document.querySelector(`.right-sidebar .toc a[href="#${id}"]`);
+      const tocItem = tocLink.parentElement;
+
+      if (entry.isIntersecting && tocItem) {
+        // Remove active class from all links
+        document.querySelectorAll('.right-sidebar .toc li').forEach((item) => item.classList.remove(activeClass));
+        // Highlight active link
+        tocItem.classList.add(activeClass);
+      }
+    });
+  }, {
+    // Triggers when section reaches top 20% of the viewport
+    rootMargin: '0px 0px -80% 0px'
+  });
+
+  // Observe all h2 and h3 elements inside your article
+  document.querySelectorAll('.docs-container main h2').forEach((heading) => {
+    observer.observe(heading);
+  });
+});
+</script>

@@ -72,7 +72,7 @@ const fetchDocsContent = async (id) => {
   return table.find(id).then(async (record) => {
     const type = record.get('Type');
     let content = '';
-    if (type == 'Markdown') {
+    if (type == 'Markdown' || type == 'Include') {
       content = record.get('Markdown');
     } else if (type == 'Diagram') {
       const frontmatter = `
@@ -93,7 +93,7 @@ config:
       const url = `https://kroki.io/mermaid/svg/${result}`;
       console.log(url);
       content = await eleventyFetch(url, {type: 'text'});
-    } else {
+    } else if (type == 'Process Table') {
       content = await fetchDocsProcess(record.get('Process')[0]);
     }
     return {
@@ -116,27 +116,29 @@ const fetchDocsPages = async () => {
     .all()
     .then(async (records) => {
       for (const record of records) {
-        let contentIds = record.get('Content');
-        if (!contentIds) {
-          contentIds = [];
-        }
+        if (useRecord(record.get('Status'))) {
+          let contentIds = record.get('Content');
+          if (!contentIds) {
+            contentIds = [];
+          }
 
-        const contents = [];
-        for (const contentId of contentIds) {
-          contents.push(await fetchDocsContent(contentId));
-        }
+          const contents = [];
+          for (const contentId of contentIds) {
+            contents.push(await fetchDocsContent(contentId));
+          }
 
-        const path = record.get('Page Path');
-        if (!data[path]) {
-          data[path] = {
-            url: path,
-            sections: contents,
-            name: record.get('Page Title'),
-            parent: record.get('Parent Page Path') || null,
-            lastUpdated: record.get('Content Last Updated'),
-          };
-        } else {
-          data[path].sections.push(...contents);
+          const path = record.get('Page Path');
+          if (!data[path]) {
+            data[path] = {
+              url: path,
+              sections: contents,
+              name: record.get('Page Title'),
+              parent: record.get('Parent Page Path') || null,
+              lastUpdated: record.get('Content Last Updated'),
+            };
+          } else {
+            data[path].sections.push(...contents);
+          }
         }
       }
 

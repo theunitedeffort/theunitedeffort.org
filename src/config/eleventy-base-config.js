@@ -4,7 +4,7 @@ const markdownItAnchor = require("markdown-it-anchor");
 const eleventyImage = require('@11ty/eleventy-img');
 
 const mdLib = markdownIt({ html: true }).use(markdownItAnchor, {
-  level: [2, 3], // Only target h2 and h3
+  level: [2], // Only target h2
   slugify: (s) => s.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
 });
 
@@ -55,21 +55,6 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode('image', async function(image, format='jpeg') {
     return await makeImage(image, 800, format);
   });
-
-
-// // Configure markdown-it to automatically add IDs to headings
-//   const mdLib = markdownIt({ html: true }).use(markdownItAnchor, {
-//     level: [2, 3], // Only target h2 and h3
-//     slugify: (s) => s.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
-//   });
-
-//   eleventyConfig.setLibrary("md", mdLib);
-
-//   // Add a filter to render Airtable's Markdown string to HTML in your templates
-//   eleventyConfig.addFilter("renderMarkdown", (content) => {
-//     return mdLib.render(content || "");
-//   });
-
 
   // Markdown filter
   eleventyConfig.addFilter('markdownify', (str) => {
