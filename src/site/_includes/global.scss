@@ -91,7 +91,7 @@ main {
   padding-left: 2.7em;
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: min-content;
   a {
     text-decoration: none;
   }
@@ -100,7 +100,7 @@ main {
     padding-left: 0.3em;
     border-width: 0 0 0 3px;
     border-style: solid;
-    border-color: var(--color-white);
+    border-color: transparent;
   }
   nav li.active-section {
     border-color: var(--color-orange);
@@ -118,14 +118,27 @@ main {
   a {
     text-decoration: none;
   }
+  a:has(+details) {
+    position: absolute;
+    margin-left: 0.8125em;
+  }
   a.active-page {
     text-decoration: underline;
     text-decoration-thickness: 3px;
     text-underline-offset: 2px;
     text-decoration-color: var(--color-orange);
   }
+  nav li summary {
+    color: transparent;
+    user-select: none;
+
+    &::marker {
+      color: var(--color-gray-200);
+    }
+  }
   nav li {
     padding-top: 0.8em;
+    position: relative;
   }
   nav li:first-child {
     padding-top: 0;
