@@ -605,11 +605,17 @@ $logo-height: 30px;
   list-style: none;
   margin: 0;
   padding: 0;
-  align-items: end;
+  align-items: center;
+  height: 100%;
 }
 
 .breadcrumbs li:not(:last-child)::after {
   display: inline-block;
   margin: 0 0.25em;
   content: ">";
+}
+
+.article-header {
+  display: flex;
+  justify-content: space-between;
 }

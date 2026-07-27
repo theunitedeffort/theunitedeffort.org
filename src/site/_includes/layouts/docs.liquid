@@ -7,7 +7,7 @@ layout: "layouts/root.liquid"
 	    {{ collections.all | eleventyNavigation | eleventyNavigationToHtml: navOptions}}
 	  </nav>
   </aside>
-  <main>
+  <main data-pagefind-body>
     {{ content }}
   </main>
 

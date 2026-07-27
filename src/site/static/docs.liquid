@@ -9,7 +9,7 @@ permalink: "{{ thisPage.url }}/index.html"
 eleventyComputed:
   pageClass: "page{{ thisPage.url | replace: '/', '-' }}"
   title: "{{ thisPage.name }}"
-  pageHead: "{{ thisPage.head }}"
+  pageHead: '<link href="/pagefind/pagefind-component-ui.css" rel="stylesheet"><script src="/pagefind/pagefind-component-ui.js" type="module"></script>'
   eleventyNavigation:
     key: "{{ thisPage.url }}"
     title: "{{ thisPage.name }}"
@@ -23,15 +23,18 @@ eleventyComputed:
 ---
 
 {% assign breadcrumbs = collections.all | eleventyNavigationBreadcrumb: thisPage.url, navOptions %}
-<nav class="breadcrumbs">
-  <ol>
-    <li><a href="/">Home</a></li>
-    {% for crumb in breadcrumbs %}
-      <li><a href="{{ crumb.url }}">{{ crumb.title }}</a></li>
-    {% endfor %}
-  </ol>
-</nav>
-
+<div class="article-header">
+  <nav class="breadcrumbs">
+    <ol>
+      <li><a href="/">Home</a></li>
+      {% for crumb in breadcrumbs %}
+        <li><a href="{{ crumb.url }}">{{ crumb.title }}</a></li>
+      {% endfor %}
+    </ol>
+  </nav>
+  <pagefind-modal-trigger></pagefind-modal-trigger>
+</div>
+<pagefind-modal></pagefind-modal>
 <h1>{{ thisPage.name }}</h1>
 <p>Last Updated {{ thisPage.lastUpdated | date: '%B %e, %Y' }}</p>
 {%- for section in thisPage.sections -%}

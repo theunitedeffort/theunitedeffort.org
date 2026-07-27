@@ -5,6 +5,7 @@ const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 const EleventyFetch = require("@11ty/eleventy-fetch");
 const pluginToc = require('eleventy-plugin-toc');
 const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
+const { execSync } = require("child_process")
 
 
 module.exports = function(eleventyConfig) {
@@ -53,6 +54,20 @@ module.exports = function(eleventyConfig) {
       }
     }
   });
+
+  // Pagefind indexing
+  eleventyConfig.on(
+    "eleventy.after",
+    async ({ dir, results, runMode, outputMode }) => {
+      console.log(
+        "******** eleventy after build event, configured in .eleventy.js config file"
+      )
+      execSync(`npx pagefind --site ${dir.output}`, {
+        encoding: "utf-8",
+        stdio: "inherit" //see the output of the process in your log
+      })
+    }
+  )
 
   return {
     dir: {
