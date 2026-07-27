@@ -18,6 +18,8 @@ eleventyComputed:
     includeSelf: true
     activeAnchorClass: active-page
     activeKey: "{{ eleventyNavigation.key }}"
+  childPagesOptions:
+    listClass: "child-pages"
 ---
 
 {% assign breadcrumbs = collections.all | eleventyNavigationBreadcrumb: thisPage.url, navOptions %}

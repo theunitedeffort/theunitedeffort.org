@@ -183,7 +183,10 @@ article figure {
   }
 }
 
-nav.toc ol{
+nav.toc ol,
+ul.child-pages,
+ul.child-pages ul,
+ul.child-pages ul ul {
   margin: 0 0 0 0.5em;
   list-style-type: none;
 }
