@@ -28,8 +28,10 @@ layout: "layouts/root.liquid"
 			  <pagefind-modal-trigger hide-shortcut></pagefind-modal-trigger>
 			</div>
 			<pagefind-modal></pagefind-modal>
-			<h1>{{ thisPage.name }}</h1>
-			<p>Last Updated {{ thisPage.lastUpdated | date: '%B %e, %Y' }}</p>
+			<div class="article-title">
+			  <h1>{{ thisPage.name }}</h1>
+			  <p>Last Updated {{ thisPage.lastUpdated | date: '%B %e, %Y' }}</p>
+		  </div>
 			<div class="content-wrapper">
 				<div class="content-body">
 		      {{ content }}

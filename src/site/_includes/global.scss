@@ -88,7 +88,6 @@ main {
 
 .right-sidebar  {
   padding-top: 0;
-  padding-left: 2.7em;
   height: min-content;
   width: 100%;
   a {
@@ -104,11 +103,18 @@ main {
   nav li.active-section {
     border-color: var(--color-orange);
   }
+  nav.toc {
+    ol {
+      margin: 0;
+      padding: 0;
+    }
+  }
   @include bp(mid) {
     position: sticky;
     top: 0;
     width: 15em;
-    padding-top: 2em;
+    margin-top: -8em;
+    padding-left: 2.7em;
   }
 }
 
@@ -255,7 +261,7 @@ ul.child-pages ul ul {
 }
 
 .docs-container .content-body {
-  flex-basis: 100em;
+  flex-basis: 100px;
   flex-grow: 1;
   flex-shrink: 1;
 }
@@ -659,6 +665,12 @@ $logo-height: 30px;
 .article-header {
   display: flex;
   justify-content: space-between;
+}
+
+.article-title {
+  @include bp(mid) {
+    margin-right: 15em;
+  }
 }
 
 // .root-margin {
