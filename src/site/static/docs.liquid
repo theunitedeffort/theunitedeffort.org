@@ -20,28 +20,6 @@ eleventyComputed:
     listClass: "child-pages"
 ---
 
-<div class="root-margin"></div>
-{% assign breadcrumbs = cms.docs | eleventyNavigationBreadcrumb: thisPage.url, navOptions %}
-<div class="article-header">
-  <nav class="breadcrumbs">
-    <ol>
-      <li><a href="/">Home</a></li>
-      {% for crumb in breadcrumbs %}
-        <li>
-          {% if crumb.url %}
-            <a href="{{ crumb.url }}">{{ crumb.title }}</a>
-          {% else %}
-            <span>{{ crumb.title }}</span>
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ol>
-  </nav>
-  <pagefind-modal-trigger hide-shortcut></pagefind-modal-trigger>
-</div>
-<pagefind-modal></pagefind-modal>
-<h1>{{ thisPage.name }}</h1>
-<p>Last Updated {{ thisPage.lastUpdated | date: '%B %e, %Y' }}</p>
 {%- for section in thisPage.sections -%}
   <div class="{{ section.type | downcase }}">
     {% if section.type == "Process-Table" %}

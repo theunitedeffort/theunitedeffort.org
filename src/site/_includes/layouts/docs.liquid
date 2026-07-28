@@ -7,16 +7,43 @@ layout: "layouts/root.liquid"
 	    {{ cms.docs | eleventyNavigation | eleventyNavigationToHtml: navOptions}}
 	  </nav>
   </aside>
-  <main data-pagefind-body>
-    {{ content }}
-  </main>
 
-	<aside class="right-sidebar">
-		{% if content | toc %}
-		  <div class="sticky-toc">
-		    <h4>On this page</h4>
-		    {{ content | toc }}
-		  </div>
-		{% endif %}
-  </aside>
+	  <main data-pagefind-body>
+			{% assign breadcrumbs = cms.docs | eleventyNavigationBreadcrumb: thisPage.url, navOptions %}
+			<div class="article-header">
+			  <nav class="breadcrumbs">
+			    <ol>
+			      <li><a href="/">Home</a></li>
+			      {% for crumb in breadcrumbs %}
+			        <li>
+			          {% if crumb.url %}
+			            <a href="{{ crumb.url }}">{{ crumb.title }}</a>
+			          {% else %}
+			            <span>{{ crumb.title }}</span>
+			          {% endif %}
+			        </li>
+			      {% endfor %}
+			    </ol>
+			  </nav>
+			  <pagefind-modal-trigger hide-shortcut></pagefind-modal-trigger>
+			</div>
+			<pagefind-modal></pagefind-modal>
+			<h1>{{ thisPage.name }}</h1>
+			<p>Last Updated {{ thisPage.lastUpdated | date: '%B %e, %Y' }}</p>
+			<div class="content-wrapper">
+				<div class="content-body">
+		      {{ content }}
+		    </div>
+		    <aside class="right-sidebar">
+				{% if content | toc %}
+				  <div class="sticky-toc">
+				    <h4>On this page</h4>
+				    {{ content | toc }}
+				  </div>
+				{% endif %}
+	  		</aside>
+			</div>
+	  </main>
+
+  </div>
 </div>

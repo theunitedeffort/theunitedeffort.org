@@ -87,11 +87,10 @@ main {
 }
 
 .right-sidebar  {
-  padding-top: 2em;
+  padding-top: 0;
   padding-left: 2.7em;
-  position: sticky;
-  top: 0;
   height: min-content;
+  width: 100%;
   a {
     text-decoration: none;
   }
@@ -104,6 +103,12 @@ main {
   }
   nav li.active-section {
     border-color: var(--color-orange);
+  }
+  @include bp(mid) {
+    position: sticky;
+    top: 0;
+    width: 15em;
+    padding-top: 2em;
   }
 }
 
@@ -233,7 +238,7 @@ ul.child-pages ul ul {
 
 .docs-container {
   display: grid;
-  grid-template-columns: 1.4fr 3.9fr 1.2fr;
+  grid-template-columns: 1.4fr 5.1fr;
   width: 95%;
   margin: 0 auto;
   text-align: left;
@@ -247,6 +252,18 @@ ul.child-pages ul ul {
   @include bp(ultra) {
     width: 1368px;
   }
+}
+
+.docs-container .content-body {
+  flex-basis: 100em;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.docs-container .content-wrapper {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  align-items: flex-end;
 }
 
 .story_content {
