@@ -124,6 +124,10 @@ main {
 .left-sidebar {
   padding-top: 2em;
   padding-right: 3em;
+  display: none;
+  @include bp(narrow) {
+    display: grid;
+  }
   // position: sticky;
   // top:0;
   // height: 100vh;
@@ -246,16 +250,13 @@ ul.child-pages ul ul {
 
 .docs-container {
   display: grid;
-  grid-template-columns: 1.4fr 5.1fr;
+  grid-template-columns: 1fr;
   width: 95%;
   margin: 0 auto;
   text-align: left;
   font-size: 0.8em;
-  @include bp(mid) {
-    width: 95%;
-  }
-  @include bp(wide) {
-    width: 95%;
+  @include bp(narrow) {
+    grid-template-columns: 1.4fr 5.1fr;
   }
   @include bp(ultra) {
     width: 1368px;
