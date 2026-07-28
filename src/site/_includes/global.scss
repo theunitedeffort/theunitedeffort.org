@@ -101,7 +101,9 @@ main {
     border-color: transparent;
   }
   nav li.active-section {
-    border-color: var(--color-orange);
+    @include bp(mid) {
+      border-color: var(--color-orange);
+    }
   }
   nav.toc {
     ol {
