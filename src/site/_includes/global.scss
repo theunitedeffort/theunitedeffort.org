@@ -561,6 +561,8 @@ $logo-height: 30px;
 .diagram svg {
   display: block;
   margin: 0 auto 0 auto;
+  max-width: 100%;
+  height: auto;
 }
 
 .process-table>div:nth-child(6n+3),

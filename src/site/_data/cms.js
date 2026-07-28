@@ -79,7 +79,6 @@ const fetchDocsContent = async (id) => {
 ---
 config:
   flowchart:
-    curve: stepAfter
     nodeSpacing: 50
     rankSpacing: 35
     wrappingWidth: 250
