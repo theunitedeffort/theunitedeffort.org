@@ -4,7 +4,7 @@ layout: "layouts/root.liquid"
 <div class="docs-container">
 	<aside class="left-sidebar">
 	  <nav>
-	    {{ collections.all | eleventyNavigation | eleventyNavigationToHtml: navOptions}}
+	    {{ cms.docs | eleventyNavigation | eleventyNavigationToHtml: navOptions}}
 	  </nav>
   </aside>
   <main data-pagefind-body>

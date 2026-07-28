@@ -111,7 +111,7 @@ const fetchDocsPages = async () => {
   const table = base(DOC_PAGES_TABLE);
 
   return table.select({
-    view: 'Grid view',
+    view: 'API list all',
   })
     .all()
     .then(async (records) => {
@@ -128,13 +128,32 @@ const fetchDocsPages = async () => {
           }
 
           const path = record.get('Page Path');
+          const name = record.get('Page Title');
+          const parent = record.get('Parent Page Path') || null;
+          // const isCategory = Boolean(record.get('Child Pages'));
+          const isCategory = !parent;
           if (!data[path]) {
             data[path] = {
               url: path,
               sections: contents,
-              name: record.get('Page Title'),
-              parent: record.get('Parent Page Path') || null,
+              name: name,
+              isCategory: isCategory,
               lastUpdated: record.get('Content Last Updated'),
+              // There is a bug in 11ty
+              // (https://github.com/11ty/buildawesome/issues/2806)
+              // that prevents the permalink from being conditionally set to
+              // false during pagination.  Eleventy Navigation data needs to
+              // be here so that we still get pages with no path (categories)
+              // in the nav tree, because they will be removed from
+              // collections.all to get around the pagination bug.
+              data: {
+                eleventyNavigation: {
+                  key: path,
+                  title: name,
+                  parent: parent,
+                  url: isCategory ? null : path,
+                },
+              },
             };
           } else {
             data[path].sections.push(...contents);

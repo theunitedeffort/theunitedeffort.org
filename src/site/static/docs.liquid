@@ -6,32 +6,34 @@ pagination:
   alias: thisPage
   addAllPagesToCollections: true
 permalink: "{{ thisPage.url }}/index.html"
-# permalink: "{% if thisPage.parent %}{{ thisPage.url }}/index.html{% endif %}"
 eleventyComputed:
   pageClass: "page{{ thisPage.url | replace: '/', '-' }}"
   title: "{{ thisPage.name }}"
   pageHead: '<link href="/pagefind/pagefind-component-ui.css" rel="stylesheet"><script src="/pagefind/pagefind-component-ui.js" type="module"></script>'
-  eleventyNavigation:
-    key: "{{ thisPage.url }}"
-    title: "{{ thisPage.name }}"
-    parent: "{{ thisPage.parent }}"
   navOptions:
     includeSelf: true
     activeAnchorClass: active-page
-    activeKey: "{{ eleventyNavigation.key }}"
+    activeKey: "{{ thisPage.data.eleventyNavigation.key }}"
+    allowMissing: true
     useTopLevelDetails: true
   childPagesOptions:
     listClass: "child-pages"
 ---
 
 <div class="root-margin"></div>
-{% assign breadcrumbs = collections.all | eleventyNavigationBreadcrumb: thisPage.url, navOptions %}
+{% assign breadcrumbs = cms.docs | eleventyNavigationBreadcrumb: thisPage.url, navOptions %}
 <div class="article-header">
   <nav class="breadcrumbs">
     <ol>
       <li><a href="/">Home</a></li>
       {% for crumb in breadcrumbs %}
-        <li><a href="{{ crumb.url }}">{{ crumb.title }}</a></li>
+        <li>
+          {% if crumb.url %}
+            <a href="{{ crumb.url }}">{{ crumb.title }}</a>
+          {% else %}
+            <span>{{ crumb.title }}</span>
+          {% endif %}
+        </li>
       {% endfor %}
     </ol>
   </nav>
