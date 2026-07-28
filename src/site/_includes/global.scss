@@ -118,10 +118,15 @@ main {
   a {
     text-decoration: none;
   }
-  a:has(+details) {
-    position: absolute;
-    margin-left: 0.8125em;
-  }
+  // a:has(+details) {
+  //   position: absolute;
+  //   margin-left: 0.8125em;
+  //   padding-right: 1em;
+
+  //   &:hover {
+  //     background-color: aquamarine;
+  //   }
+  // }
   a.active-page {
     text-decoration: underline;
     text-decoration-thickness: 3px;
@@ -129,12 +134,17 @@ main {
     text-decoration-color: var(--color-orange);
   }
   nav li summary {
-    color: transparent;
     user-select: none;
+    padding-right: 1em;
+    cursor: pointer;
 
     &::marker {
       color: var(--color-gray-200);
     }
+
+    // &:hover {
+    //   background-color: aquamarine;
+    // }
   }
   nav li {
     padding-top: 0.8em;
