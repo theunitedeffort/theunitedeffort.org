@@ -12,9 +12,11 @@ layout: "layouts/root.liquid"
   </main>
 
 	<aside class="right-sidebar">
-	  <div class="sticky-toc">
-	    <h4>On this page</h4>
-	    {{ content | toc }}
-	  </div>
+		{% if content | toc %}
+		  <div class="sticky-toc">
+		    <h4>On this page</h4>
+		    {{ content | toc }}
+		  </div>
+		{% endif %}
   </aside>
 </div>
