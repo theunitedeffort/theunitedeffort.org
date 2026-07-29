@@ -362,7 +362,7 @@ module.exports = async function() {
   console.log('checking if asset is valid')
   console.log(asset.cachedObject);
   console.log(asset.cachedObject?.cachedAt);
-  console.log(asset.cache.hasContents(asset.cachedObject?.type))
+  // console.log(asset.cache.hasContents(asset.cachedObject?.type))
   if (asset.isCacheValid('24h')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();
