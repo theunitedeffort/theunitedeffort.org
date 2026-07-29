@@ -96,6 +96,10 @@ echo AIRTABLE_API_KEY={YOUR_ACCESS_TOKEN} >> .env
 ```bash
 netlify dev
 ```
+Alternately, you can start the site with
+```bash
+npm run start
+```
 
 You can share a live development server via HTTPS tunneling with the following command:
 ```bash
