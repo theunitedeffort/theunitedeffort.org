@@ -4,16 +4,16 @@ layout: "layouts/root.liquid"
 <div class="docs-container">
 	<aside class="left-sidebar">
 	  <nav>
-	    {{ cms.docs | eleventyNavigation | eleventyNavigationToHtml: navOptions}}
+	    {{ cms.docs.pages | eleventyNavigation: cms.docs.rootNodeKey | eleventyNavigationToHtml: navOptions}}
 	  </nav>
   </aside>
 
 	  <main data-pagefind-body>
-			{% assign breadcrumbs = cms.docs | eleventyNavigationBreadcrumb: thisPage.url, navOptions %}
+			{% assign breadcrumbs = cms.docs.pages | eleventyNavigationBreadcrumb: thisPage.url, navOptions %}
 			<div class="article-header">
 			  <nav class="breadcrumbs">
+			  	{% if breadcrumbs.size > 1 %}
 			    <ol>
-			      <li><a href="/">Home</a></li>
 			      {% for crumb in breadcrumbs %}
 			        <li>
 			          {% if crumb.url %}
@@ -24,6 +24,7 @@ layout: "layouts/root.liquid"
 			        </li>
 			      {% endfor %}
 			    </ol>
+			    {% endif %}
 			  </nav>
 			  <pagefind-modal-trigger hide-shortcut></pagefind-modal-trigger>
 			</div>

@@ -129,14 +129,13 @@ const fetchDocsPages = async () => {
           const path = record.get('Page Path');
           const name = record.get('Page Title');
           const parent = record.get('Parent Page Path') || null;
-          // const isCategory = Boolean(record.get('Child Pages'));
-          const isCategory = !parent;
+          const paginate = !parent;
           if (!data[path]) {
             data[path] = {
               url: path,
               sections: contents,
               name: name,
-              isCategory: isCategory,
+              paginate: true,
               lastUpdated: record.get('Content Last Updated'),
               // There is a bug in 11ty
               // (https://github.com/11ty/buildawesome/issues/2806)
@@ -150,7 +149,7 @@ const fetchDocsPages = async () => {
                   key: path,
                   title: name,
                   parent: parent,
-                  url: isCategory ? null : path,
+                  url: path,
                 },
               },
             };
@@ -168,7 +167,20 @@ const fetchDocsPages = async () => {
         }
       }
 
-      return pages;
+      // Immediate children of the root node are treated as categories with no
+      // rendered HTML page.
+      const rootNode = pages.find((page) => !page.data.eleventyNavigation.parent);
+      for (const page of pages) {
+        if (page.data.eleventyNavigation.parent == rootNode.data.eleventyNavigation.key) {
+          page.paginate = false;
+          page.data.eleventyNavigation.url = null;
+        }
+      }
+
+      return {
+        rootNodeKey: rootNode.data.eleventyNavigation.key,
+        pages: pages,
+      };
     });
 };
 
@@ -350,6 +362,7 @@ module.exports = async function() {
   console.log('checking if asset is valid')
   console.log(asset.cachedObject);
   console.log(asset.cachedObject?.cachedAt);
+  console.log(asset.cache.hasContents(asset.cachedObject?.type))
   if (asset.isCacheValid('24h')) {
     console.log('Returning cached pages data.');
     return await asset.getCachedValue();

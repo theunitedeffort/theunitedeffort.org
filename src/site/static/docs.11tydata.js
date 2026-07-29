@@ -4,6 +4,6 @@ module.exports = {
   // pagination.  So, we just remove items from the data to be paginated
   // before the pagination runs.
   pagination: {
-    before: (data) => data.filter((item) => !item.isCategory),
+    before: (data) => data.filter((item) => item.paginate),
   },
 };
