@@ -3,6 +3,7 @@ const eleventyImage = require('@11ty/eleventy-img');
 const fs = require('fs');
 const pako = require('pako');
 const path = require('path');
+// const base64 = require('js-base64');
 const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
@@ -75,21 +76,25 @@ const fetchDocsContent = async (id) => {
     if (type == 'Markdown' || type == 'Include') {
       content = record.get('Markdown');
     } else if (type == 'Diagram') {
-      const frontmatter = `
----
-config:
-  flowchart:
-    nodeSpacing: 50
-    rankSpacing: 35
-    wrappingWidth: 250
----`;
-      const source = `${frontmatter}\n${record.get('Markdown')}`;
-      const data = Buffer.from(source, 'utf8');
+      const state = {
+        code: source,
+        mermaid: {
+          theme: 'default',
+          flowchart: {
+            nodeSpacing: 50,
+            rankSpacing: 35,
+            wrappingWidth: 250,
+          }
+        }
+      };
+      const json = JSON.stringify(state);
+      const data = Buffer.from(json, 'utf8');
       const compressed = pako.deflate(data, {level: 9});
       const result = Buffer.from(compressed)
         .toString('base64')
         .replace(/\+/g, '-').replace(/\//g, '_');
-      const url = `https://kroki.io/mermaid/svg/${result}`;
+
+      const url = `https://mermaid.ink/svg/pako:${result}`;
       console.log(url);
       content = await eleventyFetch(url, {type: 'text'});
     } else if (type == 'Process Table') {
