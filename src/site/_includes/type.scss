@@ -468,18 +468,52 @@
     font-size: 0.8em;
   }
 
- .note {
-    border: 2px solid var(--color-blue);
-    background-color: var(--color-blue-light);
+ .note,
+ .markdown-alert {
+    border: 2px solid var(--color-gray-700);
+    background-color: var(--color-gray-900);
     border-radius: 6px;
     padding: 1em;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
 
-    &::before {
-      content: "Note: ";
-      font-weight: 600;
+  .note::before {
+    content: "Note: ";
+    font-weight: 600;
+  }
+
+  .markdown-alert {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding: 0 1em;
+
+    .markdown-alert-title {
+      font-weight: 700;
+
+      svg {
+        margin-right: 0.5em;
+        vertical-align: text-top;
+      }
     }
+  }
+
+  .markdown-alert-note,
+  .markdown-alert-tip,
+  .note {
+    border-color: var(--color-blue);
+    background-color: var(--color-blue-light);
+  }
+
+  .markdown-alert-important,
+  .markdown-alert-warning {
+    border-color: var(--color-yellow);
+    background-color: var(--color-yellow-light);
+  }
+
+  .markdown-alert-caution {
+    border-color: var(--color-red);
+    background-color: var(--color-red-light);
   }
 
   .program_summary_item {

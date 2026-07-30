@@ -1,12 +1,14 @@
-const markdown = require('marked');
-const markdownIt = require("markdown-it");
-const markdownItAnchor = require("markdown-it-anchor");
+const markdownIt = require('markdown-it');
+const markdownItAnchor = require('markdown-it-anchor');
+const markdownItAlerts = require('markdown-it-github-alerts').default;
 const eleventyImage = require('@11ty/eleventy-img');
 
-const mdLib = markdownIt({ html: true }).use(markdownItAnchor, {
+const mdLib = markdownIt({breaks: true});
+mdLib.use(markdownItAnchor, {
   level: [2], // Only target h2
   slugify: (s) => s.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
 });
+mdLib.use(markdownItAlerts);
 
 // This is a global sort ranking for all filter options.
 // It assumes no name collisions.
@@ -59,7 +61,6 @@ module.exports = function(eleventyConfig) {
   // Markdown filter
   eleventyConfig.addFilter('markdownify', (str) => {
     str = str.replaceAll('http:///', '/');
-    // const markup = markdown.marked(str);
     const markup = mdLib.render(str);
     return markup.replaceAll(/(href="https?:\/\/.*?")/g,
       '$1 target="_blank" rel="noopener"');
