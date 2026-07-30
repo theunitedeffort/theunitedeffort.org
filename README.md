@@ -98,7 +98,7 @@ netlify dev
 ```
 Alternately, you can start the site with
 ```bash
-npm run start
+npm run dev:netlify
 ```
 
 You can share a live development server via HTTPS tunneling with the following command:
