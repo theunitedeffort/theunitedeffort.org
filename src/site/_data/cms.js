@@ -3,7 +3,6 @@ const eleventyImage = require('@11ty/eleventy-img');
 const fs = require('fs');
 const pako = require('pako');
 const path = require('path');
-// const base64 = require('js-base64');
 const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
