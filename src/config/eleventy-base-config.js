@@ -1,6 +1,7 @@
 const markdownIt = require('markdown-it');
 const markdownItAnchor = require('markdown-it-anchor');
 const markdownItAlerts = require('markdown-it-github-alerts').default;
+const markdownItFootnote = require('markdown-it-footnote');
 const eleventyImage = require('@11ty/eleventy-img');
 
 const mdLib = markdownIt({breaks: true});
@@ -9,6 +10,7 @@ mdLib.use(markdownItAnchor, {
   slugify: (s) => s.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
 });
 mdLib.use(markdownItAlerts);
+mdLib.use(markdownItFootnote);
 
 // This is a global sort ranking for all filter options.
 // It assumes no name collisions.
