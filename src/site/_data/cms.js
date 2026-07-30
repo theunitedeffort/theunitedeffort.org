@@ -76,7 +76,7 @@ const fetchDocsContent = async (id) => {
       content = record.get('Markdown');
     } else if (type == 'Diagram') {
       const state = {
-        code: source,
+        code: record.get('Markdown'),
         mermaid: {
           theme: 'default',
           flowchart: {
