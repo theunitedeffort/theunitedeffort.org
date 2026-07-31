@@ -644,6 +644,13 @@ $logo-height: 30px;
   color: var(--color-gray-200) !important;
 }
 
+.diagram #mermaid-svg .cluster {
+  rect {
+    fill: var(--color-gold-light) !important;
+    stroke: var(--color-gold) !important;
+  }
+}
+
 .breadcrumbs {
   padding: 0 0.5em;
   font-size: 0.8em;
