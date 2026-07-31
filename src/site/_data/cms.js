@@ -95,7 +95,7 @@ const fetchDocsContent = async (id) => {
 
       const url = `https://mermaid.ink/svg/pako:${result}`;
       console.log(url);
-      content = await eleventyFetch(url, {type: 'text'});
+      content = await eleventyFetch(url, {duration: '*', type: 'text'});
     } else if (type == 'Process Table') {
       content = await fetchDocsProcess(record.get('Process')[0]);
     }
