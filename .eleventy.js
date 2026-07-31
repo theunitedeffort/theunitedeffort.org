@@ -6,6 +6,8 @@ const EleventyFetch = require("@11ty/eleventy-fetch");
 const pluginToc = require('eleventy-plugin-toc');
 const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 const { execSync } = require("child_process")
+const cheerio = require('cheerio');
+const glossaryData = require("./src/site/_data/glossary.js");
 
 
 module.exports = function(eleventyConfig) {
@@ -54,6 +56,35 @@ module.exports = function(eleventyConfig) {
       }
     }
   });
+
+  // eleventyConfig.addTransform("linkGlossary", async function (content) {
+  //   const path = this.page.outputPath;
+  //   if (path && path.endsWith(".html")) {
+  //     const $ = cheerio.load(content);
+  //     const glossary = await glossaryData();
+
+  //     // Sort terms by length descending to match multi-word phrases first
+  //     // TODO: consider sorting terms just once, not for every page.
+  //     glossary.sort((a, b) => b.term.length - a.term.length);
+
+  //     // Target text blocks inside main content area
+  //     $("main p, main li").each(function () {
+  //       // Skip elements that already contain links or code blocks if necessary
+  //       let html = $(this).html();
+
+  //       terms.forEach(({ term, slug }) => {
+  //         // Match whole words, case-insensitive, ignoring words inside existing <a> tags
+  //         const regex = new RegExp(`\\b(${term})\\b(?![^<]*>|[^<>]*<\\/a>)`, "gi");
+  //         html = html.replace(regex, `<a href="/learn/glossary#${slug}" class="glossary-link">$1</a>`);
+  //       });
+
+  //       $(this).html(html);
+  //     });
+
+  //     return $.html();
+  //   }
+  //   return content;
+  // });
 
   // Pagefind indexing
   eleventyConfig.on(

@@ -35,7 +35,6 @@ const fetchSection = (id) => {
 
 
 const fetchDocsProcessStep = (id) => {
-  console.log(`getting process step ${id}`);
   const table = base(DOC_PROCESS_STEPS_TABLE);
   return table.find(id).then((record) => {
     return {
@@ -49,7 +48,6 @@ const fetchDocsProcessStep = (id) => {
 
 
 const fetchDocsProcess = async (id) => {
-  console.log(`getting process ${id}`);
   const table = base(DOC_PROCESSES_TABLE);
   return table.find(id).then(async (record) => {
     const stepIds = record.get('Steps');
@@ -67,7 +65,6 @@ const fetchDocsProcess = async (id) => {
 
 
 const fetchDocsContent = async (id) => {
-  console.log(`getting docs content item ${id}`);
   const table = base(DOC_CONTENT_BLOCKS_TABLE);
   return table.find(id).then(async (record) => {
     const type = record.get('Type');
@@ -384,7 +381,7 @@ module.exports = async function() {
     fetchStories(), fetchNews(), fetchImages(), fetchAssets()]);
   await cacheStoryImages(storiesList);
   await cacheAssets(assetList);
-  console.log(JSON.stringify(docsList, null, 2));
+  // console.log(JSON.stringify(docsList, null, 2));
   const ret = {
     pages: pageList,
     docs: docsList,
