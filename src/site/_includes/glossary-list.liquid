@@ -1,7 +1,7 @@
 <div class="glossary">
 	<dl>
 	{% for item in glossary %}
-	  <dt class="bold">{{ item.term }}</dt>
+	  <dt id="{{ item.slug }}" class="bold">{{ item.term }}</dt>
 	  <dd>{{ item.definition }}</dd>
 	{% endfor %}
 	</dl>

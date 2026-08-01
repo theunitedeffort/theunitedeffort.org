@@ -57,35 +57,6 @@ module.exports = function(eleventyConfig) {
     }
   });
 
-  // eleventyConfig.addTransform("linkGlossary", async function (content) {
-  //   const path = this.page.outputPath;
-  //   if (path && path.endsWith(".html")) {
-  //     const $ = cheerio.load(content);
-  //     const glossary = await glossaryData();
-
-  //     // Sort terms by length descending to match multi-word phrases first
-  //     // TODO: consider sorting terms just once, not for every page.
-  //     glossary.sort((a, b) => b.term.length - a.term.length);
-
-  //     // Target text blocks inside main content area
-  //     $("main p, main li").each(function () {
-  //       // Skip elements that already contain links or code blocks if necessary
-  //       let html = $(this).html();
-
-  //       terms.forEach(({ term, slug }) => {
-  //         // Match whole words, case-insensitive, ignoring words inside existing <a> tags
-  //         const regex = new RegExp(`\\b(${term})\\b(?![^<]*>|[^<>]*<\\/a>)`, "gi");
-  //         html = html.replace(regex, `<a href="/learn/glossary#${slug}" class="glossary-link">$1</a>`);
-  //       });
-
-  //       $(this).html(html);
-  //     });
-
-  //     return $.html();
-  //   }
-  //   return content;
-  // });
-
   eleventyConfig.addTransform('renderDiagrams', async function (content) {
     const path = this.page.outputPath;
     if (path && path.endsWith('.html')) {
@@ -97,6 +68,49 @@ module.exports = function(eleventyConfig) {
         updatedContent = updatedContent.replace(match[0], svg);
       }
       return updatedContent;
+    }
+    return content;
+  });
+
+  eleventyConfig.addTransform("linkGlossary", async function (content) {
+    const path = this.page.outputPath;
+    if (path && path.endsWith(".html") && path.includes('/learn')) {
+      const $ = cheerio.load(content);
+      const glossary = await glossaryData();
+
+      // Sort terms by length descending to match multi-word phrases first
+      // TODO: consider sorting terms just once, not for every page.
+      glossary.sort((a, b) => b.term.length - a.term.length);
+
+      const elements = $('main p, main li').filter(function () {
+        return $(this).closest('svg').length == 0;
+      });
+
+      if (this.page.url.includes('ga-housing-assistance')) {
+        for (const element of elements) {
+          console.log($(element).text());
+        }
+      }
+
+      for (const entry of glossary) {
+        for (const element of elements) {
+          let html = $(element).html();
+          let flags = '';
+          if (!entry.caseSensitive) {
+            flags += 'i';
+          }
+          // Match whole words, ignoring words inside existing <a> tags
+          // TODO: consider a filter to remove a tags instead of the regex
+          const regex = new RegExp(`\\b(${entry.term})\\b(?![^<]*>|[^<>]*<\\/a>)`, flags);
+          if (regex.test(html)) {
+            html = html.replace(regex, `<a href="/learn/reference/glossary#${entry.slug}" class="glossary-link">$1</a>`);
+            $(element).html(html);
+            // Only replace the first occurence of a glossary term.
+            break;
+          }
+        }
+      }
+      return $.html();
     }
     return content;
   });

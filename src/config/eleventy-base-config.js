@@ -136,9 +136,6 @@ module.exports = function(eleventyConfig) {
 ${renderedSteps.join('')}
 </div>`;
           str = str.replace(match[0], renderedProcess);
-          if (match[1] == 'Mail Receiving') {
-            console.log(str);
-          }
         }
       }
     }

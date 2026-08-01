@@ -99,6 +99,17 @@
       text-decoration: none;
       color: var(--color-black);
     }
+    a.glossary-link {
+      text-decoration-style: dashed;
+      text-underline-offset: 0.2em;
+      &:hover,
+      &:focus {
+        text-decoration: underline;
+        text-decoration-color: var(--color-blue);
+        text-decoration-style: dotted;
+        text-decoration-thickness: 2px;
+      }
+    }
     /* 
     A button is not technically type, but we are styling
     it to look that way, so here it is in type.scss
