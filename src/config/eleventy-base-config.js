@@ -3,6 +3,7 @@ const markdownItAnchor = require('markdown-it-anchor');
 const markdownItAlerts = require('markdown-it-github-alerts').default;
 const markdownItFootnote = require('markdown-it-footnote');
 const eleventyImage = require('@11ty/eleventy-img');
+const pako = require('pako');
 
 const mdLib = markdownIt({breaks: true});
 mdLib.use(markdownItAnchor, {
@@ -11,6 +12,39 @@ mdLib.use(markdownItAnchor, {
 });
 mdLib.use(markdownItAlerts);
 mdLib.use(markdownItFootnote);
+
+// Store the default fence renderer for fallback
+const defaultFenceRenderer = mdLib.renderer.rules.fence;
+
+// Override the fence renderer
+mdLib.renderer.rules.fence = (tokens, idx, options, env, self) => {
+  const token = tokens[idx];
+  const lang = token.info.trim(); // The language tag after ```
+
+  if (lang === "mermaid") {
+    const state = {
+      code: token.content,
+      mermaid: {
+        theme: 'default',
+        flowchart: {
+          nodeSpacing: 50,
+          rankSpacing: 35,
+          wrappingWidth: 250,
+        }
+      }
+    };
+    const json = JSON.stringify(state);
+    const data = Buffer.from(json, 'utf8');
+    const compressed = pako.deflate(data, {level: 9});
+    const result = Buffer.from(compressed)
+      .toString('base64')
+      .replace(/\+/g, '-').replace(/\//g, '_');
+    return `<div data-mermaid-hash="${result}"></div>\n`;
+  }
+
+  // Fallback to default renderer for js, html, css, etc.
+  return defaultFenceRenderer(tokens, idx, options, env, self);
+};
 
 // This is a global sort ranking for all filter options.
 // It assumes no name collisions.
@@ -89,7 +123,6 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter('stepNumbers', (tableData) => {
     // Map steps to step numbers
     const stepNumbers = {};
-    console.log(JSON.stringify(tableData, null, 2));
     for (const [i, step] of tableData.steps.entries()) {
       stepNumbers[step.name] = i + 1;
     }

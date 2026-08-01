@@ -86,6 +86,22 @@ module.exports = function(eleventyConfig) {
   //   return content;
   // });
 
+  eleventyConfig.addTransform('renderDiagrams', async function (content) {
+    const path = this.page.outputPath;
+    if (path && path.endsWith('.html')) {
+      let updatedContent = content;
+      for (const match of content.matchAll(/<div data-mermaid-hash="(.*?)"><\/div>/g)) {
+        console.log(match);
+        const url = `https://mermaid.ink/svg/pako:${match[1]}`;
+        console.log(url);
+        const svg = await EleventyFetch(url, {duration: '*', type: 'text'});
+        updatedContent = updatedContent.replace(match[0], svg);
+      }
+      return updatedContent;
+    }
+    return content;
+  });
+
   // Pagefind indexing
   eleventyConfig.on(
     "eleventy.after",

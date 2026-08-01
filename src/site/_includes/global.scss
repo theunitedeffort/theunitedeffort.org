@@ -584,7 +584,7 @@ $logo-height: 30px;
   }
 }
 
-.diagram svg {
+.docs-container svg#mermaid-svg {
   display: block;
   margin: 0 auto 0 auto;
   max-width: 100%;
@@ -615,36 +615,36 @@ $logo-height: 30px;
   }
 }
 
-.diagram #mermaid-svg foreignObject {
+.docs-container #mermaid-svg foreignObject {
   overflow: visible;
 }
 
-.diagram #mermaid-svg .node {
+.docs-container #mermaid-svg .node {
   rect, circle, ellipse, polygon, path {
     fill: var(--color-blue-dark) !important;
     stroke: var(--color-blue-dark) !important;
   }
 }
 
-.diagram #mermaid-svg .node p {
+.docs-container #mermaid-svg .node p {
   color: var(--color-white) !important;
 }
 
-.diagram #mermaid-svg .label {
+.docs-container #mermaid-svg .label {
   font-size: 0.93em !important;
   font-family: var(--font-primary) !important;
 }
 
-.diagram #mermaid-svg .flowchart-link {
+.docs-container #mermaid-svg .flowchart-link {
   stroke-width: 3px !important;
 }
 
-.diagram #mermaid-svg .edgeLabel p {
+.docs-container #mermaid-svg .edgeLabel p {
   background-color: var(--color-white) !important;
   color: var(--color-gray-200) !important;
 }
 
-.diagram #mermaid-svg .cluster {
+.docs-container #mermaid-svg .cluster {
   rect {
     fill: var(--color-gold-light) !important;
     stroke: var(--color-gold) !important;
