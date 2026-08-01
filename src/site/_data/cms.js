@@ -47,23 +47,6 @@ const fetchDocsProcessStep = (id) => {
 };
 
 
-const fetchDocsProcess = async (id) => {
-  const table = base(DOC_PROCESSES_TABLE);
-  return table.find(id).then(async (record) => {
-    const stepIds = record.get('Steps');
-    const steps = [];
-    for (const stepId of stepIds) {
-      const stepContent = await fetchDocsProcessStep(stepId);
-      steps.push(stepContent);
-    }
-    return {
-      steps: steps,
-      name: record.get('Name'),
-    };
-  });
-};
-
-
 const fetchDocsProcesses = async (id) => {
   const table = base(DOC_PROCESSES_TABLE);
   const data = {};
@@ -94,37 +77,9 @@ const fetchDocsContent = async (id) => {
   const table = base(DOC_CONTENT_BLOCKS_TABLE);
   return table.find(id).then(async (record) => {
     const type = record.get('Type');
-    let content = '';
-    if (type == 'Markdown' || type == 'Include') {
-      content = record.get('Markdown');
-    } else if (type == 'Diagram') {
-      const state = {
-        code: record.get('Markdown'),
-        mermaid: {
-          theme: 'default',
-          flowchart: {
-            nodeSpacing: 50,
-            rankSpacing: 35,
-            wrappingWidth: 250,
-          }
-        }
-      };
-      const json = JSON.stringify(state);
-      const data = Buffer.from(json, 'utf8');
-      const compressed = pako.deflate(data, {level: 9});
-      const result = Buffer.from(compressed)
-        .toString('base64')
-        .replace(/\+/g, '-').replace(/\//g, '_');
-
-      const url = `https://mermaid.ink/svg/pako:${result}`;
-      console.log(url);
-      content = await eleventyFetch(url, {duration: '*', type: 'text'});
-    } else if (type == 'Process Table') {
-      content = await fetchDocsProcess(record.get('Process')[0]);
-    }
     return {
       type: type.replace(' ', '-'),
-      content: content,
+      content: record.get('Markdown'),
     }
   });
 };
