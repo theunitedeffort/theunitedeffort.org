@@ -93,7 +93,6 @@ module.exports = function(eleventyConfig) {
         let termReplaced = false;
         for (const element of elements) {
           let html = $(element).html();
-          // Match whole words, ignoring words inside existing <a> tags
           const allTerms = [entry, ...entry.synonyms];
           // Loop through the term and all its synonyms to look for a match
           for (term of allTerms) {
@@ -102,6 +101,7 @@ module.exports = function(eleventyConfig) {
               flags += 'i';
             }
             // TODO: consider a filter to remove a tags instead of the regex
+            // Match whole words, ignoring words inside existing <a> tags
             const regex = new RegExp(`\\b(${term.term})\\b(?![^<]*>|[^<>]*<\\/a>)`, flags);
             if (regex.test(html)) {
               // Note we always link to the parent "entry" rather than taking the synonym's slug.
@@ -111,9 +111,9 @@ module.exports = function(eleventyConfig) {
               termReplaced = true;
               break;
             }
-            if (termReplaced) {
-              break;
-            }
+          }
+          if (termReplaced) {
+            break;
           }
         }
       }
