@@ -91,7 +91,6 @@ module.exports = function(eleventyConfig) {
     if (path && path.endsWith('.html')) {
       let updatedContent = content;
       for (const match of content.matchAll(/<div data-mermaid-hash="(.*?)"><\/div>/g)) {
-        console.log(match);
         const url = `https://mermaid.ink/svg/pako:${match[1]}`;
         console.log(url);
         const svg = await EleventyFetch(url, {duration: '*', type: 'text'});

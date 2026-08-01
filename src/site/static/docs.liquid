@@ -40,7 +40,7 @@ eleventyComputed:
       {% include section.content %}
     {% else %}
       {% if section.content %}
-        {{ section.content | markdownify | unplaceholder: cms.images }}
+        {{ section.content | unplaceholder: cms.images, cms.processes | markdownify }}
       {% endif %}
     {% endif %}
   </div>

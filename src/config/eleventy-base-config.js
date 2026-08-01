@@ -5,7 +5,7 @@ const markdownItFootnote = require('markdown-it-footnote');
 const eleventyImage = require('@11ty/eleventy-img');
 const pako = require('pako');
 
-const mdLib = markdownIt({breaks: true});
+const mdLib = markdownIt({html: true, breaks: true});
 mdLib.use(markdownItAnchor, {
   level: [2], // Only target h2
   slugify: (s) => s.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
@@ -103,13 +103,43 @@ module.exports = function(eleventyConfig) {
   });
 
   // Substitute placeholder text with the appropriate markup.
-  eleventyConfig.addAsyncFilter('unplaceholder', async (str, imageList=null) => {
+  // TODO: replace this with eleventy 3.0 built-in renderContent filter.
+  eleventyConfig.addAsyncFilter('unplaceholder', async (str, imageList=null, processList=null) => {
     str = str.replaceAll('{{notranslate}}', '<span translate="no">');
     str = str.replaceAll('{{endnotranslate}}', '</span>');
     if (imageList !== null) {
       for (const match of str.matchAll(/{{image ([a-z0-9-]+) ?(\d*)}}/g)) {
         const imageTag = await makeImage(imageList[match[1]], match?.[2]);
         str = str.replace(match[0], imageTag);
+      }
+    }
+    if (processList !== null) {
+      for (const match of str.matchAll(/{{process (.*?)}}/g)) {
+        const processData = processList[match[1]];
+        if (processData) {
+          const markdownify = eleventyConfig.getFilter('markdownify');
+          const numberedData = eleventyConfig.getFilter('stepNumbers')(processData);
+          const renderedSteps = []
+          for (const [idx, step] of numberedData.steps.entries()) {
+            renderedSteps.push(`
+<div class="process-step-number bold">#${idx + 1}</div>
+<div class="process-step-wrapper">
+<div class="process-step-content">${markdownify(step.content)}</div>
+<div class="process-step-next">${markdownify(step.next_step)}</div>
+</div>
+<div class="process-step-who">${step.who}</div>`);
+          }
+          const renderedProcess = `
+<div class="process-table">
+<div class="process-header-steps bold">Process Steps</div>
+<div class="process-header-who bold">Who</div>
+${renderedSteps.join('')}
+</div>`;
+          str = str.replace(match[0], renderedProcess);
+          if (match[1] == 'Mail Receiving') {
+            console.log(str);
+          }
+        }
       }
     }
     for (const match of str.matchAll(/{{video ([a-z0-9\-./]+) (\d*)}}/g)) {
@@ -844,15 +874,6 @@ module.exports = function(eleventyConfig) {
     }
     return filtersApplied.join(' ');
   });
-
-  eleventyConfig.addShortcode('processTable',
-    function(tableData) {
-      const stepsHtml = []
-      for (const step of tableData.content.steps) {
-        stepsHtml.push(`<div class="process-table-step">${step}`)
-      }
-      `<div class="process-table-wrapper">`
-    });
 
   // Summarizes the 'units' array of each item in 'housingList' by the
   // 'summarizeBy' keys.

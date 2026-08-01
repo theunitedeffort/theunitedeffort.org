@@ -38,10 +38,10 @@ const fetchDocsProcessStep = (id) => {
   const table = base(DOC_PROCESS_STEPS_TABLE);
   return table.find(id).then((record) => {
     return {
-      content: record.get('Step Content Markdown'),
-      next_step: record.get('Next Instruction Markdown'),
-      name: record.get('Name'),
-      who: record.get('Who'),
+      content: record.get('Step Content Markdown') || "",
+      next_step: record.get('Next Instruction Markdown') || "",
+      name: record.get('Name') || "",
+      who: record.get('Who') || "",
     };
   });
 };
@@ -61,6 +61,32 @@ const fetchDocsProcess = async (id) => {
       name: record.get('Name'),
     };
   });
+};
+
+
+const fetchDocsProcesses = async (id) => {
+  const table = base(DOC_PROCESSES_TABLE);
+  const data = {};
+  return table.select({
+    view: 'API list all',
+  })
+    .all()
+    .then(async (records) => {
+      for (const record of records) {
+        const stepIds = record.get('Steps');
+        const steps = [];
+        for (const stepId of stepIds) {
+          const stepContent = await fetchDocsProcessStep(stepId);
+          steps.push(stepContent);
+        }
+        const name = record.get('Name');
+        data[name] = {
+          steps: steps,
+          name: name,
+        };
+      }
+      return data;
+    });
 };
 
 
@@ -377,14 +403,16 @@ module.exports = async function() {
     newsList,
     imageList,
     assetList,
+    processList,
   ] = await Promise.all([fetchPages(), fetchDocsPages(), fetchGeneralResources(),
-    fetchStories(), fetchNews(), fetchImages(), fetchAssets()]);
+    fetchStories(), fetchNews(), fetchImages(), fetchAssets(), fetchDocsProcesses()]);
   await cacheStoryImages(storiesList);
   await cacheAssets(assetList);
   // console.log(JSON.stringify(docsList, null, 2));
   const ret = {
     pages: pageList,
     docs: docsList,
+    processes: processList,
     images: imageList,
     partialsData: {
       resources: resourceList,
