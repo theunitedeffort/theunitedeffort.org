@@ -490,10 +490,13 @@
 
     .markdown-alert-title {
       font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      line-height: 1em;
+      margin-bottom: 0;
 
       svg {
         margin-right: 0.5em;
-        vertical-align: text-top;
       }
     }
   }
