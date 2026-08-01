@@ -86,12 +86,6 @@ module.exports = function(eleventyConfig) {
         return $(this).closest('svg').length == 0;
       });
 
-      if (this.page.url.includes('ga-housing-assistance')) {
-        for (const element of elements) {
-          console.log($(element).text());
-        }
-      }
-
       for (const entry of glossary) {
         for (const element of elements) {
           let html = $(element).html();
