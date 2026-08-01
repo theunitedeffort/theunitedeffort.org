@@ -86,21 +86,34 @@ module.exports = function(eleventyConfig) {
         return $(this).closest('svg').length == 0;
       });
 
+      // Loop through glossary entries first because we want to move on to
+      // the next one once a replacement is made for that entry.
       for (const entry of glossary) {
+        // Check all relevant elements on the page for a term match
+        let termReplaced = false;
         for (const element of elements) {
           let html = $(element).html();
-          let flags = '';
-          if (!entry.caseSensitive) {
-            flags += 'i';
-          }
           // Match whole words, ignoring words inside existing <a> tags
-          // TODO: consider a filter to remove a tags instead of the regex
-          const regex = new RegExp(`\\b(${entry.term})\\b(?![^<]*>|[^<>]*<\\/a>)`, flags);
-          if (regex.test(html)) {
-            html = html.replace(regex, `<a href="/learn/reference/glossary#${entry.slug}" class="glossary-link">$1</a>`);
-            $(element).html(html);
-            // Only replace the first occurence of a glossary term.
-            break;
+          const allTerms = [entry, ...entry.synonyms];
+          // Loop through the term and all its synonyms to look for a match
+          for (term of allTerms) {
+            let flags = '';
+            if (!term.caseSensitive) {
+              flags += 'i';
+            }
+            // TODO: consider a filter to remove a tags instead of the regex
+            const regex = new RegExp(`\\b(${term.term})\\b(?![^<]*>|[^<>]*<\\/a>)`, flags);
+            if (regex.test(html)) {
+              // Note we always link to the parent "entry" rather than taking the synonym's slug.
+              html = html.replace(regex, `<a href="/learn/reference/glossary#${entry.slug}" class="glossary-link">$1</a>`);
+              $(element).html(html);
+              // Only replace the first occurence of a glossary term.
+              termReplaced = true;
+              break;
+            }
+            if (termReplaced) {
+              break;
+            }
           }
         }
       }

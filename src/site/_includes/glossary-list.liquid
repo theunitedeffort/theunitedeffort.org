@@ -2,7 +2,7 @@
 	<dl>
 	{% for item in glossary %}
 	  <dt id="{{ item.slug }}" class="bold">{{ item.term }}</dt>
-	  <dd>{{ item.definition }}</dd>
+	  <dd>{% if item.synonyms != empty %}<p class="italic">Also known as {{ item.synonyms | map: 'term' | join: ', ' }}</p>{% endif %}{{ item.definition }}</dd>
 	{% endfor %}
 	</dl>
 </div>
