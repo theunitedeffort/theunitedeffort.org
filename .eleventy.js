@@ -106,8 +106,8 @@ module.exports = function(eleventyConfig) {
             if (regex.test(html)) {
               // Note we always link to the parent "entry" rather than taking the synonym's slug.
               let href = `#${entry.slug}`;
+              // TODO: can the glossaryUrl be dynamic?
               const glossaryUrl = '/learn/reference/glossary/';
-              console.log(this.page.url);
               if (this.page.url != glossaryUrl) {
                 href = `${glossaryUrl}${href}`;
               }
