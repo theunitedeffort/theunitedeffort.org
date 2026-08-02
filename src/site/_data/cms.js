@@ -333,23 +333,8 @@ const fetchAssets = async () => {
 };
 
 
-module.exports = async function() {
-  // Only housing pages run serverless, so there is no need to fetch
-  // all this content when this data file is executed from a serverless
-  // environment.
-  if (process.env.ELEVENTY_SERVERLESS) {
-    return {};
-  }
-  const asset = new eleventyFetch.AssetCache('airtable_pages');
-  console.log('checking if asset is valid')
-  console.log(asset.cachedObject);
-  console.log(asset.cachedObject?.cachedAt);
-  // console.log(asset.cache.hasContents(asset.cachedObject?.type))
-  if (asset.isCacheValid('24h')) {
-    console.log('Returning cached pages data.');
-    return await asset.getCachedValue();
-  }
-  console.log('Fetching pages.');
+const fetchCmsData = async () => {
+  console.log('fetching cms data');
   const [
     pageList,
     docsList,
@@ -375,6 +360,16 @@ module.exports = async function() {
       articles: newsList,
     },
   };
-  await asset.save(ret, 'json');
   return ret;
+};
+
+
+module.exports = async function() {
+  // Only housing pages run serverless, so there is no need to fetch
+  // all this content when this data file is executed from a serverless
+  // environment.
+  if (process.env.ELEVENTY_SERVERLESS) {
+    return {};
+  }
+  return eleventyFetch(fetchCmsData, {requestId: 'airtable_pages', duration: '1h', type: 'json'})
 };

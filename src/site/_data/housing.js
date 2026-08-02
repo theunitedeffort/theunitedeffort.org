@@ -1,4 +1,4 @@
-const {AssetCache} = require('@11ty/eleventy-fetch');
+const eleventyFetch = require('@11ty/eleventy-fetch');
 const Airtable = require('airtable');
 const base = new Airtable(
   {apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
@@ -438,24 +438,7 @@ const housingFilterOptions = (housing) => {
   return filterVals;
 };
 
-// Returns an object containing a list of FilterSections with each FilterSection
-// having a unique list of FilterCheckboxes encompassing all the values
-// available in the Airtable data at that time.
-module.exports = async function() {
-  const asset = new AssetCache('affordable_housing_data');
-  // This cache duration will only be used at build time.
-  let cacheDuration = '1h';
-  if (process.env.ELEVENTY_SERVERLESS) {
-    // Use the serverless cache location specified in .eleventy.js
-    asset.cacheDirectory = 'cache';
-    cacheDuration = '*'; // Infinite duration (data refreshes at each build)
-  }
-  if (asset.isCacheValid(cacheDuration)) {
-    console.log('Returning cached housing, shelter, and filter data.');
-    const data = await asset.getCachedValue();
-    return data;
-  }
-
+const fetchData = async () => {
   const compiled = await compiledData();
   const housingFilterVals = housingFilterOptions(compiled.housing);
   const shelterFilterVals = shelterFilterOptions(compiled.shelters);
@@ -466,7 +449,24 @@ module.exports = async function() {
     shelterFilterValues: shelterFilterVals,
     shelterList: compiled.shelters,
   };
-
-  await asset.save(data, 'json');
   return data;
+};
+
+// Returns an object containing a list of FilterSections with each FilterSection
+// having a unique list of FilterCheckboxes encompassing all the values
+// available in the Airtable data at that time.
+module.exports = async function() {
+  let cacheDuration = '1h';  // Build time cache duration.
+  let cacheDirectory = null;  // Use default cache directory.
+  if (process.env.ELEVENTY_SERVERLESS) {
+    // Use the serverless cache location specified in .eleventy.js
+    cacheDirectory = 'cache';
+    cacheDuration = '*'; // Infinite duration (data refreshes at each build)
+  }
+  return eleventyFetch(fetchData, {
+    requestId: 'affordable_housing_data',
+    duration: cacheDuration,
+    type: 'json',
+    directory: cacheDirectory,
+  });
 };

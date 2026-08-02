@@ -6,6 +6,7 @@ const base = new Airtable(
 const GLOSSARY_TABLE = 'tblTVtBsMxCNoUIAB';
 
 const fetchGlossary = async () => {
+  console.log('Fetching glossary');
   const dataMap = {};
   const table = base(GLOSSARY_TABLE);
   return table.select({
@@ -50,13 +51,9 @@ module.exports = async function() {
   if (process.env.ELEVENTY_SERVERLESS) {
     return {};
   }
-  const asset = new eleventyFetch.AssetCache('airtable_glossary');
-  if (asset.isCacheValid('1h')) {
-    return await asset.getCachedValue();
-  }
-  console.log('Fetching glossary');
-  const glossary = await fetchGlossary();
-  // console.log(JSON.stringify(glossary, null, 2));
-  await asset.save(glossary, 'json');
-  return glossary;
+  return eleventyFetch(fetchGlossary, {
+    requestId: 'airtable_glossary',
+    duration: '1h',
+    type: 'json'
+  });
 };
