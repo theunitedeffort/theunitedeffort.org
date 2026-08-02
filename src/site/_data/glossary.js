@@ -51,7 +51,7 @@ module.exports = async function() {
     return {};
   }
   const asset = new eleventyFetch.AssetCache('airtable_glossary');
-  if (asset.isCacheValid('1m')) {
+  if (asset.isCacheValid('1h')) {
     return await asset.getCachedValue();
   }
   console.log('Fetching glossary');

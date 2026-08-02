@@ -82,7 +82,7 @@ module.exports = function(eleventyConfig) {
       // TODO: consider sorting terms just once, not for every page.
       glossary.sort((a, b) => b.term.length - a.term.length);
 
-      const elements = $('main p, main li').filter(function () {
+      const elements = $('main p, main li, main dd:not(.synonyms)').filter(function () {
         return $(this).closest('svg').length == 0;
       });
 
@@ -105,7 +105,14 @@ module.exports = function(eleventyConfig) {
             const regex = new RegExp(`\\b(${term.term})\\b(?![^<]*>|[^<>]*<\\/a>)`, flags);
             if (regex.test(html)) {
               // Note we always link to the parent "entry" rather than taking the synonym's slug.
-              html = html.replace(regex, `<a href="/learn/reference/glossary#${entry.slug}" class="glossary-link">$1</a>`);
+              let href = `#${entry.slug}`;
+              const glossaryUrl = '/learn/reference/glossary/';
+              console.log(this.page.url);
+              if (this.page.url != glossaryUrl) {
+                href = `${glossaryUrl}${href}`;
+              }
+
+              html = html.replace(regex, `<a href="${href}" class="glossary-link">$1</a>`);
               $(element).html(html);
               // Only replace the first occurence of a glossary term.
               termReplaced = true;

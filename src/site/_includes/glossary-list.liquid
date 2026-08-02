@@ -1,8 +1,9 @@
 <div class="glossary">
 	<dl>
 	{% for item in glossary %}
-	  <dt id="{{ item.slug }}" class="bold">{{ item.term }}</dt>
-	  <dd>{% if item.synonyms != empty %}<p class="italic">Also known as {{ item.synonyms | map: 'term' | join: ', ' }}</p>{% endif %}{{ item.definition }}</dd>
+	  <dt id="{{ item.slug }}"><span class="bold">{{ item.term }}</span></dt>
+	  {% if item.synonyms != empty %}<dd class="synonyms italic">Also known as {{ item.synonyms | map: 'term' | join: ', ' }}</dd>{% endif %}
+	  <dd>{{ item.definition }}</dd>
 	{% endfor %}
 	</dl>
 </div>

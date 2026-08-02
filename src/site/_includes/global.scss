@@ -683,9 +683,8 @@ $logo-height: 30px;
   }
 }
 
-.glossary dd {
-  padding-bottom: 3em;
-  padding-left: 1em;
+.glossary dd:not(.synonyms) {
+  padding: 1em 0 3em 1em;
 }
 
 // .root-margin {
