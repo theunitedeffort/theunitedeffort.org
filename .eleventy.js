@@ -133,15 +133,18 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.on(
     "eleventy.after",
     async ({ dir, results, runMode, outputMode }) => {
+      if (process.env.ELEVENTY_SERVERLESS) {
+        return;
+      }
       console.log(
         "******** eleventy after build event, configured in .eleventy.js config file"
-      )
+      );
       execSync(`npx pagefind --site ${dir.output}`, {
         encoding: "utf-8",
         stdio: "inherit" //see the output of the process in your log
-      })
+      });
     }
-  )
+  );
 
   return {
     dir: {
