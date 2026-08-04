@@ -5,7 +5,12 @@ const markdownItFootnote = require('markdown-it-footnote');
 const eleventyImage = require('@11ty/eleventy-img');
 const pako = require('pako');
 
-const mdLib = markdownIt({html: true, breaks: true});
+const mdLib = markdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+  breaks: true,
+});
 mdLib.use(markdownItAnchor, {
   level: [2], // Only target h2
   slugify: (s) => s.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
