@@ -560,6 +560,7 @@ $logo-height: 30px;
   text-align: center;
   padding: 0.5em;
   border-bottom: solid 1px var(--color-gray-200);
+  word-break: normal;
 }
 
 .process-step-wrapper {
@@ -572,6 +573,7 @@ $logo-height: 30px;
   text-align: center;
   padding: 0.5em;
   border-bottom: solid 1px var(--color-gray-200);
+  word-break: normal;
 }
 
 .process-step-content {
