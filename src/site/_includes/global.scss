@@ -619,8 +619,15 @@ $logo-height: 30px;
   }
 }
 
-.docs-container #mermaid-svg foreignObject {
-  overflow: visible;
+.docs-container #mermaid-svg {
+  foreignObject {
+    overflow: visible;
+  }
+
+  a:link,
+  a:visited {
+    color: var(--color-blue);
+  }
 }
 
 .docs-container #mermaid-svg .node {
