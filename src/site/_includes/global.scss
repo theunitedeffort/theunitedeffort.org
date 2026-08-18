@@ -248,13 +248,14 @@ ul.child-pages ul ul {
   }
 }
 
+$docs-font-scale: 0.8;
 .docs-container {
   display: grid;
   grid-template-columns: 1fr;
   width: 95%;
   margin: 0 auto;
   text-align: left;
-  font-size: 0.8em;
+  font-size: calc($docs-font-scale * 1em);
   @include bp(narrow) {
     grid-template-columns: 1.4fr 5.1fr;
   }
@@ -697,6 +698,33 @@ $logo-height: 30px;
 
 .glossary dd:not(.synonyms) {
   padding: 1em 0 3em 1em;
+}
+
+pagefind-modal-trigger {
+  // Base font size gets all messed up for pagefind children, so reset it here.
+  font-size: calc(16px * $docs-font-scale) !important;
+  width: 100% !important;
+}
+
+button.pf-trigger-btn {
+  font-family: var(--pf-font) !important;
+  font-size: 0.9375em !important;
+  @include bp(narrow) {
+    font-size: 1em !important;
+  }
+  @include bp(mid) {
+    font-size: 1.125em !important;
+  }
+  @include bp(wide) {
+    font-size: 1.25em !important;
+  }
+  @include bp(ultra) {
+    font-size: 1.375em !important;
+  }
+}
+
+.search-wrapper {
+  width: 12.3em;
 }
 
 // .root-margin {
