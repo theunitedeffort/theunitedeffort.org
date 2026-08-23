@@ -59,6 +59,18 @@
 }
 
 html:root {
+    --pf-text: var(--color-gray-200);
+    --pf-text-secondary: var(--color-gray-500);
+    --pf-text-muted: var(--color-gray-600);
+    --pf-background: var(--color-white);
+    --pf-border: var(--color-gray-700);
+    --pf-border-focus: var(--color-gray-200);
+    --pf-skeleton: var(--color-white);
+    --pf-hover: var(--color-white);
+    --pf-mark: var(--pf-text);
     --pf-font: var(--font-primary);
     --pf-border-radius: 3px;
+    --pf-shadow-sm: none;
+    --pf-shadow-md: none;
+    --pf-shadow-lg: none;
 }

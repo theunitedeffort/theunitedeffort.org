@@ -709,6 +709,7 @@ pagefind-modal-trigger {
 button.pf-trigger-btn {
   font-family: var(--pf-font) !important;
   font-size: 0.9375em !important;
+  transition: none !important;
   @include bp(narrow) {
     font-size: 1em !important;
   }
@@ -721,6 +722,19 @@ button.pf-trigger-btn {
   @include bp(ultra) {
     font-size: 1.375em !important;
   }
+}
+
+dialog.pf-modal {
+  border-radius: 3px !important;
+}
+
+li.pf-heading-chip {
+  border-radius: 3px !important;
+  transition: none !important;
+}
+
+.pf-result-card {
+  transition: none !important;
 }
 
 .search-wrapper {
