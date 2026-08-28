@@ -135,3 +135,8 @@ status = 301
 from = "/about/stories/from-homeless-to-hope/"
 to = "/about/stories/from-homeless-to-giving-hope/"
 status = 301
+
+[[redirects]]
+from = "/about/team/"
+to = "/about/"
+status = 301

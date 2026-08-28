@@ -36,20 +36,20 @@ const cnst = {
   calworks: {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/1CalWorksRCAECATCVAP/NonExEmpAUStndsCht.htm
     // Section 1.2 "Non-Exempt (Employable) AU Standards Chart Region 1"
-    // Effective through 6/30/26
+    // Effective through 6/30/27
     MBSAC: [ // USD per month
-      930,
-      1526,
-      1892,
-      2244,
-      2561,
-      2880,
-      3166,
-      3445,
-      3738,
-      4056,
+      963,
+      1581,
+      1960,
+      2325,
+      2653,
+      2983,
+      3280,
+      3569,
+      3872,
+      4202,
     ],
-    MBSAC_ADDL_PERSON: 36, // USD per month per person
+    MBSAC_ADDL_PERSON: 37, // USD per month per person
     // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/14Property_Gen/Property_Limit.htm
     // "Property General - Property Limit"
     // Effective through 12/31/2026
@@ -72,18 +72,18 @@ const cnst = {
   },
   care: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    // Effective through 5/31/2026
+    // Effective through 5/31/2027
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      42300,
-      42300,
-      53300,
-      64300,
-      75300,
-      86300,
-      97300,
-      108300,
+      43280,
+      43280,
+      54640,
+      66000,
+      77360,
+      88720,
+      100080,
+      111440,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11000, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 11360, // USD per year per person
   },
   clipper: {
     // https://www.clipperstartcard.com/s/
@@ -105,18 +105,18 @@ const cnst = {
   },
   fera: {
     // https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program
-    // Effective through 5/31/2026
+    // Effective through 5/31/2027
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      52875,
-      52875,
-      66625,
-      80375,
-      94125,
-      107875,
-      121625,
-      135375,
+      54100,
+      54100,
+      68300,
+      82500,
+      96700,
+      110900,
+      125100,
+      139300,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 13750, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 14200, // USD per year per person
   },
   ga: {
     // https://stgenssa.sccgov.org/debs/program_handbooks/charts/assets/4GA/NeedStnds.htm
@@ -198,14 +198,14 @@ const cnst = {
   },
   lifeline: {
     // https://www.cpuc.ca.gov/consumer-support/financial-assistance-savings-and-discounts/lifeline/california-lifeline-eligibility#qualify
-    // Effective through 5/31/26
+    // Effective through 5/31/27
     ANNUAL_INCOME_LIMITS: [ // USD per year
-      24200,
-      32600,
-      41100,
-      49600,
+      24600,
+      33300,
+      42100,
+      50800,
     ],
-    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 8500, // USD per year per person
+    ANNUAL_INCOME_LIMIT_ADDL_PERSON: 8700, // USD per year per person
   },
   liheap: {
     // https://www.csd.ca.gov/Pages/LIHEAP-Income-Eligibility.aspx
