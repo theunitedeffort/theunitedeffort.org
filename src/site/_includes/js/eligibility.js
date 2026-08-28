@@ -1824,6 +1824,11 @@ function calfreshResult(input) {
   //
   const mceIncomeLimit = (cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR *
     fedPovertyLevel.getLimit(input.householdSize));
+  
+  // For CalFresh, GI payments entirely funded by the government are not exempt, however we can probably
+  // safely assume that all GI money is exempt to err on the side of eligiblity.
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/Income_Definitions_and_Exemptions/Exempt.htm?rhhlterm=guaranteed&rhsearch=guaranteed
+  // https://www.cdss.ca.gov/inforesources/guaranteed-income-pilot-program
   const nonExemptIncome = (grossIncome(input) -
     cnst.calfresh.SELF_EMPLOYED_EXEMPT_FRACTION *
     categoryTotal(input.income.selfEmployed) -
