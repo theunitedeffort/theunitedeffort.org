@@ -2924,8 +2924,6 @@ function buildInputObj() {
     return allValues;
   }
 
-  const householdMembers = getHouseholdMembers();
-
   const inputData = {
     age: getValueOrNull('age'),
     citizen: not(getValueOrNull('not-citizen')),
@@ -2936,15 +2934,7 @@ function buildInputObj() {
     pregnant: getValueOrNull('pregnant'),
     feeding: getValueOrNull('feeding'),
     headOfHousehold: getValueOrNull('head-household-yes'),
-    householdMembers: householdMembers,
-    // TODO (#400): Remove these parallel arrays now that the same data is
-    // available in householdMembers above.
-    householdAges: memberValues(householdMembers, 'age'),
-    householdDisabled: memberValues(householdMembers, 'disabled'),
-    householdPregnant: memberValues(householdMembers, 'pregnant'),
-    householdFeeding: memberValues(householdMembers, 'breastfeeding'),
-    householdSpouse: memberValues(householdMembers, 'spouse'),
-    householdDependents: memberValues(householdMembers, 'dependent'),
+    householdMembers: getHouseholdMembers(),
     householdSize: document.querySelectorAll(
       '#page-household-members ul.dynamic_field_list>li').length,
     unbornChildren: getValueOrNull('unborn-children'),
