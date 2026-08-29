@@ -1,5 +1,11 @@
 const elig = require('../eligibility');
 
+// Builds the list of people in the user's household other than the user
+// themselves, with one HouseholdMember per entry in 'attributes'.
+function makeMembers(attributes) {
+  return attributes.map((a) => new elig.HouseholdMember(a));
+}
+
 function verifyOverlay(modifiedInput) {
   expect(modifiedInput._verifyFn(modifiedInput).eligible).toBe(true);
 }
@@ -539,12 +545,7 @@ describe('Program eligibility', () => {
       pregnant: false,
       feeding: false,
       headOfHousehold: false,
-      householdAges: [],
-      householdDisabled: [],
-      householdPregnant: [],
-      householdFeeding: [],
-      householdSpouse: [],
-      householdDependents: [],
+      householdMembers: [],
       householdSize: 1,
       unbornChildren: null,
       housingSituation: null,
@@ -784,7 +785,10 @@ describe('Program eligibility', () => {
         input.income.valid = true;
         // Disregard up to $100 for one child
         input.householdSize = 2;
-        input.householdAges = [35, elig.cnst.calworks.MAX_CHILD_AGE];
+        input.householdMembers = makeMembers([
+          {age: 35},
+          {age: elig.cnst.calworks.MAX_CHILD_AGE},
+        ]);
         input.income.childSupport = [[50], []];
         expect(elig.calworksAdjustedIncome(input)).toBe(0);
         input.income.childSupport = [[100], []];
@@ -793,8 +797,11 @@ describe('Program eligibility', () => {
         expect(elig.calworksAdjustedIncome(input)).toBe(100);
         // Disregard up to $200 for two or more children
         input.householdSize = 3;
-        input.householdAges = [35, elig.cnst.calworks.MAX_CHILD_AGE,
-          elig.cnst.calworks.MAX_CHILD_AGE];
+        input.householdMembers = makeMembers([
+          {age: 35},
+          {age: elig.cnst.calworks.MAX_CHILD_AGE},
+          {age: elig.cnst.calworks.MAX_CHILD_AGE},
+        ]);
         input.income.childSupport = [[100], [], []];
         expect(elig.calworksAdjustedIncome(input)).toBe(0);
         input.income.childSupport = [[200], [], []];
@@ -802,8 +809,12 @@ describe('Program eligibility', () => {
         input.income.childSupport = [[300], [], []];
         expect(elig.calworksAdjustedIncome(input)).toBe(100);
         input.householdSize = 4;
-        input.householdAges = [35, elig.cnst.calworks.MAX_CHILD_AGE,
-          elig.cnst.calworks.MAX_CHILD_AGE, elig.cnst.calworks.MAX_CHILD_AGE];
+        input.householdMembers = makeMembers([
+          {age: 35},
+          {age: elig.cnst.calworks.MAX_CHILD_AGE},
+          {age: elig.cnst.calworks.MAX_CHILD_AGE},
+          {age: elig.cnst.calworks.MAX_CHILD_AGE},
+        ]);
         expect(elig.calworksAdjustedIncome(input)).toBe(100);
       });
 
@@ -819,7 +830,10 @@ describe('Program eligibility', () => {
         const supportPayment = 500;
         input.income.valid = true;
         input.householdSize = 2;
-        input.householdAges = [35, elig.cnst.calworks.MAX_CHILD_AGE + 1];
+        input.householdMembers = makeMembers([
+          {age: 35},
+          {age: elig.cnst.calworks.MAX_CHILD_AGE + 1},
+        ]);
         input.income.childSupport = [[supportPayment], []];
         expect(elig.calworksAdjustedIncome(input)).toBe(supportPayment);
       });
@@ -879,18 +893,25 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.assets.valid = true;
       input.householdSize = 2;
-      input.householdPregnant = [false];
+      // Give the member an adult age so that they do not also satisfy the
+      // "household includes a child" part of the same requirement.
+      input.householdMembers = makeMembers([
+        {age: elig.cnst.calworks.MAX_CHILD_AGE + 1, pregnant: false},
+      ]);
       check(elig.calworksResult, input)
-        .isEligibleIf('householdPregnant').is([true]);
+        .isEligibleIf('householdMembers.0.pregnant').is(true);
     });
 
     test('Eligible when household includes a child', () => {
       input.income.valid = true;
       input.assets.valid = true;
       input.householdSize = 2;
-      input.householdAges = [elig.cnst.calworks.MAX_CHILD_AGE + 1];
+      input.householdMembers = makeMembers([
+        {age: elig.cnst.calworks.MAX_CHILD_AGE + 1},
+      ]);
       check(elig.calworksResult, input)
-        .isEligibleIf('householdAges').is([elig.cnst.calworks.MAX_CHILD_AGE]);
+        .isEligibleIf('householdMembers.0.age')
+        .is(elig.cnst.calworks.MAX_CHILD_AGE);
     });
 
     test('Eligible when main caretaker is young', () => {
@@ -917,18 +938,21 @@ describe('Program eligibility', () => {
       input.age = elig.cnst.calworks.MIN_ELDERLY_AGE - 1;
       input.householdSize = 2;
       // Elderly household member
-      input.householdAges = [elig.cnst.calworks.MIN_ELDERLY_AGE];
-      input.householdDisabled = [false];
+      input.householdMembers = makeMembers([
+        {age: elig.cnst.calworks.MIN_ELDERLY_AGE, disabled: false},
+      ]);
       check(elig.calworksResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
       // Disabled household member
-      input.householdAges = [elig.cnst.calworks.MIN_ELDERLY_AGE - 1];
-      input.householdDisabled = [true];
+      input.householdMembers = makeMembers([
+        {age: elig.cnst.calworks.MIN_ELDERLY_AGE - 1, disabled: true},
+      ]);
       check(elig.calworksResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
       // No elderly or disabled member
-      input.householdAges = [elig.cnst.calworks.MIN_ELDERLY_AGE - 1];
-      input.householdDisabled = [false];
+      input.householdMembers = makeMembers([
+        {age: elig.cnst.calworks.MIN_ELDERLY_AGE - 1, disabled: false},
+      ]);
       check(elig.calworksResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.calworks.BASE_RESOURCE_LIMIT);
       // Elderly applicant
@@ -940,7 +964,7 @@ describe('Program eligibility', () => {
       check(elig.calworksResult, input).isEligibleIf('assets.values')
         .isAtMost(elig.cnst.calworks.DISABLED_ELDERLY_RESOURCE_LIMIT);
       // Unknown ages
-      input.householdAges = [null];
+      input.householdMembers = makeMembers([{age: null, disabled: false}]);
       input.age = null;
       input.disabled = false;
       check(elig.calworksResult, input).isEligibleIf('assets.values')
@@ -1136,9 +1160,12 @@ describe('Program eligibility', () => {
       input.income.valid = true;
       input.assets.valid = true;
       input.age = elig.cnst.ga.MIN_ELIGIBLE_AGE;
-      input.householdDependents = [false, true];
+      input.householdMembers = makeMembers([
+        {dependent: false},
+        {dependent: true},
+      ]);
       check(elig.gaResult, input)
-        .isEligibleIf('householdDependents').is([false, false]);
+        .isEligibleIf('householdMembers.1.dependent').is(false);
     });
 
     test('Requires income at or below income limit', () => {
@@ -1791,38 +1818,53 @@ describe('Program eligibility', () => {
     describe('Household size', () => {
       test('Includes spouse', () => {
         input.householdSize = 4;
-        input.householdSpouse = [true, false, false];
-        input.householdDependents = [false, false, false];
+        input.householdMembers = makeMembers([
+          {spouse: true, dependent: false},
+          {spouse: false, dependent: false},
+          {spouse: false, dependent: false},
+        ]);
         expect(elig.vaPensionHouseholdSize(input)).toBe(2);
       });
 
       test('Includes dependents', () => {
         input.householdSize = 4;
-        input.householdSpouse = [false, false, false];
-        input.householdDependents = [true, true, false];
+        input.householdMembers = makeMembers([
+          {spouse: false, dependent: true},
+          {spouse: false, dependent: true},
+          {spouse: false, dependent: false},
+        ]);
         expect(elig.vaPensionHouseholdSize(input)).toBe(3);
       });
 
       test('Does not double count any person', () => {
         input.householdSize = 4;
-        input.householdSpouse = [true, false, false];
-        input.householdDependents = [true, true, false];
+        input.householdMembers = makeMembers([
+          {spouse: true, dependent: true},
+          {spouse: false, dependent: true},
+          {spouse: false, dependent: false},
+        ]);
         expect(elig.vaPensionHouseholdSize(input)).toBe(3);
       });
     });
 
     describe('Countable income', () => {
       test('Includes income from spouse', () => {
-        input.householdSpouse = [true, false];
-        input.householdDependents = [false, false];
+        input.householdMembers = makeMembers([
+          {spouse: true, dependent: false},
+          {spouse: false, dependent: false},
+        ]);
         input.income.valid = true;
         input.income.wages = [[100], [300], [99]];
         expect(elig.vaPensionCountableIncome(input)).toBe(400);
       });
 
       test('Includes income from dependents over a threshold', () => {
-        input.householdSpouse = [false, false, false, false];
-        input.householdDependents = [true, true, true, false];
+        input.householdMembers = makeMembers([
+          {spouse: false, dependent: true},
+          {spouse: false, dependent: true},
+          {spouse: false, dependent: true},
+          {spouse: false, dependent: false},
+        ]);
         input.income.valid = true;
         input.income.wages = [
           [100],
@@ -1835,8 +1877,9 @@ describe('Program eligibility', () => {
       });
 
       test('Does not double count income from a dependent spouse', () => {
-        input.householdSpouse = [true];
-        input.householdDependents = [true];
+        input.householdMembers = makeMembers([
+          {spouse: true, dependent: true},
+        ]);
         input.income.valid = true;
         input.income.wages = [
           [100],
@@ -1878,14 +1921,17 @@ describe('Program eligibility', () => {
       });
 
       test('Includes assets from spouse', () => {
-        input.householdSpouse = [true, false];
+        input.householdMembers = makeMembers([
+          {spouse: true},
+          {spouse: false},
+        ]);
         input.assets.valid = true;
         input.assets.values = [[100], [200], [899]];
         expect(elig.vaPensionNetWorth(input, 0)).toBe(300);
       });
 
       test('Does not include assets from dependents', () => {
-        input.householdDependents = [true];
+        input.householdMembers = makeMembers([{dependent: true}]);
         input.assets.valid = true;
         input.assets.values = [[100], [300]];
         expect(elig.vaPensionNetWorth(input, 0)).toBe(100);
@@ -2092,7 +2138,7 @@ describe('Program eligibility', () => {
       // income limit, we need to add a dependent here to ensure the VA Pension
       // income limit is above the SSDI income limit for this test.
       input.householdSize = 2;
-      input.householdDependents = [true];
+      input.householdMembers = makeMembers([{dependent: true}]);
       check(elig.vaPensionResult, input).isEligibleIf(ssdiMadeEligible);
     });
   });
@@ -2172,25 +2218,34 @@ describe('Program eligibility', () => {
 
     test('Eligible when anyone in the household is pregnant or was pregnant in the last 6 months', () => {
       input.income.valid = true;
-      input.householdPregnant = [false, false];
+      input.householdMembers = makeMembers([
+        {pregnant: false},
+        {pregnant: false},
+      ]);
       check(elig.wicResult, input).isEligibleIf('pregnant').is(true);
       check(elig.wicResult, input)
-        .isEligibleIf('householdPregnant').is([true, false]);
+        .isEligibleIf('householdMembers.0.pregnant').is(true);
     });
 
     test('Eligible when anyone in the household is breastfeeding a baby under 1 year old', () => {
       input.income.valid = true;
-      input.householdFeeding = [false, false];
+      input.householdMembers = makeMembers([
+        {breastfeeding: false},
+        {breastfeeding: false},
+      ]);
       check(elig.wicResult, input).isEligibleIf('feeding').is(true);
       check(elig.wicResult, input)
-        .isEligibleIf('householdFeeding').is([true, false]);
+        .isEligibleIf('householdMembers.0.breastfeeding').is(true);
     });
 
     test('Eligible when the household includes a child or baby', () => {
       input.income.valid = true;
-      input.householdAges = [elig.cnst.wic.CHILD_EXIT_AGE, 99];
-      check(elig.wicResult, input).isEligibleIf('householdAges')
-        .is([elig.cnst.wic.CHILD_EXIT_AGE - 1, 99]);
+      input.householdMembers = makeMembers([
+        {age: elig.cnst.wic.CHILD_EXIT_AGE},
+        {age: 99},
+      ]);
+      check(elig.wicResult, input).isEligibleIf('householdMembers.0.age')
+        .is(elig.cnst.wic.CHILD_EXIT_AGE - 1);
     });
   });
 

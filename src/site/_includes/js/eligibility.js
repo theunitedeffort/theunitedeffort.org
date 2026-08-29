@@ -1914,8 +1914,8 @@ function calworksAdjustedIncome(input) {
   // than propagate null age values.
   // Note if the applicant is under 19, they do not count as a child for
   // child support income.
-  const numChildren = (input.householdAges.filter(
-    (a) => a <= cnst.calworks.MAX_CHILD_AGE).length);
+  const numChildren = (input.householdMembers.filter(
+    (m) => m.age <= cnst.calworks.MAX_CHILD_AGE).length);
 
   const maxEmploymentDisregard = (
     numEmployed * cnst.calworks.EMPLOYMENT_DISREGARD);
@@ -1948,14 +1948,15 @@ function calworksResult(input) {
     validImmigration(input));
 
   const meetsFamilyReq = or(
-    ...input.householdAges.map((a) => le(a, cnst.calworks.MAX_CHILD_AGE)),
+    ...input.householdMembers.map(
+      (m) => le(m.age, cnst.calworks.MAX_CHILD_AGE)),
     // TODO: is this head of household check needed?  Could we just
     // check if _anyone_ is under 19?
     and(
       le(input.age, cnst.calworks.MAX_CHILD_AGE),
       input.headOfHousehold),
     input.pregnant,
-    ...input.householdPregnant,
+    ...memberValues(input.householdMembers, 'pregnant'),
   );
 
   const nonExemptIncome = calworksAdjustedIncome(input);
@@ -1968,9 +1969,10 @@ function calworksResult(input) {
 
   let resourceLimit = cnst.calworks.BASE_RESOURCE_LIMIT;
   const hasElderlyOrDisabled = or(
-    ...input.householdAges.map((a) => ge(a, cnst.calworks.MIN_ELDERLY_AGE)),
+    ...input.householdMembers.map(
+      (m) => ge(m.age, cnst.calworks.MIN_ELDERLY_AGE)),
     ge(input.age, cnst.calworks.MIN_ELDERLY_AGE),
-    ...input.householdDisabled,
+    ...memberValues(input.householdMembers, 'disabled'),
     // TODO: Determine if blind or deaf is considered "disabled" here.
     input.disabled);
   // If household ages are not specified, we are ok falling back to
@@ -2201,7 +2203,8 @@ function gaResult(input) {
 
   const meetsAgeReq = ge(input.age, cnst.ga.MIN_ELIGIBLE_AGE);
 
-  const numDependents = input.householdDependents.filter((d) => d).length;
+  const numDependents = input.householdMembers.filter(
+    (m) => m.dependent).length;
   const hasNoDependents = eq(numDependents, cnst.ga.NUM_OF_DEPENDENTS);
 
   const underResourceLimit = le(totalResources(input), cnst.ga.MAX_RESOURCES);
@@ -2577,14 +2580,17 @@ function ssdiResult(input) {
 // a spouse, or an empty list if no spouse exists.
 function spouseIndices(input) {
   // Add offset of 1 for user (index 0).
-  return indexOfAll(input.householdSpouse, true).map((i) => i + 1);
+  return indexOfAll(
+    memberValues(input.householdMembers, 'spouse'), true).map((i) => i + 1);
 }
 
 // Returns a list of indices that can be used to extract income and assets for
 // any dependents, or an empty list if no dependents exist.
 function dependentIndices(input) {
   // Add offset of 1 for user (index 0).
-  return indexOfAll(input.householdDependents, true).map((i) => i + 1);
+  return indexOfAll(
+    memberValues(input.householdMembers, 'dependent'),
+    true).map((i) => i + 1);
 }
 
 // Computes the countable income for VA Pension eligiblility.
@@ -2726,12 +2732,13 @@ function wicResult(input) {
   // https://www.cdph.ca.gov/Programs/CFH/DWICSN/Pages/HowCanIGetWIC.aspx
   const hasPregnant = or(
     input.pregnant,
-    ...input.householdPregnant);
+    ...memberValues(input.householdMembers, 'pregnant'));
   const hasBreastfeeding = or(
     input.feeding,
-    ...input.householdFeeding);
+    ...memberValues(input.householdMembers, 'breastfeeding'));
   const hasChild = or(
-    ...input.householdAges.map((a) => lt(a, cnst.wic.CHILD_EXIT_AGE)));
+    ...input.householdMembers.map(
+      (m) => lt(m.age, cnst.wic.CHILD_EXIT_AGE)));
 
   // Rather than null, if unborn-children is left empty, numUnborn == 0.
   const numUnborn = Number(input.unbornChildren);
