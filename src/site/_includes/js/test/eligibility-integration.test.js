@@ -1600,6 +1600,24 @@ describe('buildInputObj', () => {
       householdFeeding: [true, false],
       householdSpouse: [false, true],
       householdDependents: [true, false],
+      householdMembers: [
+        new elig.HouseholdMember({
+          age: '20',
+          disabled: true,
+          pregnant: true,
+          breastfeeding: true,
+          dependent: true,
+          spouse: false,
+        }),
+        new elig.HouseholdMember({
+          age: '41',
+          disabled: false,
+          pregnant: false,
+          breastfeeding: false,
+          dependent: false,
+          spouse: true,
+        }),
+      ],
       householdSize: 3,
       unbornChildren: '1',
       unhousedRisk: true,
@@ -1759,6 +1777,8 @@ describe('buildInputObj', () => {
       expected.householdDependents[1]);
     expect(getInput().householdDependents).toEqual(
       expected.householdDependents);
+
+    expect(getInput().householdMembers).toEqual(expected.householdMembers);
 
     document.getElementById('unborn-children').value = expected.unbornChildren;
     expect(getInput().unbornChildren).toBe(expected.unbornChildren);
@@ -2035,5 +2055,53 @@ describe('buildInputObj', () => {
       expected.existingBiaGaHousehold);
 
     expect(getInput()).toEqual(expected);
+  });
+
+  test('Does not include the user as a household member', () => {
+    document.body.parentElement.innerHTML = html;
+    elig.init();
+    // The user is always present in the form, but is never a household
+    // member.  householdSize does count them, though.
+    expect(getInput().householdMembers).toEqual([]);
+    expect(getInput().householdSize).toBe(1);
+
+    document.querySelector('#page-household-members .field_list_add').click();
+    document.getElementById('hh-myself-age').value = '42';
+    document.getElementById('hh-member-age-1').value = '7';
+    expect(getInput().householdMembers).toEqual([
+      new elig.HouseholdMember({
+        age: '7',
+        disabled: false,
+        pregnant: false,
+        breastfeeding: false,
+        dependent: false,
+        spouse: false,
+      }),
+    ]);
+    expect(getInput().householdSize).toBe(2);
+  });
+
+  // Each household member attribute comes from its own form element, so make
+  // sure none of them is read from a different attribute's element.
+  const memberChecks = {
+    disabled: 'hh-member-disabled-1',
+    pregnant: 'hh-member-pregnant-1',
+    breastfeeding: 'hh-member-breastfeeding-1',
+    dependent: 'hh-member-dependent-1',
+    spouse: 'hh-member-spouse-1',
+  };
+  test.each(
+    Object.entries(memberChecks),
+  )('Sets household member %s from element "%s" alone', (attribute, id) => {
+    document.body.parentElement.innerHTML = html;
+    elig.init();
+    document.querySelector('#page-household-members .field_list_add').click();
+
+    document.getElementById(id).checked = true;
+    const member = getInput().householdMembers[0];
+    for (const other of Object.keys(memberChecks)) {
+      expect(member[other], `${other} of a member with only ${id} checked`)
+        .toBe(other === attribute);
+    }
   });
 });

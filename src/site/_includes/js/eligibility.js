@@ -1509,6 +1509,28 @@ function getValuesOrNulls(idPrefix) {
     `input[id^="${idPrefix}"]`), (e) => getValueOrNull(e.id));
 }
 
+// Builds a HouseholdMember for each person the user has added to their
+// household, in the order those people appear in the form.  The static first
+// list item describes the user themselves, so it is skipped here.
+function getHouseholdMembers() {
+  const items = document.querySelectorAll(
+    '#page-household-members ul.dynamic_field_list>li:not([data-static-item])');
+  return Array.from(items, (item) => {
+    // Helper to get a single value from within this member's list item.
+    const value = function(idPrefix) {
+      return getValueOrNull(item.querySelector(`input[id^="${idPrefix}"]`).id);
+    };
+    return new HouseholdMember({
+      age: value('hh-member-age'),
+      disabled: value('hh-member-disabled'),
+      pregnant: value('hh-member-pregnant'),
+      breastfeeding: value('hh-member-breastfeeding'),
+      dependent: value('hh-member-dependent'),
+      spouse: value('hh-member-spouse'),
+    });
+  });
+}
+
 function categoryTotal(incomeArray, hhMemberIdx=null) {
   // TODO: Check for invalid income here?
   if (hhMemberIdx === null) {
@@ -1567,6 +1589,39 @@ function totalResources(input, hhMemberIdx=null) {
     return NaN;
   }
   return categoryTotal(input.assets.values, hhMemberIdx);
+}
+
+// A single person in the user's household, not including the user
+// themselves.  The user's own attributes are stored at the top level of the
+// input object (input.age, input.disabled, and so on).
+//
+// Note every attribute defaults to null rather than false.  The eligibility
+// logic operators (or(), and(), le(), etc.) distinguish "unknown" from "no",
+// so defaulting an unanswered attribute to false would turn an unknown
+// eligibility result into an ineligible one.
+class HouseholdMember {
+  constructor({
+    age = null,
+    disabled = null,
+    pregnant = null,
+    breastfeeding = null,
+    dependent = null,
+    spouse = null,
+  } = {}) {
+    this.age = age;
+    this.disabled = disabled;
+    this.pregnant = pregnant;
+    this.breastfeeding = breastfeeding;
+    this.dependent = dependent;
+    this.spouse = spouse;
+  }
+}
+
+// Collects the value of a single attribute across all household members.
+// The returned array is in household member order, so it can be spread into
+// the logic operators or passed to indexOfAll().
+function memberValues(members, attribute) {
+  return members.map((m) => m[attribute]);
 }
 
 // Returns true if the immigration status is valid for assistance, false
@@ -2862,6 +2917,8 @@ function buildInputObj() {
     return allValues;
   }
 
+  const householdMembers = getHouseholdMembers();
+
   const inputData = {
     age: getValueOrNull('age'),
     citizen: not(getValueOrNull('not-citizen')),
@@ -2872,13 +2929,15 @@ function buildInputObj() {
     pregnant: getValueOrNull('pregnant'),
     feeding: getValueOrNull('feeding'),
     headOfHousehold: getValueOrNull('head-household-yes'),
-    // TODO (#400): Perhaps make a list of household member objects.
-    householdAges: getValuesOrNulls('hh-member-age'),
-    householdDisabled: getValuesOrNulls('hh-member-disabled'),
-    householdPregnant: getValuesOrNulls('hh-member-pregnant'),
-    householdFeeding: getValuesOrNulls('hh-member-breastfeeding'),
-    householdSpouse: getValuesOrNulls('hh-member-spouse'),
-    householdDependents: getValuesOrNulls('hh-member-dependent'),
+    householdMembers: householdMembers,
+    // TODO (#400): Remove these parallel arrays now that the same data is
+    // available in householdMembers above.
+    householdAges: memberValues(householdMembers, 'age'),
+    householdDisabled: memberValues(householdMembers, 'disabled'),
+    householdPregnant: memberValues(householdMembers, 'pregnant'),
+    householdFeeding: memberValues(householdMembers, 'breastfeeding'),
+    householdSpouse: memberValues(householdMembers, 'spouse'),
+    householdDependents: memberValues(householdMembers, 'dependent'),
     householdSize: document.querySelectorAll(
       '#page-household-members ul.dynamic_field_list>li').length,
     unbornChildren: getValueOrNull('unborn-children'),
@@ -3263,6 +3322,8 @@ if (typeof module !== 'undefined' && module.exports) {
     withinInterval,
     indexOfAll,
     isOneOf,
+    HouseholdMember,
+    memberValues,
     categoryTotal,
     totalEarnedIncome,
     totalUnearnedIncome,
