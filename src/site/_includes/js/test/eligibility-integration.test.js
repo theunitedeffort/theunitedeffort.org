@@ -1736,8 +1736,10 @@ describe('buildInputObj', () => {
     householdMemberAdd.click();
     householdMemberAdd.click();
     for (const [idx, member] of expected.householdMembers.entries()) {
-      // Form element ids are 1-indexed, and the user themselves is not a
-      // household member, so member 0 is described by the '-1' elements.
+      // The user is not in householdMembers at all, so householdMembers[0] is
+      // the first person the user added.  That person's form elements are the
+      // ones whose ids end in "1" (hh-member-age-1 and so on), since the
+      // dynamic field list starts numbering added items at 1.
       const suffix = idx + 1;
       document.getElementById(`hh-member-age-${suffix}`).value = member.age;
       document.getElementById(`hh-member-disabled-${suffix}`).checked = (
