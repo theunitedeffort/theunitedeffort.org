@@ -9,7 +9,7 @@ const base = new Airtable(
 
 const MYCONNECTSV_CALENDAR_URL = 'https://calendar.google.com/calendar/ical/c_bc13a42e047ab729ab123f1352170ee36f9be68d01c9c0a5cd773b92e4f67a18%40group.calendar.google.com/public/basic.ics';
 const LOOKAHEAD_DAYS = 30;
-const NEXT_N_EVENTS = 5;
+const NEXT_N_EVENTS = 7;
 
 const CONTENT_BLOCKS_TABLE = 'tblAkC6dlPJc4o0Je';
 const PAGES_TABLE = 'tblTqhITQfO1MJQaE';
@@ -223,17 +223,21 @@ const fetchEventData = async (url) => {
   console.log('fetching events');
   const data = await ical.fromURL(url);
   events = [];
+  const now = new Date();
+  const lookahead = new Date(Date.now() + LOOKAHEAD_DAYS * 24 * 60 * 60 * 1000);
   for (const event of Object.values(data)) {
     if (event.type === 'VEVENT') {
       if (event.rrule) {
         const instances = ical.expandRecurringEvent(event, {
-          from: new Date(),
-          to: new Date(Date.now() + LOOKAHEAD_DAYS * 24 * 60 * 60 * 1000)
+          from: now,
+          to: lookahead,
+          expandOngoing: true,
         });
         for (const instance of instances) {
           events.push(makeEventEntry(instance))
         }
-      } else {
+      } else if (event.end >= now && event.end <= lookahead ||
+          event.start >= now && event.start <= lookahead) {
         events.push(makeEventEntry(event));
       }
     }
