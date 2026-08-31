@@ -1,0 +1,14 @@
+<ul class="event-list">
+{% for event in data.events %}
+  <li class="event-item">
+    <div class="event-date">
+      <span class="month">{{ event.start | date: '%b' }}</span>
+      <span class="day">{{ event.start | date: '%e' }}</span>
+    </div>
+    <div class="event-info">
+      <div class="event-title">{{ event.title }}</div>
+      <div class="event-details">{{ event.start | date: '%l:%M%P'}} - {{ event.end | date: '%l:%M%P' }} &bull; {{ event.location | replace_last: ", USA", "" | replace_regex: ",? CA 9\\d{4}", "" }} (<a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query={{ event.location | url_encode }}">map</a>)</div>
+    </div>
+  </li>
+{% endfor %}
+</ul>
