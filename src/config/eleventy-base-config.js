@@ -99,6 +99,10 @@ module.exports = function(eleventyConfig) {
     return await makeImage(image, 800, format);
   });
 
+  eleventyConfig.addFilter('replace_regex', (str, search, repl) => {
+    return str.replaceAll(new RegExp(search, 'g'), repl);
+  });
+
   // Markdown filter
   eleventyConfig.addFilter('markdownify', (str) => {
     str = str.replaceAll('http:///', '/');
