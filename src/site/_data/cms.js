@@ -219,12 +219,12 @@ const makeEventEntry = (event) => {
   return entry;
 };
 
-const fetchEventData = async (url) => {
+const fetchEventData = async (url, lookaheadDays, maxEvents) => {
   console.log('fetching events');
   const data = await ical.fromURL(url);
-  events = [];
+  let events = [];
   const now = new Date();
-  const lookahead = new Date(Date.now() + LOOKAHEAD_DAYS * 24 * 60 * 60 * 1000);
+  const lookahead = new Date(Date.now() + lookaheadDays * 24 * 60 * 60 * 1000);
   for (const event of Object.values(data)) {
     if (event.type === 'VEVENT') {
       if (event.rrule) {
@@ -234,7 +234,7 @@ const fetchEventData = async (url) => {
           expandOngoing: true,
         });
         for (const instance of instances) {
-          events.push(makeEventEntry(instance))
+          events.push(makeEventEntry(instance));
         }
       } else if (event.end >= now && event.end <= lookahead ||
           event.start >= now && event.start <= lookahead) {
@@ -243,7 +243,7 @@ const fetchEventData = async (url) => {
     }
   }
   events.sort(sortByDate);
-  events = events.slice(0, NEXT_N_EVENTS);
+  events = events.slice(0, maxEvents);
   return events;
 };
 
@@ -270,7 +270,8 @@ module.exports = async function() {
     assetList,
     eventsList,
   ] = await Promise.all([fetchPages(), fetchGeneralResources(), fetchStories(),
-    fetchNews(), fetchImages(), fetchAssets(), fetchEventData(MYCONNECTSV_CALENDAR_URL)]);
+    fetchNews(), fetchImages(), fetchAssets(),
+    fetchEventData(MYCONNECTSV_CALENDAR_URL, LOOKAHEAD_DAYS, NEXT_N_EVENTS)]);
   await cacheStoryImages(storiesList);
   await cacheAssets(assetList);
   const ret = {
