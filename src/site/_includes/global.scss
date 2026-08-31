@@ -273,7 +273,6 @@ ul.no_bullets {
   display: flex;
   flex-direction: column;
   gap: 2.5em;
-  max-width: 100%;
 }
 
 .event-item {
@@ -311,7 +310,6 @@ ul.no_bullets {
 
 .event-title {
   font-weight: 600;
-  margin-bottom: 2px;
 }
 
 .event-details {
