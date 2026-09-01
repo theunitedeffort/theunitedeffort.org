@@ -17,10 +17,10 @@ const eleventyFetchRetry = async (url, options, attempts=1, wait=0) => {
       attempts++;
       wait = wait ? wait * BACKOFF_FACTOR : INITIAL_WAIT_MS;
       console.error(`Retrying after ${wait} ms: ${url}`);
-      await new Promise(resolve => setTimeout(resolve, wait));
+      await new Promise((resolve) => setTimeout(resolve, wait));
       return await eleventyFetchRetry(url, options, attempts, wait);
     }
   }
 };
 
-module.exports = { eleventyFetchRetry };
+module.exports = {eleventyFetchRetry};
