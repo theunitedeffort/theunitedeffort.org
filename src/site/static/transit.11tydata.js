@@ -1,26 +1,8 @@
-const eleventyFetch = require('@11ty/eleventy-fetch');
+const {eleventyFetchRetry} = require('../../_utils/utils');
 
-const MAX_FETCH_ATTEMPTS = 5;
 const OPERATOR_ID_MAP = {
   'SC': 'VTA',
   'MV': 'MVgo',
-};
-
-// https://www.pupismyname.com/articles/fetch-retry/
-const eleventyFetchRetry = async (url, options, attempts=1) => {
-  try {
-    return await eleventyFetch(url, options);
-  } catch (e) {
-    console.error(`attempt ${attempts} of ${MAX_FETCH_ATTEMPTS}: ${e.message}`);
-    if (attempts >= MAX_FETCH_ATTEMPTS) {
-      console.error(`Fetch failed for ${url}`);
-      throw e;
-    } else {
-      attempts++;
-      console.error(`Retrying ${url}`);
-      return await eleventyFetchRetry(url, options, attempts);
-    }
-  }
 };
 
 const fetchTransitData = async (operatorId) => {
