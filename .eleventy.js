@@ -3,6 +3,7 @@ const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 // This requirement is somehow not propagated from affordable-housing.11tydata.js
 // so include it here to be sure it makes it into the serverless bundle.
 const EleventyFetch = require("@11ty/eleventy-fetch");
+const { eleventyFetchRetry } = require('./src/_utils/utils');
 const pluginToc = require('eleventy-plugin-toc');
 const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 const { execSync } = require("child_process")
@@ -64,7 +65,7 @@ module.exports = function(eleventyConfig) {
       for (const match of content.matchAll(/<div data-mermaid-hash="(.*?)"><\/div>/g)) {
         const url = `https://mermaid.ink/svg/pako:${match[1]}`;
         console.log(url);
-        const svg = await EleventyFetch(url, {duration: '*', type: 'text'});
+        const svg = await eleventyFetchRetry(url, {duration: '*', type: 'text'});
         updatedContent = updatedContent.replace(match[0], svg);
       }
       return updatedContent;
