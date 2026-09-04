@@ -11,6 +11,7 @@ const emptyInput = {
     veterans: [[], []],
     workersComp: [[], []],
     childSupport: [[], []],
+    guaranteed: [[], []],
     retirement: [[], []],
     other: [[], []],
   },
@@ -62,6 +63,7 @@ describe('totalEarnedIncome', () => {
       veterans: [[99], [99]],
       workersComp: [[99], [99]],
       childSupport: [[99], [99]],
+      guaranteed: [[99], [99]],
       retirement: [[99], [99]],
       other: [[99], [99]],
     };
@@ -100,6 +102,7 @@ describe('totalUnearnedIncome', () => {
       veterans: [[100], []],
       workersComp: [[100], []],
       childSupport: [[100], []],
+      guaranteed: [[100], []],
       retirement: [[100], []],
       other: [[100], []],
     };
@@ -111,13 +114,13 @@ describe('totalUnearnedIncome', () => {
   });
 
   test('Sums all unearned income only', () => {
-    expect(elig.totalUnearnedIncome(testInput)).toBe(800);
+    expect(elig.totalUnearnedIncome(testInput)).toBe(900);
   });
 
   test('Sums only unearned income from specified group indices', () => {
     expect(elig.totalUnearnedIncome(testInput, 1)).toBe(50);
-    expect(elig.totalUnearnedIncome(testInput, [0, 1])).toBe(800);
-    expect(elig.totalUnearnedIncome(testInput, null)).toBe(800);
+    expect(elig.totalUnearnedIncome(testInput, [0, 1])).toBe(900);
+    expect(elig.totalUnearnedIncome(testInput, null)).toBe(900);
   });
 
   test('Returns NaN for invalid input', () => {
@@ -138,6 +141,7 @@ describe('grossIncome', () => {
       veterans: [[100], []],
       workersComp: [[100], []],
       childSupport: [[100], []],
+      guaranteed: [[100], []],
       retirement: [[100], []],
       other: [[100], []],
     };
@@ -148,13 +152,13 @@ describe('grossIncome', () => {
   });
 
   test('Sums all income', () => {
-    expect(elig.grossIncome(testInput)).toBe(1000);
+    expect(elig.grossIncome(testInput)).toBe(1100);
   });
 
   test('Sums only income from specified group indices', () => {
     expect(elig.grossIncome(testInput, 1)).toBe(50);
-    expect(elig.grossIncome(testInput, [0, 1])).toBe(1000);
-    expect(elig.grossIncome(testInput, null)).toBe(1000);
+    expect(elig.grossIncome(testInput, [0, 1])).toBe(1100);
+    expect(elig.grossIncome(testInput, null)).toBe(1100);
   });
 
   test('Returns NaN for invalid input', () => {
