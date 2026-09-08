@@ -2627,7 +2627,7 @@ function vaPensionResult(input) {
       and(
         isDuringWartime,
         or(
-          eq(duty.type, 'active-duty')),
+          eq(duty.type, 'active-duty'),
           eq(duty.type, 'active-training'),
           eq(duty.type, 'inactive-training')),
         or(
