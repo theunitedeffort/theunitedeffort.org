@@ -206,7 +206,7 @@ const strs = {
   },
   'guaranteed': {
     'en': /guaranteed income/i,
-    'es': /ingreso garantizado/i,
+    'es': /ingresos? garantizados?/i,
   },
   'otherSource': {
     'en': /other source/i,
@@ -515,6 +515,10 @@ function e2eTest(lang) {
   inputMoney(lang);
 
   nextShouldBe('#page-income-details-child-support');
+  incomeChecks();
+  inputMoney(lang);
+
+  nextShouldBe('#page-income-details-guaranteed');
   incomeChecks();
   inputMoney(lang);
 
