@@ -2031,6 +2031,16 @@ describe('Program eligibility', () => {
         start: input.dutyPeriods[0].start,
         end: input.dutyPeriods[0].end,
       }]);
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: 'active-training',
+        start: input.dutyPeriods[0].start,
+        end: input.dutyPeriods[0].end,
+      }]);
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: 'inactive-training',
+        start: input.dutyPeriods[0].start,
+        end: input.dutyPeriods[0].end,
+      }]);
     });
 
     test('Eligible when starting 24-month active duty after Sept 7, 1980, serving during wartime', () => {

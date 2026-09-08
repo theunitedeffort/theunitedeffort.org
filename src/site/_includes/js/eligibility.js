@@ -2621,10 +2621,15 @@ function vaPensionResult(input) {
     // complex legal distinctions and minutae.
     // Despite language to the contrary on the va.gov eligibility webpage,
     // it seems that pension is available *only* to wartime veterans.
+    // Note: language was added to the above webpage in Sep 2026 clarifying that
+    // active-duty training and inactive duty training might count.
     meetsServiceReq.push(
       and(
         isDuringWartime,
-        eq(duty.type, 'active-duty'),
+        or(
+          eq(duty.type, 'active-duty')),
+          eq(duty.type, 'active-training'),
+          eq(duty.type, 'inactive-training')),
         or(
           and(
             lt(duty.start,
