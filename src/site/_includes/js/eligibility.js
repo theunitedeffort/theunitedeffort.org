@@ -1445,6 +1445,13 @@ function customPageLinking(pageById) {
   };
 
   pageById['page-income-details-child-support'].next = function() {
+    if (document.getElementById('income-has-guaranteed').checked) {
+      return pageById['page-income-details-guaranteed'];
+    }
+    return pageById['page-income-details-guaranteed'].next();
+  };
+
+  pageById['page-income-details-guaranteed'].next = function() {
     if (document.getElementById('income-has-other').checked) {
       return pageById['page-income-details-other'];
     }
@@ -1549,6 +1556,7 @@ function totalUnearnedIncome(input, hhMemberIdx=null) {
     input.income.veterans,
     input.income.workersComp,
     input.income.childSupport,
+    input.income.guaranteed,
     input.income.retirement,
     input.income.other,
   ];
@@ -1816,9 +1824,16 @@ function calfreshResult(input) {
   //
   const mceIncomeLimit = (cnst.calfresh.GROSS_INCOME_LIMIT_MCE_FACTOR *
     fedPovertyLevel.getLimit(input.householdSize));
+
+  // For CalFresh, GI payments entirely funded by the government are not
+  // exempt, however we can probably safely assume that all GI money is
+  // exempt to err on the side of eligiblity.
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calfresh/assets/CalFresh/Income_Definitions_and_Exemptions/Exempt.htm?rhhlterm=guaranteed&rhsearch=guaranteed
+  // https://www.cdss.ca.gov/inforesources/guaranteed-income-pilot-program
   const nonExemptIncome = (grossIncome(input) -
     cnst.calfresh.SELF_EMPLOYED_EXEMPT_FRACTION *
-    categoryTotal(input.income.selfEmployed));
+    categoryTotal(input.income.selfEmployed) -
+    categoryTotal(input.income.guaranteed));
   const underIncomeLimit = le(nonExemptIncome, mceIncomeLimit);
 
   const program = new Program();
@@ -1876,11 +1891,15 @@ function calworksAdjustedIncome(input) {
 
   // TODO: remove the SSI income subtraction?
   // https://www.cdss.ca.gov/Portals/9/Additional-Resources/Forms-and-Brochures/2020/A-D/CW29.pdf?ver=2021-11-19-150846-840
+
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/27Other_Exempt_Income/Other_Exempt_Income.htm
+  // "Guaranteed Income (GI) Payments"
   return (grossIncome(input) -
       Math.min(netEarned, maxEmploymentDisregard) -
       Math.min(childSupportTotal, maxChildSupportDisregard) -
       cnst.calworks.SELF_EMPLOYED_DISREGARD_FRAC *
-      categoryTotal(input.income.selfEmployed) - ssiIncomeTotal);
+      categoryTotal(input.income.selfEmployed) - ssiIncomeTotal -
+      categoryTotal(input.income.guaranteed));
 }
 
 function calworksResult(input) {
