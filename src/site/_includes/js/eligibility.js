@@ -1891,6 +1891,9 @@ function calworksAdjustedIncome(input) {
 
   // TODO: remove the SSI income subtraction?
   // https://www.cdss.ca.gov/Portals/9/Additional-Resources/Forms-and-Brochures/2020/A-D/CW29.pdf?ver=2021-11-19-150846-840
+
+  // https://stgenssa.sccgov.org/debs/program_handbooks/calworks/assets/27Other_Exempt_Income/Other_Exempt_Income.htm
+  // "Guaranteed Income (GI) Payments"
   return (grossIncome(input) -
       Math.min(netEarned, maxEmploymentDisregard) -
       Math.min(childSupportTotal, maxChildSupportDisregard) -
