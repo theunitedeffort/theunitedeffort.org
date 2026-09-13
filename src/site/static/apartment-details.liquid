@@ -70,6 +70,7 @@ eleventyComputed:
     {% else %}
       This property only serves people who are
     {% endif %}
+    {%- assign hasSeniors = apartment.populationsServed | includes: "Seniors" -%}
     {%- for population in specialPopulations -%}
       {%- if forloop.first == false -%}
         {%- if forloop.last %}
@@ -79,7 +80,14 @@ eleventyComputed:
         {% endif -%}
       {%- endif -%}
       {{- population | downcase -}}
-      {%- if population == "Seniors" or population == "Youth" -%}
+      {%- comment -%}
+      Rare properties set aside units for seniors and other units for youth.
+      With only a single age range field, we default to applying the ages to the
+      senior category since the senior min age is often much more well-defined
+      than the youth age (often listed simply as "transition-aged youth").
+      {%- endcomment -%}
+      {%- assign youthNoSenior = population == "Youth" and not hasSeniors -%}
+      {%- if population == "Seniors" or youthNoSenior -%}
         {{- ageRangeStr -}}
       {%- endif -%}
     {%- endfor -%}.
