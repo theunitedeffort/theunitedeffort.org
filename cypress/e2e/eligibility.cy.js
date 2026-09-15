@@ -204,6 +204,10 @@ const strs = {
     'en': /child support/i,
     'es': /manutención ((infantil)|(de los hijos))/i,
   },
+  'guaranteed': {
+    'en': /guaranteed income/i,
+    'es': /ingresos? garantizados?/i,
+  },
   'otherSource': {
     'en': /other source/i,
     'es': /otra fuente/i,
@@ -466,6 +470,7 @@ function e2eTest(lang) {
     strs.veterans[lang],
     strs.workersComp[lang],
     strs.childSupport[lang],
+    strs.guaranteed[lang],
     strs.otherSource[lang],
   ];
   cy.wrap(incomeTypes).each((incomeType) => {
@@ -510,6 +515,10 @@ function e2eTest(lang) {
   inputMoney(lang);
 
   nextShouldBe('#page-income-details-child-support');
+  incomeChecks();
+  inputMoney(lang);
+
+  nextShouldBe('#page-income-details-guaranteed');
   incomeChecks();
   inputMoney(lang);
 

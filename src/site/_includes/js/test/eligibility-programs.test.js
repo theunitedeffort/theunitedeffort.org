@@ -567,6 +567,7 @@ describe('Program eligibility', () => {
         veterans: [[]],
         workersComp: [[]],
         childSupport: [[]],
+        guaranteed: [[]],
         retirement: [[]],
         other: [[]],
       },
@@ -734,6 +735,19 @@ describe('Program eligibility', () => {
         .isEligibleIf('income.selfEmployed').isAtMost(testIncome);
     });
 
+    test('Eligible with any guaranteed income due to full exemption', () => {
+      // Raise gross income above the income limit value
+      const testIncome = expectedIncomeLimit + 1;
+      input.income.valid = true;
+      // Not eligible if all income is from wages
+      input.income.wages = [[testIncome]];
+      expect(elig.calfreshResult(input).eligible).not.toBe(true);
+      // Eligible when all income is from guaranteed income
+      input.income.wages = [[0]];
+      input.income.guaranteed = [[testIncome]];
+      expect(elig.calfreshResult(input).eligible).toBe(true);
+    });
+
     test('Unknown result for invalid income with no categorical eligibility', () => {
       input.income.valid = true;
       check(elig.calfreshResult, input).isUnknownIf('income.valid').is(false);
@@ -844,6 +858,14 @@ describe('Program eligibility', () => {
         input.householdSize = 1;
         input.ssiIncome = [500, 300];
         expect(elig.calworksAdjustedIncome(input)).toBe(200);
+      });
+
+      test('Disregards guaranteed income payments', () => {
+        input.income.valid = true;
+        input.householdSize = 1;
+        input.income.disability = [[300]];
+        input.income.guaranteed = [[500]];
+        expect(elig.calworksAdjustedIncome(input)).toBe(300);
       });
 
       test('Returns NaN if income data is not valid', () => {
@@ -2052,6 +2074,16 @@ describe('Program eligibility', () => {
       }];
       check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
         type: 'active-duty',
+        start: input.dutyPeriods[0].start,
+        end: input.dutyPeriods[0].end,
+      }]);
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: 'active-training',
+        start: input.dutyPeriods[0].start,
+        end: input.dutyPeriods[0].end,
+      }]);
+      check(elig.vaPensionResult, input).isEligibleIf('dutyPeriods').is([{
+        type: 'inactive-training',
         start: input.dutyPeriods[0].start,
         end: input.dutyPeriods[0].end,
       }]);
