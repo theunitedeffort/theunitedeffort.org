@@ -26,6 +26,64 @@ describe('indexOfAll', () => {
   });
 });
 
+describe('HouseholdMember', () => {
+  test('Stores all given attributes', () => {
+    const member = new elig.HouseholdMember({
+      age: 24,
+      disabled: false,
+      pregnant: false,
+      breastfeeding: false,
+      dependent: false,
+      spouse: true,
+    });
+    expect(member.age).toBe(24);
+    expect(member.disabled).toBe(false);
+    expect(member.pregnant).toBe(false);
+    expect(member.breastfeeding).toBe(false);
+    expect(member.dependent).toBe(false);
+    expect(member.spouse).toBe(true);
+  });
+
+  // Defaulting to false rather than null would turn an unknown eligibility
+  // result into an ineligible one, so this behavior is important.
+  test('Defaults unspecified attributes to null, not false', () => {
+    const member = new elig.HouseholdMember({age: 24});
+    expect(member.age).toBe(24);
+    expect(member.disabled).toBe(null);
+    expect(member.pregnant).toBe(null);
+    expect(member.breastfeeding).toBe(null);
+    expect(member.dependent).toBe(null);
+    expect(member.spouse).toBe(null);
+  });
+
+  test('Defaults all attributes to null with no arguments', () => {
+    expect(new elig.HouseholdMember()).toEqual(new elig.HouseholdMember({
+      age: null,
+      disabled: null,
+      pregnant: null,
+      breastfeeding: null,
+      dependent: null,
+      spouse: null,
+    }));
+  });
+});
+
+describe('memberValues', () => {
+  test('Collects one attribute across all members', () => {
+    const members = [
+      new elig.HouseholdMember({age: 24, spouse: true}),
+      new elig.HouseholdMember({age: 8, dependent: true}),
+    ];
+    expect(elig.memberValues(members, 'age')).toEqual([24, 8]);
+    expect(elig.memberValues(members, 'spouse')).toEqual([true, null]);
+    expect(elig.memberValues(members, 'dependent')).toEqual([null, true]);
+  });
+
+  test('Handles empty household', () => {
+    expect(elig.memberValues([], 'age')).toEqual([]);
+  });
+});
+
 describe('isOneOf', () => {
   test('Works for non-null search value', () => {
     const allowedOptions = ['apple', 'orange', 'banana'];
