@@ -25,7 +25,7 @@ To access the data, the site requires _readonly_ access to Airtable via the appr
 - `AIRTABLE_BASE_ID=apphE4mk8YDqyHM0I`
 
 Permissions to the Airtable bases can be granted by the adminitrators of the [UEO base](https://airtable.com/apphE4mk8YDqyHM0I/).
-Once you have at least read access to the bases, you can get a value for `AIRTABLE_API_KEY` by [generating an Airtable personal access token](https://airtable.com/create/tokens/new) with `data.records:read` scope on the UEO Housing Database.
+Once you have at least read access to the bases, you can get a value for `AIRTABLE_API_KEY` by [generating an Airtable personal access token](https://airtable.com/create/tokens/new) with `data.records:read` scope on the **UEO Website** base.
 
 Public transit data is also drawn from [511 SF Bay](https://511.org).  If you want this data in your development site, you will need to provide an addtional optional environment variable:
 
