@@ -31,10 +31,12 @@ mdLib.renderer.rules.fence = (tokens, idx, options, env, self) => {
       code: token.content,
       mermaid: {
         theme: 'default',
+        look: 'classic',
         flowchart: {
           nodeSpacing: 50,
           rankSpacing: 35,
           wrappingWidth: 250,
+          minNodeWidth: 50,
         }
       }
     };

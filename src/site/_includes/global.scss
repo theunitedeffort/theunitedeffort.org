@@ -683,6 +683,7 @@ $logo-height: 30px;
   rect, circle, ellipse, polygon, path {
     fill: var(--color-blue-dark) !important;
     stroke: var(--color-blue-dark) !important;
+    filter: none !important;
   }
 }
 
